@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.1
+// @version     1.0.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -274,7 +274,6 @@
                 }
             }
             function scriptExit(a) {
-                var g;
                 function baseDetour(b) {
                     return function () {
                         b.apply(this, arguments);
@@ -346,12 +345,12 @@
                 }
                 if (a.target.getAttribute('name') && a.target.getAttribute('name') === 'www/base') {
                     window.yt.setConfig = baseDetour(window.yt.setConfig);
-                    for (g in window._yt_www) {
-                        if (typeof window._yt_www[g] === 'function' && window._yt_www[g].toString().indexOf('player-added') !== -1) {
-                            window._yt_www[g] = embedDetour(window._yt_www[g]);
-                            break;
+                    Object.keys(window._yt_www).some(function (b) {
+                        if (typeof window._yt_www[b] === 'function' && window._yt_www[b].toString().indexOf('player-added') !== -1) {
+                            window._yt_www[b] = embedDetour(window._yt_www[b]);
+                            return true;
                         }
-                    }
+                    });
                 } else if (a.target.getAttribute('name') && a.target.getAttribute('name') === 'html5player/html5player') {
                     window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
                 } else if (a.target.getAttribute('name') && a.target.getAttribute('name') === 'www/watch') {
