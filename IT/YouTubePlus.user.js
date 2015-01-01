@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.2
+// @version     1.0.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -22,6 +22,7 @@
     var styleSheet = '#header,' +
         '#watch-discussion,' +
         '#feed-pyv-container,' +
+        '.video-list-item:not(.related-list-item),' +
         '.pyv-afc-ads-container,' +
         '.ad-div' +
         '{display:none}\n' +
