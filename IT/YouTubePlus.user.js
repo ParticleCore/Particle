@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version     1.0.0
+// @version     1.0.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
 // @match       https://www.youtube.com/*
 // @run-at      document-start
-// @downloadURL https://github.com/ParticleCore/YouTubePlus/IT/YouTubePlus.user.js
+// @downloadURL https://github.com/ParticleCore/YouTubePlus/raw/master/IT/YouTubePlus.user.js
 // @grant       none
 // @noframes
 // ==/UserScript==
