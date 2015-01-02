@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.4
+// @version     1.0.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -58,10 +58,11 @@
                         a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base] = hdURL;
                         api.cueVideoByPlayerVars(a.args);
                         api.setPlaybackQuality(videoQuality);
+                        img.removeEventListener('load', widthReport);
                     }
                 }
                 img = new Image();
-                img.onload = widthReport;
+                img.addEventListener('load', widthReport);
                 img.src = hdURL;
             }
             function username() {
