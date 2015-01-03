@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.5
+// @version     1.0.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -279,8 +279,19 @@
                 function baseDetour(b) {
                     return function () {
                         b.apply(this, arguments);
-                        delete window.yt.config_.SHARE_ON_VIDEO_END;
-                        delete window.yt.config_.UNIVERSAL_HOVERCARDS;
+                        [
+                            'ADS_DATA',
+                            'CONVERSION_CONFIG_DICT',
+                            'PYV_IFRAME_CONTENT',
+                            'PYV_IFRAME_ID',
+                            'DELAYED_EMBED',
+                            'TIMING_ACTION',
+                            'TIMING_INFO',
+                            'SHARE_ON_VIDEO_END',
+                            'UNIVERSAL_HOVERCARDS'
+                        ].forEach(function (c) {
+                            delete window.yt.config_[c];
+                        });
                     };
                 }
                 function embedDetour(b) {
@@ -293,6 +304,14 @@
                         b.apply(this, args);
                         if (html5Player && api) {
                             api.setPlaybackQuality(videoQuality);
+                        }
+                    };
+                }
+                function autoplayDetour(b) {
+                    return function () {
+                        var args = arguments;
+                        if (args[1].feature && args[1].feature !== 'autoplay') {
+                            b.apply(this, arguments);
                         }
                     };
                 }
@@ -348,15 +367,21 @@
                 if (a.target.getAttribute('name') && a.target.getAttribute('name') === 'www/base') {
                     window.yt.setConfig = baseDetour(window.yt.setConfig);
                     Object.keys(window._yt_www).some(function (b) {
-                        if (typeof window._yt_www[b] === 'function' && window._yt_www[b].toString().indexOf('player-added') !== -1) {
-                            window._yt_www[b] = embedDetour(window._yt_www[b]);
-                            return true;
+                        if (typeof window._yt_www[b] === 'function') {
+                            if (window._yt_www[b].toString().indexOf('player-added') !== -1) {
+                                window._yt_www[b] = embedDetour(window._yt_www[b]);
+                            } else if (window._yt_www[b].toString().indexOf('window.spf.navigate') !== -1) {
+                                window._yt_www[b] = autoplayDetour(window._yt_www[b]);
+                            }
                         }
                     });
                 } else if (a.target.getAttribute('name') && a.target.getAttribute('name') === 'html5player/html5player') {
                     window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
                 } else if (a.target.getAttribute('name') && a.target.getAttribute('name') === 'www/watch') {
                     window.yt.www.watch.lists.getState = html5Fix(window.yt.www.watch.lists.getState);
+                    window.yt.www.watch.ads = function () {
+                        return;
+                    };
                 }
             }
             function linkList(a, b) {
