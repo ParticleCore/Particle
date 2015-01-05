@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.6
+// @version     1.0.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -310,7 +310,7 @@
                 function autoplayDetour(b) {
                     return function () {
                         var args = arguments;
-                        if (args[1].feature && args[1].feature !== 'autoplay') {
+                        if (!args[1] || args[1].feature && args[1].feature !== 'autoplay') {
                             b.apply(this, arguments);
                         }
                     };
