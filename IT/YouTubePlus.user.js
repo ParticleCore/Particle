@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.8
+// @version     1.0.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -68,7 +68,6 @@
             function username() {
                 var videos,
                     link,
-                    div,
                     span,
                     user,
                     verified;
@@ -89,10 +88,8 @@
                 }
                 function getInfo(b) {
                     videos = JSON.parse(b);
-                    div = document.createElement('div');
-                    div.innerHTML = videos.body.content;
                     link.className = 'spf-link';
-                    link.textContent = channelId[user.getAttribute('data-ytid')] = div.querySelectorAll('ul.pl-header-details li')[1].textContent;
+                    link.textContent = channelId[user.getAttribute('data-ytid')] = videos.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1];
                     videoCounter();
                 }
                 if (location.href.indexOf('/watch') !== -1 && !document.getElementById('uploaded-videos')) {
@@ -310,7 +307,7 @@
                 function autoplayDetour(b) {
                     return function () {
                         var args = arguments;
-                        if (!args[1] || args[1].feature && args[1].feature !== 'autoplay') {
+                        if (!args[1] || (args[1].feature && args[1].feature !== 'autoplay')) {
                             b.apply(this, arguments);
                         }
                     };
