@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.7
+// @version     1.0.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -384,35 +384,6 @@
                     };
                 }
             }
-            function linkList(a, b) {
-                var i,
-                    list = document.getElementById('channels-browse-content-grid') || document.getElementById('browse-items-primary'),
-                    button = document.querySelector('button[data-uix-load-more-href]'),
-                    length,
-                    observer,
-                    config = {
-                        attributes: true,
-                        attributeOldValue: true
-                    };
-                if (location.href.indexOf('/playlist') === -1) {
-                    if (a) {
-                        b.disconnect();
-                    }
-                    if (list) {
-                        if (button && document.readyState === 'complete') {
-                            observer = new window.MutationObserver(linkList);
-                            observer.observe(button, config);
-                        }
-                        list = list.querySelectorAll('a[href*="&list="]');
-                        length = list.length;
-                        if (length !== 0) {
-                            for (i = 0; i < length; i += 1) {
-                                list[i].href = list[i].href.split('&list=')[0];
-                            }
-                        }
-                    }
-                }
-            }
             function title() {
                 var observer,
                     config = {childList: true},
@@ -443,7 +414,6 @@
                 wide();
                 title();
                 general();
-                linkList();
                 username();
             }
             function request(a) {
