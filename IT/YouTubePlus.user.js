@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.9
+// @version     1.1.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -27,7 +27,9 @@
         '.ad-div' +
         '{display:none}\n' +
         '#masthead-appbar' +
-        '{display:block !important}',
+        '{display:block !important}\n' +
+        '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list\n' +
+        '{background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAZUlEQVR4Xr3QxwqAMBREUTXFWHvvJf//jcpbCMpkJ97tgZcw1tdF9rMbSt8AWscSw1WQIaB4AYBiYQ2AEkkKgFK5B4ByKtcADQTVwlNdP6DHxTih77J5gZPwFU6y7XDEQ75m/6cTnM8Rnfw5n1IAAAAASUVORK5CYII=") no-repeat; width:24px; height:24px}',
         core = function () {
             var loaded,
                 channelId = {},
@@ -37,7 +39,8 @@
                 fullscreen = false,
                 html5Player = true,
                 playerAutoPlay = false,
-                requestRunning = false;
+                requestRunning = false,
+                playlistAutoPlay = window.localStorage.playlistAutoplay || 'false';
             function get(a, b, c) {
                 var request = new XMLHttpRequest();
                 function process() {
@@ -307,7 +310,7 @@
                 function autoplayDetour(b) {
                     return function () {
                         var args = arguments;
-                        if (!args[1] || (args[1].feature && args[1].feature !== 'autoplay')) {
+                        if (!args[1] || playlistAutoPlay !== 'false' || (playlistAutoPlay === 'false' && args[1].feature && args[1].feature !== 'autoplay')) {
                             b.apply(this, arguments);
                         }
                     };
@@ -394,6 +397,34 @@
                     titleElement.textContent = titleElement.textContent.replace('▶ ', '');
                 }
             }
+            function autoplayButton(a) {
+                a = (window.chrome && a.target.parentNode) || a.target;
+                a.classList.toggle('yt-uix-button-toggled');
+                window.localStorage.playlistAutoplay = playlistAutoPlay = (playlistAutoPlay === 'true' && 'false') || 'true';
+            }
+            function insertButton() {
+                var spanIcon,
+                    navControls,
+                    playlistBar,
+                    button = document.getElementById('Autoplay');
+                if (location.href.indexOf('list=') !== -1 && !button) {
+                    window.localStorage.playlistAutoplay = window.localStorage.playlistAutoplay || playlistAutoPlay;
+                    playlistBar = document.getElementById('watch-appbar-playlist');
+                    navControls = document.getElementsByClassName('playlist-nav-controls')[0];
+                    button = document.createElement('button');
+                    button.id = 'Autoplay';
+                    button.title = 'Autoplay';
+                    button.type = 'button';
+                    button.className = 'yt-uix-button yt-uix-button-size-default yt-uix-button-player-controls yt-uix-button-empty yt-uix-button-has-icon autoplay-playlist yt-uix-button-opacity yt-uix-tooltip' + ((playlistAutoPlay === 'true' && ' yt-uix-button-toggled') || '');
+                    button.setAttribute('data-tooltip-text', 'Autoplay');
+                    spanIcon = document.createElement('span');
+                    spanIcon.className = 'yt-uix-button-icon yt-uix-button-icon-watch-appbar-autoplay-video-list';
+                    button.appendChild(spanIcon);
+                    navControls.appendChild(button);
+                    button.addEventListener('click', autoplayButton);
+                    playlistBar.className = playlistBar.className.replace('radio-playlist', '');
+                }
+            }
             function htmlGate() {
                 if (fullscreen && window.ytplayer.config) {
                     if (!html5Player && location.href.indexOf('list=') !== -1) {
@@ -408,6 +439,7 @@
                     }
                 }
                 requestRunning = false;
+                insertButton();
                 wide();
                 title();
                 general();
