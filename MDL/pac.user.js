@@ -1,8 +1,8 @@
 // ==UserScript==
-// @version     1.0.0
-// @name        PAC
+// @version     1.0.1
+// @name        Playlist Autoplay Control for YouTube
 // @namespace   https://github.com/ParticleCore
-// @description Playlist Autoplay Control for YouTube - Control autoplay in your playlists
+// @description Control autoplay in your playlists
 // @match       https://www.youtube.com/*
 // @run-at      document-start
 // @downloadURL https://github.com/ParticleCore/YouTubePlus/raw/master/MDL/pac.user.js
