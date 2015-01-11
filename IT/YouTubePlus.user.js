@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.1.1
+// @version     1.1.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -30,7 +30,7 @@
         '#masthead-appbar' +
         '{display:block !important}\n' +
         '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list\n' +
-        '{background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAZUlEQVR4Xr3QxwqAMBREUTXFWHvvJf//jcpbCMpkJ97tgZcw1tdF9rMbSt8AWscSw1WQIaB4AYBiYQ2AEkkKgFK5B4ByKtcADQTVwlNdP6DHxTih77J5gZPwFU6y7XDEQ75m/6cTnM8Rnfw5n1IAAAAASUVORK5CYII=") no-repeat; width:24px; height:24px}',
+        '{background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat; width:24px; height:24px}',
         core = function () {
             var loaded,
                 channelId = {},
