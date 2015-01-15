@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.1.2
+// @version     1.1.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -453,6 +453,7 @@
                     listAfter = a.detail.url.indexOf('list=') !== -1,
                     player = document.getElementById('movie_player');
                 if (player && videoAfter && (listAfter !== listBefore || videoBefore)) {
+                    delete window.ytplayer.config.loaded;
                     player.remove();
                 }
                 requestRunning = true;
