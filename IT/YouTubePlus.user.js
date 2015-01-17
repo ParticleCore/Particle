@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.1.4
+// @version     1.1.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -20,7 +20,11 @@
         document.head.appendChild(injection);
         injection.textContent = a;
     }
-    var styleSheet = '#header,' +
+    var styleSheet =
+        '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n' +
+        '#P:hover{opacity:0.85}\n' +
+        '.P-hide{display:none}\n' +
+        '#header,' +
         '#watch-discussion,' +
         '#feed-pyv-container,' +
         '.video-list-item:not(.related-list-item),' +
@@ -52,6 +56,505 @@
                 request.onreadystatechange = process;
                 request.open(c, a);
                 request.send();
+            }
+            function settingsMenu() {
+                var li,
+                    h2,
+                    h3,
+                    hr,
+                    div,
+                    link,
+                    span,
+                    input,
+                    label,
+                    select,
+                    option,
+                    button,
+                    pHeader,
+                    pContainer,
+                    pList,
+                    pContent,
+                    uploadButton,
+                    settingsButton,
+                    userLang,
+                    userSettings = (window.localStorage.Particle && JSON.parse(window.localStorage.Particle)) || {
+                        GEN_YT_LOGO_LINK: true,
+                        GEN_BLUE_GLOW: true,
+                        VID_MEM_QLTY: true,
+                        CHN_DFLT_PAGE: 'channels'
+                    },
+                    lang = {
+                        GLB_SVE: {
+                            en: 'Save',
+                            'pt-PT': 'Guardar'
+                        },
+                        GEN: {
+                            en: 'General',
+                            'pt-PT': 'Geral'
+                        },
+                        VID: {
+                            en: 'Video',
+                            'pt-PT': 'Video'
+                        },
+                        CHN: {
+                            en: 'Channels',
+                            'pt-PT': 'Canais'
+                        },
+                        DWN: {
+                            en: 'Download',
+                            'pt-PT': 'Transferência'
+                        },
+                        EXT: {
+                            en: 'Extras',
+                            'pt-PT': 'Extras'
+                        },
+                        ABT: {
+                            en: 'About',
+                            'pt-PT': 'Sobre'
+                        },
+                        GEN_TTL: {
+                            en: 'General settings',
+                            'pt-PT': 'Definições gerais'
+                        },
+                        GEN_GEN: {
+                            en: 'General',
+                            'pt-PT': 'Geral'
+                        },
+                        GEN_YT_LOGO_LINK: {
+                            en: 'YouTube logo redirects to subscriptions',
+                            'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
+                        },
+                        GEN_GRID_SUBS: {
+                            en: 'Grid layout in subscriptions',
+                            'pt-PT': 'Subscrições em formato grelha'
+                        },
+                        GEN_GRID_SRCH: {
+                            en: 'Grid layout in search results',
+                            'pt-PT': 'Resultados de pesquisa em formato grelha'
+                        },
+                        GEN_CMPT_TITL: {
+                            en: 'Compact titles in grid layout',
+                            'pt-PT': 'Títulos compactos no formato grelha'
+                        },
+                        GEN_HIDE_FTR: {
+                            en: 'Hide footer',
+                            'pt-PT': 'Esconder rodapé'
+                        },
+                        GEN_BLUE_GLOW: {
+                            en: 'Remove blue glow around clicked buttons',
+                            'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
+                        },
+                        GEN_REM_RECM_SDBR: {
+                            en: 'Remove recommended channels sidebar',
+                            'pt-PT': 'Retirar barra lateral de canais recomendados'
+                        },
+                        GEN_ENHC: {
+                            en: 'Enhancements',
+                            'pt-PT': 'Melhorias'
+                        },
+                        GEN_USER_LNKS: {
+                            en: 'Enable user links in recommended videos',
+                            'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
+                        },
+                        VID_TTL: {
+                            en: 'Video settings',
+                            'pt-PT': 'Definições de vídeo'
+                        },
+                        VID_PLR: {
+                            en: 'Player',
+                            'pt-PT': 'Player'
+                        },
+                        VID_MEM_QLTY: {
+                            en: 'Memorize selected quality',
+                            'pt-PT': 'Memorizar qualidade seleccionada'
+                        },
+                        VID_PROG_BAR_CLR_WHT: { // color = white
+                            en: 'White progress bar color',
+                            'pt-PT': 'Barra de progresso branca'
+                        },
+                        VID_CTRL_BAR_CLR_WHT: { // theme = light
+                            en: 'White control bar color',
+                            'pt-PT': 'Barra de controlos branca'
+                        },
+                        VID_END_SHRE: {
+                            en: 'Disable share panel when video ends',
+                            'pt-PT': 'Desactivar painel de partilha quando o video acaba'
+                        },
+                        VID_LAYT: {
+                            en: 'Layout',
+                            'pt-PT': 'Aparência'
+                        },
+                        VID_HIDE_COMS: {
+                            en: 'Hide comment section',
+                            'pt-PT': 'Esconder secção de comentários'
+                        },
+                        VID_BTNS: {
+                            en: 'Buttons',
+                            'pt-PT': 'Botões'
+                        },
+                        VID_DWNL_BTN: {
+                            en: 'Download button',
+                            'pt-PT': 'Botão de download'
+                        },
+                        VID_RPT_BTN: {
+                            en: 'Repeat button',
+                            'pt-PT': 'Botão de repetir'
+                        },
+                        VID_LIGHTS_OUT: {
+                            en: 'Lights out',
+                            'pt-PT': 'Modo escuro'
+                        },
+                        CHN_TTL: {
+                            en: 'Channel settings',
+                            'pt-PT': 'Definições de canais'
+                        },
+                        CHN_FAV: {
+                            en: 'Favorites',
+                            'pt-PT': 'Favoritos'
+                        },
+                        CHN_FAV_ADS: {
+                            en: 'Enable ads in favorite channels',
+                            'pt-PT': 'Activar publicidades nos canais favoritos'
+                        },
+                        CHN_ALK: {
+                            en: 'Auto-like',
+                            'pt-PT': 'Gostar automaticamente'
+                        },
+                        CHN_BVR: {
+                            en: 'Behavior',
+                            'pt-PT': 'Comportamento'
+                        },
+                        CHN_TRL_ATP: {
+                            en: 'Disable trailer autoplay',
+                            'pt-PT': 'Desactivar começo automático do trailer'
+                        },
+                        CHN_DFLT_PAGE: {
+                            en: 'Default landing page: ',
+                            'pt-PT': 'Página de destino: '
+                        },
+                        CHN_DFLT_PAGE_DFLT: {
+                            en: 'Default',
+                            'pt-PT': 'Padrão'
+                        },
+                        CHN_DFLT_PAGE_VID: {
+                            en: 'Videos',
+                            'pt-PT': 'Vídeos'
+                        },
+                        CHN_DFLT_PAGE_PL: {
+                            en: 'Playlists',
+                            'pt-PT': 'Listas de reprodução'
+                        },
+                        CHN_DFLT_PAGE_CHN: {
+                            en: 'Channels',
+                            'pt-PT': 'Canais'
+                        },
+                        CHN_DFLT_PAGE_DISC: {
+                            en: 'Discussion',
+                            'pt-PT': 'Discussão'
+                        },
+                        CHN_DFLT_PAGE_ABT: {
+                            en: 'About',
+                            'pt-PT': 'Acerca de'
+                        },
+                        DWN_TTL: {
+                            en: 'Download settings',
+                            'pt-PT': 'Preferências de transferência'
+                        },
+                        DWN_PREF: {
+                            en: 'Preferences',
+                            'pt-PT': 'Preferências'
+                        },
+                        DWN_DEFQ: {
+                            en: 'Default quality',
+                            'pt-PT': 'Qualidade padrão'
+                        },
+                        DWN_FILE_NAME: {
+                            en: 'File name preferences',
+                            'pt-PT': 'Preferências de nome de ficheiro'
+                        },
+                        ABT_TTL: {
+                            en: 'Information and useful links',
+                            'pt-PT': 'Informação e ligações úteis'
+                        },
+                        ABT_INFO: {
+                            en: 'Official pages',
+                            'pt-PT': 'Páginas oficiais'
+                        },
+                        ABT_LNK_GHB: {
+                            en: 'GitHub'
+                        },
+                        ABT_LNK_GRFK: {
+                            en: 'Greasy Fork'
+                        },
+                        ABT_LNK_OPNU: {
+                            en: 'OpenUserJS'
+                        },
+                        ABT_PRBL: {
+                            en: 'Report a problem',
+                            'pt-PT': 'Reportar problema'
+                        },
+                        ABT_LNK_PRBL: {
+                            en: 'Click here for instructions',
+                            'pt-PT': 'Clique aqui para instruções'
+                        },
+                        ABT_VER: {
+                            en: 'Version',
+                            'pt-PT': 'Versão'
+                        },
+                        ABT_TEXT: {
+                            en: 'YouTube+ 1.1.5 - Internal Testing'
+                        }
+                    },
+                    menus = {
+                        GEN: { // 0: EL, 1: TYPE, 2: OPTION
+                            GEN_TTL: ['h2'],
+                            GEN_GEN: ['h3'],
+                            GEN_YT_LOGO_LINK: ['input', 'checkbox'],
+                            GEN_GRID_SUBS: ['input', 'checkbox'],
+                            GEN_GRID_SRCH: ['input', 'checkbox'],
+                            GEN_CMPT_TITL: ['input', 'checkbox'],
+                            GEN_HIDE_FTR: ['input', 'checkbox'],
+                            GEN_BLUE_GLOW: ['input', 'checkbox'],
+                            GEN_REM_RECM_SDBR: ['input', 'checkbox'],
+                            GEN_ENHC: ['h3'],
+                            GEN_USER_LNKS: ['input', 'checkbox']
+                        },
+                        VID: {
+                            VID_TTL: ['h2'],
+                            VID_PLR: ['h3'],
+                            VID_MEM_QLTY: ['input', 'checkbox'],
+                            VID_PROG_BAR_CLR_WHT: ['input', 'checkbox'],
+                            VID_CTRL_BAR_CLR_WHT: ['input', 'checkbox'],
+                            VID_END_SHRE: ['input', 'checkbox'],
+                            VID_LAYT: ['h3'],
+                            VID_HIDE_COMS: ['input', 'checkbox'],
+                            VID_BTNS: ['h3'],
+                            VID_DWNL_BTN: ['input', 'checkbox'],
+                            VID_RPT_BTN: ['input', 'checkbox'],
+                            VID_LIGHTS_OUT: ['input', 'checkbox']
+                        },
+                        CHN: {
+                            CHN_TTL: ['h2'],
+                            CHN_FAV: ['h3'],
+                            CHN_FAV_ADS: ['input', 'checkbox'],
+                            CHN_ALK: ['input', 'checkbox'],
+                            CHN_BVR: ['h3'],
+                            CHN_TRL_ATP: ['input', 'checkbox'],
+                            CHN_DFLT_PAGE: ['input', 'select', {
+                                'default': 'CHN_DFLT_PAGE_DFLT',
+                                'videos': 'CHN_DFLT_PAGE_VID',
+                                'playlists': 'CHN_DFLT_PAGE_PL',
+                                'channels': 'CHN_DFLT_PAGE_CHN',
+                                'discussion': 'CHN_DFLT_PAGE_DISC',
+                                'about': 'CHN_DFLT_PAGE_ABT'
+                            }]
+                        },
+                        DWN: {
+                            DWN_TTL: ['h2'],
+                            DWN_PREF: ['h3'],
+                            DWN_DEFQ: ['input', 'checkbox'],
+                            DWN_FILE_NAME: ['input', 'checkbox']
+                        },
+                        ABT: {
+                            ABT_TTL: ['h2'],
+                            ABT_INFO: ['h3'],
+                            ABT_LNK_GHB: ['a', 'https://github.com/ParticleCore/Particle/issues'],
+                            ABT_LNK_GRFK: ['a', 'https://greasyfork.org/en/scripts/'],
+                            ABT_LNK_OPNU: ['a', 'http://openuserjs.org/scripts/ParticleCore/'],
+                            ABT_PRBL: ['h3'],
+                            ABT_LNK_PRBL: ['a', 'https://github.com/ParticleCore/Particle/issues'],
+                            ABT_VER: ['h3'],
+                            ABT_TEXT: ['span']
+                        }
+                    };
+                function navigateSettings(a) {
+                    function saveSettings() {
+                        var value,
+                            navId = document.getElementsByClassName('selected')[0].id,
+                            userSets = document.getElementById('P-content').querySelectorAll('[id*="' + navId + '"]'),
+                            length = userSets.length;
+                        while (length--) {
+                            value = userSets[length].checked || (userSets[length].value !== 'on' && userSets[length].value);
+                            console.info(userSets[length].id, value);
+                            if (value) {
+                                userSettings[userSets[length].id] = value;
+                            } else if (!value) {
+                                delete userSettings[userSets[length].id];
+                            }
+                        }
+                        console.info(userSets.length, navId, userSettings);
+                    }
+                    if (typeof a === 'string' || a.target.parentNode.id === 'P-sidebar-list') {
+                        if (typeof a === 'string') {
+                            li = document.createElement('li');
+                            li.textContent = lang[a][userLang] || lang[a].en;
+                            li.className = 'selected';
+                            li.id = a;
+                            pList.appendChild(li);
+                        } else {
+                            document.getElementById('P-content').remove();
+                            pContainer = document.getElementById('P-container');
+                            pContent = document.createElement('div');
+                            pContent.id = 'P-content';
+                            pContainer.appendChild(pContent);
+                            a.target.parentNode.querySelector('.selected').removeAttribute('class');
+                            a.target.className = 'selected';
+                            a = a.target.id;
+                        }
+                        Object.keys(menus[a]).forEach(function (c) {
+                            div = document.createElement('div');
+                            if (menus[a][c][0] === 'h2') {
+                                hr = document.createElement('hr');
+                                h2 = document.createElement('h2');
+                                pHeader = document.createElement('div');
+                                button = document.createElement('button');
+                                hr.className = 'P-horz';
+                                button.className = 'P-save';
+                                pHeader.className = 'P-header';
+                                button.textContent = lang.GLB_SVE[userLang];
+                                h2.textContent = lang[c][userLang] || lang[c].en;
+                                div.appendChild(pHeader);
+                                button.addEventListener('click', saveSettings);
+                                pHeader.appendChild(button);
+                                pHeader.appendChild(h2);
+                                div.appendChild(hr);
+                            } else if (menus[a][c][0] === 'h3') {
+                                h3 = document.createElement('h3');
+                                h3.textContent = lang[c][userLang] || lang[c].en;
+                                div.appendChild(h3);
+                            } else if (menus[a][c][0] === 'a') {
+                                link = document.createElement('a');
+                                link.textContent = lang[c][userLang] || lang[c].en;
+                                link.href = menus[a][c][1];
+                                div.appendChild(link);
+                            } else if (menus[a][c][0] === 'span') {
+                                span = document.createElement('span');
+                                span.textContent = lang[c][userLang] || lang[c].en;
+                                div.appendChild(span);
+                            } else if (menus[a][c][0] === 'input') {
+                                input = document.createElement('input');
+                                if (menus[a][c][1] === 'text') {
+                                    div.textContent = lang[c][userLang] || lang[c].en;
+                                    input.type = 'text';
+                                    input.placeholder = menus[a][c][2];
+                                    div.appendChild(input);
+                                } else if (menus[a][c][1] === 'checkbox') {
+                                    input.type = 'checkbox';
+                                    input.checked = userSettings[c];
+                                    input.id = c;
+                                    label = document.createElement('label');
+                                    label.setAttribute('for', c);
+                                    label.textContent = lang[c][userLang] || lang[c].en;
+                                    div.appendChild(input);
+                                    div.appendChild(label);
+                                } else if (menus[a][c][1] === 'select') {
+                                    label = document.createElement('label');
+                                    label.setAttribute('for', c);
+                                    label.textContent = lang[c][userLang] || lang[c].en;
+                                    select = document.createElement('select');
+                                    select.id = c;
+                                    Object.keys(menus[a][c][2]).forEach(function (d) {
+                                        option = document.createElement('option');
+                                        if (userSettings[c] === d) {
+                                            option.selected = true;
+                                        }
+                                        option.value = d;
+                                        option.textContent = lang[menus[a][c][2][d]][userLang] || lang[menus[a][c][2][d]].en;
+                                        select.appendChild(option);
+                                    });
+                                    div.appendChild(label);
+                                    div.appendChild(select);
+                                }
+                            }
+                            pContent.appendChild(div);
+                        });
+                    }
+                }
+                function settingsTemplate() {
+                    var bodyContainer,
+                        pageContainer,
+                        settingsStyle,
+                        pSidebar,
+                        pWrapper = document.getElementById('P-settings');
+                    if (pWrapper) {
+                        pWrapper.classList.toggle('P-hide');
+                    } else {
+                        userLang = window.yt.config_.FEEDBACK_LOCALE_LANGUAGE;
+                        bodyContainer = document.getElementById('body-container');
+                        pageContainer = document.getElementById('page-container');
+                        settingsStyle = document.createElement('style');
+                        pWrapper = document.createElement('div');
+                        pContainer = document.createElement('div');
+                        pSidebar = document.createElement('div');
+                        pContent = document.createElement('div');
+                        pList = document.createElement('ul');
+                        pWrapper.id = 'P-settings';
+                        pContainer.id = 'P-container';
+                        pSidebar.id = 'P-sidebar';
+                        pList.id = 'P-sidebar-list';
+                        pContent.id = 'P-content';
+                        settingsStyle.textContent =
+                            '#body-container{position:relative}\n' +
+                            '#footer-container{position:relative}\n' +
+                            '#P-settings{background:#f1f1f1;height:100%;left:0;position:absolute;right:0;z-index:1000}\n' +
+                            '#P-sidebar,#P-content{-moz-user-select:none}\n' +
+                            '#P-container{margin:10px auto 0;max-width:1066px}\n' +
+                            '#P-sidebar,#P-content{box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);box-sizing:border-box}\n' +
+                            '#P-sidebar{background:#1e1e1e;color:grey;float:left;width:195px;margin-right:10px;padding:10px 0}\n' +
+                            '#P-sidebar-list > li{color:grey;padding:0 21px;cursor:pointer;font-size:11px;line-height:24px}\n' +
+                            '#P-sidebar-list > li:hover{color:#1e1e1e;background:#f6f6f6}\n' +
+                            '#P-sidebar-list > li.selected{color:#FFF;font-weight:bold;background-color:#cc181e}\n' +
+                            '#P-content{background:#FFF;overflow:hidden;padding-bottom:40px;margin-bottom:10px}\n' +
+                            '#P-content h2{color:#333;float:left;font-size:18px;font-weight:bold}\n' +
+                            '#P-content h3{color:#555;font-size:14px;font-weight:bold;margin:30px 0 16px}\n' +
+                            '#P-content > div{color:#666;padding:4px 0;overflow:hidden}\n' +
+                            '#P-content > div:first-child{padding:0}\n' +
+                            '#P-content div:first-child + div h3{margin-top:initial}\n' +
+                            '#P-content > div:not(:first-child){padding-left:15px}\n' +
+                            '#P-content input[type="checkbox"]{display:none;margin-left:25px}\n' +
+                            '#P-content label{line-height:20px}\n' +
+                            '#P-content input + label{position:relative;margin-left:25px}\n' +
+                            '#P-content input + label:before{cursor:pointer;border:1px solid #c6c6c6;content:"";left:-25px;height:14px;position:absolute;top:-1px;width:14px}\n' +
+                            '#P-content input[type="checkbox"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAAAAAA6I3INAAAAbElEQVQImWP8ycyAAH8Z/yBzn6BwTy5B5h6c7YHEXb9DuRDO/T3vnG4O3Kivkx6oFLCCuDmu3iyvJr+SLuUEW7R/hbzTqq9iZbxQe2efYWAQKBeCOeN7+0veQmmEqx5PzFFAduR3TpibUb0AALukM83efhR6AAAAAElFTkSuQmCC) no-repeat;border:1px solid #36649c}\n' +
+                            '#P-content select{cursor:pointer;background-image:linear-gradient(to bottom, #fcfcfc 0px, #f8f8f8 100%);border:1px solid #d3d3d3;color:#333;font-family:arial,sans-serif;font-size:11px;font-weight:bold;height:26px;-moz-appearance:none;-webkit-appearance:none;padding:0 1em}\n' +
+                            '#P-content select option{padding:0;padding:0 1em}\n' +
+                            '.P-header{height:20px;margin:0;padding:24px 0 0 15px}\n' +
+                            '.P-save{background:#167ac6;border-color:#167ac6;border-radius:2px;box-shadow:0 1px 0 rgba(0, 0, 0, 0.05);color:#fff;cursor:pointer;display:inline-block;float:right;font-size:11px;font-weight:bold;height:28px;line-height:normal;margin-right:20px;margin-top:-5px;outline:0 none;padding:0 20px;vertical-align:middle;white-space:nowrap;word-wrap:normal}\n' +
+                            '.P-save:hover{background:#126db3}\n' +
+                            '.P-save:active{background:#095b99}\n' +
+                            '.P-horz{border-bottom:0 none;border-top:1px solid #e2e2e2;height:0;margin:20px 0;position:relative}';
+                        pContainer.appendChild(pSidebar);
+                        pContainer.appendChild(pContent);
+                        pWrapper.appendChild(pContainer);
+                        pSidebar.appendChild(pList);
+                        Object.keys(menus).forEach(function (a, b) {
+                            if (b < 1) {
+                                navigateSettings(a);
+                            } else {
+                                li = document.createElement('li');
+                                li.id = a;
+                                li.textContent = lang[a][userLang] || lang[a].en;
+                                pList.appendChild(li);
+                            }
+                        });
+                        bodyContainer.insertBefore(pWrapper, pageContainer);
+                        pWrapper.appendChild(settingsStyle);
+                        pWrapper.addEventListener('click', navigateSettings);
+                    }
+                    if (window.crhome) {
+                        document.documentElement.scrollTop = 0;
+                    } else {
+                        document.body.scrollTop = 0;
+                    }
+                }
+                uploadButton = document.getElementById('appbar-onebar-upload-group');
+                if (uploadButton && !document.getElementById('P')) {
+                    settingsButton = document.createElement('button');
+                    settingsButton.id = 'P';
+                    settingsButton.title = 'YouTube+ settings';
+                    settingsButton.addEventListener('click', settingsTemplate);
+                    uploadButton.parentNode.insertBefore(settingsButton, uploadButton.nextSibling);
+                }
             }
             function checkThumbnail(a) {
                 var img,
@@ -439,6 +942,7 @@
                         api.loadVideoByPlayerVars(window.ytplayer.config.args);
                     }
                 }
+                settingsMenu();
                 requestRunning = false;
                 insertButton();
                 wide();
