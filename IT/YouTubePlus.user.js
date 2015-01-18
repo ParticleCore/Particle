@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.1.5
+// @version     1.1.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -38,25 +38,304 @@
         core = function () {
             var loaded,
                 channelId = {},
-                videoQuality = 'hd720',
                 api = false,
                 widePlayer = true,
                 fullscreen = false,
                 html5Player = true,
-                playerAutoPlay = false,
                 requestRunning = false,
-                playlistAutoPlay = window.localStorage.playlistAutoplay || 'false';
-            function get(a, b, c) {
-                var request = new XMLHttpRequest();
-                function process() {
-                    if (request.readyState === 4) {
-                        b(request.responseText);
+                playlistAutoPlay = window.localStorage.playlistAutoplay || 'false',
+                userSettings = (window.localStorage.Particle && JSON.parse(window.localStorage.Particle)) || {
+                    GEN_YT_LOGO_LINK: true,
+                    GEN_BLUE_GLOW: true,
+                    VID_MEM_QLTY: true,
+                    CHN_DFLT_PAGE: 'channels'
+                },
+                lang = {
+                    GLB_SVE: {
+                        en: 'Save',
+                        'pt-PT': 'Guardar'
+                    },
+                    GEN: {
+                        en: 'General',
+                        'pt-PT': 'Geral'
+                    },
+                    VID: {
+                        en: 'Video',
+                        'pt-PT': 'Video'
+                    },
+                    CHN: {
+                        en: 'Channels',
+                        'pt-PT': 'Canais'
+                    },
+                    DWN: {
+                        en: 'Download',
+                        'pt-PT': 'Transferência'
+                    },
+                    EXT: {
+                        en: 'Extras',
+                        'pt-PT': 'Extras'
+                    },
+                    ABT: {
+                        en: 'About',
+                        'pt-PT': 'Sobre'
+                    },
+                    GEN_TTL: {
+                        en: 'General settings',
+                        'pt-PT': 'Definições gerais'
+                    },
+                    GEN_GEN: {
+                        en: 'General',
+                        'pt-PT': 'Geral'
+                    },
+                    GEN_YT_LOGO_LINK: {
+                        en: 'YouTube logo redirects to subscriptions',
+                        'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
+                    },
+                    GEN_GRID_SUBS: {
+                        en: 'Grid layout in subscriptions',
+                        'pt-PT': 'Subscrições em formato grelha'
+                    },
+                    GEN_GRID_SRCH: {
+                        en: 'Grid layout in search results',
+                        'pt-PT': 'Resultados de pesquisa em formato grelha'
+                    },
+                    GEN_CMPT_TITL: {
+                        en: 'Compact titles in grid layout',
+                        'pt-PT': 'Títulos compactos no formato grelha'
+                    },
+                    GEN_HIDE_FTR: {
+                        en: 'Hide footer',
+                        'pt-PT': 'Esconder rodapé'
+                    },
+                    GEN_BLUE_GLOW: {
+                        en: 'Remove blue glow around clicked buttons',
+                        'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
+                    },
+                    GEN_REM_RECM_SDBR: {
+                        en: 'Remove recommended channels sidebar',
+                        'pt-PT': 'Retirar barra lateral de canais recomendados'
+                    },
+                    GEN_ENHC: {
+                        en: 'Enhancements',
+                        'pt-PT': 'Melhorias'
+                    },
+                    GEN_USER_LNKS: {
+                        en: 'Enable user links in recommended videos',
+                        'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
+                    },
+                    VID_TTL: {
+                        en: 'Video settings',
+                        'pt-PT': 'Definições de vídeo'
+                    },
+                    VID_PLR: {
+                        en: 'Player',
+                        'pt-PT': 'Player'
+                    },
+                    VID_DFLT_QLTY: {
+                        en: 'Default video quality: ',
+                        'pt-PT': 'Qualidade de vídeo padrão: '
+                    },
+                    VID_DFLT_QLTY_AUTO: {
+                        en: 'Auto',
+                        'pt-PT': 'Auto'
+                    },
+                    VID_DFLT_QLTY_TNY: {
+                        en: '144p'
+                    },
+                    VID_DFLT_QLTY_SML: {
+                        en: '240p'
+                    },
+                    VID_DFLT_QLTY_MDM: {
+                        en: '360p'
+                    },
+                    VID_DFLT_QLTY_LRG: {
+                        en: '480p'
+                    },
+                    VID_DFLT_QLTY_720: {
+                        en: '720p'
+                    },
+                    VID_DFLT_QLTY_1080: {
+                        en: '1080p'
+                    },
+                    VID_DFLT_QLTY_1440: {
+                        en: '1440p'
+                    },
+                    VID_DFLT_QLTY_ORIG: {
+                        en: '4K'
+                    },
+                    VID_PLR_ATPL: {
+                        en: 'Autoplay videos',
+                        'pt-PT': 'Iniciar vídeos automaticamente'
+                    },
+                    VID_PROG_BAR_CLR: {
+                        en: 'Progress bar color: ',
+                        'pt-PT': 'Cor da barra de progresso: '
+                    },
+                    VID_PROG_BAR_CLR_RED: { // color = red
+                        en: 'Red',
+                        'pt-PT': 'Vermelha'
+                    },
+                    VID_PROG_BAR_CLR_WHT: { // color = white
+                        en: 'White',
+                        'pt-PT': 'Branca'
+                    },
+                    VID_CTRL_BAR_CLR: {
+                        en: 'Control bar color: ',
+                        'pt-PT': 'Cor da barra de controlos: '
+                    },
+                    VID_CTRL_BAR_CLR_DARK: {
+                        en: 'Dark',
+                        'pt-PT': 'Escura'
+                    },
+                    VID_CTRL_BAR_CLR_LGHT: {
+                        en: 'Light',
+                        'pt-PT': 'Clara'
+                    },
+                    VID_CTRL_BAR_CLR_WHT: { // theme = light
+                        en: 'White control bar color',
+                        'pt-PT': 'Barra de controlos branca'
+                    },
+                    VID_LAYT: {
+                        en: 'Layout',
+                        'pt-PT': 'Aparência'
+                    },
+                    VID_VID_CNT: {
+                        en: 'Show number of uploaded videos in front of the author\'s username',
+                        'pt-PT': 'Mostrar número de vídeos carregados em frente do nome do autor'
+                    },
+                    VID_HIDE_COMS: {
+                        en: 'Hide comment section',
+                        'pt-PT': 'Esconder secção de comentários'
+                    },
+                    VID_BTNS: {
+                        en: 'Buttons',
+                        'pt-PT': 'Botões'
+                    },
+                    VID_DWNL_BTN: {
+                        en: 'Download button',
+                        'pt-PT': 'Botão de download'
+                    },
+                    VID_RPT_BTN: {
+                        en: 'Repeat button',
+                        'pt-PT': 'Botão de repetir'
+                    },
+                    VID_LIGHTS_OUT: {
+                        en: 'Lights out',
+                        'pt-PT': 'Modo escuro'
+                    },
+                    VID_END_SHRE: {
+                        en: 'Disable share panel when video ends',
+                        'pt-PT': 'Desactivar painel de partilha quando o video acaba'
+                    },
+                    VID_PLST: {
+                        en: 'Playlists',
+                        'pt-PT': 'Listas'
+                    },
+                    VID_PLST_ATPL: {
+                        en: 'Add playlist autoplay button',
+                        'pt-PT': 'Adicionar botão de controlo de início automático das listas'
+                    },
+                    CHN_TTL: {
+                        en: 'Channel settings',
+                        'pt-PT': 'Definições de canais'
+                    },
+                    CHN_FAV: {
+                        en: 'Favorites',
+                        'pt-PT': 'Favoritos'
+                    },
+                    CHN_FAV_ADS: {
+                        en: 'Enable ads in favorite channels',
+                        'pt-PT': 'Activar publicidades nos canais favoritos'
+                    },
+                    CHN_ALK: {
+                        en: 'Auto-like',
+                        'pt-PT': 'Gostar automaticamente'
+                    },
+                    CHN_BVR: {
+                        en: 'Behavior',
+                        'pt-PT': 'Comportamento'
+                    },
+                    CHN_TRL_ATP: {
+                        en: 'Disable trailer autoplay',
+                        'pt-PT': 'Desactivar começo automático do trailer'
+                    },
+                    CHN_DFLT_PAGE: {
+                        en: 'Default landing page: ',
+                        'pt-PT': 'Página de destino: '
+                    },
+                    CHN_DFLT_PAGE_DFLT: {
+                        en: 'Default',
+                        'pt-PT': 'Padrão'
+                    },
+                    CHN_DFLT_PAGE_VID: {
+                        en: 'Videos',
+                        'pt-PT': 'Vídeos'
+                    },
+                    CHN_DFLT_PAGE_PL: {
+                        en: 'Playlists',
+                        'pt-PT': 'Listas de reprodução'
+                    },
+                    CHN_DFLT_PAGE_CHN: {
+                        en: 'Channels',
+                        'pt-PT': 'Canais'
+                    },
+                    CHN_DFLT_PAGE_DISC: {
+                        en: 'Discussion',
+                        'pt-PT': 'Discussão'
+                    },
+                    CHN_DFLT_PAGE_ABT: {
+                        en: 'About',
+                        'pt-PT': 'Acerca de'
+                    },
+                    DWN_TTL: {
+                        en: 'Download settings',
+                        'pt-PT': 'Preferências de transferência'
+                    },
+                    DWN_PREF: {
+                        en: 'Preferences',
+                        'pt-PT': 'Preferências'
+                    },
+                    DWN_DEFQ: {
+                        en: 'Default quality',
+                        'pt-PT': 'Qualidade padrão'
+                    },
+                    DWN_FILE_NAME: {
+                        en: 'File name preferences',
+                        'pt-PT': 'Preferências de nome de ficheiro'
+                    },
+                    ABT_TTL: {
+                        en: 'Information and useful links',
+                        'pt-PT': 'Informação e ligações úteis'
+                    },
+                    ABT_INFO: {
+                        en: 'Official pages',
+                        'pt-PT': 'Páginas oficiais'
+                    },
+                    ABT_LNK_GHB: {
+                        en: 'GitHub'
+                    },
+                    ABT_LNK_GRFK: {
+                        en: 'Greasy Fork'
+                    },
+                    ABT_LNK_OPNU: {
+                        en: 'OpenUserJS'
+                    },
+                    ABT_PRBL: {
+                        en: 'Report a problem',
+                        'pt-PT': 'Reportar problema'
+                    },
+                    ABT_LNK_PRBL: {
+                        en: 'Click here for instructions',
+                        'pt-PT': 'Clique aqui para instruções'
+                    },
+                    ABT_VER: {
+                        en: 'Version',
+                        'pt-PT': 'Versão'
+                    },
+                    ABT_TEXT: {
+                        en: 'YouTube+ 1.1.6 - Internal Testing'
                     }
-                }
-                request.onreadystatechange = process;
-                request.open(c, a);
-                request.send();
-            }
+                };
             function settingsMenu() {
                 var li,
                     h2,
@@ -77,270 +356,64 @@
                     uploadButton,
                     settingsButton,
                     userLang,
-                    userSettings = (window.localStorage.Particle && JSON.parse(window.localStorage.Particle)) || {
-                        GEN_YT_LOGO_LINK: true,
-                        GEN_BLUE_GLOW: true,
-                        VID_MEM_QLTY: true,
-                        CHN_DFLT_PAGE: 'channels'
-                    },
-                    lang = {
-                        GLB_SVE: {
-                            en: 'Save',
-                            'pt-PT': 'Guardar'
-                        },
-                        GEN: {
-                            en: 'General',
-                            'pt-PT': 'Geral'
-                        },
-                        VID: {
-                            en: 'Video',
-                            'pt-PT': 'Video'
-                        },
-                        CHN: {
-                            en: 'Channels',
-                            'pt-PT': 'Canais'
-                        },
-                        DWN: {
-                            en: 'Download',
-                            'pt-PT': 'Transferência'
-                        },
-                        EXT: {
-                            en: 'Extras',
-                            'pt-PT': 'Extras'
-                        },
-                        ABT: {
-                            en: 'About',
-                            'pt-PT': 'Sobre'
-                        },
-                        GEN_TTL: {
-                            en: 'General settings',
-                            'pt-PT': 'Definições gerais'
-                        },
-                        GEN_GEN: {
-                            en: 'General',
-                            'pt-PT': 'Geral'
-                        },
-                        GEN_YT_LOGO_LINK: {
-                            en: 'YouTube logo redirects to subscriptions',
-                            'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
-                        },
-                        GEN_GRID_SUBS: {
-                            en: 'Grid layout in subscriptions',
-                            'pt-PT': 'Subscrições em formato grelha'
-                        },
-                        GEN_GRID_SRCH: {
-                            en: 'Grid layout in search results',
-                            'pt-PT': 'Resultados de pesquisa em formato grelha'
-                        },
-                        GEN_CMPT_TITL: {
-                            en: 'Compact titles in grid layout',
-                            'pt-PT': 'Títulos compactos no formato grelha'
-                        },
-                        GEN_HIDE_FTR: {
-                            en: 'Hide footer',
-                            'pt-PT': 'Esconder rodapé'
-                        },
-                        GEN_BLUE_GLOW: {
-                            en: 'Remove blue glow around clicked buttons',
-                            'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
-                        },
-                        GEN_REM_RECM_SDBR: {
-                            en: 'Remove recommended channels sidebar',
-                            'pt-PT': 'Retirar barra lateral de canais recomendados'
-                        },
-                        GEN_ENHC: {
-                            en: 'Enhancements',
-                            'pt-PT': 'Melhorias'
-                        },
-                        GEN_USER_LNKS: {
-                            en: 'Enable user links in recommended videos',
-                            'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
-                        },
-                        VID_TTL: {
-                            en: 'Video settings',
-                            'pt-PT': 'Definições de vídeo'
-                        },
-                        VID_PLR: {
-                            en: 'Player',
-                            'pt-PT': 'Player'
-                        },
-                        VID_MEM_QLTY: {
-                            en: 'Memorize selected quality',
-                            'pt-PT': 'Memorizar qualidade seleccionada'
-                        },
-                        VID_PROG_BAR_CLR_WHT: { // color = white
-                            en: 'White progress bar color',
-                            'pt-PT': 'Barra de progresso branca'
-                        },
-                        VID_CTRL_BAR_CLR_WHT: { // theme = light
-                            en: 'White control bar color',
-                            'pt-PT': 'Barra de controlos branca'
-                        },
-                        VID_END_SHRE: {
-                            en: 'Disable share panel when video ends',
-                            'pt-PT': 'Desactivar painel de partilha quando o video acaba'
-                        },
-                        VID_LAYT: {
-                            en: 'Layout',
-                            'pt-PT': 'Aparência'
-                        },
-                        VID_HIDE_COMS: {
-                            en: 'Hide comment section',
-                            'pt-PT': 'Esconder secção de comentários'
-                        },
-                        VID_BTNS: {
-                            en: 'Buttons',
-                            'pt-PT': 'Botões'
-                        },
-                        VID_DWNL_BTN: {
-                            en: 'Download button',
-                            'pt-PT': 'Botão de download'
-                        },
-                        VID_RPT_BTN: {
-                            en: 'Repeat button',
-                            'pt-PT': 'Botão de repetir'
-                        },
-                        VID_LIGHTS_OUT: {
-                            en: 'Lights out',
-                            'pt-PT': 'Modo escuro'
-                        },
-                        CHN_TTL: {
-                            en: 'Channel settings',
-                            'pt-PT': 'Definições de canais'
-                        },
-                        CHN_FAV: {
-                            en: 'Favorites',
-                            'pt-PT': 'Favoritos'
-                        },
-                        CHN_FAV_ADS: {
-                            en: 'Enable ads in favorite channels',
-                            'pt-PT': 'Activar publicidades nos canais favoritos'
-                        },
-                        CHN_ALK: {
-                            en: 'Auto-like',
-                            'pt-PT': 'Gostar automaticamente'
-                        },
-                        CHN_BVR: {
-                            en: 'Behavior',
-                            'pt-PT': 'Comportamento'
-                        },
-                        CHN_TRL_ATP: {
-                            en: 'Disable trailer autoplay',
-                            'pt-PT': 'Desactivar começo automático do trailer'
-                        },
-                        CHN_DFLT_PAGE: {
-                            en: 'Default landing page: ',
-                            'pt-PT': 'Página de destino: '
-                        },
-                        CHN_DFLT_PAGE_DFLT: {
-                            en: 'Default',
-                            'pt-PT': 'Padrão'
-                        },
-                        CHN_DFLT_PAGE_VID: {
-                            en: 'Videos',
-                            'pt-PT': 'Vídeos'
-                        },
-                        CHN_DFLT_PAGE_PL: {
-                            en: 'Playlists',
-                            'pt-PT': 'Listas de reprodução'
-                        },
-                        CHN_DFLT_PAGE_CHN: {
-                            en: 'Channels',
-                            'pt-PT': 'Canais'
-                        },
-                        CHN_DFLT_PAGE_DISC: {
-                            en: 'Discussion',
-                            'pt-PT': 'Discussão'
-                        },
-                        CHN_DFLT_PAGE_ABT: {
-                            en: 'About',
-                            'pt-PT': 'Acerca de'
-                        },
-                        DWN_TTL: {
-                            en: 'Download settings',
-                            'pt-PT': 'Preferências de transferência'
-                        },
-                        DWN_PREF: {
-                            en: 'Preferences',
-                            'pt-PT': 'Preferências'
-                        },
-                        DWN_DEFQ: {
-                            en: 'Default quality',
-                            'pt-PT': 'Qualidade padrão'
-                        },
-                        DWN_FILE_NAME: {
-                            en: 'File name preferences',
-                            'pt-PT': 'Preferências de nome de ficheiro'
-                        },
-                        ABT_TTL: {
-                            en: 'Information and useful links',
-                            'pt-PT': 'Informação e ligações úteis'
-                        },
-                        ABT_INFO: {
-                            en: 'Official pages',
-                            'pt-PT': 'Páginas oficiais'
-                        },
-                        ABT_LNK_GHB: {
-                            en: 'GitHub'
-                        },
-                        ABT_LNK_GRFK: {
-                            en: 'Greasy Fork'
-                        },
-                        ABT_LNK_OPNU: {
-                            en: 'OpenUserJS'
-                        },
-                        ABT_PRBL: {
-                            en: 'Report a problem',
-                            'pt-PT': 'Reportar problema'
-                        },
-                        ABT_LNK_PRBL: {
-                            en: 'Click here for instructions',
-                            'pt-PT': 'Clique aqui para instruções'
-                        },
-                        ABT_VER: {
-                            en: 'Version',
-                            'pt-PT': 'Versão'
-                        },
-                        ABT_TEXT: {
-                            en: 'YouTube+ 1.1.5 - Internal Testing'
-                        }
-                    },
                     menus = {
-                        GEN: { // 0: EL, 1: TYPE, 2: OPTION
+                        GEN: {
                             GEN_TTL: ['h2'],
                             GEN_GEN: ['h3'],
-                            GEN_YT_LOGO_LINK: ['input', 'checkbox'],
-                            GEN_GRID_SUBS: ['input', 'checkbox'],
-                            GEN_GRID_SRCH: ['input', 'checkbox'],
-                            GEN_CMPT_TITL: ['input', 'checkbox'],
-                            GEN_HIDE_FTR: ['input', 'checkbox'],
-                            GEN_BLUE_GLOW: ['input', 'checkbox'],
-                            GEN_REM_RECM_SDBR: ['input', 'checkbox'],
+                            GEN_YT_LOGO_LINK: ['checkbox'],
+                            GEN_GRID_SUBS: ['checkbox'],
+                            GEN_GRID_SRCH: ['checkbox'],
+                            GEN_CMPT_TITL: ['checkbox'],
+                            GEN_HIDE_FTR: ['checkbox'],
+                            GEN_BLUE_GLOW: ['checkbox'],
+                            GEN_REM_RECM_SDBR: ['checkbox'],
                             GEN_ENHC: ['h3'],
-                            GEN_USER_LNKS: ['input', 'checkbox']
+                            GEN_USER_LNKS: ['checkbox']
                         },
                         VID: {
                             VID_TTL: ['h2'],
                             VID_PLR: ['h3'],
-                            VID_MEM_QLTY: ['input', 'checkbox'],
-                            VID_PROG_BAR_CLR_WHT: ['input', 'checkbox'],
-                            VID_CTRL_BAR_CLR_WHT: ['input', 'checkbox'],
-                            VID_END_SHRE: ['input', 'checkbox'],
+                            VID_DFLT_QLTY: ['select', {
+                                'auto': 'VID_DFLT_QLTY_AUTO',
+                                'tiny': 'VID_DFLT_QLTY_TNY',
+                                'small': 'VID_DFLT_QLTY_SML',
+                                'medium': 'VID_DFLT_QLTY_MDM',
+                                'large': 'VID_DFLT_QLTY_LRG',
+                                'hd720': 'VID_DFLT_QLTY_720',
+                                'hd1080': 'VID_DFLT_QLTY_1080',
+                                'hd1440': 'VID_DFLT_QLTY_1440',
+                                'highres': 'VID_DFLT_QLTY_ORIG'
+                            }],
+                            VID_PLR_ATPL: ['checkbox'],
+                            VID_PROG_BAR_CLR: ['radio', {
+                                'red': 'VID_PROG_BAR_CLR_RED',
+                                'white': 'VID_PROG_BAR_CLR_WHT'
+                            }],
+                            VID_CTRL_BAR_CLR: ['radio', {
+                                'dark': 'VID_CTRL_BAR_CLR_DARK',
+                                'light': 'VID_CTRL_BAR_CLR_LGHT'
+                            }],
+                            VID_PROG_BAR_CLR_WHT: ['checkbox'],
+                            VID_CTRL_BAR_CLR_WHT: ['checkbox'],
+                            VID_END_SHRE: ['checkbox'],
+                            VID_PLST: ['h3'],
+                            VID_PLST_ATPL: ['checkbox'],
                             VID_LAYT: ['h3'],
-                            VID_HIDE_COMS: ['input', 'checkbox'],
+                            VID_VID_CNT: ['checkbox'],
+                            VID_HIDE_COMS: ['checkbox'],
                             VID_BTNS: ['h3'],
-                            VID_DWNL_BTN: ['input', 'checkbox'],
-                            VID_RPT_BTN: ['input', 'checkbox'],
-                            VID_LIGHTS_OUT: ['input', 'checkbox']
+                            VID_DWNL_BTN: ['checkbox'],
+                            VID_RPT_BTN: ['checkbox'],
+                            VID_LIGHTS_OUT: ['checkbox']
                         },
                         CHN: {
                             CHN_TTL: ['h2'],
                             CHN_FAV: ['h3'],
-                            CHN_FAV_ADS: ['input', 'checkbox'],
-                            CHN_ALK: ['input', 'checkbox'],
+                            CHN_FAV_ADS: ['checkbox'],
+                            CHN_ALK: ['checkbox'],
                             CHN_BVR: ['h3'],
-                            CHN_TRL_ATP: ['input', 'checkbox'],
-                            CHN_DFLT_PAGE: ['input', 'select', {
+                            CHN_TRL_ATP: ['checkbox'],
+                            CHN_DFLT_PAGE: ['select', {
                                 'default': 'CHN_DFLT_PAGE_DFLT',
                                 'videos': 'CHN_DFLT_PAGE_VID',
                                 'playlists': 'CHN_DFLT_PAGE_PL',
@@ -352,8 +425,8 @@
                         DWN: {
                             DWN_TTL: ['h2'],
                             DWN_PREF: ['h3'],
-                            DWN_DEFQ: ['input', 'checkbox'],
-                            DWN_FILE_NAME: ['input', 'checkbox']
+                            DWN_DEFQ: ['checkbox'],
+                            DWN_FILE_NAME: ['checkbox']
                         },
                         ABT: {
                             ABT_TTL: ['h2'],
@@ -374,15 +447,14 @@
                             userSets = document.getElementById('P-content').querySelectorAll('[id*="' + navId + '"]'),
                             length = userSets.length;
                         while (length--) {
-                            value = userSets[length].checked || (userSets[length].value !== 'on' && userSets[length].value);
-                            console.info(userSets[length].id, value);
+                            value = userSets[length].checked || (userSets[length].type !== 'radio' && userSets[length].value !== 'on' && userSets[length].value);
                             if (value) {
                                 userSettings[userSets[length].id] = value;
                             } else if (!value) {
                                 delete userSettings[userSets[length].id];
                             }
                         }
-                        console.info(userSets.length, navId, userSettings);
+                        window.localStorage.Particle = JSON.stringify(userSettings);
                     }
                     if (typeof a === 'string' || a.target.parentNode.id === 'P-sidebar-list') {
                         if (typeof a === 'string') {
@@ -402,69 +474,88 @@
                             a = a.target.id;
                         }
                         Object.keys(menus[a]).forEach(function (c) {
+                            var language = lang[c][userLang] || lang[c].en;
                             div = document.createElement('div');
                             if (menus[a][c][0] === 'h2') {
-                                hr = document.createElement('hr');
                                 h2 = document.createElement('h2');
-                                pHeader = document.createElement('div');
-                                button = document.createElement('button');
+                                h2.textContent = language;
+                                hr = document.createElement('hr');
                                 hr.className = 'P-horz';
+                                button = document.createElement('button');
                                 button.className = 'P-save';
-                                pHeader.className = 'P-header';
                                 button.textContent = lang.GLB_SVE[userLang];
-                                h2.textContent = lang[c][userLang] || lang[c].en;
-                                div.appendChild(pHeader);
                                 button.addEventListener('click', saveSettings);
+                                pHeader = document.createElement('div');
+                                pHeader.className = 'P-header';
                                 pHeader.appendChild(button);
                                 pHeader.appendChild(h2);
+                                div.appendChild(pHeader);
                                 div.appendChild(hr);
                             } else if (menus[a][c][0] === 'h3') {
                                 h3 = document.createElement('h3');
-                                h3.textContent = lang[c][userLang] || lang[c].en;
+                                h3.textContent = language;
                                 div.appendChild(h3);
                             } else if (menus[a][c][0] === 'a') {
                                 link = document.createElement('a');
-                                link.textContent = lang[c][userLang] || lang[c].en;
+                                link.textContent = language;
                                 link.href = menus[a][c][1];
                                 div.appendChild(link);
                             } else if (menus[a][c][0] === 'span') {
                                 span = document.createElement('span');
-                                span.textContent = lang[c][userLang] || lang[c].en;
+                                span.textContent = language;
                                 div.appendChild(span);
-                            } else if (menus[a][c][0] === 'input') {
+                            } else if (menus[a][c][0] === 'text') {
                                 input = document.createElement('input');
-                                if (menus[a][c][1] === 'text') {
-                                    div.textContent = lang[c][userLang] || lang[c].en;
-                                    input.type = 'text';
-                                    input.placeholder = menus[a][c][2];
-                                    div.appendChild(input);
-                                } else if (menus[a][c][1] === 'checkbox') {
-                                    input.type = 'checkbox';
-                                    input.checked = userSettings[c];
-                                    input.id = c;
+                                input.placeholder = menus[a][c][1];
+                                input.type = 'text';
+                                div.textContent = language;
+                                div.appendChild(input);
+                            } else if (menus[a][c][0] === 'radio') {
+                                label = document.createElement('label');
+                                label.textContent = language;
+                                div.appendChild(label);
+                                Object.keys(menus[a][c][1]).forEach(function (d) {
+                                    input = document.createElement('input');
+                                    input.type = 'radio';
+                                    input.value = d;
+                                    input.name = c;
+                                    input.id = menus[a][c][1][d];
+                                    if (userSettings[menus[a][c][1][d]]) {
+                                        input.checked = true;
+                                    }
                                     label = document.createElement('label');
-                                    label.setAttribute('for', c);
-                                    label.textContent = lang[c][userLang] || lang[c].en;
+                                    label.setAttribute('for', menus[a][c][1][d]);
+                                    label.textContent = lang[menus[a][c][1][d]][userLang] || lang[menus[a][c][1][d]].en;
                                     div.appendChild(input);
                                     div.appendChild(label);
-                                } else if (menus[a][c][1] === 'select') {
-                                    label = document.createElement('label');
-                                    label.setAttribute('for', c);
-                                    label.textContent = lang[c][userLang] || lang[c].en;
-                                    select = document.createElement('select');
-                                    select.id = c;
-                                    Object.keys(menus[a][c][2]).forEach(function (d) {
-                                        option = document.createElement('option');
-                                        if (userSettings[c] === d) {
-                                            option.selected = true;
-                                        }
-                                        option.value = d;
-                                        option.textContent = lang[menus[a][c][2][d]][userLang] || lang[menus[a][c][2][d]].en;
-                                        select.appendChild(option);
-                                    });
-                                    div.appendChild(label);
-                                    div.appendChild(select);
-                                }
+                                });
+                            } else if (menus[a][c][0] === 'checkbox') {
+                                input = document.createElement('input');
+                                input.type = 'checkbox';
+                                input.checked = userSettings[c];
+                                input.id = c;
+                                label = document.createElement('label');
+                                label.setAttribute('for', c);
+                                label.textContent = language;
+                                div.appendChild(input);
+                                div.appendChild(label);
+                            } else if (menus[a][c][0] === 'select') {
+                                label = document.createElement('label');
+                                label.setAttribute('for', c);
+                                label.textContent = language;
+                                select = document.createElement('select');
+                                select.id = c;
+                                Object.keys(menus[a][c][1]).forEach(function (d) {
+                                    option = document.createElement('option');
+                                    if (userSettings[c] === d) {
+                                        option.selected = true;
+                                    }
+                                    option.value = d;
+                                    option.textContent = lang[menus[a][c][1][d]][userLang] || lang[menus[a][c][1][d]].en;
+                                    select.appendChild(option);
+                                });
+                                div.appendChild(label);
+                                div.appendChild(select);
                             }
                             pContent.appendChild(div);
                         });
@@ -511,11 +602,14 @@
                             '#P-content > div:first-child{padding:0}\n' +
                             '#P-content div:first-child + div h3{margin-top:initial}\n' +
                             '#P-content > div:not(:first-child){padding-left:15px}\n' +
-                            '#P-content input[type="checkbox"]{display:none;margin-left:25px}\n' +
                             '#P-content label{line-height:20px}\n' +
+                            '#P-content input{display:none;margin-left:25px}\n' +
                             '#P-content input + label{position:relative;margin-left:25px}\n' +
                             '#P-content input + label:before{cursor:pointer;border:1px solid #c6c6c6;content:"";left:-25px;height:14px;position:absolute;top:-1px;width:14px}\n' +
-                            '#P-content input[type="checkbox"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAAAAAA6I3INAAAAbElEQVQImWP8ycyAAH8Z/yBzn6BwTy5B5h6c7YHEXb9DuRDO/T3vnG4O3Kivkx6oFLCCuDmu3iyvJr+SLuUEW7R/hbzTqq9iZbxQe2efYWAQKBeCOeN7+0veQmmEqx5PzFFAduR3TpibUb0AALukM83efhR6AAAAAElFTkSuQmCC) no-repeat;border:1px solid #36649c}\n' +
+                            '#P-content input:checked + label:before{border:1px solid #36649c}\n' +
+                            '#P-content input[type="radio"] + label:before{border-radius:50%;left:-20px}\n' +
+                            '#P-content input[type="checkbox"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJXRSTlMAmQmDBYwZUT92AjdnbAtadZRPBBaSfqRBejiODWWJEoJ5Gx0gnoi62QAAAExJREFUCB1NwQUSgDAAA7B2G+7uzv/fCAdDEvyY+HgFXnYV4WHRcXFTPgNo4cJYAUjSDLlkKXCq2bQdZY/LQHKccBMzjRWPzdjxEdAOtVECtAyMKkUAAAAASUVORK5CYII=) no-repeat 2px 1px;}\n' +
+                            '#P-content input[type="radio"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAQlBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZma1tx8vAAAAFXRSTlMAdRg22LcS6r1mJyQw/OcJ80UzaRuV38qbAAAANElEQVQIHQWAhxGAIBDA8oDYsABm/1U9gDMBkIsuCeqqusGuqgehqpl2qd4PhPp2gBHzgx9d1gLnmWiDtQAAAABJRU5ErkJggg==) no-repeat 3px;}\n' +
                             '#P-content select{cursor:pointer;background-image:linear-gradient(to bottom, #fcfcfc 0px, #f8f8f8 100%);border:1px solid #d3d3d3;color:#333;font-family:arial,sans-serif;font-size:11px;font-weight:bold;height:26px;-moz-appearance:none;-webkit-appearance:none;padding:0 1em}\n' +
                             '#P-content select option{padding:0;padding:0 1em}\n' +
                             '.P-header{height:20px;margin:0;padding:24px 0 0 15px}\n' +
@@ -556,6 +650,17 @@
                     uploadButton.parentNode.insertBefore(settingsButton, uploadButton.nextSibling);
                 }
             }
+            function get(a, b, c) {
+                var request = new XMLHttpRequest();
+                function process() {
+                    if (request.readyState === 4) {
+                        b(request.responseText);
+                    }
+                }
+                request.onreadystatechange = process;
+                request.open(c, a);
+                request.send();
+            }
             function checkThumbnail(a) {
                 var img,
                     base = (a.args.iurl_webp && '_webp') || '',
@@ -564,7 +669,7 @@
                     if (img.width > 120 && img.height > 90 && !a.args['iurlmaxres' + base] && api && api.getPlayerState && api.getPlayerState() === 5) {
                         a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base] = hdURL;
                         api.cueVideoByPlayerVars(a.args);
-                        api.setPlaybackQuality(videoQuality);
+                        api.setPlaybackQuality(userSettings.VID_DFLT_QLTY);
                         img.removeEventListener('load', widthReport);
                     }
                 }
@@ -623,47 +728,6 @@
                     }
                 }
             }
-            function playerState(a) {
-                if (window.movie_player) {
-                    if (a === -1) {
-                        if (!requestRunning && fullscreen) {
-                            var sentinel = setInterval(function () {
-                                var href = location.href,
-                                    link = document.createElement('a'),
-                                    id = api.getVideoData().video_id,
-                                    list = api.getVideoData().list,
-                                    index = api.getPlaylistIndex() + 1,
-                                    idCheck = href.indexOf(id) !== -1,
-                                    listCheck = (list && href.indexOf(list) !== -1) || href.indexOf(list) === -1;
-                                function go(b) {
-                                    link.className = 'spf-link';
-                                    document.head.appendChild(link);
-                                    link.href = b;
-                                    link.click();
-                                    link.remove();
-                                }
-                                if (href.indexOf(list) === -1 && list) {
-                                    clearInterval(sentinel);
-                                    document.querySelector('.spf-link[href*="list=' + list + '"]').click();
-                                } else if (href.indexOf(id) === -1 && href.indexOf(list) !== -1) {
-                                    clearInterval(sentinel);
-                                    go('/watch?v=' + id + '&list=' + list + '&index=' + index);
-                                } else if (href.indexOf(id) === -1 && !list) {
-                                    clearInterval(sentinel);
-                                    go('/watch?v=' + id);
-                                } else if ((idCheck && listCheck) || !fullscreen) {
-                                    clearInterval(sentinel);
-                                }
-                            }, 100);
-                        }
-                    } else if (a === 1) {
-                        if (!html5Player && window.ytplayer.config.args.list && loaded !== window.ytplayer.config.args.video_id) {
-                            loaded = window.ytplayer.config.args.video_id;
-                            api.loadVideoByPlayerVars(window.ytplayer.config.args);
-                        }
-                    }
-                }
-            }
             function argsCleaner(a) {
                 var base = (a.args.iurl_webp && '_webp') || '',
                     maxRes = (document.querySelector('[href*="maxresdefault"]') && document.querySelector('[href*="maxresdefault"]').getAttribute('href')) || (document.querySelector('[content*="maxresdefault"]') && document.querySelector('[content*="maxresdefault"]').getAttribute('content')),
@@ -697,19 +761,22 @@
                         length -= 1;
                         delete a.args[ads[length]];
                     }
-                    a.args.enablecsi = '0';
                     a.args.player_wide = '1';
                     a.args.iv_load_policy = '3';
-                    a.args.vq = videoQuality;
-                    a.args.autoplay = (!fullscreen && !playerAutoPlay && '0') || '1';
+                    a.args.vq = userSettings.VID_DFLT_QLTY;
+                    a.args.autoplay = (!userSettings.VID_PLR_ATPL && '0') || '1';
+                    a.args.theme = (userSettings.VID_CTRL_BAR_CLR_LGHT && 'light') || 'dark';
+                    a.args.color = (userSettings.VID_PROG_BAR_CLR_WHT && 'white') || 'red';
                     a.html5 = html5Player;
                     a.params.wmode = 'gpu';
-                    a.args['iurlmaxres' + base] = a.args['iurlmaxres' + base] || maxRes || false;
-                    if (a.args['iurlmaxres' + base] === false || (a.args['iurlmaxres' + base] && a.args['iurlmaxres' + base].indexOf(a.args.video_id) === -1)) {
-                        delete a.args['iurlmaxres' + base];
-                        checkThumbnail(a, a.args['iurl' + base]);
-                    } else if (a.args['iurlmaxres' + base]) {
-                        a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base];
+                    if (a.args.autoplay === '0') {
+                        a.args['iurlmaxres' + base] = a.args['iurlmaxres' + base] || maxRes || false;
+                        if (a.args['iurlmaxres' + base] === false || (a.args['iurlmaxres' + base] && a.args['iurlmaxres' + base].indexOf(a.args.video_id) === -1)) {
+                            delete a.args['iurlmaxres' + base];
+                            checkThumbnail(a, a.args['iurl' + base]);
+                        } else if (a.args['iurlmaxres' + base]) {
+                            a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base];
+                        }
                     }
                     if (location.href.indexOf('/watch') !== -1 && window.ytplayer && window.ytplayer.config === null) {
                         window.ytplayer.config = a;
@@ -717,6 +784,47 @@
                 }
             }
             function playerReady(a) {
+                function playerState(b) {
+                    if (window.movie_player) {
+                        if (b === -1) {
+                            if (!requestRunning && fullscreen) {
+                                var sentinel = setInterval(function () {
+                                    var href = location.href,
+                                        link = document.createElement('a'),
+                                        id = api.getVideoData().video_id,
+                                        list = api.getVideoData().list,
+                                        index = api.getPlaylistIndex() + 1,
+                                        idCheck = href.indexOf(id) !== -1,
+                                        listCheck = (list && href.indexOf(list) !== -1) || href.indexOf(list) === -1;
+                                    function go(c) {
+                                        link.className = 'spf-link';
+                                        document.head.appendChild(link);
+                                        link.href = c;
+                                        link.click();
+                                        link.remove();
+                                    }
+                                    if (href.indexOf(list) === -1 && list) {
+                                        clearInterval(sentinel);
+                                        document.querySelector('.spf-link[href*="list=' + list + '"]').click();
+                                    } else if (href.indexOf(id) === -1 && href.indexOf(list) !== -1) {
+                                        clearInterval(sentinel);
+                                        go('/watch?v=' + id + '&list=' + list + '&index=' + index);
+                                    } else if (href.indexOf(id) === -1 && !list) {
+                                        clearInterval(sentinel);
+                                        go('/watch?v=' + id);
+                                    } else if ((idCheck && listCheck) || !fullscreen) {
+                                        clearInterval(sentinel);
+                                    }
+                                }, 100);
+                            }
+                        } else if (b === 1) {
+                            if (!html5Player && window.ytplayer.config.args.list && loaded !== window.ytplayer.config.args.video_id) {
+                                loaded = window.ytplayer.config.args.video_id;
+                                api.loadVideoByPlayerVars(window.ytplayer.config.args);
+                            }
+                        }
+                    }
+                }
                 function playerFullscreen(b) {
                     fullscreen = b.fullscreen;
                 }
@@ -734,7 +842,7 @@
                         api.addEventListener('onStateChange', playerState, false);
                         api.addEventListener('onFullscreenChange', playerFullscreen, false);
                     }
-                    if (!playerAutoPlay) {
+                    if (!userSettings.VID_PLR_ATPL) {
                         if (document.getElementsByTagName('video')[0]) {
                             document.getElementsByTagName('video')[0].removeAttribute('src');
                         }
@@ -742,7 +850,7 @@
                         api.cueVideoByPlayerVars(window.ytplayer.config.args);
                     }
                     if (html5Player) {
-                        api.setPlaybackQuality(videoQuality);
+                        api.setPlaybackQuality(userSettings.VID_DFLT_QLTY);
                         document.mozCancelFullScreen = fullscreenControl(document.mozCancelFullScreen);
                     }
                 }
@@ -807,7 +915,7 @@
                         }
                         b.apply(this, args);
                         if (html5Player && api) {
-                            api.setPlaybackQuality(videoQuality);
+                            api.setPlaybackQuality(userSettings.VID_DFLT_QLTY);
                         }
                     };
                 }
@@ -901,16 +1009,16 @@
                     titleElement.textContent = titleElement.textContent.replace('▶ ', '');
                 }
             }
-            function autoplayButton(a) {
-                a = (window.chrome && a.target.parentNode) || a.target;
-                a.classList.toggle('yt-uix-button-toggled');
-                window.localStorage.playlistAutoplay = playlistAutoPlay = (playlistAutoPlay === 'true' && 'false') || 'true';
-            }
             function insertButton() {
                 var spanIcon,
                     navControls,
                     playlistBar,
                     button = document.getElementById('Autoplay');
+                function autoplayButton(a) {
+                    a = (window.chrome && a.target.parentNode) || a.target;
+                    a.classList.toggle('yt-uix-button-toggled');
+                    window.localStorage.playlistAutoplay = playlistAutoPlay = (playlistAutoPlay === 'true' && 'false') || 'true';
+                }
                 if (location.href.indexOf('list=') !== -1 && !button) {
                     window.localStorage.playlistAutoplay = window.localStorage.playlistAutoplay || playlistAutoPlay;
                     playlistBar = document.getElementById('watch-appbar-playlist');
