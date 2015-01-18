@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.1.6
+// @version     1.1.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -333,7 +333,7 @@
                         'pt-PT': 'Versão'
                     },
                     ABT_TEXT: {
-                        en: 'YouTube+ 1.1.6 - Internal Testing'
+                        en: 'YouTube+ 1.1.8 - Internal Testing'
                     }
                 };
             function settingsMenu() {
