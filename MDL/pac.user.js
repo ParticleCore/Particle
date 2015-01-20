@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.4
+// @version     1.0.5
 // @name        Playlist Autoplay Control for YouTube
 // @namespace   https://github.com/ParticleCore
 // @description Control autoplay in your playlists
@@ -39,11 +39,8 @@
                 }
             }
             function buttonToggled(a) {
-                if (window.chrome) {
-                    a.target.parentNode.classList.toggle('yt-uix-button-toggled');
-                } else {
-                    a.target.classList.toggle('yt-uix-button-toggled');
-                }
+                a = (window.chrome && a.target.parentNode) || a.target;
+                a.classList.toggle('yt-uix-button-toggled');
                 window.localStorage.playlistAutoplay = (window.localStorage.playlistAutoplay === 'true' && 'false') || 'true';
             }
             function insertButton() {
