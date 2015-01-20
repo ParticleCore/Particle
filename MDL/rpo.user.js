@@ -1,11 +1,11 @@
 // ==UserScript==
-// @version     1.0.1
-// @name        Reverse Playlist for YouTube
+// @version     1.0.2
+// @name        Reverse Playlist Order for YouTube
 // @namespace   https://github.com/ParticleCore
-// @description Reverse YouTube playlists
+// @description Reverse the order of YouTube playlists
 // @match       https://www.youtube.com/*
 // @run-at      document-start
-// @downloadURL https://github.com/ParticleCore/Particle/raw/master/MDL/rp.user.js
+// @downloadURL https://github.com/ParticleCore/Particle/raw/master/MDL/rpo.user.js
 // @grant       none
 // @noframes
 // ==/UserScript==
