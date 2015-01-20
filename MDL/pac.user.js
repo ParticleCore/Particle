@@ -5,7 +5,7 @@
 // @description Control autoplay in your playlists
 // @match       https://www.youtube.com/*
 // @run-at      document-start
-// @downloadURL https://github.com/ParticleCore/YouTubePlus/raw/master/MDL/pac.user.js
+// @downloadURL https://github.com/ParticleCore/Particle/raw/master/MDL/pac.user.js
 // @grant       none
 // @noframes
 // ==/UserScript==
