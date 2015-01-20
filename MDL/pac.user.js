@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.2
+// @version     1.0.4
 // @name        Playlist Autoplay Control for YouTube
 // @namespace   https://github.com/ParticleCore
 // @description Control autoplay in your playlists
