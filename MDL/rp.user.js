@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.0.0
+// @version     1.0.1
 // @name        Reverse Playlist for YouTube
 // @namespace   https://github.com/ParticleCore
 // @description Reverse YouTube playlists
@@ -37,12 +37,13 @@
                 list.scrollTop = document.getElementsByClassName('currently-playing')[0].offsetTop;
             }
             function buttonToggled(a) {
-                if (window.chrome) {
-                    a.target.parentNode.classList.toggle('yt-uix-button-toggled');
+                a = (window.chrome && a.target.parentNode) || a.target;
+                a.classList.toggle('yt-uix-button-toggled');
+                if (window.localStorage.playlistReverse) {
+                    delete window.localStorage.playlistReverse;
                 } else {
-                    a.target.classList.toggle('yt-uix-button-toggled');
+                    window.localStorage.playlistReverse = window.yt.config_.LIST_ID;
                 }
-                window.localStorage.playlistReverse = window.yt.config_.LIST_ID;
                 reverseControl();
             }
             function insertButton() {
