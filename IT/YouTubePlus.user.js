@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.2.3
+// @version     1.2.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -27,6 +27,18 @@
     }
     if (window.chrome && document.querySelector('[name="html5player/html5player"]')) {
         window.location.reload(false);
+    }
+    function get(a) {
+        return JSON.parse(window.localStorage.Particle)[a];
+    }
+    function set(a, b) {
+        var userSettings = JSON.parse(window.localStorage.Particle);
+        if (b !== undefined) {
+            userSettings[a] = b;
+        } else {
+            delete userSettings[a];
+        }
+        window.localStorage.Particle = JSON.stringify(userSettings);
     }
     styleSheet = document.createElement('style');
     styleSheet.textContent = [
@@ -69,12 +81,12 @@
         '#P:hover{opacity:0.85}\n',
         '.P-hide{display:none}\n',
         '#header,',
-        '#watch-discussion,',
         '#feed-pyv-container,',
         '.video-list-item:not(.related-list-item),',
         '.pyv-afc-ads-container,',
         '.ad-div',
         '{display:none}\n',
+        get('VID_HIDE_COMS') && '#watch-discussion{opacity:0;height:0;overflow:hidden}',
         '#masthead-appbar',
         '{display:block !important}\n',
         '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list\n',
@@ -114,18 +126,6 @@
         request.onload = process;
         request.open(a, b, true);
         request.send();
-    }
-    function get(a) {
-        return JSON.parse(window.localStorage.Particle)[a];
-    }
-    function set(a, b) {
-        var userSettings = JSON.parse(window.localStorage.Particle);
-        if (b !== undefined) {
-            userSettings[a] = b;
-        } else {
-            delete userSettings[a];
-        }
-        window.localStorage.Particle = JSON.stringify(userSettings);
     }
     function settingsMenu() {
         var li,
@@ -258,7 +258,7 @@
                     en: '1440p'
                 },
                 VID_DFLT_QLTY_ORIG: {
-                    en: '4K'
+                    en: '2160p'
                 },
                 VID_PLR_TYPE: {
                     en: 'Player type: ',
@@ -306,8 +306,12 @@
                     'pt-PT': 'Aparência'
                 },
                 VID_VID_CNT: {
-                    en: 'Show number of uploaded videos in front of the author\'s username',
-                    'pt-PT': 'Mostrar número de vídeos carregados em frente do nome do autor'
+                    en: 'Show link with number of uploaded videos',
+                    'pt-PT': 'Mostrar link com número de vídeos carregados'
+                },
+                VID_POST_TIME: {
+                    en: 'Show how long the video has been published',
+                    'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
                 },
                 VID_HIDE_COMS: {
                     en: 'Hide comment section',
@@ -492,6 +496,7 @@
                     VID_PLST_RVRS: ['checkbox'],
                     VID_LAYT: ['h3'],
                     VID_VID_CNT: ['checkbox'],
+                    VID_POST_TIME: ['checkbox'],
                     VID_HIDE_COMS: ['checkbox'],
                     VID_BTNS: ['h3'],
                     VID_DWNL_BTN: ['checkbox'],
@@ -705,44 +710,87 @@
             uploadButton.parentNode.insertBefore(settingsButton, uploadButton.nextSibling);
         }
     }
-    function username() {
-        var videos,
-            link,
-            span,
-            user,
-            verified;
-        function videoCounter() {
-            link.href = user.getAttribute('href') + '/videos';
-            link.setAttribute('style', 'font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial');
-            span = document.createElement('span');
-            span.textContent = ' · ';
-            span.setAttribute('style', 'font-size:11px;color:#666');
-            document.querySelector('.yt-user-info').insertBefore(span, document.getElementById('uploaded-videos'));
-            verified = document.querySelector('.yt-channel-title-icon-verified');
-            if (verified) {
-                user.className += ' yt-uix-tooltip';
-                user.setAttribute('data-tooltip-text', verified.getAttribute('data-tooltip-text'));
-                user.style.color = '#167ac6';
-                verified.remove();
+    function enhancedDetails() {
+        function username() {
+            var videos,
+                link,
+                span,
+                user,
+                verified;
+            function videoCounter() {
+                link.href = user.getAttribute('href') + '/videos';
+                link.setAttribute('style', 'font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial');
+                span = document.createElement('span');
+                span.textContent = ' · ';
+                span.setAttribute('style', 'font-size:11px;color:#666');
+                document.querySelector('.yt-user-info').insertBefore(span, document.getElementById('uploaded-videos'));
+                verified = document.querySelector('.yt-channel-title-icon-verified');
+                if (verified) {
+                    user.className += ' yt-uix-tooltip';
+                    user.setAttribute('data-tooltip-text', verified.getAttribute('data-tooltip-text'));
+                    user.style.color = '#167ac6';
+                    verified.remove();
+                }
             }
-        }
-        function getInfo(b) {
-            videos = JSON.parse(b);
-            link.className = 'spf-link';
-            link.textContent = cs.channelId[user.getAttribute('data-ytid')] = videos.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '');
-            videoCounter();
-        }
-        if (location.href.indexOf('/watch') > -1 && !document.getElementById('uploaded-videos')) {
-            link = document.createElement('a');
-            user = document.querySelector('.yt-user-info').getElementsByTagName('a')[0];
-            link.id = 'uploaded-videos';
-            document.querySelector('.yt-user-info').appendChild(link);
-            if (cs.channelId[user.getAttribute('data-ytid')]) {
-                link.textContent = cs.channelId[user.getAttribute('data-ytid')];
+            function getInfo(a) {
+                videos = JSON.parse(a);
+                link.className = 'spf-link';
+                link.textContent = cs.channelId[user.getAttribute('data-ytid')] = videos.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '');
                 videoCounter();
-            } else {
-                xhr('GET', '/playlist?list=' + user.getAttribute('data-ytid').replace('UC', 'UU') + '&spf=navigate', getInfo);
             }
+            if (!document.getElementById('uploaded-videos')) {
+                link = document.createElement('a');
+                user = document.querySelector('.yt-user-info').getElementsByTagName('a')[0];
+                link.id = 'uploaded-videos';
+                document.querySelector('.yt-user-info').appendChild(link);
+                if (cs.channelId[user.getAttribute('data-ytid')]) {
+                    link.textContent = cs.channelId[user.getAttribute('data-ytid')];
+                    videoCounter();
+                } else {
+                    xhr('GET', '/playlist?list=' + user.getAttribute('data-ytid').replace('UC', 'UU') + '&spf=navigate', getInfo);
+                }
+            }
+        }
+        function publishedTime() {
+            var watchTime = document.querySelector('.watch-time-text');
+            function getInfo(a) {
+                if (watchTime.textContent.indexOf('·') < 0) {
+                    a = JSON.parse(a).body.content;
+                    watchTime.textContent += ' · ' + a.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/)[1].split('</li><li>')[0];
+                }
+            }
+            xhr('GET', '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate', getInfo);
+        }
+        if (location.href.indexOf('/watch') > -1) {
+            if (get('VID_VID_CNT')) {
+                username();
+            }
+            if (get('VID_POST_TIME')) {
+                publishedTime();
+            }
+        }
+    }
+    function commentsButton() {
+        var comments,
+            wrapper,
+            button;
+        function showComments() {
+            comments.setAttribute('style', 'opacity:1;height:auto');
+            wrapper.remove();
+        }
+        if (!document.getElementById('show-comments') && get('VID_HIDE_COMS')) {
+            comments = document.getElementById('watch-discussion');
+            wrapper = document.createElement('div');
+            button = document.createElement('button');
+            wrapper.id = 'show-comments';
+            wrapper.className = 'yt-card';
+            button.className = 'yt-uix-button yt-uix-button-size-default yt-uix-button-expander yt-uix-expander-head yt-uix-expander-collapsed-body yt-uix-gen204';
+            button.setAttribute('onclick', ';return false;');
+            button.setAttribute('style', 'border-top:none;padding-top:2px');
+            button.addEventListener('click', showComments, false);
+            button.textContent = 'Show comments';
+            wrapper.appendChild(button);
+            comments.parentNode.insertBefore(wrapper, comments);
         }
     }
     function wide() {
@@ -948,7 +996,7 @@
                     'DELAYED_EMBED',
                     'TIMING_ACTION',
                     'TIMING_INFO',
-                    'SHARE_ON_VIDEO_END',
+                    get('VID_END_SHRE') && 'SHARE_ON_VIDEO_END',
                     'UNIVERSAL_HOVERCARDS'
                 ].forEach(function (c) {
                     delete window.yt.config_[c];
@@ -1134,7 +1182,8 @@
         wide();
         title();
         general();
-        username();
+        enhancedDetails();
+        commentsButton();
     }
     function request(a) {
         var videoBefore = a.detail.previous.indexOf('/watch?') < 0,
