@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.2.5
+// @version     1.2.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -335,6 +335,23 @@
     if (window.chrome && document.querySelector('[name="html5player/html5player"]')) {
         window.location.reload(false);
     }
+    if (!window.localStorage.Particle) {
+        window.localStorage.Particle = JSON.stringify({
+            GEN_YT_LOGO_LINK: true,
+            GEN_BLUE_GLOW: true,
+            VID_DFLT_QLTY: 'hd720',
+            VID_PLR_TYPE: 'html5',
+            VID_PLST_ATPL: true,
+            VID_PLST_RVRS: true,
+            VID_PROG_BAR_CLR: 'red',
+            VID_CTRL_BAR_CLR: 'light',
+            VID_PLR_SIZE_MEM: true,
+            CHN_DFLT_PAGE: 'channels',
+            plApl: true,
+            plRev: false,
+            widePlayer: true
+        });
+    }
     function userLang() {
         return window.yt.config_.FEEDBACK_LOCALE_LANGUAGE;
     }
@@ -387,7 +404,7 @@
         ':focus{outline:none;}\n',
         '::-moz-focus-inner{border:0;}\n',
         'select{color:transparent !important;text-shadow: 0 0 0 #333}\n',
-        '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
+        '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;margin-left:10px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
         '#P:hover{opacity:0.85}\n',
         '.P-hide{display:none}\n',
         '#header,',
@@ -411,23 +428,6 @@
         requestRunning: false,
         channelId: {}
     };
-    if (!window.localStorage.Particle) {
-        window.localStorage.Particle = JSON.stringify({
-            GEN_YT_LOGO_LINK: true,
-            GEN_BLUE_GLOW: true,
-            VID_DFLT_QLTY: 'hd720',
-            VID_PLR_TYPE: 'html5',
-            VID_PLST_ATPL: true,
-            VID_PLST_RVRS: true,
-            VID_PROG_BAR_CLR: 'red',
-            VID_CTRL_BAR_CLR: 'light',
-            VID_PLR_SIZE_MEM: true,
-            CHN_DFLT_PAGE: 'channels',
-            plApl: true,
-            plRev: false,
-            widePlayer: true
-        });
-    }
     function xhr(a, b, c) {
         var request = new XMLHttpRequest();
         function process() {
@@ -454,7 +454,7 @@
             pHeader,
             pContent,
             pContainer,
-            uploadButton,
+            buttonsSection,
             settingsButton,
             menus = {
                 GEN: {
@@ -709,13 +709,13 @@
                 document.documentElement.scrollTop = 0;
             }
         }
-        uploadButton = document.getElementById('appbar-onebar-upload-group');
-        if (uploadButton && !document.getElementById('P')) {
+        buttonsSection = document.getElementById('yt-masthead-user') || document.getElementById('yt-masthead-signin');
+        if (buttonsSection && !document.getElementById('P')) {
             settingsButton = document.createElement('button');
             settingsButton.id = 'P';
             settingsButton.title = 'YouTube+ settings';
             settingsButton.addEventListener('click', settingsTemplate);
-            uploadButton.parentNode.insertBefore(settingsButton, uploadButton.nextSibling);
+            buttonsSection.appendChild(settingsButton);
         }
     }
     function enhancedDetails() {
