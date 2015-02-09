@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.2.6
+// @version     1.2.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -12,348 +12,354 @@
 // ==/UserScript==
 (function particle() {
     'use strict';
-    var cs,
+    var api,
+        lang,
         loaded,
         injection,
         styleSheet,
-        sType = typeof GM_info,
-        lang = {
-            SHOW_CMTS: {
-                en: 'Show comments',
-                'pt-PT': 'Mostrar comentários'
-            },
-            HIDE_CMTS: {
-                en: 'Hide comments',
-                'pt-PT': 'Esconder comentários'
-            },
-            GLB_SVE: {
-                en: 'Save',
-                'pt-PT': 'Guardar'
-            },
-            GEN: {
-                en: 'General',
-                'pt-PT': 'Geral'
-            },
-            VID: {
-                en: 'Video',
-                'pt-PT': 'Video'
-            },
-            CHN: {
-                en: 'Channels',
-                'pt-PT': 'Canais'
-            },
-            DWN: {
-                en: 'Download',
-                'pt-PT': 'Transferência'
-            },
-            EXT: {
-                en: 'Extras',
-                'pt-PT': 'Extras'
-            },
-            ABT: {
-                en: 'About',
-                'pt-PT': 'Sobre'
-            },
-            GEN_TTL: {
-                en: 'General settings',
-                'pt-PT': 'Definições gerais'
-            },
-            GEN_GEN: {
-                en: 'General',
-                'pt-PT': 'Geral'
-            },
-            GEN_YT_LOGO_LINK: {
-                en: 'YouTube logo redirects to subscriptions',
-                'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
-            },
-            GEN_GRID_SUBS: {
-                en: 'Grid layout in subscriptions',
-                'pt-PT': 'Subscrições em formato grelha'
-            },
-            GEN_GRID_SRCH: {
-                en: 'Grid layout in search results',
-                'pt-PT': 'Resultados de pesquisa em formato grelha'
-            },
-            GEN_CMPT_TITL: {
-                en: 'Compact titles in grid layout',
-                'pt-PT': 'Títulos compactos no formato grelha'
-            },
-            GEN_HIDE_FTR: {
-                en: 'Hide footer',
-                'pt-PT': 'Esconder rodapé'
-            },
-            GEN_BLUE_GLOW: {
-                en: 'Remove blue glow around clicked buttons',
-                'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
-            },
-            GEN_REM_RECM_SDBR: {
-                en: 'Remove recommended channels sidebar',
-                'pt-PT': 'Retirar barra lateral de canais recomendados'
-            },
-            GEN_ENHC: {
-                en: 'Enhancements',
-                'pt-PT': 'Melhorias'
-            },
-            GEN_USER_LNKS: {
-                en: 'Enable user links in recommended videos',
-                'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
-            },
-            VID_TTL: {
-                en: 'Video settings',
-                'pt-PT': 'Definições de vídeo'
-            },
-            VID_PLR: {
-                en: 'Player',
-                'pt-PT': 'Player'
-            },
-            VID_DFLT_QLTY: {
-                en: 'Default video quality: ',
-                'pt-PT': 'Qualidade de vídeo padrão: '
-            },
-            VID_DFLT_QLTY_AUTO: {
-                en: 'Auto',
-                'pt-PT': 'Auto'
-            },
-            VID_DFLT_QLTY_TNY: {
-                en: '144p'
-            },
-            VID_DFLT_QLTY_SML: {
-                en: '240p'
-            },
-            VID_DFLT_QLTY_MDM: {
-                en: '360p'
-            },
-            VID_DFLT_QLTY_LRG: {
-                en: '480p'
-            },
-            VID_DFLT_QLTY_720: {
-                en: '720p'
-            },
-            VID_DFLT_QLTY_1080: {
-                en: '1080p'
-            },
-            VID_DFLT_QLTY_1440: {
-                en: '1440p'
-            },
-            VID_DFLT_QLTY_ORIG: {
-                en: '2160p'
-            },
-            VID_PLR_TYPE: {
-                en: 'Player type: ',
-                'pt-PT': 'Tipo de player: '
-            },
-            VID_PLR_TYPE_AUTO: {
-                en: 'Auto'
-            },
-            VID_PLR_TYPE_FLSH: {
-                en: 'Flash'
-            },
-            VID_PLR_TYPE_HTML: {
-                en: 'HTML5'
-            },
-            VID_PLR_ATPL: {
-                en: 'Autoplay videos',
-                'pt-PT': 'Iniciar vídeos automaticamente'
-            },
-            VID_PROG_BAR_CLR: {
-                en: 'Progress bar color: ',
-                'pt-PT': 'Cor da barra de progresso: '
-            },
-            VID_PROG_BAR_CLR_RED: { // color = red
-                en: 'Red',
-                'pt-PT': 'Vermelha'
-            },
-            VID_PROG_BAR_CLR_WHT: { // color = white
-                en: 'White',
-                'pt-PT': 'Branca'
-            },
-            VID_CTRL_BAR_CLR: {
-                en: 'Control bar color: ',
-                'pt-PT': 'Cor da barra de controlos: '
-            },
-            VID_CTRL_BAR_CLR_DARK: { // theme = dark
-                en: 'Dark',
-                'pt-PT': 'Escura'
-            },
-            VID_CTRL_BAR_CLR_LGHT: { // theme = light
-                en: 'Light',
-                'pt-PT': 'Clara'
-            },
-            VID_LAYT: {
-                en: 'Layout',
-                'pt-PT': 'Aparência'
-            },
-            VID_VID_CNT: {
-                en: 'Show link with number of uploaded videos',
-                'pt-PT': 'Mostrar link com número de vídeos carregados'
-            },
-            VID_POST_TIME: {
-                en: 'Show how long the video has been published',
-                'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
-            },
-            VID_HIDE_COMS: {
-                en: 'Hide comment section',
-                'pt-PT': 'Esconder secção de comentários'
-            },
-            VID_BTNS: {
-                en: 'Buttons',
-                'pt-PT': 'Botões'
-            },
-            VID_DWNL_BTN: {
-                en: 'Download button',
-                'pt-PT': 'Botão de download'
-            },
-            VID_RPT_BTN: {
-                en: 'Repeat button',
-                'pt-PT': 'Botão de repetir'
-            },
-            VID_LIGHTS_OUT: {
-                en: 'Lights out',
-                'pt-PT': 'Modo escuro'
-            },
-            VID_END_SHRE: {
-                en: 'Disable share panel when video ends',
-                'pt-PT': 'Desactivar painel de partilha quando o video acaba'
-            },
-            VID_PLST: {
-                en: 'Playlists',
-                'pt-PT': 'Listas'
-            },
-            VID_PLST_ATPL: {
-                en: 'Enable playlist autoplay control',
-                'pt-PT': 'Activar controlo de início automático das listas'
-            },
-            VID_PLST_RVRS: {
-                en: 'Enable reverse playlist control',
-                'pt-PT': 'Activar controlo de inversão das listas'
-            },
-            VID_PLR_SIZE_MEM: {
-                en: 'Memorize player mode',
-                'pt-PT': 'Memorizar tamanho do reproductor'
-            },
-            CHN_TTL: {
-                en: 'Channel settings',
-                'pt-PT': 'Definições de canais'
-            },
-            CHN_FAV: {
-                en: 'Favorites',
-                'pt-PT': 'Favoritos'
-            },
-            CHN_FAV_ADS: {
-                en: 'Enable ads in favorite channels',
-                'pt-PT': 'Activar publicidades nos canais favoritos'
-            },
-            CHN_ALK: {
-                en: 'Auto-like',
-                'pt-PT': 'Gostar automaticamente'
-            },
-            CHN_BVR: {
-                en: 'Behavior',
-                'pt-PT': 'Comportamento'
-            },
-            CHN_TRL_ATP: {
-                en: 'Disable trailer autoplay',
-                'pt-PT': 'Desactivar começo automático do trailer'
-            },
-            CHN_DFLT_PAGE: {
-                en: 'Default landing page: ',
-                'pt-PT': 'Página de destino: '
-            },
-            CHN_DFLT_PAGE_DFLT: {
-                en: 'Default',
-                'pt-PT': 'Padrão'
-            },
-            CHN_DFLT_PAGE_VID: {
-                en: 'Videos',
-                'pt-PT': 'Vídeos'
-            },
-            CHN_DFLT_PAGE_PL: {
-                en: 'Playlists',
-                'pt-PT': 'Listas de reprodução'
-            },
-            CHN_DFLT_PAGE_CHN: {
-                en: 'Channels',
-                'pt-PT': 'Canais'
-            },
-            CHN_DFLT_PAGE_DISC: {
-                en: 'Discussion',
-                'pt-PT': 'Discussão'
-            },
-            CHN_DFLT_PAGE_ABT: {
-                en: 'About',
-                'pt-PT': 'Acerca de'
-            },
-            DWN_TTL: {
-                en: 'Download settings',
-                'pt-PT': 'Preferências de transferência'
-            },
-            DWN_PREF: {
-                en: 'Preferences',
-                'pt-PT': 'Preferências'
-            },
-            DWN_DEFQ: {
-                en: 'Default quality',
-                'pt-PT': 'Qualidade padrão'
-            },
-            DWN_FILE_NAME: {
-                en: 'File name preferences',
-                'pt-PT': 'Preferências de nome de ficheiro'
-            },
-            ABT_TTL: {
-                en: 'Information and useful links',
-                'pt-PT': 'Informação e ligações úteis'
-            },
-            ABT_INFO: {
-                en: 'Official pages',
-                'pt-PT': 'Páginas oficiais'
-            },
-            ABT_LNK_GHB: {
-                en: 'GitHub'
-            },
-            ABT_LNK_GRFK: {
-                en: 'Greasy Fork'
-            },
-            ABT_LNK_OPNU: {
-                en: 'OpenUserJS'
-            },
-            ABT_PRBL: {
-                en: 'Report a problem',
-                'pt-PT': 'Reportar problema'
-            },
-            ABT_LNK_PRBL: {
-                en: 'Click here for instructions',
-                'pt-PT': 'Clique aqui para instruções'
-            }
-        };
-    if (sType === 'undefined' && !document.getElementById('Particle')) {
+        fullscreen,
+        channelId = {},
+        requestRunning,
+        defaultSettings,
+        sType = typeof GM_info;
+    if (window.chrome && document.querySelector('[name="html5player/html5player"]')) {
+        window.location.reload(false);
+    } else if (sType === 'undefined' && !document.getElementById('Particle')) {
         injection = document.createElement('script');
         injection.id = 'Particle';
         injection.textContent = '(' + particle + '())';
         document.documentElement.appendChild(injection);
         return;
     }
-    if (window.chrome && document.querySelector('[name="html5player/html5player"]')) {
-        window.location.reload(false);
-    }
+    lang = {
+        SHOW_CMTS: {
+            en: 'Show comments',
+            'pt-PT': 'Mostrar comentários'
+        },
+        HIDE_CMTS: {
+            en: 'Hide comments',
+            'pt-PT': 'Esconder comentários'
+        },
+        GLB_SVE: {
+            en: 'Save',
+            'pt-PT': 'Guardar'
+        },
+        GEN: {
+            en: 'General',
+            'pt-PT': 'Geral'
+        },
+        VID: {
+            en: 'Video',
+            'pt-PT': 'Video'
+        },
+        CHN: {
+            en: 'Channels',
+            'pt-PT': 'Canais'
+        },
+        DWN: {
+            en: 'Download',
+            'pt-PT': 'Transferência'
+        },
+        EXT: {
+            en: 'Extras',
+            'pt-PT': 'Extras'
+        },
+        ABT: {
+            en: 'About',
+            'pt-PT': 'Sobre'
+        },
+        GEN_TTL: {
+            en: 'General settings',
+            'pt-PT': 'Definições gerais'
+        },
+        GEN_GEN: {
+            en: 'General',
+            'pt-PT': 'Geral'
+        },
+        GEN_YT_LOGO_LINK: {
+            en: 'YouTube logo redirects to subscriptions',
+            'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
+        },
+        GEN_GRID_SUBS: {
+            en: 'Grid layout in subscriptions',
+            'pt-PT': 'Subscrições em formato grelha'
+        },
+        GEN_GRID_SRCH: {
+            en: 'Grid layout in search results',
+            'pt-PT': 'Resultados de pesquisa em formato grelha'
+        },
+        GEN_CMPT_TITL: {
+            en: 'Compact titles in grid layout',
+            'pt-PT': 'Títulos compactos no formato grelha'
+        },
+        GEN_HIDE_FTR: {
+            en: 'Hide footer',
+            'pt-PT': 'Esconder rodapé'
+        },
+        GEN_BLUE_GLOW: {
+            en: 'Remove blue glow around clicked buttons',
+            'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
+        },
+        GEN_REM_RECM_SDBR: {
+            en: 'Remove recommended channels sidebar',
+            'pt-PT': 'Retirar barra lateral de canais recomendados'
+        },
+        GEN_ENHC: {
+            en: 'Enhancements',
+            'pt-PT': 'Melhorias'
+        },
+        GEN_USER_LNKS: {
+            en: 'Enable user links in recommended videos',
+            'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
+        },
+        VID_TTL: {
+            en: 'Video settings',
+            'pt-PT': 'Definições de vídeo'
+        },
+        VID_PLR: {
+            en: 'Player',
+            'pt-PT': 'Player'
+        },
+        VID_DFLT_QLTY: {
+            en: 'Default video quality: ',
+            'pt-PT': 'Qualidade de vídeo padrão: '
+        },
+        VID_DFLT_QLTY_AUTO: {
+            en: 'Auto',
+            'pt-PT': 'Auto'
+        },
+        VID_DFLT_QLTY_TNY: {
+            en: '144p'
+        },
+        VID_DFLT_QLTY_SML: {
+            en: '240p'
+        },
+        VID_DFLT_QLTY_MDM: {
+            en: '360p'
+        },
+        VID_DFLT_QLTY_LRG: {
+            en: '480p'
+        },
+        VID_DFLT_QLTY_720: {
+            en: '720p'
+        },
+        VID_DFLT_QLTY_1080: {
+            en: '1080p'
+        },
+        VID_DFLT_QLTY_1440: {
+            en: '1440p'
+        },
+        VID_DFLT_QLTY_ORIG: {
+            en: '2160p'
+        },
+        VID_PLR_TYPE: {
+            en: 'Player type: ',
+            'pt-PT': 'Tipo de player: '
+        },
+        VID_PLR_TYPE_AUTO: {
+            en: 'Auto'
+        },
+        VID_PLR_TYPE_FLSH: {
+            en: 'Flash'
+        },
+        VID_PLR_TYPE_HTML: {
+            en: 'HTML5'
+        },
+        VID_PLR_ATPL: {
+            en: 'Autoplay videos',
+            'pt-PT': 'Iniciar vídeos automaticamente'
+        },
+        VID_PROG_BAR_CLR: {
+            en: 'Progress bar color: ',
+            'pt-PT': 'Cor da barra de progresso: '
+        },
+        VID_PROG_BAR_CLR_RED: { // color = red
+            en: 'Red',
+            'pt-PT': 'Vermelha'
+        },
+        VID_PROG_BAR_CLR_WHT: { // color = white
+            en: 'White',
+            'pt-PT': 'Branca'
+        },
+        VID_CTRL_BAR_CLR: {
+            en: 'Control bar color: ',
+            'pt-PT': 'Cor da barra de controlos: '
+        },
+        VID_CTRL_BAR_CLR_DARK: { // theme = dark
+            en: 'Dark',
+            'pt-PT': 'Escura'
+        },
+        VID_CTRL_BAR_CLR_LGHT: { // theme = light
+            en: 'Light',
+            'pt-PT': 'Clara'
+        },
+        VID_LAYT: {
+            en: 'Layout',
+            'pt-PT': 'Aparência'
+        },
+        VID_VID_CNT: {
+            en: 'Show link with number of uploaded videos',
+            'pt-PT': 'Mostrar link com número de vídeos carregados'
+        },
+        VID_POST_TIME: {
+            en: 'Show how long the video has been published',
+            'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
+        },
+        VID_HIDE_COMS: {
+            en: 'Hide comment section',
+            'pt-PT': 'Esconder secção de comentários'
+        },
+        VID_BTNS: {
+            en: 'Buttons',
+            'pt-PT': 'Botões'
+        },
+        VID_DWNL_BTN: {
+            en: 'Download button',
+            'pt-PT': 'Botão de download'
+        },
+        VID_RPT_BTN: {
+            en: 'Repeat button',
+            'pt-PT': 'Botão de repetir'
+        },
+        VID_LIGHTS_OUT: {
+            en: 'Lights out',
+            'pt-PT': 'Modo escuro'
+        },
+        VID_END_SHRE: {
+            en: 'Disable share panel when video ends',
+            'pt-PT': 'Desactivar painel de partilha quando o video acaba'
+        },
+        VID_PLST: {
+            en: 'Playlists',
+            'pt-PT': 'Listas'
+        },
+        VID_PLST_ATPL: {
+            en: 'Enable playlist autoplay control',
+            'pt-PT': 'Activar controlo de início automático das listas'
+        },
+        VID_PLST_RVRS: {
+            en: 'Enable reverse playlist control',
+            'pt-PT': 'Activar controlo de inversão das listas'
+        },
+        VID_PLR_SIZE_MEM: {
+            en: 'Memorize player mode',
+            'pt-PT': 'Memorizar tamanho do reproductor'
+        },
+        VID_PLR_ANTS: {
+            en: 'Disable annotations',
+            'pt-PT': 'Desactivar notas'
+        },
+        CHN_TTL: {
+            en: 'Channel settings',
+            'pt-PT': 'Definições de canais'
+        },
+        CHN_FAV: {
+            en: 'Favorites',
+            'pt-PT': 'Favoritos'
+        },
+        CHN_FAV_ADS: {
+            en: 'Enable ads in favorite channels',
+            'pt-PT': 'Activar publicidades nos canais favoritos'
+        },
+        CHN_ALK: {
+            en: 'Auto-like',
+            'pt-PT': 'Gostar automaticamente'
+        },
+        CHN_BVR: {
+            en: 'Behavior',
+            'pt-PT': 'Comportamento'
+        },
+        CHN_TRL_ATP: {
+            en: 'Disable trailer autoplay',
+            'pt-PT': 'Desactivar começo automático do trailer'
+        },
+        CHN_DFLT_PAGE: {
+            en: 'Default landing page: ',
+            'pt-PT': 'Página de destino: '
+        },
+        CHN_DFLT_PAGE_DFLT: {
+            en: 'Default',
+            'pt-PT': 'Padrão'
+        },
+        CHN_DFLT_PAGE_VID: {
+            en: 'Videos',
+            'pt-PT': 'Vídeos'
+        },
+        CHN_DFLT_PAGE_PL: {
+            en: 'Playlists',
+            'pt-PT': 'Listas de reprodução'
+        },
+        CHN_DFLT_PAGE_CHN: {
+            en: 'Channels',
+            'pt-PT': 'Canais'
+        },
+        CHN_DFLT_PAGE_DISC: {
+            en: 'Discussion',
+            'pt-PT': 'Discussão'
+        },
+        CHN_DFLT_PAGE_ABT: {
+            en: 'About',
+            'pt-PT': 'Acerca de'
+        },
+        DWN_TTL: {
+            en: 'Download settings',
+            'pt-PT': 'Preferências de transferência'
+        },
+        DWN_PREF: {
+            en: 'Preferences',
+            'pt-PT': 'Preferências'
+        },
+        DWN_DEFQ: {
+            en: 'Default quality',
+            'pt-PT': 'Qualidade padrão'
+        },
+        DWN_FILE_NAME: {
+            en: 'File name preferences',
+            'pt-PT': 'Preferências de nome de ficheiro'
+        },
+        ABT_TTL: {
+            en: 'Information and useful links',
+            'pt-PT': 'Informação e ligações úteis'
+        },
+        ABT_INFO: {
+            en: 'Official pages',
+            'pt-PT': 'Páginas oficiais'
+        },
+        ABT_LNK_GHB: {
+            en: 'GitHub'
+        },
+        ABT_LNK_GRFK: {
+            en: 'Greasy Fork'
+        },
+        ABT_LNK_OPNU: {
+            en: 'OpenUserJS'
+        },
+        ABT_PRBL: {
+            en: 'Report a problem',
+            'pt-PT': 'Reportar problema'
+        },
+        ABT_LNK_PRBL: {
+            en: 'Click here for instructions',
+            'pt-PT': 'Clique aqui para instruções'
+        }
+    };
+    defaultSettings = {
+        GEN_YT_LOGO_LINK: true,
+        GEN_BLUE_GLOW: true,
+        VID_DFLT_QLTY: 'hd720',
+        VID_PLR_TYPE: 'html5',
+        VID_PLST_ATPL: true,
+        VID_PLST_RVRS: true,
+        VID_PROG_BAR_CLR: 'red',
+        VID_CTRL_BAR_CLR: 'light',
+        VID_PLR_SIZE_MEM: true,
+        CHN_DFLT_PAGE: 'channels',
+        plApl: true,
+        plRev: false,
+        widePlayer: true
+    };
     if (!window.localStorage.Particle) {
-        window.localStorage.Particle = JSON.stringify({
-            GEN_YT_LOGO_LINK: true,
-            GEN_BLUE_GLOW: true,
-            VID_DFLT_QLTY: 'hd720',
-            VID_PLR_TYPE: 'html5',
-            VID_PLST_ATPL: true,
-            VID_PLST_RVRS: true,
-            VID_PROG_BAR_CLR: 'red',
-            VID_CTRL_BAR_CLR: 'light',
-            VID_PLR_SIZE_MEM: true,
-            CHN_DFLT_PAGE: 'channels',
-            plApl: true,
-            plRev: false,
-            widePlayer: true
-        });
-    }
-    function userLang() {
-        return window.yt.config_.FEEDBACK_LOCALE_LANGUAGE;
+        window.localStorage.Particle = JSON.stringify(defaultSettings);
     }
     function get(a) {
         return JSON.parse(window.localStorage.Particle)[a];
@@ -366,6 +372,9 @@
             delete userSettings[a];
         }
         window.localStorage.Particle = JSON.stringify(userSettings);
+    }
+    function userLang() {
+        return window.yt.config_.FEEDBACK_LOCALE_LANGUAGE;
     }
     styleSheet = document.createElement('style');
     styleSheet.textContent = [
@@ -407,6 +416,8 @@
         '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;margin-left:10px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
         '#P:hover{opacity:0.85}\n',
         '.P-hide{display:none}\n',
+        '#body #uploaded-videos{font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial}',
+        '.yt-user-info > span{font-size:11px;color:#666}',
         '#header,',
         '#feed-pyv-container,',
         '.video-list-item:not(.related-list-item),',
@@ -422,12 +433,6 @@
         '{background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat; width:24px; height:24px}'
     ].join('');
     document.documentElement.appendChild(styleSheet);
-    cs = {
-        api: false,
-        fullscreen: false,
-        requestRunning: false,
-        channelId: {}
-    };
     function xhr(a, b, c) {
         var request = new XMLHttpRequest();
         function process() {
@@ -474,6 +479,7 @@
                     VID_TTL: ['h2'],
                     VID_PLR: ['h3'],
                     VID_PLR_ATPL: ['checkbox'],
+                    VID_PLR_ANTS: ['checkbox'],
                     VID_END_SHRE: ['checkbox'],
                     VID_PLR_SIZE_MEM: ['checkbox'],
                     VID_PROG_BAR_CLR: ['radio', {
@@ -720,18 +726,18 @@
     }
     function enhancedDetails() {
         function username() {
-            var videos,
-                link,
+            var link,
                 span,
                 user,
+                name,
+                videos,
                 verified;
             function videoCounter() {
                 link.href = user.getAttribute('href') + '/videos';
-                link.setAttribute('style', 'font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial');
                 span = document.createElement('span');
                 span.textContent = ' · ';
-                span.setAttribute('style', 'font-size:11px;color:#666');
-                document.querySelector('.yt-user-info').insertBefore(span, document.getElementById('uploaded-videos'));
+                name.appendChild(span);
+                name.appendChild(link);
                 verified = document.querySelector('.yt-channel-title-icon-verified');
                 if (verified) {
                     user.className += ' yt-uix-tooltip';
@@ -743,16 +749,17 @@
             function getInfo(a) {
                 videos = JSON.parse(a);
                 link.className = 'spf-link';
-                link.textContent = cs.channelId[user.getAttribute('data-ytid')] = videos.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '');
+                link.textContent = channelId[user.getAttribute('data-ytid')] = videos.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '');
                 videoCounter();
             }
             if (!document.getElementById('uploaded-videos')) {
                 link = document.createElement('a');
-                user = document.querySelector('.yt-user-info').querySelector('a');
                 link.id = 'uploaded-videos';
-                document.querySelector('.yt-user-info').appendChild(link);
-                if (cs.channelId[user.getAttribute('data-ytid')]) {
-                    link.textContent = cs.channelId[user.getAttribute('data-ytid')];
+                name = document.querySelector('.yt-user-info');
+                name.appendChild(link);
+                user = name.querySelector('a');
+                if (channelId[user.getAttribute('data-ytid')]) {
+                    link.textContent = channelId[user.getAttribute('data-ytid')];
                     videoCounter();
                 } else {
                     xhr('GET', '/playlist?list=' + user.getAttribute('data-ytid').replace('UC', 'UU') + '&spf=navigate', getInfo);
@@ -769,7 +776,7 @@
             }
             xhr('GET', '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate', getInfo);
         }
-        if (location.href.indexOf('/watch') > -1) {
+        if (window.location.href.indexOf('/watch') > -1) {
             if (get('VID_VID_CNT')) {
                 username();
             }
@@ -787,15 +794,15 @@
             button.textContent = (comments.classList.contains('show') && lang.HIDE_CMTS[userLang() || 'en']) || lang.SHOW_CMTS[userLang() || 'en'];
         }
         if (!document.getElementById('P-show-comments') && get('VID_HIDE_COMS')) {
-            comments = document.getElementById('watch-discussion');
-            wrapper = document.createElement('div');
             button = document.createElement('button');
-            wrapper.id = 'P-show-comments';
-            wrapper.className = 'yt-card';
             button.className = 'yt-uix-button yt-uix-button-expander';
             button.addEventListener('click', showComments, false);
             button.textContent = lang.SHOW_CMTS[userLang() || 'en'];
+            wrapper = document.createElement('div');
+            wrapper.id = 'P-show-comments';
+            wrapper.className = 'yt-card';
             wrapper.appendChild(button);
+            comments = document.getElementById('watch-discussion');
             comments.parentNode.insertBefore(wrapper, comments);
         }
     }
@@ -804,7 +811,7 @@
         if (get('VID_PLR_SIZE_MEM') && get('widePlayer') && (document.cookie.indexOf('wide=0') > -1 || document.cookie.indexOf('wide=1') < 0)) {
             document.cookie = 'wide=1; domain=.youtube.com; path=/';
             playerElement = document.getElementById('player');
-            if (playerElement && location.href.indexOf('/watch') > -1) {
+            if (playerElement && window.location.href.indexOf('/watch') > -1) {
                 playerElement.className = 'watch-large';
                 document.getElementById('watch7-container').className = 'watch-wide';
             }
@@ -812,7 +819,8 @@
     }
     function argsCleaner(a) {
         var base = (a.args.iurl_webp && '_webp') || '',
-            maxRes = (document.querySelector('[href*="maxresdefault"]') && document.querySelector('[href*="maxresdefault"]').getAttribute('href')) || (document.querySelector('[content*="maxresdefault"]') && document.querySelector('[content*="maxresdefault"]').getAttribute('content')),
+            scanner = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]'),
+            maxRes = scanner && (scanner.getAttribute('href') || scanner.getAttribute('content')),
             ads = [
                 'ad3_module',
                 'ad_module',
@@ -829,10 +837,10 @@
             var img,
                 hdURL = a.args['iurl' + base].replace('hqdefault', 'maxresdefault');
             function widthReport() {
-                if (img.width > 120 && img.height > 90 && !a.args['iurlmaxres' + base] && cs.api && cs.api.getPlayerState && cs.api.getPlayerState() === 5) {
+                if (img.width > 120 && img.height > 90 && !a.args['iurlmaxres' + base] && api && api.getPlayerState && api.getPlayerState() === 5) {
                     a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base] = hdURL;
-                    cs.api.cueVideoByPlayerVars(a.args);
-                    cs.api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                    api.cueVideoByPlayerVars(a.args);
+                    api.setPlaybackQuality(get('VID_DFLT_QLTY'));
                     img.removeEventListener('load', widthReport);
                 }
             }
@@ -861,7 +869,9 @@
             if (get('VID_PLR_SIZE_MEM') && get('widePlayer')) {
                 a.args.player_wide = '1';
             }
-            a.args.iv_load_policy = '3';
+            if (a.args.iv_load_policy) {
+                a.args.iv_load_policy = (get('VID_PLR_ANTS') && '3') || '1';
+            }
             a.args.vq = get('VID_DFLT_QLTY');
             a.args.autoplay = (!get('VID_PLR_ATPL') && '0') || '1';
             a.args.theme = get('VID_CTRL_BAR_CLR');
@@ -879,7 +889,7 @@
                     a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base];
                 }
             }
-            if (location.href.indexOf('/watch') > -1 && window.ytplayer && window.ytplayer.config === null) {
+            if (window.location.href.indexOf('/watch') > -1 && window.ytplayer && window.ytplayer.config === null) {
                 window.ytplayer.config = a;
             }
         }
@@ -888,12 +898,12 @@
         function playerState(b) {
             if (window.movie_player) {
                 if (b < 0) {
-                    if (!cs.requestRunning && cs.fullscreen) {
+                    if (!requestRunning && fullscreen) {
                         var sentinel = setInterval(function () {
-                            var href = location.href,
-                                id = cs.api.getVideoData().video_id,
-                                list = cs.api.getVideoData().list,
-                                index = cs.api.getPlaylistIndex() + 1,
+                            var href = window.location.href,
+                                id = api.getVideoData().video_id,
+                                list = api.getVideoData().list,
+                                index = api.getPlaylistIndex() + 1,
                                 idCheck = href.indexOf(id) > -1,
                                 listCheck = (list && href.indexOf(list) > -1) || href.indexOf(list) < 0;
                             function go(c) {
@@ -911,49 +921,50 @@
                                 go('/watch?v=' + id + '&list=' + list + '&index=' + index);
                             } else if (href.indexOf(id) < 0 && !list) {
                                 go('/watch?v=' + id);
-                            } else if ((idCheck && listCheck) || !cs.fullscreen) {
+                            } else if ((idCheck && listCheck) || !fullscreen) {
                                 clearInterval(sentinel);
                             }
                         }, 100);
                     }
                 } else if (b === 1) {
-                    if (!window.ytplayer.config.html5 && window.ytplayer.config.args.list && loaded !== window.ytplayer.config.args.video_id) {
-                        loaded = window.ytplayer.config.args.video_id;
-                        cs.api.loadVideoByPlayerVars(window.ytplayer.config.args);
+                    b = window.ytplayer.config;
+                    if (!b.html5 && b.args.list && loaded !== b.args.video_id) {
+                        loaded = b.args.video_id;
+                        api.loadVideoByPlayerVars(b.args);
                     }
                 }
             }
         }
         function playerFullscreen(b) {
-            cs.fullscreen = b.fullscreen;
+            fullscreen = b.fullscreen;
         }
         function playerWide(b) {
             set('widePlayer', b);
         }
         function fullscreenControl(b) {
             return function () {
-                if (!cs.requestRunning) {
+                if (!requestRunning) {
                     return b.apply(this, arguments);
                 }
                 return true;
             };
         }
         if (typeof a === 'object' && !document.getElementById('c4-player')) {
-            if (!cs.api) {
-                cs.api = a;
-                cs.api.addEventListener('onStateChange', playerState, false);
-                cs.api.addEventListener('onFullscreenChange', playerFullscreen, false);
-                cs.api.addEventListener('SIZE_CLICKED', playerWide, false);
+            if (!api) {
+                api = a;
+                api.addEventListener('onStateChange', playerState, false);
+                api.addEventListener('onFullscreenChange', playerFullscreen, false);
+                api.addEventListener('SIZE_CLICKED', playerWide, false);
             }
             if (!get('VID_PLR_ATPL')) {
                 if (document.querySelector('video')) {
                     document.querySelector('video').removeAttribute('src');
                 }
                 argsCleaner(window.ytplayer.config);
-                cs.api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                api.cueVideoByPlayerVars(window.ytplayer.config.args);
             }
             if (window.ytplayer.config.html5) {
-                cs.api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                api.setPlaybackQuality(get('VID_DFLT_QLTY'));
                 document.mozCancelFullScreen = fullscreenControl(document.mozCancelFullScreen);
             }
         }
@@ -969,7 +980,7 @@
         if (a.target.textContent.indexOf('var ytplayer = ytplayer') > -1) {
             a.preventDefault();
             a.stopPropagation();
-            if (location.href.indexOf('/watch') > -1) {
+            if (window.location.href.indexOf('/watch') > -1) {
                 ytConfig = a.target.textContent.match(/ytplayer\.config = \{([\w\W]*?)\};/)[1];
                 window.ytplayer = window.ytplayer || {};
                 window.ytplayer.config = JSON.parse('{' + ytConfig + '}');
@@ -1017,8 +1028,8 @@
                     return b.apply(this, args);
                 }
                 b.apply(this, args);
-                if (window.ytplayer.config.html5 && cs.api) {
-                    cs.api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                if (window.ytplayer.config.html5 && api) {
+                    api.setPlaybackQuality(get('VID_DFLT_QLTY'));
                 }
             };
         }
@@ -1071,7 +1082,7 @@
         function html5Fix(b) {
             return function () {
                 var changed = b.apply(this, arguments);
-                if (changed && changed.autoPlay && !cs.fullscreen) {
+                if (changed && changed.autoPlay && !get('VID_PLR_ATPL')) {
                     changed.autoPlay = false;
                 }
                 return changed;
@@ -1109,7 +1120,7 @@
             titleElement.id = 'observing';
             observer = new window.MutationObserver(title);
             observer.observe(titleElement, config);
-        } else if (titleStatus === 'observing' && titleElement.textContent.indexOf('▶') > -1 && !(cs.api && cs.api.getPlayerState && '0123'.indexOf(cs.api.getPlayerState()) > -1)) {
+        } else if (titleStatus === 'observing' && titleElement.textContent.indexOf('▶') > -1 && !(api && api.getPlayerState && '0123'.indexOf(api.getPlayerState()) > -1)) {
             titleElement.textContent = titleElement.textContent.replace('▶ ', '');
         }
     }
@@ -1127,7 +1138,7 @@
             temp = prev.href;
             prev.href = next.href;
             next.href = temp;
-            cs.api.updatePlaylist();
+            api.updatePlaylist();
             list.scrollTop = document.querySelector('.currently-playing').offsetTop;
         }
         function reverseButton(a) {
@@ -1151,14 +1162,14 @@
             button.id = a;
             button.title = a;
             button.type = 'button';
-            button.className = 'yt-uix-button yt-uix-button-size-default yt-uix-button-player-controls yt-uix-button-empty yt-uix-button-has-icon yt-uix-button-opacity yt-uix-tooltip' + (((b === true || location.href.indexOf(b) > -1) && ' yt-uix-button-toggled') || '');
+            button.className = 'yt-uix-button yt-uix-button-size-default yt-uix-button-player-controls yt-uix-button-empty yt-uix-button-has-icon yt-uix-button-opacity yt-uix-tooltip' + (((b === true || window.location.href.indexOf(b) > -1) && ' yt-uix-button-toggled') || '');
             button.setAttribute('data-tooltip-text', a);
             button.appendChild(spanIcon);
             button.addEventListener('click', c);
             navControls.appendChild(button);
         }
-        if (location.href.indexOf('list=') > -1) {
-            if (document.readyState === 'complete' && location.href.indexOf(get('plRev')) > -1) {
+        if (window.location.href.indexOf('list=') > -1) {
+            if (document.readyState === 'complete' && window.location.href.indexOf(get('plRev')) > -1) {
                 reverseControl();
             }
             if (get('VID_PLST_RVRS') && !document.getElementById('Reverse')) {
@@ -1170,19 +1181,19 @@
         }
     }
     function htmlGate() {
-        if (cs.fullscreen && window.ytplayer.config) {
-            if (!window.ytplayer.config.html5 && location.href.indexOf('list=') > -1) {
+        if (fullscreen && window.ytplayer.config) {
+            if (!window.ytplayer.config.html5 && window.location.href.indexOf('list=') > -1) {
                 var sentinel = setInterval(function () {
                     if (window.yt.config_.ERRORS) {
                         clearInterval(sentinel);
-                        cs.api.loadVideoByPlayerVars(window.ytplayer.config.args);
+                        api.loadVideoByPlayerVars(window.ytplayer.config.args);
                     }
                 }, 100);
             } else {
-                cs.api.loadVideoByPlayerVars(window.ytplayer.config.args);
+                api.loadVideoByPlayerVars(window.ytplayer.config.args);
             }
         }
-        cs.requestRunning = false;
+        requestRunning = false;
         settingsMenu();
         plControls();
         wide();
@@ -1203,7 +1214,7 @@
             }
             player.remove();
         }
-        cs.requestRunning = true;
+        requestRunning = true;
     }
     window.onYouTubePlayerReady = playerReady;
     window.addEventListener('readystatechange', htmlGate, true);
