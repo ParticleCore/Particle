@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.2.7
+// @version     1.2.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -20,11 +20,10 @@
         fullscreen,
         channelId = {},
         requestRunning,
-        defaultSettings,
-        sType = typeof GM_info;
-    if (window.chrome && document.querySelector('[name="html5player/html5player"]')) {
+        defaultSettings;
+    if (document.querySelector('[name="html5player/html5player"]')) {
         window.location.reload(false);
-    } else if (sType === 'undefined' && !document.getElementById('Particle')) {
+    } else if (!document.getElementById('Particle')) {
         injection = document.createElement('script');
         injection.id = 'Particle';
         injection.textContent = '(' + particle + '())';
@@ -55,10 +54,6 @@
         CHN: {
             en: 'Channels',
             'pt-PT': 'Canais'
-        },
-        DWN: {
-            en: 'Download',
-            'pt-PT': 'Transferência'
         },
         EXT: {
             en: 'Extras',
@@ -213,10 +208,6 @@
             en: 'Buttons',
             'pt-PT': 'Botões'
         },
-        VID_DWNL_BTN: {
-            en: 'Download button',
-            'pt-PT': 'Botão de download'
-        },
         VID_RPT_BTN: {
             en: 'Repeat button',
             'pt-PT': 'Botão de repetir'
@@ -301,22 +292,6 @@
             en: 'About',
             'pt-PT': 'Acerca de'
         },
-        DWN_TTL: {
-            en: 'Download settings',
-            'pt-PT': 'Preferências de transferência'
-        },
-        DWN_PREF: {
-            en: 'Preferences',
-            'pt-PT': 'Preferências'
-        },
-        DWN_DEFQ: {
-            en: 'Default quality',
-            'pt-PT': 'Qualidade padrão'
-        },
-        DWN_FILE_NAME: {
-            en: 'File name preferences',
-            'pt-PT': 'Preferências de nome de ficheiro'
-        },
         ABT_TTL: {
             en: 'Information and useful links',
             'pt-PT': 'Informação e ligações úteis'
@@ -356,11 +331,9 @@
         CHN_DFLT_PAGE: 'channels',
         plApl: true,
         plRev: false,
-        widePlayer: true
+        theaterMode: true
     };
-    if (!window.localStorage.Particle) {
-        window.localStorage.Particle = JSON.stringify(defaultSettings);
-    }
+    window.localStorage.Particle = window.localStorage.Particle || JSON.stringify(defaultSettings);
     function get(a) {
         return JSON.parse(window.localStorage.Particle)[a];
     }
@@ -514,7 +487,6 @@
                     VID_POST_TIME: ['checkbox'],
                     VID_HIDE_COMS: ['checkbox'],
                     VID_BTNS: ['h3'],
-                    VID_DWNL_BTN: ['checkbox'],
                     VID_RPT_BTN: ['checkbox'],
                     VID_LIGHTS_OUT: ['checkbox']
                 },
@@ -533,12 +505,6 @@
                         'discussion': 'CHN_DFLT_PAGE_DISC',
                         'about': 'CHN_DFLT_PAGE_ABT'
                     }]
-                },
-                DWN: {
-                    DWN_TTL: ['h2'],
-                    DWN_PREF: ['h3'],
-                    DWN_DEFQ: ['checkbox'],
-                    DWN_FILE_NAME: ['checkbox']
                 },
                 ABT: {
                     ABT_TTL: ['h2'],
@@ -806,9 +772,9 @@
             comments.parentNode.insertBefore(wrapper, comments);
         }
     }
-    function wide() {
+    function playerMode() {
         var playerElement;
-        if (get('VID_PLR_SIZE_MEM') && get('widePlayer') && (document.cookie.indexOf('wide=0') > -1 || document.cookie.indexOf('wide=1') < 0)) {
+        if (get('VID_PLR_SIZE_MEM') && get('theaterMode') && (document.cookie.indexOf('wide=0') > -1 || document.cookie.indexOf('wide=1') < 0)) {
             document.cookie = 'wide=1; domain=.youtube.com; path=/';
             playerElement = document.getElementById('player');
             if (playerElement && window.location.href.indexOf('/watch') > -1) {
@@ -819,8 +785,8 @@
     }
     function argsCleaner(a) {
         var base = (a.args.iurl_webp && '_webp') || '',
-            scanner = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]'),
-            maxRes = scanner && (scanner.getAttribute('href') || scanner.getAttribute('content')),
+            hdThumb = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]'),
+            maxRes = hdThumb && (hdThumb.getAttribute('href') || hdThumb.getAttribute('content')),
             ads = [
                 'ad3_module',
                 'ad_module',
@@ -866,12 +832,15 @@
                 length -= 1;
                 delete a.args[ads[length]];
             }
-            if (get('VID_PLR_SIZE_MEM') && get('widePlayer')) {
+            if (get('VID_PLR_SIZE_MEM') && get('theaterMode')) {
                 a.args.player_wide = '1';
             }
             if (a.args.iv_load_policy) {
                 a.args.iv_load_policy = (get('VID_PLR_ANTS') && '3') || '1';
             }
+            a.args.cc_load_policy = '0';
+            a.args.showinfo = '0';
+            a.args.autohide = '2';
             a.args.vq = get('VID_DFLT_QLTY');
             a.args.autoplay = (!get('VID_PLR_ATPL') && '0') || '1';
             a.args.theme = get('VID_CTRL_BAR_CLR');
@@ -938,8 +907,8 @@
         function playerFullscreen(b) {
             fullscreen = b.fullscreen;
         }
-        function playerWide(b) {
-            set('widePlayer', b);
+        function sizeChanged(b) {
+            set('theaterMode', b);
         }
         function fullscreenControl(b) {
             return function () {
@@ -954,7 +923,7 @@
                 api = a;
                 api.addEventListener('onStateChange', playerState, false);
                 api.addEventListener('onFullscreenChange', playerFullscreen, false);
-                api.addEventListener('SIZE_CLICKED', playerWide, false);
+                api.addEventListener('SIZE_CLICKED', sizeChanged, false);
             }
             if (!get('VID_PLR_ATPL')) {
                 if (document.querySelector('video')) {
@@ -1196,7 +1165,7 @@
         requestRunning = false;
         settingsMenu();
         plControls();
-        wide();
+        playerMode();
         title();
         general();
         enhancedDetails();
