@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.2.9
+// @version     1.3.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -337,13 +337,14 @@
     defaultSettings = {
         GEN_YT_LOGO_LINK: true,
         GEN_BLUE_GLOW: true,
-        VID_DFLT_QLTY: 'hd720',
-        VID_PLR_TYPE: 'html5',
+        VID_DFLT_QLTY: 'auto',
+        VID_PLR_TYPE: 'auto',
         VID_PLST_ATPL: true,
         VID_PLST_RVRS: true,
         VID_PROG_BAR_CLR: 'red',
         VID_CTRL_BAR_CLR: 'light',
         VID_PLR_SIZE_MEM: true,
+        VID_PLR_DASH: 'auto',
         CHN_DFLT_PAGE: 'channels',
         plApl: true,
         plRev: false,
@@ -364,11 +365,6 @@
     }
     function userLang(a) {
         return a[window.yt.config_.FEEDBACK_LOCALE_LANGUAGE] || a.en;
-    }
-    function decodeEntities(a) {
-        var text = document.createElement('textarea');
-        text.innerHTML = a;
-        return text.value;
     }
     styleSheet = document.createElement('style');
     styleSheet.textContent = [
@@ -722,7 +718,6 @@
                 span,
                 user,
                 name,
-                videos,
                 verified;
             function videoCounter() {
                 link.href = user.getAttribute('href') + '/videos';
@@ -739,9 +734,8 @@
                 }
             }
             function getInfo(a) {
-                videos = JSON.parse(a).body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '');
                 link.className = 'spf-link';
-                link.textContent = channelId[user.getAttribute('data-ytid')] = decodeEntities(videos);
+                link.textContent = channelId[user.getAttribute('data-ytid')] = JSON.parse(a).body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '').replace('&#39;', '\'');
                 videoCounter();
             }
             if (!document.getElementById('uploaded-videos')) {
@@ -783,13 +777,13 @@
             button;
         function showComments() {
             comments.classList.toggle('show');
-            button.textContent = (comments.classList.contains('show') && userLang(lang.HIDE_CMTS)) || userLang(lang.SHOW_CMTS);
+            button.textContent = userLang((comments.classList.contains('show') && lang.HIDE_CMTS) || lang.SHOW_CMTS);
         }
         if (!document.getElementById('P-show-comments') && get('VID_HIDE_COMS')) {
             button = document.createElement('button');
             button.className = 'yt-uix-button yt-uix-button-expander';
-            button.addEventListener('click', showComments, false);
             button.textContent = userLang(lang.SHOW_CMTS);
+            button.addEventListener('click', showComments, false);
             wrapper = document.createElement('div');
             wrapper.id = 'P-show-comments';
             wrapper.className = 'yt-card';
