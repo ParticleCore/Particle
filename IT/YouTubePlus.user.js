@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.0
+// @version     1.3.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -116,8 +116,8 @@
             'pt-PT': 'Player'
         },
         VID_DFLT_QLTY: {
-            en: 'Default video quality: ',
-            'pt-PT': 'Qualidade de vídeo padrão: '
+            en: 'Default video quality:',
+            'pt-PT': 'Qualidade de vídeo padrão:'
         },
         VID_DFLT_QLTY_AUTO: {
             en: 'Auto',
@@ -148,11 +148,8 @@
             en: '2160p'
         },
         VID_PLR_TYPE: {
-            en: 'Player type: ',
-            'pt-PT': 'Tipo de player: '
-        },
-        VID_PLR_TYPE_AUTO: {
-            en: 'Auto'
+            en: 'Player type:',
+            'pt-PT': 'Tipo de player:'
         },
         VID_PLR_TYPE_FLSH: {
             en: 'Flash'
@@ -162,11 +159,11 @@
         },
         VID_PLR_ATPL: {
             en: 'Autoplay videos',
-            'pt-PT': 'Iniciar vídeos automaticamente'
+            'pt-PT': 'Iniciar vídeos automáticamente'
         },
         VID_PROG_BAR_CLR: {
-            en: 'Progress bar color: ',
-            'pt-PT': 'Cor da barra de progresso: '
+            en: 'Progress bar color:',
+            'pt-PT': 'Cor da barra de progresso:'
         },
         VID_PROG_BAR_CLR_RED: { // color = red
             en: 'Red',
@@ -177,8 +174,8 @@
             'pt-PT': 'Branca'
         },
         VID_CTRL_BAR_CLR: {
-            en: 'Control bar color: ',
-            'pt-PT': 'Cor da barra de controlos: '
+            en: 'Control bar color:',
+            'pt-PT': 'Cor da barra de controlos:'
         },
         VID_CTRL_BAR_CLR_DARK: { // theme = dark
             en: 'Dark',
@@ -203,18 +200,6 @@
         VID_HIDE_COMS: {
             en: 'Hide comment section',
             'pt-PT': 'Esconder secção de comentários'
-        },
-        VID_BTNS: {
-            en: 'Buttons',
-            'pt-PT': 'Botões'
-        },
-        VID_RPT_BTN: {
-            en: 'Repeat button',
-            'pt-PT': 'Botão de repetir'
-        },
-        VID_LIGHTS_OUT: {
-            en: 'Lights out',
-            'pt-PT': 'Modo escuro'
         },
         VID_END_SHRE: {
             en: 'Disable share panel when video ends',
@@ -241,20 +226,12 @@
             'pt-PT': 'Desactivar notas'
         },
         VID_PLR_DASH: {
-            en: 'DASH format: ',
-            'pt-PT': 'Formato DASH'
+            en: 'Disable DASH playback',
+            'pt-PT': 'Desactivar reprodução DASH'
         },
-        VID_PLR_DASH_AUTO: {
-            en: 'Auto',
-            'pt-PT': 'Automático'
-        },
-        VID_PLR_DASH_ENBL: {
-            en: 'Enabled',
-            'pt-PT': 'Activado'
-        },
-        VID_PLR_DASH_DSBL: {
-            en: 'Disabled',
-            'pt-PT': 'Desactivado'
+        VID_PLR_CC: {
+            en: 'Disable subtitles',
+            'pt-PT': 'Desactivar legendas'
         },
         CHN_TTL: {
             en: 'Channel settings',
@@ -281,8 +258,8 @@
             'pt-PT': 'Desactivar começo automático do trailer'
         },
         CHN_DFLT_PAGE: {
-            en: 'Default landing page: ',
-            'pt-PT': 'Página de destino: '
+            en: 'Default landing page:',
+            'pt-PT': 'Página de destino:'
         },
         CHN_DFLT_PAGE_DFLT: {
             en: 'Default',
@@ -337,14 +314,14 @@
     defaultSettings = {
         GEN_YT_LOGO_LINK: true,
         GEN_BLUE_GLOW: true,
+        VID_END_SHRE: true,
         VID_DFLT_QLTY: 'auto',
-        VID_PLR_TYPE: 'auto',
+        VID_PLR_TYPE: 'html5',
         VID_PLST_ATPL: true,
         VID_PLST_RVRS: true,
         VID_PROG_BAR_CLR: 'red',
         VID_CTRL_BAR_CLR: 'light',
         VID_PLR_SIZE_MEM: true,
-        VID_PLR_DASH: 'auto',
         CHN_DFLT_PAGE: 'channels',
         plApl: true,
         plRev: false,
@@ -393,7 +370,7 @@
         '#P-content input[type="radio"] + label:before{border-radius:50%;left:-20px}\n',
         '#P-content input[type="checkbox"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJXRSTlMAmQmDBYwZUT92AjdnbAtadZRPBBaSfqRBejiODWWJEoJ5Gx0gnoi62QAAAExJREFUCB1NwQUSgDAAA7B2G+7uzv/fCAdDEvyY+HgFXnYV4WHRcXFTPgNo4cJYAUjSDLlkKXCq2bQdZY/LQHKccBMzjRWPzdjxEdAOtVECtAyMKkUAAAAASUVORK5CYII=) no-repeat 2px 1px;}\n',
         '#P-content input[type="radio"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAQlBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZma1tx8vAAAAFXRSTlMAdRg22LcS6r1mJyQw/OcJ80UzaRuV38qbAAAANElEQVQIHQWAhxGAIBDA8oDYsABm/1U9gDMBkIsuCeqqusGuqgehqpl2qd4PhPp2gBHzgx9d1gLnmWiDtQAAAABJRU5ErkJggg==) no-repeat 3px;}\n',
-        '#P-content select{cursor:pointer;background-image:linear-gradient(to bottom, #fcfcfc 0px, #f8f8f8 100%);border:1px solid #d3d3d3;color:#333 !important;font-family:arial,sans-serif;font-size:11px;font-weight:bold;height:26px;-moz-appearance:none;-webkit-appearance:none;padding:0 1em;text-shadow:none}\n',
+        '#P-content select{cursor:pointer;margin-left:5px;background-image:linear-gradient(to bottom, #fcfcfc 0px, #f8f8f8 100%);border:1px solid #d3d3d3;color:#333 !important;font-family:arial,sans-serif;font-size:11px;font-weight:bold;height:26px;-moz-appearance:none;-webkit-appearance:none;padding:0 1em;text-shadow:none}\n',
         '#P-content select option{padding:0;padding:0 1em}\n',
         '.P-header{height:20px;margin:0;padding:24px 0 0 15px}\n',
         '.P-save{background:#167ac6;border-color:#167ac6;border-radius:2px;box-shadow:0 1px 0 rgba(0, 0, 0, 0.05);color:#fff;cursor:pointer;display:inline-block;float:right;font-size:11px;font-weight:bold;height:28px;line-height:normal;margin-right:20px;margin-top:-5px;outline:0 none;padding:0 20px;vertical-align:middle;white-space:nowrap;word-wrap:normal}\n',
@@ -402,7 +379,7 @@
         '.P-horz{border-bottom:0 none;border-top:1px solid #e2e2e2;height:0;margin:20px 0;position:relative}\n',
         ':focus{outline:none;}\n',
         '::-moz-focus-inner{border:0;}\n',
-        'select{color:transparent !important;text-shadow: 0 0 0 #333}\n',
+        '#P-settings select{color:transparent !important;text-shadow: 0 0 0 #333}\n',
         '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;margin-left:10px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
         '#P:hover{opacity:0.85}\n',
         '.P-hide{display:none}\n',
@@ -469,37 +446,33 @@
                     VID_TTL: ['h2'],
                     VID_PLR: ['h3'],
                     VID_PLR_ATPL: ['checkbox'],
+                    VID_PLR_CC: ['checkbox'],
                     VID_PLR_ANTS: ['checkbox'],
                     VID_END_SHRE: ['checkbox'],
                     VID_PLR_SIZE_MEM: ['checkbox'],
-                    VID_PLR_DASH: ['radio', {
-                        'auto': 'VID_PLR_DASH_AUTO',
-                        'enable': 'VID_PLR_DASH_ENBL',
-                        'disable': 'VID_PLR_DASH_DSBL'
+                    VID_PLR_DASH: ['checkbox'],
+                    VID_PLR_TYPE: ['radio', {
+                        'VID_PLR_TYPE_FLSH': 'flash',
+                        'VID_PLR_TYPE_HTML': 'html5'
                     }],
                     VID_PROG_BAR_CLR: ['radio', {
-                        'red': 'VID_PROG_BAR_CLR_RED',
-                        'white': 'VID_PROG_BAR_CLR_WHT'
+                        'VID_PROG_BAR_CLR_RED': 'red',
+                        'VID_PROG_BAR_CLR_WHT': 'white'
                     }],
                     VID_CTRL_BAR_CLR: ['radio', {
-                        'dark': 'VID_CTRL_BAR_CLR_DARK',
-                        'light': 'VID_CTRL_BAR_CLR_LGHT'
+                        'VID_CTRL_BAR_CLR_DARK': 'dark',
+                        'VID_CTRL_BAR_CLR_LGHT': 'light'
                     }],
                     VID_DFLT_QLTY: ['select', {
-                        'auto': 'VID_DFLT_QLTY_AUTO',
-                        'highres': 'VID_DFLT_QLTY_ORIG',
-                        'hd1440': 'VID_DFLT_QLTY_1440',
-                        'hd1080': 'VID_DFLT_QLTY_1080',
-                        'hd720': 'VID_DFLT_QLTY_720',
-                        'large': 'VID_DFLT_QLTY_LRG',
-                        'medium': 'VID_DFLT_QLTY_MDM',
-                        'small': 'VID_DFLT_QLTY_SML',
-                        'tiny': 'VID_DFLT_QLTY_TNY'
-                    }],
-                    VID_PLR_TYPE: ['radio', {
-                        'auto': 'VID_PLR_TYPE_AUTO',
-                        'flash': 'VID_PLR_TYPE_FLSH',
-                        'html5': 'VID_PLR_TYPE_HTML'
+                        'VID_DFLT_QLTY_AUTO': 'auto',
+                        'VID_DFLT_QLTY_ORIG': 'highres',
+                        'VID_DFLT_QLTY_1440': 'hd1440',
+                        'VID_DFLT_QLTY_1080': 'hd1080',
+                        'VID_DFLT_QLTY_720': 'hd720',
+                        'VID_DFLT_QLTY_LRG': 'large',
+                        'VID_DFLT_QLTY_MDM': 'medium',
+                        'VID_DFLT_QLTY_SML': 'small',
+                        'VID_DFLT_QLTY_TNY': 'tiny'
                     }],
                     VID_PLST: ['h3'],
                     VID_PLST_ATPL: ['checkbox'],
@@ -507,10 +480,7 @@
                     VID_LAYT: ['h3'],
                     VID_VID_CNT: ['checkbox'],
                     VID_POST_TIME: ['checkbox'],
-                    VID_HIDE_COMS: ['checkbox'],
-                    VID_BTNS: ['h3'],
-                    VID_RPT_BTN: ['checkbox'],
-                    VID_LIGHTS_OUT: ['checkbox']
+                    VID_HIDE_COMS: ['checkbox']
                 },
                 CHN: {
                     CHN_TTL: ['h2'],
@@ -520,12 +490,12 @@
                     CHN_BVR: ['h3'],
                     CHN_TRL_ATP: ['checkbox'],
                     CHN_DFLT_PAGE: ['select', {
-                        'default': 'CHN_DFLT_PAGE_DFLT',
-                        'videos': 'CHN_DFLT_PAGE_VID',
-                        'playlists': 'CHN_DFLT_PAGE_PL',
-                        'channels': 'CHN_DFLT_PAGE_CHN',
-                        'discussion': 'CHN_DFLT_PAGE_DISC',
-                        'about': 'CHN_DFLT_PAGE_ABT'
+                        'CHN_DFLT_PAGE_DFLT': 'default',
+                        'CHN_DFLT_PAGE_VID': 'videos',
+                        'CHN_DFLT_PAGE_PL': 'playlists',
+                        'CHN_DFLT_PAGE_CHN': 'channels',
+                        'CHN_DFLT_PAGE_DISC': 'discussion',
+                        'CHN_DFLT_PAGE_ABT': 'about'
                     }]
                 },
                 ABT: {
@@ -626,15 +596,15 @@
                         Object.keys(menus[a][c][1]).forEach(function (d) {
                             input = document.createElement('input');
                             input.type = 'radio';
-                            input.value = d;
+                            input.value = menus[a][c][1][d];
                             input.name = c;
-                            input.id = menus[a][c][1][d];
-                            if (get(c) === d) {
+                            input.id = d;
+                            if (get(c) === menus[a][c][1][d]) {
                                 input.checked = true;
                             }
                             label = document.createElement('label');
-                            label.setAttribute('for', menus[a][c][1][d]);
-                            label.textContent = userLang(lang[menus[a][c][1][d]]);
+                            label.setAttribute('for', d);
+                            label.textContent = userLang(lang[d]);
                             div.appendChild(input);
                             div.appendChild(label);
                         });
@@ -646,11 +616,11 @@
                         select.id = c;
                         Object.keys(menus[a][c][1]).forEach(function (d) {
                             option = document.createElement('option');
-                            if (get(c) === d) {
+                            if (get(c) === menus[a][c][1][d]) {
                                 option.selected = true;
                             }
-                            option.value = d;
-                            option.textContent = userLang(lang[menus[a][c][1][d]]);
+                            option.value = menus[a][c][1][d];
+                            option.textContent = userLang(lang[d]);
                             select.appendChild(option);
                         });
                         div.appendChild(label);
@@ -810,12 +780,6 @@
             ads = [
                 'ad3_module',
                 'ad_module',
-                'ad_tag',
-                'afv',
-                'aftv',
-                'invideo',
-                'instream',
-                'trueview',
                 'ypc_vid'
             ],
             length = ads.length;
@@ -858,19 +822,17 @@
             if (a.args.iv_load_policy) {
                 a.args.iv_load_policy = (get('VID_PLR_ANTS') && '3') || '1';
             }
-            if (get('VID_PLR_DASH') !== 'auto') {
-                a.args.dash = (get('VID_PLR_DASH') === 'enable' && '1') || '0';
+            if (a.args.cc_load_policy) {
+                a.args.cc_load_policy = (get('VID_PLR_CC') && '0') || '1';
             }
-            a.args.cc_load_policy = '0';
+            a.args.dash = (get('VID_PLR_DASH') && '0') || '1';
             a.args.showinfo = '0';
             a.args.autohide = '2';
             a.args.vq = get('VID_DFLT_QLTY');
-            a.args.autoplay = (!get('VID_PLR_ATPL') && '0') || '1';
+            a.args.autoplay = (get('VID_PLR_ATPL') && '1') || '0';
             a.args.theme = get('VID_CTRL_BAR_CLR');
             a.args.color = get('VID_PROG_BAR_CLR');
-            if (get('VID_PLR_TYPE') !== 'auto') {
-                a.html5 = get('VID_PLR_TYPE') === 'html5';
-            }
+            a.html5 = get('VID_PLR_TYPE');
             a.params.wmode = 'gpu';
             if (a.args.autoplay === '0') {
                 a.args['iurlmaxres' + base] = a.args['iurlmaxres' + base] || maxRes || false;
@@ -888,7 +850,7 @@
     }
     function playerReady(a) {
         function playerState(b) {
-            if (window.movie_player) {
+            if (document.getElementById('movie_player')) {
                 if (b < 0) {
                     if (!requestRunning && fullscreen) {
                         var sentinel = setInterval(function () {
