@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.1
+// @version     1.3.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -221,6 +221,10 @@
             en: 'Memorize player mode',
             'pt-PT': 'Memorizar tamanho do reproductor'
         },
+        VID_PLR_VOL_MEM: {
+            en: 'Memorize audio volume',
+            'pt-PT': 'Memorizar volume de audio'
+        },
         VID_PLR_ANTS: {
             en: 'Disable annotations',
             'pt-PT': 'Desactivar notas'
@@ -232,6 +236,30 @@
         VID_PLR_CC: {
             en: 'Disable subtitles',
             'pt-PT': 'Desactivar legendas'
+        },
+        VID_PLR_CTRL_VIS: {
+            en: 'Progress and controls bar visibility:',
+            'pt-PT': 'Visibilidade das barras de progresso e controlo:'
+        },
+        VID_PLR_CTRL_VIS_HIDE_PROG: {
+            en: 'Hide progress',
+            'pt-PT': 'Esconder progresso'
+        },
+        VID_PLR_CTRL_VIS_HIDE_ALL: {
+            en: 'Hide both',
+            'pt-PT': 'Esconder ambos'
+        },
+        VID_PLR_CTRL_VIS_SHOW_ALL: {
+            en: 'Show both',
+            'pt-PT': 'Mostrar ambos'
+        },
+        VID_PLR_FIT: {
+            en: 'Fit to content in theater mode',
+            'pt-PT': 'Ajustar ao conteúdo no modo cinema'
+        },
+        VID_PLR_DYN_SIZE: {
+            en: 'Disable dynamic player size in normal mode',
+            'pt-PT': 'Desactivar tamanho dinâmico do reproductor no modo normal'
         },
         CHN_TTL: {
             en: 'Channel settings',
@@ -323,6 +351,7 @@
         VID_CTRL_BAR_CLR: 'light',
         VID_PLR_SIZE_MEM: true,
         CHN_DFLT_PAGE: 'channels',
+        volLev: false,
         plApl: true,
         plRev: false,
         theaterMode: true
@@ -379,19 +408,24 @@
         '.P-horz{border-bottom:0 none;border-top:1px solid #e2e2e2;height:0;margin:20px 0;position:relative}\n',
         ':focus{outline:none;}\n',
         '::-moz-focus-inner{border:0;}\n',
-        '#P-settings select{color:transparent !important;text-shadow: 0 0 0 #333}\n',
+        '#P-settings select{color:transparent !important;padding-right:0;text-shadow: 0 0 0 #333}\n',
         '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;margin-left:10px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
         '#P:hover{opacity:0.85}\n',
         '.P-hide{display:none}\n',
         '#body #uploaded-videos{font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial}',
-        '.yt-user-info > span{font-size:11px;color:#666}',
+        '.yt-user-info > span{font-size:11px;color:#666}\n',
+        ((!get('VID_PLR_FIT') && '#body #player:not(.watch-small) #player-api{width:854px !important}@media screen and (min-width:1320px) and (min-height:870px){#body #player:not(.watch-small) #player-api{width:1280px !important}}\n') || ''),
+        '#player{position:relative;width:100% !important}#theater-background{height:100% !important}#player #player-api{position:relative !important;height:auto !important}#player:not(.watch-small) #player-api{max-width:1280px !important;width:100% !important}#player #player-api:before{content:"";display:block;padding-top:56.25%}#player #movie_player{bottom:0 !important;left:0 !important;position:absolute !important;right:0 !important;top:0 !important}\n',
+        '#player-api{padding-bottom:' + ((get('VID_PLR_CTRL_VIS') === '2' && '30px') || (get('VID_PLR_CTRL_VIS') === '0' && '35px') || (get('VID_PLR_CTRL_VIS') === '1' && '0')) + ';}\n',
+        ((get('VID_PLR_DYN_SIZE') && '.watch-non-stage-mode #watch7-content{width: 640px !important}.watch-non-stage-mode #content.content-alignment, .watch-non-stage-mode #player.watch-small{max-width: 1066px !important}.watch-non-stage-mode #watch7-preview{margin-top: -750px !important}.watch-non-stage-mode #watch7-sidebar{margin-left: 650px !important;margin-top: ' + ((get('VID_PLR_CTRL_VIS') === '2' && '-390px') || (get('VID_PLR_CTRL_VIS') === '0' && '-395px') || (get('VID_PLR_CTRL_VIS') === '1' && '-360px')) + '; /* hide both */top: 0;}.watch-non-stage-mode .player-width{width: 640px !important}.watch-non-stage-mode .player-height{height: 390px !important}.watch-non-stage-mode .watch-playlist{height: ' + ((get('VID_PLR_CTRL_VIS') === '2' && '390px') || (get('VID_PLR_CTRL_VIS') === '0' && '395px') || (get('VID_PLR_CTRL_VIS') === '1' && '360px')) + ' !important /* hide both */}\n') || ''),
+        ((!get('VID_PLR_DYN_SIZE') && '#watch7-sidebar{margin-top: ' + ((get('VID_PLR_CTRL_VIS') === '2' && '-390px') || (get('VID_PLR_CTRL_VIS') === '0' && '-395px') || (get('VID_PLR_CTRL_VIS') === '1' && '-360px')) + '}#watch-appbar-playlist{;height:' + ((get('VID_PLR_CTRL_VIS') === '2' && '390px') || (get('VID_PLR_CTRL_VIS') === '0' && '395px') || (get('VID_PLR_CTRL_VIS') === '1' && '360px')) + ';}@media screen and (min-width:1294px) and (min-height:630px){#watch-appbar-playlist{height:' + ((get('VID_PLR_CTRL_VIS') === '2' && '510px') || (get('VID_PLR_CTRL_VIS') === '0' && '515px') || (get('VID_PLR_CTRL_VIS') === '1' && '480px')) + ';}}@media screen and (min-width:1720px) and (min-height:980px){#watch-appbar-playlist{height:' + ((get('VID_PLR_CTRL_VIS') === '2' && '750px') || (get('VID_PLR_CTRL_VIS') === '0' && '755px') || (get('VID_PLR_CTRL_VIS') === '1' && '720px')) + ';}}\n') || ''),
         '#header,',
         '#feed-pyv-container,',
         '.video-list-item:not(.related-list-item),',
         '.pyv-afc-ads-container,',
         '.ad-div',
         '{display:none}\n',
-        get('VID_HIDE_COMS') && '#watch-discussion{opacity:0;height:0;overflow:hidden}\n#P-show-comments button{border-top:none;padding-top:2px}\n.show{opacity:1 !important;height:auto !important}',
+        ((get('VID_HIDE_COMS') && '#watch-discussion{opacity:0;height:0;overflow:hidden}\n#P-show-comments button{border-top:none;padding-top:2px}\n.show{opacity:1 !important;height:auto !important}\n') || ''),
         '#masthead-appbar',
         '{display:block !important}\n',
         '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list\n',
@@ -449,8 +483,11 @@
                     VID_PLR_CC: ['checkbox'],
                     VID_PLR_ANTS: ['checkbox'],
                     VID_END_SHRE: ['checkbox'],
+                    VID_PLR_VOL_MEM: ['checkbox'],
                     VID_PLR_SIZE_MEM: ['checkbox'],
                     VID_PLR_DASH: ['checkbox'],
+                    VID_PLR_FIT: ['checkbox'],
+                    VID_PLR_DYN_SIZE: ['checkbox'],
                     VID_PLR_TYPE: ['radio', {
                         'VID_PLR_TYPE_FLSH': 'flash',
                         'VID_PLR_TYPE_HTML': 'html5'
@@ -473,6 +510,11 @@
                         'VID_DFLT_QLTY_MDM': 'medium',
                         'VID_DFLT_QLTY_SML': 'small',
                         'VID_DFLT_QLTY_TNY': 'tiny'
+                    }],
+                    VID_PLR_CTRL_VIS: ['select', {
+                        'VID_PLR_CTRL_VIS_HIDE_PROG': '2',
+                        'VID_PLR_CTRL_VIS_HIDE_ALL': '1',
+                        'VID_PLR_CTRL_VIS_SHOW_ALL': '0'
                     }],
                     VID_PLST: ['h3'],
                     VID_PLST_ATPL: ['checkbox'],
@@ -726,8 +768,10 @@
             var watchTime = document.querySelector('.watch-time-text');
             function getInfo(a) {
                 if (watchTime.textContent.indexOf('·') < 0) {
-                    a = JSON.parse(a).body.content;
-                    watchTime.textContent += ' · ' + a.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/)[1].split('</li><li>')[0];
+                    a = JSON.parse(a).body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
+                    if (a) {
+                        watchTime.textContent += ' · ' + a[1].split('</li><li>')[0];
+                    }
                 }
             }
             xhr('GET', '/channel/' + window.ytplayer.config.args.ucid + '/search?spf=navigate&query="' + window.ytplayer.config.args.video_id, getInfo);
@@ -742,14 +786,14 @@
         }
     }
     function commentsButton() {
-        var comments,
+        var comments = document.getElementById('watch-discussion'),
             wrapper,
             button;
         function showComments() {
             comments.classList.toggle('show');
             button.textContent = userLang((comments.classList.contains('show') && lang.HIDE_CMTS) || lang.SHOW_CMTS);
         }
-        if (!document.getElementById('P-show-comments') && get('VID_HIDE_COMS')) {
+        if (comments && !document.getElementById('P-show-comments') && get('VID_HIDE_COMS')) {
             button = document.createElement('button');
             button.className = 'yt-uix-button yt-uix-button-expander';
             button.textContent = userLang(lang.SHOW_CMTS);
@@ -758,7 +802,6 @@
             wrapper.id = 'P-show-comments';
             wrapper.className = 'yt-card';
             wrapper.appendChild(button);
-            comments = document.getElementById('watch-discussion');
             comments.parentNode.insertBefore(wrapper, comments);
         }
     }
@@ -791,6 +834,9 @@
                     a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base] = hdURL;
                     api.cueVideoByPlayerVars(a.args);
                     api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                    if (get('VID_PLR_VOL_MEM')) {
+                        api.setVolume(get('volLev') || 50);
+                    }
                     img.removeEventListener('load', widthReport);
                 }
             }
@@ -825,14 +871,14 @@
             if (a.args.cc_load_policy) {
                 a.args.cc_load_policy = (get('VID_PLR_CC') && '0') || '1';
             }
+            //a.args.controls = '0'; // disables controls
             a.args.dash = (get('VID_PLR_DASH') && '0') || '1';
-            a.args.showinfo = '0';
-            a.args.autohide = '2';
+            a.args.autohide = get('VID_PLR_CTRL_VIS'); // #player-api padding-bottom: 30px | 0 = show all | 1 = hide all | 2 = autohide progress bar
             a.args.vq = get('VID_DFLT_QLTY');
             a.args.autoplay = (get('VID_PLR_ATPL') && '1') || '0';
             a.args.theme = get('VID_CTRL_BAR_CLR');
             a.args.color = get('VID_PROG_BAR_CLR');
-            a.html5 = get('VID_PLR_TYPE');
+            a.html5 = get('VID_PLR_TYPE') === 'html5';
             a.params.wmode = 'gpu';
             if (a.args.autoplay === '0') {
                 a.args['iurlmaxres' + base] = a.args['iurlmaxres' + base] || maxRes || false;
@@ -895,6 +941,9 @@
         function sizeChanged(b) {
             set('theaterMode', b);
         }
+        function volumeChanged(b) {
+            set('volLev', b.volume);
+        }
         function fullscreenControl(b) {
             return function () {
                 if (!requestRunning) {
@@ -908,6 +957,7 @@
                 api = a;
                 api.addEventListener('onStateChange', playerState, false);
                 api.addEventListener('onFullscreenChange', playerFullscreen, false);
+                api.addEventListener('onVolumeChange', volumeChanged, false);
                 api.addEventListener('SIZE_CLICKED', sizeChanged, false);
             }
             if (!get('VID_PLR_ATPL')) {
@@ -921,12 +971,9 @@
                 api.setPlaybackQuality(get('VID_DFLT_QLTY'));
                 document.mozCancelFullScreen = fullscreenControl(document.mozCancelFullScreen);
             }
-        }
-    }
-    function general() {
-        var sidebar = document.querySelector('.branded-page-v2-secondary-col');
-        if (sidebar && sidebar.getElementsByTagName('div').length < 5) {
-            sidebar.remove();
+            if (get('VID_PLR_VOL_MEM')) {
+                api.setVolume(get('volLev') || 50);
+            }
         }
     }
     function scriptEntry(a) {
@@ -1152,7 +1199,6 @@
         plControls();
         playerMode();
         title();
-        general();
         enhancedDetails();
         commentsButton();
     }
