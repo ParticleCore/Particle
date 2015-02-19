@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.3
+// @version     1.3.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,12 +14,10 @@
     'use strict';
     var api,
         lang,
-        loaded,
         injection,
         styleSheet,
         fullscreen,
         channelId = {},
-        requestRunning,
         defaultSettings;
     if (document.querySelector('[name="html5player/html5player"]')) {
         window.location.reload(false);
@@ -113,6 +111,18 @@
         GEN_USER_LNKS: {
             en: 'Enable user links in recommended videos',
             'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
+        },
+        GEN_CMPT_TTLS: {
+            en: 'Compact titles in feeds',
+            'pt-PT': 'Títulos compactos nas listas'
+        },
+        GEN_BTTR_NTF: {
+            en: 'Improved blue notification box',
+            'pt-PT': 'Caixa de notificação azul melhorada'
+        },
+        GEN_CNTR_LYT: {
+            en: 'Center navigation and footer',
+            'pt-PT': 'Centrar barra de navegação e rodapé'
         },
         VID_TTL: {
             en: 'Video settings',
@@ -272,6 +282,10 @@
             en: 'Show both',
             'pt-PT': 'Mostrar ambos'
         },
+        VID_PLR_CTRL_VIS_RMV_ALL: {
+            en: 'Remove both',
+            'pt-PT': 'Remover ambos'
+        },
         VID_PLR_FIT: {
             en: 'Fit to page in theater mode',
             'pt-PT': 'Ajustar na página no modo cinema'
@@ -283,6 +297,14 @@
         VID_PLR_DYN_SIZE: {
             en: 'Disable dynamic player size in default view',
             'pt-PT': 'Desactivar tamanho dinâmico do reproductor na vista predefinida'
+        },
+        VID_DESC_SHRT: {
+            en: 'Short video description buttons',
+            'pt-PT': 'Botões curtos na descrição do vídeo'
+        },
+        VID_TTL_CMPT: {
+            en: 'Compact title in video description',
+            'pt-PT': 'Título compacto ba descrição do vídeo'
         },
         CHN_TTL: {
             en: 'Channel settings',
@@ -410,7 +432,7 @@
         '#footer-container{position:relative}\n',
         '#P-settings{background:#f1f1f1;height:100%;left:0;position:absolute;right:0;z-index:1000}\n',
         '#P-sidebar,#P-content{-moz-user-select:none}\n',
-        '#P-container{margin:10px auto 0;max-width:1066px}\n',
+        '#P-container{margin:10px auto 0;max-width:1262px}\n',
         '#P-sidebar,#P-content{box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);box-sizing:border-box}\n',
         '#P-sidebar{background:#1e1e1e;color:grey;float:left;width:195px;margin-right:10px;padding:10px 0}\n',
         '#P-sidebar-list > li{color:grey;padding:0 21px;cursor:pointer;font-size:11px;line-height:24px}\n',
@@ -446,7 +468,12 @@
         '.P-hide{display:none}\n',
         '#body #uploaded-videos{font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial}',
         '.yt-user-info > span{font-size:11px;color:#666}\n',
+        ((get('VID_DESC_SHRT') && '#watch8-secondary-actions{left:0 !important}#watch8-secondary-actions .yt-uix-button-content{display:none}#watch8-secondary-actions button{padding:0}') || ''),
+        ((get('VID_TTL_CMPT') && '#watch-headline-title{display:block !important;white-space:nowrap !important}#watch-headline-title h1{display:block !important;text-overflow:ellipsis !important}') || ''),
+        ((get('GEN_CMPT_TTLS') && '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{white-space:nowrap !important}') || ''),
+        ((get('GEN_CNTR_LYT') && '#yt-masthead, #footer{max-width:1262px !important}') || ''),
         ((get('GEN_BLUE_GLOW') && '.yt-uix-button:focus, .yt-uix-button:focus:hover{box-shadow: initial !important}') || ''),
+        ((get('GEN_BTTR_NTF') && '#appbar-main-guide-notification-container{box-shadow:0 1px 2px #eee inset;display:inline-block;top:2px !important;left:auto !important;margin-left:79px !important;opacity:0;overflow:hidden !important;position:absolute !important;visibility:hidden;width:auto;z-index:1}#appbar-main-guide-notification-container .appbar-guide-notification{height:27px !important}.show-guide-button-notification #appbar-main-guide-notification-container{visibility: visible;opacity:1}#appbar-main-guide-notification-container{transition:visibility .3s linear .1s, opacity .3s linear .1s}#appbar-guide-button-notification-check{display:none !important}.show-guide-button-notification #appbar-guide-button{opacity:1 !important}') || ''),
         ((get('VID_PLST_SEP') && '#watch-appbar-playlist{margin-left:0 !important;}\n') || ''),
         ((!get('VID_PLR_FIT') && '#body #player:not(.watch-small) #player-api{width:854px !important}@media screen and (min-width:1320px) and (min-height:870px){#body #player:not(.watch-small) #player-api{width:1280px !important}}\n') || ''),
         '#player{position:relative;width:100% !important}#theater-background{height:100% !important}#player #player-api, #player #player-unavailable{position:relative !important;height:auto !important}#player:not(.watch-small) #player-api, #player:not(.watch-small) #player-unavailable{max-width:' + get('VID_PLR_FIT_WDTH') + ' !important;width:100% !important}#player #player-api:before, #player #player-unavailable:before{content:"";display:block;padding-top:56.25%}#player #movie_player{bottom:0 !important;left:0 !important;position:absolute !important;right:0 !important;top:0 !important}#player-unavailable:not(.hid) + #player-api{display:none}.watch-stage-mode #player-unavailable{margin:0 auto;float:none}\n',
@@ -502,6 +529,9 @@
                     GEN_GEN: ['h3'],
                     GEN_YT_LOGO_LINK: ['checkbox'],
                     GEN_LYT: ['h3'],
+                    GEN_BTTR_NTF: ['checkbox'],
+                    GEN_CNTR_LYT: ['checkbox'],
+                    GEN_CMPT_TTLS: ['checkbox'],
                     GEN_BLUE_GLOW: ['checkbox'],
                     GEN_HIDE_FTR: ['checkbox'],
                     GEN_REM_RECM_SDBR: ['checkbox'],
@@ -552,13 +582,16 @@
                     VID_PLR_CTRL_VIS: ['select', {
                         'VID_PLR_CTRL_VIS_HIDE_PROG': '2',
                         'VID_PLR_CTRL_VIS_HIDE_ALL': '1',
-                        'VID_PLR_CTRL_VIS_SHOW_ALL': '0'
+                        'VID_PLR_CTRL_VIS_SHOW_ALL': '0',
+                        'VID_PLR_CTRL_VIS_RMV_ALL': '3'
                     }],
                     VID_PLST: ['h3'],
                     VID_PLST_SEP: ['checkbox'],
                     VID_PLST_ATPL: ['checkbox'],
                     VID_PLST_RVRS: ['checkbox'],
                     VID_LAYT: ['h3'],
+                    VID_TTL_CMPT: ['checkbox'],
+                    VID_DESC_SHRT: ['checkbox'],
                     VID_VID_CNT: ['checkbox'],
                     VID_POST_TIME: ['checkbox'],
                     VID_HIDE_COMS: ['checkbox']
@@ -863,14 +896,8 @@
     }
     function argsCleaner(a) {
         var base = (a.args.iurl_webp && '_webp') || '',
-            hdThumb = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]'),
-            maxRes = hdThumb && (hdThumb.getAttribute('href') || hdThumb.getAttribute('content')),
-            ads = [
-                'ad3_module',
-                'ad_module',
-                'ypc_vid'
-            ],
-            length = ads.length;
+            hdThumb,
+            maxRes;
         function checkThumbnail(a) {
             var img,
                 hdURL = a.args['iurl' + base].replace('hqdefault', 'maxresdefault');
@@ -889,25 +916,9 @@
             img.addEventListener('load', widthReport);
             img.src = hdURL;
         }
-        function vidInfo(b) {
-            var obj = {};
-            b.split('&').forEach(function (c) {
-                obj[c.split('=')[0]] = decodeURIComponent(c.split('=')[1]);
-            });
-            a.args = obj;
-            window.ytplayer.config.args = obj;
-            argsCleaner(window.ytplayer.config);
-        }
-        if (a.args.ypc_module && !a.args.ypc_item_title) {
-            xhr('GET', '/get_video_info?video_id=' + a.args.ypc_vid, vidInfo);
-            return;
-        }
         if (a.args.video_id) {
             if (get('VID_PLR_ADS')) {
-                while (length) {
-                    length -= 1;
-                    delete a.args[ads[length]];
-                }
+                delete a.args.ad3_module;
             }
             if (get('VID_PLR_SIZE_MEM') && get('theaterMode')) {
                 a.args.player_wide = '1';
@@ -918,9 +929,12 @@
             if (a.args.cc_load_policy) {
                 a.args.cc_load_policy = (get('VID_PLR_CC') && '0') || '1';
             }
-            //a.args.controls = '0'; // disables controls
+            if (get('VID_PLR_CTRL_VIS') === '3') {
+                a.args.controls = '0';
+            } else {
+                a.args.autohide = get('VID_PLR_CTRL_VIS');
+            }
             a.args.dash = (get('VID_PLR_DASH') && '0') || '1';
-            a.args.autohide = get('VID_PLR_CTRL_VIS'); // #player-api padding-bottom: 30px | 0 = show all | 1 = hide all | 2 = autohide progress bar
             a.args.vq = get('VID_DFLT_QLTY');
             a.args.autoplay = (get('VID_PLR_ATPL') && '1') || '0';
             a.args.theme = get('VID_CTRL_BAR_CLR');
@@ -928,6 +942,8 @@
             a.html5 = get('VID_PLR_TYPE') === 'html5';
             a.params.wmode = 'gpu';
             if (a.args.autoplay === '0') {
+                hdThumb = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]');
+                maxRes = hdThumb && (hdThumb.getAttribute('href') || hdThumb.getAttribute('content'));
                 a.args['iurlmaxres' + base] = a.args['iurlmaxres' + base] || maxRes || false;
                 if (a.args['iurlmaxres' + base] === false || (a.args['iurlmaxres' + base] && a.args['iurlmaxres' + base].indexOf(a.args.video_id) < 0)) {
                     delete a.args['iurlmaxres' + base];
@@ -943,46 +959,29 @@
     }
     function playerReady(a) {
         function playerState(b) {
-            if (document.getElementById('movie_player')) {
-                if (b < 0) {
-                    if (!requestRunning && fullscreen) {
-                        var sentinel = setInterval(function () {
-                            var href = window.location.href,
-                                id = api.getVideoData().video_id,
-                                list = api.getVideoData().list,
-                                index = api.getPlaylistIndex() + 1,
-                                idCheck = href.indexOf(id) > -1,
-                                listCheck = (list && href.indexOf(list) > -1) || href.indexOf(list) < 0;
-                            function go(c) {
-                                clearInterval(sentinel);
-                                if (window.spf) {
-                                    window.spf.navigate(c);
-                                } else {
-                                    window.location.href = c;
-                                }
-                            }
-                            if (href.indexOf(list) < 0 && list) {
-                                clearInterval(sentinel);
-                                document.querySelector('.spf-link[href*="list=' + list + '"]').click();
-                            } else if (href.indexOf(id) < 0 && href.indexOf(list) > -1) {
-                                go('/watch?v=' + id + '&list=' + list + '&index=' + index);
-                            } else if (href.indexOf(id) < 0 && !list) {
-                                go('/watch?v=' + id);
-                            } else if ((idCheck && listCheck) || !fullscreen) {
-                                clearInterval(sentinel);
-                            }
-                        }, 100);
-                    }
-                } else if (b === 1) {
-                    b = window.ytplayer.config;
-                    if (!b.html5 && b.args.list && loaded !== b.args.video_id) {
-                        loaded = b.args.video_id;
-                        api.loadVideoByPlayerVars(b.args);
-                    }
+            var args = {},
+                vidData = api.getVideoData(),
+                beacon = vidData.video_id + vidData.list;
+            function go(c) {
+                c.split('&').forEach(function (d) {
+                    args[d.split('=')[0]] = window.unescape(d.split('=')[1].replace(/\+/g, ' '));
+                });
+                window.ytplayer.config.args = args;
+                argsCleaner(window.ytplayer.config);
+                if (!get('VID_PLR_ATPL')) {
+                    api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                } else if (get('VID_PLR_ATPL')) {
+                    api.loadVideoByPlayerVars(window.ytplayer.config.args);
                 }
+                api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+            }
+            if (document.getElementById('movie_player') && fullscreen && window.beacon !== beacon) {
+                window.beacon = beacon;
+                xhr('GET', '/get_video_info?el=detailpage&video_id=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list)) || ''), go);
             }
         }
         function playerFullscreen(b) {
+            window.beacon = api.getVideoData().video_id + api.getVideoData().list;
             fullscreen = b.fullscreen;
         }
         function sizeChanged(b) {
@@ -991,20 +990,12 @@
         function volumeChanged(b) {
             set('volLev', b.volume);
         }
-        function fullscreenControl(b) {
-            return function () {
-                if (!requestRunning) {
-                    return b.apply(this, arguments);
-                }
-                return true;
-            };
-        }
         if (typeof a === 'object' && !document.getElementById('c4-player')) {
             if (!api) {
                 api = a;
-                api.addEventListener('onStateChange', playerState, false);
                 api.addEventListener('onFullscreenChange', playerFullscreen, false);
                 api.addEventListener('onVolumeChange', volumeChanged, false);
+                api.addEventListener('onStateChange', playerState, false);
                 api.addEventListener('SIZE_CLICKED', sizeChanged, false);
             }
             if (!get('VID_PLR_ATPL')) {
@@ -1016,7 +1007,6 @@
             }
             if (window.ytplayer.config.html5) {
                 api.setPlaybackQuality(get('VID_DFLT_QLTY'));
-                document.mozCancelFullScreen = fullscreenControl(document.mozCancelFullScreen);
             }
             if (get('VID_PLR_VOL_MEM')) {
                 api.setVolume(get('volLev') || 50);
@@ -1229,19 +1219,6 @@
         }
     }
     function htmlGate() {
-        if (fullscreen && window.ytplayer.config) {
-            if (!window.ytplayer.config.html5 && window.location.href.indexOf('list=') > -1) {
-                var sentinel = setInterval(function () {
-                    if (window.yt.config_.ERRORS) {
-                        clearInterval(sentinel);
-                        api.loadVideoByPlayerVars(window.ytplayer.config.args);
-                    }
-                }, 100);
-            } else {
-                api.loadVideoByPlayerVars(window.ytplayer.config.args);
-            }
-        }
-        requestRunning = false;
         settingsMenu();
         plControls();
         playerMode();
@@ -1261,7 +1238,6 @@
             }
             player.remove();
         }
-        requestRunning = true;
     }
     window.onYouTubePlayerReady = playerReady;
     window.addEventListener('readystatechange', htmlGate, true);
