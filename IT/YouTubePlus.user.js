@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.4
+// @version     1.3.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -470,7 +470,7 @@
         '.yt-user-info > span{font-size:11px;color:#666}\n',
         ((get('VID_DESC_SHRT') && '#watch8-secondary-actions{left:0 !important}#watch8-secondary-actions .yt-uix-button-content{display:none}#watch8-secondary-actions button{padding:0}') || ''),
         ((get('VID_TTL_CMPT') && '#watch-headline-title{display:block !important;white-space:nowrap !important}#watch-headline-title h1{display:block !important;text-overflow:ellipsis !important}') || ''),
-        ((get('GEN_CMPT_TTLS') && '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{white-space:nowrap !important}') || ''),
+        ((get('GEN_CMPT_TTLS') && '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{white-space:nowrap !important;display:inherit !important}') || ''),
         ((get('GEN_CNTR_LYT') && '#yt-masthead, #footer{max-width:1262px !important}') || ''),
         ((get('GEN_BLUE_GLOW') && '.yt-uix-button:focus, .yt-uix-button:focus:hover{box-shadow: initial !important}') || ''),
         ((get('GEN_BTTR_NTF') && '#appbar-main-guide-notification-container{box-shadow:0 1px 2px #eee inset;display:inline-block;top:2px !important;left:auto !important;margin-left:79px !important;opacity:0;overflow:hidden !important;position:absolute !important;visibility:hidden;width:auto;z-index:1}#appbar-main-guide-notification-container .appbar-guide-notification{height:27px !important}.show-guide-button-notification #appbar-main-guide-notification-container{visibility: visible;opacity:1}#appbar-main-guide-notification-container{transition:visibility .3s linear .1s, opacity .3s linear .1s}#appbar-guide-button-notification-check{display:none !important}.show-guide-button-notification #appbar-guide-button{opacity:1 !important}') || ''),
@@ -884,9 +884,11 @@
         }
     }
     function playerMode() {
-        var playerElement;
-        if (get('VID_PLR_SIZE_MEM') && get('theaterMode') && (document.cookie.indexOf('wide=0') > -1 || document.cookie.indexOf('wide=1') < 0)) {
+        var playerElement,
+            cookie = document.cookie;
+        if (get('VID_PLR_SIZE_MEM') && get('theaterMode') && (cookie.indexOf('wide=0') > -1 || cookie.indexOf('wide=1') < 0)) {
             document.cookie = 'wide=1; domain=.youtube.com; path=/';
+            document.cookie = 'wide=1; domain=www.youtube.com; path=/';
             playerElement = document.getElementById('player');
             if (playerElement && window.location.href.indexOf('/watch') > -1) {
                 playerElement.className = 'watch-large';
@@ -964,16 +966,13 @@
                 beacon = vidData.video_id + vidData.list;
             function go(c) {
                 c.split('&').forEach(function (d) {
-                    args[d.split('=')[0]] = window.unescape(d.split('=')[1].replace(/\+/g, ' '));
+                    args[d.split('=')[0]] = window.decodeURIComponent(d.split('=')[1].replace(/\+/g, ' '));
                 });
                 window.ytplayer.config.args = args;
                 argsCleaner(window.ytplayer.config);
-                if (!get('VID_PLR_ATPL')) {
-                    api.cueVideoByPlayerVars(window.ytplayer.config.args);
-                } else if (get('VID_PLR_ATPL')) {
-                    api.loadVideoByPlayerVars(window.ytplayer.config.args);
-                }
+                api.cueVideoByPlayerVars(window.ytplayer.config.args);
                 api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                api.playVideo();
             }
             if (document.getElementById('movie_player') && fullscreen && window.beacon !== beacon) {
                 window.beacon = beacon;
@@ -1088,11 +1087,13 @@
                         var player,
                             canvas,
                             changed = c.apply(this, arguments);
-                        if (changed.width && changed.height) {
+                        if (changed.width && changed.height && !fullscreen) {
                             player = document.getElementById('movie_player');
                             canvas = document.querySelector('.html5-video-container');
-                            changed.width = (d && player.offsetWidth) || canvas.offsetWidth;
-                            changed.height = (d && player.offsetHeight) || canvas.offsetHeight;
+                            if (player && canvas) {
+                                changed.width = (d && player.offsetWidth) || canvas.offsetWidth;
+                                changed.height = (d && player.offsetHeight) || canvas.offsetHeight;
+                            }
                         }
                         return changed;
                     };
@@ -1120,7 +1121,7 @@
         function html5Fix(b) {
             return function () {
                 var changed = b.apply(this, arguments);
-                if (changed && changed.autoPlay && !get('VID_PLR_ATPL')) {
+                if (changed && changed.autoPlay) {
                     changed.autoPlay = false;
                 }
                 return changed;
