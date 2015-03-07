@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.5
+// @version     1.3.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -421,46 +421,92 @@
     styleSheet = document.createElement('style');
     styleSheet.id = 'P-style';
     styleSheet.textContent = [
-        'input[type="checkbox"],input[type="radio"]{opacity:0}\n',
-        ':focus{outline:none}\n',
-        '::-moz-focus-inner{border:0}\n',
-        '.ideal-aspect .html5-player-chrome{background:rgba(27,27,27,0.9) !important}\n',
-        '.ideal-aspect.light-theme .html5-player-chrome{background:rgba(204,204,204,0.9) !important}\n',
-        '.branded-page-related-channels-item .yt-close{z-index:1}\n',
-        '.watch #content.content-alignment, #footer-container, #player.watch-small{min-width:initial !important;width:auto}.content-alignment{max-width:1262px;min-width:initial;width:auto}.not-yt-legacy-css .watch-sidebar{width:initial}#footer-container{max-width:initial}\n',
-        '#body-container{position:relative}\n',
-        '#footer-container{position:relative}\n',
-        '#P-settings{background:#f1f1f1;height:100%;left:0;position:absolute;right:0;z-index:1000}\n',
-        '#P-sidebar,#P-content{-moz-user-select:none}\n',
-        '#P-container{margin:10px auto 0;max-width:1262px}\n',
-        '#P-sidebar,#P-content{box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);box-sizing:border-box}\n',
+        'input[type="checkbox"],input[type="radio"]{\n',
+        '    opacity:0;\n',
+        '}\n',
+        ':focus{\n',
+        '    outline:none;\n',
+        '}\n',
+        '::-moz-focus-inner{\n',
+        '    border:0;\n',
+        '}\n',
+        '.ideal-aspect .html5-player-chrome{\n',
+        '    background:rgba(27,27,27,0.9) !important;\n',
+        '}\n',
+        '.ideal-aspect.light-theme .html5-player-chrome{\n',
+        '    background:rgba(204,204,204,0.9) !important;\n',
+        '}\n',
+        '.branded-page-related-channels-item .yt-close{\n',
+        '    z-index:1;\n',
+        '}\n',
+        '.watch #content.content-alignment, #footer-container, #player.watch-small{\n',
+        '    min-width:initial !important;\n',
+        '    width:auto;\n',
+        '}\n',
+        '.content-alignment{\n',
+        '    max-width:1262px;\n',
+        '    min-width:initial;\n',
+        '    width:auto;\n',
+        '}\n',
+        '.not-yt-legacy-css .watch-sidebar{\n',
+        '    width:initial;\n',
+        '}\n',
+        '#footer-container{\n',
+        '    max-width:initial;\n',
+        '}\n',
+        '#body-container{\n',
+        '    position:relative;\n',
+        '}\n',
+        '#footer-container{\n',
+        '    position:relative;\n',
+        '}\n',
+        '#P-settings{\n',
+        '    background:#f1f1f1;\n',
+        '    height:100%;\n',
+        '    left:0;\n',
+        '    position:absolute;\n',
+        '    right:0;\n',
+        '    z-index:1000;\n',
+        '}\n',
+        '#P-sidebar,#P-content{\n',
+        '    -moz-user-select:none;\n',
+        '}\n',
+        '#P-container{\n',
+        '    margin:10px auto 0;\n',
+        '    max-width:1262px;\n',
+        '}\n',
+        '#P-sidebar,#P-content{\n',
+        '    box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);\n',
+        '    box-sizing:border-box;\n',
+        '}\n',
         '#P-sidebar{background:#1e1e1e;color:grey;float:left;width:195px;margin-right:10px;padding:10px 0}\n',
         '#P-sidebar-list > li{color:grey;padding:0 21px;cursor:pointer;font-size:11px;line-height:24px}\n',
         '#P-sidebar-list > li:hover{color:#1e1e1e;background:#f6f6f6}\n',
         '#P-sidebar-list > li.selected{color:#FFF;font-weight:bold;background-color:#CC181E}\n',
-        '#P-content{background:#FFF;overflow:hidden;padding-bottom:40px;margin-bottom:10px}\n',
+        '#P-content{background:#FFF;color:#666;overflow:hidden;padding-bottom:40px;padding-left:15px;margin-bottom:10px}\n',
         '#P-content h2{color:#333;float:left;font-size:18px;font-weight:bold}\n',
         '#P-content h3{color:#555;font-size:14px;font-weight:bold;margin:30px 0 16px}\n',
-        '#P-content > div{color:#666;padding:4px 0;overflow:hidden}\n',
-        '#P-content > div:first-child{padding:0}\n',
-        '#P-content div:first-child + div h3{margin-top:initial}\n',
-        '#P-content > div:not(:first-child){padding-left:15px}\n',
-        '#P-content label{line-height:20px}\n',
+        '#P-content br{clear:both}\n',
+        '#P-content label{line-height:26px}\n',
+        '#P-content input[type="checkbox"] + label{display:block;}\n',
         '#P-content input{display:none;margin-left:25px}\n',
         '#P-content input + label{position:relative;margin-left:25px}\n',
-        '#P-content input + label:before{cursor:pointer;border:1px solid #c6c6c6;content:"";left:-25px;height:14px;position:absolute;top:-1px;width:14px}\n',
+        '#P-content input + label:before{cursor:pointer;border:1px solid #c6c6c6;content:"";left:-25px;height:14px;position:absolute;top:5px;width:14px}\n',
         '#P-content input:checked + label:before{border:1px solid #36649c}\n',
-        '#P-content input[type="text"]{display:initial;margin-left:5px}',
+        '#P-content input[type="text"]{top:2px;position:relative;display:initial;margin-left:5px}',
+        '#P-content input[type="text"] + label{float:left;margin-left:0}',
+        '#P-content input[type="text"] + label:before{display:none}',
+        '#P-content input[type="radio"] + label{display:inline-block}\n',
         '#P-content input[type="radio"] + label:before{border-radius:50%;left:-20px}\n',
         '#P-content input[type="checkbox"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJXRSTlMAmQmDBYwZUT92AjdnbAtadZRPBBaSfqRBejiODWWJEoJ5Gx0gnoi62QAAAExJREFUCB1NwQUSgDAAA7B2G+7uzv/fCAdDEvyY+HgFXnYV4WHRcXFTPgNo4cJYAUjSDLlkKXCq2bQdZY/LQHKccBMzjRWPzdjxEdAOtVECtAyMKkUAAAAASUVORK5CYII=) no-repeat 2px 1px;}\n',
         '#P-content input[type="radio"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAQlBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZma1tx8vAAAAFXRSTlMAdRg22LcS6r1mJyQw/OcJ80UzaRuV38qbAAAANElEQVQIHQWAhxGAIBDA8oDYsABm/1U9gDMBkIsuCeqqusGuqgehqpl2qd4PhPp2gBHzgx9d1gLnmWiDtQAAAABJRU5ErkJggg==) no-repeat 3px;}\n',
         '#P-content select{cursor:pointer;margin-left:5px;background-image:linear-gradient(to bottom, #fcfcfc 0px, #f8f8f8 100%);border:1px solid #d3d3d3;color:#333 !important;font-family:arial,sans-serif;font-size:11px;font-weight:bold;height:26px;-moz-appearance:none;-webkit-appearance:none;padding:0 1em;text-shadow:none}\n',
         '#P-content select option{padding:0;padding:0 1em}\n',
-        '.P-header{height:20px;margin:0;padding:24px 0 0 15px}\n',
+        '.P-header{height:20px;margin:0;padding:24px 0 0}\n',
         '.P-save{background:#167ac6;border-color:#167ac6;border-radius:2px;box-shadow:0 1px 0 rgba(0, 0, 0, 0.05);color:#fff;cursor:pointer;display:inline-block;float:right;font-size:11px;font-weight:bold;height:28px;line-height:normal;margin-right:20px;margin-top:-5px;outline:0 none;padding:0 20px;vertical-align:middle;white-space:nowrap;word-wrap:normal}\n',
         '.P-save:hover{background:#126db3}\n',
         '.P-save:active{background:#095b99}\n',
-        '.P-horz{border-bottom:0 none;border-top:1px solid #e2e2e2;height:0;margin:20px 0;position:relative}\n',
+        '.P-horz{border-bottom:0 none;border-top:1px solid #e2e2e2;height:0;margin:20px 0 0 -15px;position:relative}\n',
         '#P-settings select{color:transparent !important;text-shadow:0 0 0 #333}\n',
         '#P-settings option{color:#000;text-shadow:none}\n',
         '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;margin-left:10px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
@@ -505,58 +551,116 @@
         request.send();
     }
     function settingsMenu() {
-        var li,
-            h2,
-            h3,
-            hr,
-            div,
-            link,
-            span,
-            input,
-            label,
-            select,
-            option,
-            button,
-            pList,
-            pHeader,
-            pContent,
+        var pContent,
             pContainer,
             buttonsSection,
             settingsButton,
-            menus = {
-                GEN: {
-                    GEN_TTL: ['h2'],
-                    GEN_GEN: ['h3'],
-                    GEN_YT_LOGO_LINK: ['checkbox'],
-                    GEN_LYT: ['h3'],
-                    GEN_BTTR_NTF: ['checkbox'],
-                    GEN_CNTR_LYT: ['checkbox'],
-                    GEN_CMPT_TTLS: ['checkbox'],
-                    GEN_BLUE_GLOW: ['checkbox'],
-                    GEN_HIDE_FTR: ['checkbox'],
-                    GEN_REM_RECM_SDBR: ['checkbox'],
-                    GEN_GRID_SUBS: ['checkbox'],
-                    GEN_GRID_SRCH: ['checkbox'],
-                    GEN_CMPT_TITL: ['checkbox'],
-                    GEN_ENHC: ['h3'],
-                    GEN_USER_LNKS: ['checkbox']
+            htEl = {
+                title: function (content, tag) {
+                    return '<' + tag + '>' + lang[content].en + '</' + tag + '>\n';
                 },
-                VID: {
-                    VID_TTL: ['h2'],
-                    VID_PLR: ['h3'],
-                    VID_PLR_ATPL: ['checkbox'],
-                    VID_PLR_ADS: ['checkbox'],
-                    VID_PLR_CC: ['checkbox'],
-                    VID_PLR_ANTS: ['checkbox'],
-                    VID_END_SHRE: ['checkbox'],
-                    VID_PLR_VOL_MEM: ['checkbox'],
-                    VID_PLR_SIZE_MEM: ['checkbox'],
-                    VID_PLR_DASH: ['checkbox'],
-                    VID_PLR_TYPE: ['radio', {
+                select: function (id, list) {
+                    var select = '<label for="' + id + '">' + lang[id].en + '</label>\n' +
+                        '<select id="' + id + '">\n';
+                    Object.keys(list).forEach(function (a) {
+                        select += '<option';
+                        if (get(id) === list[a]) {
+                            select += ' selected="true"';
+                        }
+                        select += ' value="' + list[a] + '">' + lang[a].en + '</option>\n';
+                    });
+                    select += '</select>\n';
+                    return select;
+                },
+                radio: function (name, list) {
+                    var radio = '<label>' + lang[name].en + '</label>\n';
+                    Object.keys(list).forEach(function (a) {
+                        radio += '<input id="' + a + '" name="' + name + '" value="' + list[a] + '" type="radio"';
+                        if (get(name) === list[a]) {
+                            radio += ' checked="true"';
+                        }
+                        radio += '>\n<label for="' + a + '">' + lang[a].en + '</label>';
+                    });
+                    return radio;
+                },
+                input: function (id, type, placeholder, size) {
+                    var input = '<input id="' + id + '" type="' + type + '"';
+                    if (placeholder) {
+                        input += ' placeholder="' + placeholder + '" size="' + size + '"';
+                        if (typeof get(id) === 'string') {
+                            input += ' value="' + get(id) + '"';
+                        }
+                    } else if (get(id) === true) {
+                        input += ' checked="true"';
+                    }
+                    input += '>\n<label for="' + id + '">' + lang[id].en + '</label>\n';
+                    return input;
+                }
+            },
+            string2HTML = function (string) {
+                var mortar = new DOMParser();
+                return mortar.parseFromString(string, 'text/html');
+            },
+            menus = {
+                setMenu: [
+                    '<div id="P-settings">\n',
+                    '    <div id="P-container">\n',
+                    '        <div id="P-sidebar">\n',
+                    '            <ul id="P-sidebar-list">\n',
+                    '                <li id="genMenu" class="selected">General</li>\n',
+                    '                <li id="vidMenu">Video</li>\n',
+                    '                <li id="chnMenu">Channels</li>\n',
+                    '                <li id="abtMenu">About</li>\n',
+                    '            </ul>\n',
+                    '        </div>\n',
+                    '    </div>\n',
+                    '</div>\n'
+                ].join(''),
+                genMenu: [
+                    '<div id="P-content">\n',
+                    '    <div class="P-header">\n',
+                    '        <button class="P-save">Save</button>\n',
+                    htEl.title('GEN_TTL', 'h2'),
+                    '    </div>\n',
+                    '    <hr class="P-horz">\n',
+                    htEl.title('GEN_GEN', 'h3'),
+                    htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
+                    htEl.title('GEN_LYT', 'h3'),
+                    htEl.input('GEN_BTTR_NTF', 'checkbox'),
+                    htEl.input('GEN_CNTR_LYT', 'checkbox'),
+                    htEl.input('GEN_CMPT_TTLS', 'checkbox'),
+                    htEl.input('GEN_BLUE_GLOW', 'checkbox'),
+                    htEl.input('GEN_HIDE_FTR', 'checkbox'),
+                    htEl.input('GEN_REM_RECM_SDBR', 'checkbox'),
+                    htEl.input('GEN_GRID_SUBS', 'checkbox'),
+                    htEl.input('GEN_GRID_SRCH', 'checkbox'),
+                    htEl.input('GEN_CMPT_TITL', 'checkbox'),
+                    htEl.title('GEN_ENHC', 'h3'),
+                    htEl.input('GEN_USER_LNKS', 'checkbox'),
+                    '</div>\n'
+                ].join(''),
+                vidMenu: [
+                    '<div id="P-content">\n',
+                    '    <div class="P-header">\n',
+                    '        <button class="P-save">Save</button>\n',
+                    htEl.title('VID_TTL', 'h2'),
+                    '    </div>\n',
+                    '    <hr class="P-horz">\n',
+                    htEl.title('VID_PLR', 'h3'),
+                    htEl.input('VID_PLR_ATPL', 'checkbox'),
+                    htEl.input('VID_PLR_ADS', 'checkbox'),
+                    htEl.input('VID_PLR_CC', 'checkbox'),
+                    htEl.input('VID_PLR_ANTS', 'checkbox'),
+                    htEl.input('VID_END_SHRE', 'checkbox'),
+                    htEl.input('VID_PLR_VOL_MEM', 'checkbox'),
+                    htEl.input('VID_PLR_SIZE_MEM', 'checkbox'),
+                    htEl.input('VID_PLR_DASH', 'checkbox'),
+                    htEl.radio('VID_PLR_TYPE', {
                         'VID_PLR_TYPE_FLSH': 'flash',
                         'VID_PLR_TYPE_HTML': 'html5'
-                    }],
-                    VID_DFLT_QLTY: ['select', {
+                    }),
+                    '    <br>',
+                    htEl.select('VID_DFLT_QLTY', {
                         'VID_DFLT_QLTY_AUTO': 'auto',
                         'VID_DFLT_QLTY_ORIG': 'highres',
                         'VID_DFLT_QLTY_1440': 'hd1440',
@@ -566,61 +670,79 @@
                         'VID_DFLT_QLTY_MDM': 'medium',
                         'VID_DFLT_QLTY_SML': 'small',
                         'VID_DFLT_QLTY_TNY': 'tiny'
-                    }],
-                    VID_PLR_LYT: ['h3'],
-                    VID_PLR_DYN_SIZE: ['checkbox'],
-                    VID_PLR_FIT: ['checkbox'],
-                    VID_PLR_FIT_WDTH: ['text', '1280px', 6],
-                    VID_PROG_BAR_CLR: ['radio', {
+                    }),
+                    '    <br>',
+                    htEl.title('VID_PLR_LYT', 'h3'),
+                    htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
+                    htEl.input('VID_PLR_FIT', 'checkbox'),
+                    htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
+                    '    <br>',
+                    htEl.radio('VID_PROG_BAR_CLR', {
                         'VID_PROG_BAR_CLR_RED': 'red',
                         'VID_PROG_BAR_CLR_WHT': 'white'
-                    }],
-                    VID_CTRL_BAR_CLR: ['radio', {
+                    }),
+                    '    <br>',
+                    htEl.radio('VID_CTRL_BAR_CLR', {
                         'VID_CTRL_BAR_CLR_DARK': 'dark',
                         'VID_CTRL_BAR_CLR_LGHT': 'light'
-                    }],
-                    VID_PLR_CTRL_VIS: ['select', {
+                    }),
+                    '    <br>',
+                    htEl.select('VID_PLR_CTRL_VIS', {
                         'VID_PLR_CTRL_VIS_HIDE_PROG': '2',
                         'VID_PLR_CTRL_VIS_HIDE_ALL': '1',
                         'VID_PLR_CTRL_VIS_SHOW_ALL': '0',
                         'VID_PLR_CTRL_VIS_RMV_ALL': '3'
-                    }],
-                    VID_PLST: ['h3'],
-                    VID_PLST_SEP: ['checkbox'],
-                    VID_PLST_ATPL: ['checkbox'],
-                    VID_PLST_RVRS: ['checkbox'],
-                    VID_LAYT: ['h3'],
-                    VID_TTL_CMPT: ['checkbox'],
-                    VID_DESC_SHRT: ['checkbox'],
-                    VID_VID_CNT: ['checkbox'],
-                    VID_POST_TIME: ['checkbox'],
-                    VID_HIDE_COMS: ['checkbox']
-                },
-                CHN: {
-                    CHN_TTL: ['h2'],
-                    CHN_FAV: ['h3'],
-                    CHN_FAV_ADS: ['checkbox'],
-                    CHN_ALK: ['checkbox'],
-                    CHN_BVR: ['h3'],
-                    CHN_TRL_ATP: ['checkbox'],
-                    CHN_DFLT_PAGE: ['select', {
+                    }),
+                    '    <br>',
+                    htEl.title('VID_PLST', 'h3'),
+                    htEl.input('VID_PLST_SEP', 'checkbox'),
+                    htEl.input('VID_PLST_ATPL', 'checkbox'),
+                    htEl.input('VID_PLST_RVRS', 'checkbox'),
+                    htEl.title('VID_LAYT', 'h3'),
+                    htEl.input('VID_TTL_CMPT', 'checkbox'),
+                    htEl.input('VID_DESC_SHRT', 'checkbox'),
+                    htEl.input('VID_VID_CNT', 'checkbox'),
+                    htEl.input('VID_POST_TIME', 'checkbox'),
+                    htEl.input('VID_HIDE_COMS', 'checkbox'),
+                    '</div>\n'
+                ].join(''),
+                chnMenu: [
+                    '<div id="P-content">\n',
+                    '    <div class="P-header">\n',
+                    '        <button class="P-save">Save</button>\n',
+                    htEl.title('CHN_TTL', 'h2'),
+                    '    </div>\n',
+                    '    <hr class="P-horz">\n',
+                    htEl.title('CHN_FAV', 'h3'),
+                    htEl.input('CHN_FAV_ADS', 'checkbox'),
+                    htEl.input('CHN_ALK', 'checkbox'),
+                    htEl.title('CHN_BVR', 'h3'),
+                    htEl.input('CHN_TRL_ATP', 'checkbox'),
+                    htEl.select('CHN_DFLT_PAGE', {
                         'CHN_DFLT_PAGE_DFLT': 'default',
                         'CHN_DFLT_PAGE_VID': 'videos',
                         'CHN_DFLT_PAGE_PL': 'playlists',
                         'CHN_DFLT_PAGE_CHN': 'channels',
                         'CHN_DFLT_PAGE_DISC': 'discussion',
                         'CHN_DFLT_PAGE_ABT': 'about'
-                    }]
-                },
-                ABT: {
-                    ABT_TTL: ['h2'],
-                    ABT_INFO: ['h3'],
-                    ABT_LNK_GHB: ['a', 'https://github.com/ParticleCore/Particle/issues'],
-                    ABT_LNK_GRFK: ['a', 'https://greasyfork.org/en/scripts/'],
-                    ABT_LNK_OPNU: ['a', 'http://openuserjs.org/scripts/ParticleCore/'],
-                    ABT_PRBL: ['h3'],
-                    ABT_LNK_PRBL: ['a', 'https://github.com/ParticleCore/Particle/issues']
-                }
+                    }),
+                    '    <br>',
+                    '</div>\n'
+                ].join(''),
+                abtMenu: [
+                    '<div id="P-content">\n',
+                    '    <div class="P-header">\n',
+                    htEl.title('ABT_TTL', 'h2'),
+                    '    </div>\n',
+                    '    <hr class="P-horz">\n',
+                    htEl.title('ABT_INFO', 'h3'),
+                    '<a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
+                    '<a href="https://greasyfork.org/en/scripts/">Greasy Fork</a>\n',
+                    '<a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
+                    htEl.title('ABT_PRBL', 'h3'),
+                    '<a href="https://github.com/ParticleCore/Particle/issues">Click here for instructions</a>\n',
+                    '</div>\n'
+                ].join('')
             };
         function navigateSettings(a) {
             function saveSettings() {
@@ -640,149 +762,26 @@
                 window.localStorage.Particle = JSON.stringify(savedSets);
             }
             if (typeof a === 'string' || a.target.parentNode.id === 'P-sidebar-list') {
-                if (typeof a === 'string') {
-                    li = document.createElement('li');
-                    li.textContent = userLang(lang[a]);
-                    li.className = 'selected';
-                    li.id = a;
-                    pList.appendChild(li);
-                } else {
-                    document.getElementById('P-content').remove();
-                    pContainer = document.getElementById('P-container');
-                    pContent = document.createElement('div');
-                    pContent.id = 'P-content';
-                    pContainer.appendChild(pContent);
-                    a.target.parentNode.querySelector('.selected').removeAttribute('class');
-                    a.target.className = 'selected';
-                    a = a.target.id;
-                }
-                Object.keys(menus[a]).forEach(function (c) {
-                    var language = userLang(lang[c]);
-                    div = document.createElement('div');
-                    if (menus[a][c][0] === 'h2') {
-                        h2 = document.createElement('h2');
-                        h2.textContent = language;
-                        hr = document.createElement('hr');
-                        hr.className = 'P-horz';
-                        button = document.createElement('button');
-                        button.className = 'P-save';
-                        button.textContent = userLang(lang.GLB_SVE);
-                        button.addEventListener('click', saveSettings);
-                        pHeader = document.createElement('div');
-                        pHeader.className = 'P-header';
-                        pHeader.appendChild(button);
-                        pHeader.appendChild(h2);
-                        div.appendChild(pHeader);
-                        div.appendChild(hr);
-                    } else if (menus[a][c][0] === 'h3') {
-                        h3 = document.createElement('h3');
-                        h3.textContent = language;
-                        div.appendChild(h3);
-                    } else if (menus[a][c][0] === 'a') {
-                        link = document.createElement('a');
-                        link.textContent = language;
-                        link.href = menus[a][c][1];
-                        div.appendChild(link);
-                    } else if (menus[a][c][0] === 'span') {
-                        span = document.createElement('span');
-                        span.textContent = language;
-                        div.appendChild(span);
-                    } else if (menus[a][c][0] === 'text') {
-                        input = document.createElement('input');
-                        input.placeholder = menus[a][c][1];
-                        input.size = menus[a][c][2];
-                        input.type = 'text';
-                        input.id = c;
-                        if (get(c)) {
-                            input.value = get(c);
-                        }
-                        div.textContent = language;
-                        div.appendChild(input);
-                    } else if (menus[a][c][0] === 'checkbox') {
-                        input = document.createElement('input');
-                        input.type = 'checkbox';
-                        input.checked = get(c);
-                        input.id = c;
-                        label = document.createElement('label');
-                        label.setAttribute('for', c);
-                        label.textContent = language;
-                        div.appendChild(input);
-                        div.appendChild(label);
-                    } else if (menus[a][c][0] === 'radio') {
-                        label = document.createElement('label');
-                        label.textContent = language;
-                        div.appendChild(label);
-                        Object.keys(menus[a][c][1]).forEach(function (d) {
-                            input = document.createElement('input');
-                            input.type = 'radio';
-                            input.value = menus[a][c][1][d];
-                            input.name = c;
-                            input.id = d;
-                            if (get(c) === menus[a][c][1][d]) {
-                                input.checked = true;
-                            }
-                            label = document.createElement('label');
-                            label.setAttribute('for', d);
-                            label.textContent = userLang(lang[d]);
-                            div.appendChild(input);
-                            div.appendChild(label);
-                        });
-                    } else if (menus[a][c][0] === 'select') {
-                        label = document.createElement('label');
-                        label.setAttribute('for', c);
-                        label.textContent = language;
-                        select = document.createElement('select');
-                        select.id = c;
-                        Object.keys(menus[a][c][1]).forEach(function (d) {
-                            option = document.createElement('option');
-                            if (get(c) === menus[a][c][1][d]) {
-                                option.selected = true;
-                            }
-                            option.value = menus[a][c][1][d];
-                            option.textContent = userLang(lang[d]);
-                            select.appendChild(option);
-                        });
-                        div.appendChild(label);
-                        div.appendChild(select);
-                    }
-                    pContent.appendChild(div);
-                });
+                document.getElementById('P-content').remove();
+                pContainer = document.getElementById('P-container');
+                pContent = string2HTML(menus[a.target.id]).querySelector('#P-content');
+                pContainer.appendChild(pContent);
+                a.target.parentNode.querySelector('.selected').removeAttribute('class');
+                a.target.className = 'selected';
+                a = a.target.id;
             }
         }
         function settingsTemplate() {
             var bodyContainer,
                 pageContainer,
-                pSidebar,
                 pWrapper = document.getElementById('P-settings');
             if (pWrapper) {
                 pWrapper.classList.toggle('P-hide');
             } else {
                 bodyContainer = document.getElementById('body-container');
                 pageContainer = document.getElementById('page-container');
-                pWrapper = document.createElement('div');
-                pContainer = document.createElement('div');
-                pSidebar = document.createElement('div');
-                pContent = document.createElement('div');
-                pList = document.createElement('ul');
-                pWrapper.id = 'P-settings';
-                pContainer.id = 'P-container';
-                pSidebar.id = 'P-sidebar';
-                pList.id = 'P-sidebar-list';
-                pContent.id = 'P-content';
-                pContainer.appendChild(pSidebar);
-                pContainer.appendChild(pContent);
-                pWrapper.appendChild(pContainer);
-                pSidebar.appendChild(pList);
-                Object.keys(menus).forEach(function (a, b) {
-                    if (b < 1) {
-                        navigateSettings(a);
-                    } else {
-                        li = document.createElement('li');
-                        li.id = a;
-                        li.textContent = userLang(lang[a]);
-                        pList.appendChild(li);
-                    }
-                });
+                pWrapper = string2HTML(menus.setMenu).querySelector('#P-settings');
+                pWrapper.querySelector('#P-container').appendChild(string2HTML(menus.genMenu).querySelector('#P-content'));
                 bodyContainer.insertBefore(pWrapper, pageContainer);
                 pWrapper.addEventListener('click', navigateSettings);
             }
@@ -897,7 +896,7 @@
         }
     }
     function argsCleaner(a) {
-        var base = (a.args.iurl_webp && '_webp') || '',
+        var base = (a.args.iurl_webp) ? '_webp' : '',
             hdThumb,
             maxRes;
         function checkThumbnail(a) {
@@ -926,19 +925,19 @@
                 a.args.player_wide = '1';
             }
             if (a.args.iv_load_policy) {
-                a.args.iv_load_policy = (get('VID_PLR_ANTS') && '3') || '1';
+                a.args.iv_load_policy = (get('VID_PLR_ANTS')) ? '3' : '1';
             }
             if (a.args.cc_load_policy) {
-                a.args.cc_load_policy = (get('VID_PLR_CC') && '0') || '1';
+                a.args.cc_load_policy = (get('VID_PLR_CC')) ? '0' : '1';
             }
             if (get('VID_PLR_CTRL_VIS') === '3') {
                 a.args.controls = '0';
             } else {
                 a.args.autohide = get('VID_PLR_CTRL_VIS');
             }
-            a.args.dash = (get('VID_PLR_DASH') && '0') || '1';
+            a.args.dash = (get('VID_PLR_DASH')) ? '0' : '1';
             a.args.vq = get('VID_DFLT_QLTY');
-            a.args.autoplay = (get('VID_PLR_ATPL') && '1') || '0';
+            a.args.autoplay = (get('VID_PLR_ATPL')) ? '1' : '0';
             a.args.theme = get('VID_CTRL_BAR_CLR');
             a.args.color = get('VID_PROG_BAR_CLR');
             a.html5 = get('VID_PLR_TYPE') === 'html5';
