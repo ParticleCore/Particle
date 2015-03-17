@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.6
+// @version     1.3.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,11 +14,16 @@
     'use strict';
     var api,
         lang,
+        ytlang,
         injection,
         styleSheet,
         fullscreen,
         channelId = {},
-        defaultSettings;
+        defaultSettings,
+        string2HTML = function (string) {
+            var mortar = new window.DOMParser();
+            return mortar.parseFromString(string, 'text/html');
+        };
     if (document.querySelector('[name="html5player/html5player"]')) {
         window.location.reload(false);
     } else if (!document.getElementById('Particle')) {
@@ -28,7 +33,7 @@
         document.documentElement.appendChild(injection);
         return;
     }
-    if (document.getElementById('P-style')) {
+    if (document.getElementById('P-style') || window.self !== window.top) {
         return;
     }
     lang = {
@@ -80,18 +85,6 @@
             en: 'YouTube logo redirects to subscriptions',
             'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
         },
-        GEN_GRID_SUBS: {
-            en: 'Grid layout in subscriptions',
-            'pt-PT': 'Subscrições em formato grelha'
-        },
-        GEN_GRID_SRCH: {
-            en: 'Grid layout in search results',
-            'pt-PT': 'Resultados de pesquisa em formato grelha'
-        },
-        GEN_CMPT_TITL: {
-            en: 'Compact titles in grid layout',
-            'pt-PT': 'Títulos compactos no formato grelha'
-        },
         GEN_HIDE_FTR: {
             en: 'Hide footer',
             'pt-PT': 'Esconder rodapé'
@@ -100,9 +93,17 @@
             en: 'Remove blue glow around clicked buttons',
             'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
         },
-        GEN_REM_RECM_SDBR: {
-            en: 'Remove recommended channels sidebar',
-            'pt-PT': 'Retirar barra lateral de canais recomendados'
+        GEN_HDE_RECM_SDBR: {
+            en: 'Hide recommended channels sidebar',
+            'pt-PT': 'Esconder barra lateral de canais recomendados'
+        },
+        GEN_HDE_SRCH_SDBR: {
+            en: 'Hide search results sidebar',
+            'pt-PT': 'Esconder barra lateral nos resultados de pesquisa'
+        },
+        GEN_HDE_CHN_SDBR: {
+            en: 'Hide channel sidebar',
+            'pt-PT': 'Esconder barra lateral nos canais'
         },
         GEN_ENHC: {
             en: 'Enhancements',
@@ -115,6 +116,10 @@
         GEN_CMPT_TTLS: {
             en: 'Compact titles in feeds',
             'pt-PT': 'Títulos compactos nas listas'
+        },
+        GEN_DSB_HVRC: {
+            en: 'Disable hovercards',
+            'pt-PT': 'Desactivar hovercards'
         },
         GEN_BTTR_NTF: {
             en: 'Improved blue notification box',
@@ -416,129 +421,288 @@
         window.localStorage.Particle = JSON.stringify(userSettings);
     }
     function userLang(a) {
-        return a[window.yt.config_.FEEDBACK_LOCALE_LANGUAGE] || a.en;
+        if (!ytlang) {
+            ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || 'en';
+        }
+        return lang[a][ytlang];
     }
     styleSheet = document.createElement('style');
     styleSheet.id = 'P-style';
     styleSheet.textContent = [
-        'input[type="checkbox"],input[type="radio"]{\n',
-        '    opacity:0;\n',
+        'input[type="checkbox"], input[type="radio"]{\n',
+        '    opacity: 0;\n',
         '}\n',
         ':focus{\n',
-        '    outline:none;\n',
+        '    outline: none;\n',
         '}\n',
         '::-moz-focus-inner{\n',
-        '    border:0;\n',
+        '    border: 0;\n',
         '}\n',
         '.ideal-aspect .html5-player-chrome{\n',
-        '    background:rgba(27,27,27,0.9) !important;\n',
+        '    background: rgba(27,27,27,0.9) !important;\n',
         '}\n',
         '.ideal-aspect.light-theme .html5-player-chrome{\n',
-        '    background:rgba(204,204,204,0.9) !important;\n',
+        '    background: rgba(204,204,204,0.9) !important;\n',
         '}\n',
         '.branded-page-related-channels-item .yt-close{\n',
-        '    z-index:1;\n',
+        '    z-index: 1;\n',
         '}\n',
         '.watch #content.content-alignment, #footer-container, #player.watch-small{\n',
-        '    min-width:initial !important;\n',
-        '    width:auto;\n',
+        '    min-width: initial !important;\n',
+        '    width: auto;\n',
         '}\n',
         '.content-alignment{\n',
-        '    max-width:1262px;\n',
-        '    min-width:initial;\n',
-        '    width:auto;\n',
+        '    max-width: 1262px;\n',
+        '    min-width: initial;\n',
+        '    width: auto;\n',
         '}\n',
         '.not-yt-legacy-css .watch-sidebar{\n',
-        '    width:initial;\n',
+        '    width: initial;\n',
         '}\n',
         '#footer-container{\n',
-        '    max-width:initial;\n',
+        '    max-width: initial;\n',
         '}\n',
         '#body-container{\n',
-        '    position:relative;\n',
+        '    position: relative;\n',
         '}\n',
         '#footer-container{\n',
-        '    position:relative;\n',
+        '    position: relative;\n',
         '}\n',
         '#P-settings{\n',
-        '    background:#f1f1f1;\n',
-        '    height:100%;\n',
-        '    left:0;\n',
-        '    position:absolute;\n',
-        '    right:0;\n',
-        '    z-index:1000;\n',
+        '    background: #f1f1f1;\n',
+        '    height: 100%;\n',
+        '    left: 0;\n',
+        '    position: absolute;\n',
+        '    right: 0;\n',
+        '    z-index: 1000;\n',
         '}\n',
-        '#P-sidebar,#P-content{\n',
-        '    -moz-user-select:none;\n',
+        '#P-sidebar, #P-content{\n',
+        '    -moz-user-select: none;\n',
         '}\n',
         '#P-container{\n',
-        '    margin:10px auto 0;\n',
-        '    max-width:1262px;\n',
+        '    margin: 10px auto 0;\n',
+        '    max-width: 1262px;\n',
         '}\n',
-        '#P-sidebar,#P-content{\n',
-        '    box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);\n',
-        '    box-sizing:border-box;\n',
+        '#P-sidebar, #P-content{\n',
+        '    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n',
+        '    box-sizing: border-box;\n',
         '}\n',
-        '#P-sidebar{background:#1e1e1e;color:grey;float:left;width:195px;margin-right:10px;padding:10px 0}\n',
-        '#P-sidebar-list > li{color:grey;padding:0 21px;cursor:pointer;font-size:11px;line-height:24px}\n',
-        '#P-sidebar-list > li:hover{color:#1e1e1e;background:#f6f6f6}\n',
-        '#P-sidebar-list > li.selected{color:#FFF;font-weight:bold;background-color:#CC181E}\n',
-        '#P-content{background:#FFF;color:#666;overflow:hidden;padding-bottom:40px;padding-left:15px;margin-bottom:10px}\n',
-        '#P-content h2{color:#333;float:left;font-size:18px;font-weight:bold}\n',
-        '#P-content h3{color:#555;font-size:14px;font-weight:bold;margin:30px 0 16px}\n',
-        '#P-content br{clear:both}\n',
-        '#P-content label{line-height:26px}\n',
-        '#P-content input[type="checkbox"] + label{display:block;}\n',
-        '#P-content input{display:none;margin-left:25px}\n',
-        '#P-content input + label{position:relative;margin-left:25px}\n',
-        '#P-content input + label:before{cursor:pointer;border:1px solid #c6c6c6;content:"";left:-25px;height:14px;position:absolute;top:5px;width:14px}\n',
-        '#P-content input:checked + label:before{border:1px solid #36649c}\n',
-        '#P-content input[type="text"]{top:2px;position:relative;display:initial;margin-left:5px}',
-        '#P-content input[type="text"] + label{float:left;margin-left:0}',
-        '#P-content input[type="text"] + label:before{display:none}',
-        '#P-content input[type="radio"] + label{display:inline-block}\n',
-        '#P-content input[type="radio"] + label:before{border-radius:50%;left:-20px}\n',
-        '#P-content input[type="checkbox"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJXRSTlMAmQmDBYwZUT92AjdnbAtadZRPBBaSfqRBejiODWWJEoJ5Gx0gnoi62QAAAExJREFUCB1NwQUSgDAAA7B2G+7uzv/fCAdDEvyY+HgFXnYV4WHRcXFTPgNo4cJYAUjSDLlkKXCq2bQdZY/LQHKccBMzjRWPzdjxEdAOtVECtAyMKkUAAAAASUVORK5CYII=) no-repeat 2px 1px;}\n',
-        '#P-content input[type="radio"]:checked + label:before{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAQlBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZma1tx8vAAAAFXRSTlMAdRg22LcS6r1mJyQw/OcJ80UzaRuV38qbAAAANElEQVQIHQWAhxGAIBDA8oDYsABm/1U9gDMBkIsuCeqqusGuqgehqpl2qd4PhPp2gBHzgx9d1gLnmWiDtQAAAABJRU5ErkJggg==) no-repeat 3px;}\n',
-        '#P-content select{cursor:pointer;margin-left:5px;background-image:linear-gradient(to bottom, #fcfcfc 0px, #f8f8f8 100%);border:1px solid #d3d3d3;color:#333 !important;font-family:arial,sans-serif;font-size:11px;font-weight:bold;height:26px;-moz-appearance:none;-webkit-appearance:none;padding:0 1em;text-shadow:none}\n',
-        '#P-content select option{padding:0;padding:0 1em}\n',
-        '.P-header{height:20px;margin:0;padding:24px 0 0}\n',
-        '.P-save{background:#167ac6;border-color:#167ac6;border-radius:2px;box-shadow:0 1px 0 rgba(0, 0, 0, 0.05);color:#fff;cursor:pointer;display:inline-block;float:right;font-size:11px;font-weight:bold;height:28px;line-height:normal;margin-right:20px;margin-top:-5px;outline:0 none;padding:0 20px;vertical-align:middle;white-space:nowrap;word-wrap:normal}\n',
-        '.P-save:hover{background:#126db3}\n',
-        '.P-save:active{background:#095b99}\n',
-        '.P-horz{border-bottom:0 none;border-top:1px solid #e2e2e2;height:0;margin:20px 0 0 -15px;position:relative}\n',
-        '#P-settings select{color:transparent !important;text-shadow:0 0 0 #333}\n',
-        '#P-settings option{color:#000;text-shadow:none}\n',
-        '#P{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;margin-left:10px;cursor:pointer;opacity:0.55;height:28px;width:19px;vertical-align:middle}\n',
-        '#P:hover{opacity:0.85}\n',
-        '.P-hide{display:none}\n',
-        '#body #uploaded-videos{font-size:11px;color:#666;display:initial;font-weight:initial;overflow:initial;vertical-align:initial}',
-        '.yt-user-info > span{font-size:11px;color:#666}\n',
-        ((get('VID_DESC_SHRT') && '#watch8-secondary-actions{left:0 !important}#watch8-secondary-actions .yt-uix-button-content{display:none}#watch8-secondary-actions button{padding:0}') || ''),
-        ((get('VID_TTL_CMPT') && '#watch-headline-title{display:block !important;white-space:nowrap !important}#watch-headline-title h1{display:block !important;text-overflow:ellipsis !important}') || ''),
-        ((get('GEN_CMPT_TTLS') && '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{white-space:nowrap !important;display:inherit !important}') || ''),
-        ((get('GEN_CNTR_LYT') && '#yt-masthead, #footer{max-width:1262px !important}') || ''),
-        ((get('GEN_BLUE_GLOW') && '.yt-uix-button:focus, .yt-uix-button:focus:hover{box-shadow: initial !important}') || ''),
-        ((get('GEN_BTTR_NTF') && '#appbar-main-guide-notification-container{box-shadow:0 1px 2px #eee inset;display:inline-block;top:2px !important;left:auto !important;margin-left:79px !important;opacity:0;overflow:hidden !important;position:absolute !important;visibility:hidden;width:auto;z-index:1}#appbar-main-guide-notification-container .appbar-guide-notification{height:27px !important}.show-guide-button-notification #appbar-main-guide-notification-container{visibility: visible;opacity:1}#appbar-main-guide-notification-container{transition:visibility .3s linear .1s, opacity .3s linear .1s}#appbar-guide-button-notification-check{display:none !important}.show-guide-button-notification #appbar-guide-button{opacity:1 !important}') || ''),
-        ((get('VID_PLST_SEP') && '#watch-appbar-playlist{margin-left:0 !important;}\n') || ''),
-        ((!get('VID_PLR_FIT') && '#body #player:not(.watch-small) #player-api{width:854px !important}@media screen and (min-width:1320px) and (min-height:870px){#body #player:not(.watch-small) #player-api{width:1280px !important}}\n') || ''),
-        '#player{position:relative;width:100% !important}#theater-background{height:100% !important}#player #player-api, #player #player-unavailable{position:relative !important;height:auto !important}#player:not(.watch-small) #player-api, #player:not(.watch-small) #player-unavailable{max-width:' + get('VID_PLR_FIT_WDTH') + ' !important;width:100% !important}#player #player-api:before, #player #player-unavailable:before{content:"";display:block;padding-top:56.25%}#player #movie_player{bottom:0 !important;left:0 !important;position:absolute !important;right:0 !important;top:0 !important}#player-unavailable:not(.hid) + #player-api{display:none}.watch-stage-mode #player-unavailable{margin:0 auto;float:none}\n',
-        '#player-api{padding-bottom:' + ((get('VID_PLR_CTRL_VIS') === '2' && '30px') || (get('VID_PLR_CTRL_VIS') === '0' && '35px') || (get('VID_PLR_CTRL_VIS') === '1' && '0')) + ';}\n',
-        ((get('VID_PLR_DYN_SIZE') && '.watch-non-stage-mode #watch7-content{width: 640px !important}.watch-non-stage-mode #content.content-alignment, .watch-non-stage-mode #player.watch-small{max-width: 1066px !important}.watch-non-stage-mode #watch7-preview{margin-top: -750px !important}.watch-non-stage-mode #watch7-sidebar{margin-left: 650px !important;margin-top: ' + ((get('VID_PLR_CTRL_VIS') === '2' && '-390px') || (get('VID_PLR_CTRL_VIS') === '0' && '-395px') || (get('VID_PLR_CTRL_VIS') === '1' && '-360px')) + ';top: 0;}.watch-non-stage-mode .player-width{width: 640px !important}.watch-non-stage-mode .player-height{height: 390px !important}.watch-non-stage-mode .watch-playlist{height: ' + ((get('VID_PLR_CTRL_VIS') === '2' && '390px') || (get('VID_PLR_CTRL_VIS') === '0' && '395px') || (get('VID_PLR_CTRL_VIS') === '1' && '360px')) + ' !important}\n') || ''),
-        ((!get('VID_PLR_DYN_SIZE') && '#watch7-sidebar{margin-top: ' + ((get('VID_PLR_CTRL_VIS') === '2' && '-390px') || (get('VID_PLR_CTRL_VIS') === '0' && '-395px') || (get('VID_PLR_CTRL_VIS') === '1' && '-360px')) + '}#watch-appbar-playlist{;height:' + ((get('VID_PLR_CTRL_VIS') === '2' && '390px') || (get('VID_PLR_CTRL_VIS') === '0' && '395px') || (get('VID_PLR_CTRL_VIS') === '1' && '360px')) + ';}@media screen and (min-width:1294px) and (min-height:630px){#watch-appbar-playlist{height:' + ((get('VID_PLR_CTRL_VIS') === '2' && '510px') || (get('VID_PLR_CTRL_VIS') === '0' && '515px') || (get('VID_PLR_CTRL_VIS') === '1' && '480px')) + ';}}@media screen and (min-width:1720px) and (min-height:980px){#watch-appbar-playlist{height:' + ((get('VID_PLR_CTRL_VIS') === '2' && '750px') || (get('VID_PLR_CTRL_VIS') === '0' && '755px') || (get('VID_PLR_CTRL_VIS') === '1' && '720px')) + ';}}\n') || ''),
-        '#header,',
-        '#feed-pyv-container,',
-        '.video-list-item:not(.related-list-item),',
-        '.pyv-afc-ads-container,',
-        '.ad-div',
-        '{display:none}\n',
-        ((get('VID_HIDE_COMS') && '#watch-discussion{opacity:0;height:0;overflow:hidden}\n#P-show-comments button{border-top:none;padding-top:2px}\n.show{opacity:1 !important;height:auto !important}\n') || ''),
-        '#masthead-appbar',
-        '{display:block !important}\n',
-        '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list\n',
-        '{background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMA8KS9FQYBt8gPhw6JigvJyoYcNuUAAABRSURBVHhevdE5DsAgDERRs8ZAtrn/ZaMIiSKD5AbllX8qg/wubnHam0JPYSkACIl69nj5LB8VXRXm4EbggdvKYbCHHd1hHc3PxMqFuxhfsdwDNLwDxD27Q0MAAAAASUVORK5CYII=") no-repeat; width:24px; height:24px}\n',
-        '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list\n',
-        '{background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat; width:24px; height:24px}'
+        '#P-sidebar{\n',
+        '    background: #1e1e1e;\n',
+        '    color: grey;\n',
+        '    float: left;\n',
+        '    width: 195px;\n',
+        '    margin-right: 10px;\n',
+        '    padding: 10px 0;\n',
+        '}\n',
+        '#P-sidebar-list > li{\n',
+        '    color: grey;\n',
+        '    padding: 0 21px;\n',
+        '    cursor: pointer;\n',
+        '    font-size: 11px;\n',
+        '    line-height: 24px;\n',
+        '}\n',
+        '#P-sidebar-list > li:hover{\n',
+        '    color: #1e1e1e;\n',
+        '    background: #f6f6f6;\n',
+        '}\n',
+        '#P-sidebar-list > li.selected{\n',
+        '    color: #FFF;\n',
+        '    font-weight: bold;\n',
+        '    background-color: #CC181E;\n',
+        '}\n',
+        '#P-content{\n',
+        '    background: #FFF;\n',
+        '    color: #666;\n',
+        '    overflow: hidden;\n',
+        '    padding-bottom: 40px;\n',
+        '    padding-left: 15px;\n',
+        '    margin-bottom: 10px;\n',
+        '}\n',
+        '#P-content h2{\n',
+        '    color: #333;\n',
+        '    float: left;\n',
+        '    font-size: 18px;\n',
+        '    font-weight: bold;\n',
+        '}\n',
+        '#P-content h3{\n',
+        '    color: #555;\n',
+        '    font-size: 14px;\n',
+        '    font-weight: bold;\n',
+        '    margin: 30px 0 16px;\n',
+        '}\n',
+        '#P-content br{\n',
+        '    clear: both;\n',
+        '}\n',
+        '#P-content div{\n',
+        '    line-height: 26px;\n',
+        '    overflow: hidden;\n',
+        '}\n',
+        '#P-content div:first-child{\n',
+        '    overflow: initial;\n',
+        '}\n',
+        '#P-content label{\n',
+        '    line-height: 26px;\n',
+        '}\n',
+        '#P-content input{\n',
+        '    display: none;\n',
+        '    margin-left: 25px;\n',
+        '}\n',
+        '#P-content input + label{\n',
+        '    position: relative;\n',
+        '    margin-left: 25px;\n',
+        '}\n',
+        '#P-content input + label:before{\n',
+        '    cursor: pointer;\n',
+        '    border: 1px solid #c6c6c6;\n',
+        '    content: "";\n',
+        '    left: -25px;\n',
+        '    height: 14px;\n',
+        '    position: absolute;\n',
+        '    top: 5px;\n',
+        '    width: 14px;\n',
+        '}\n',
+        '#P-content input:checked + label:before{\n',
+        '    border: 1px solid #36649c;\n',
+        '}\n',
+        '#P-content input[type="text"]{\n',
+        '    top: 2px;\n',
+        '    position: relative;\n',
+        '    display: initial;\n',
+        '    margin-left: 5px;\n',
+        '}\n',
+        '#P-content input[type="text"] + label{\n',
+        '    float: left;\n',
+        '    margin-left: 0;\n',
+        '}\n',
+        '#P-content input[type="text"] + label:before{\n',
+        '    display: none;\n',
+        '}\n',
+        '#P-content input[type="radio"] + label{\n',
+        '    display: inline-block;\n',
+        '}\n',
+        '#P-content input[type="radio"] + label:before{\n',
+        '    border-radius: 50%;\n',
+        '    left: -20px;\n',
+        '}\n',
+        '#P-content input[type="checkbox"] + label{\n',
+        '    display: block;\n',
+        '}\n',
+        '#P-content input[type="checkbox"]:checked + label:before{\n',
+        '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJXRSTlMAmQmDBYwZUT92AjdnbAtadZRPBBaSfqRBejiODWWJEoJ5Gx0gnoi62QAAAExJREFUCB1NwQUSgDAAA7B2G+7uzv/fCAdDEvyY+HgFXnYV4WHRcXFTPgNo4cJYAUjSDLlkKXCq2bQdZY/LQHKccBMzjRWPzdjxEdAOtVECtAyMKkUAAAAASUVORK5CYII=) no-repeat 2px 1px;\n',
+        '}\n',
+        '#P-content input[type="radio"]:checked + label:before{\n',
+        '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAQlBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZma1tx8vAAAAFXRSTlMAdRg22LcS6r1mJyQw/OcJ80UzaRuV38qbAAAANElEQVQIHQWAhxGAIBDA8oDYsABm/1U9gDMBkIsuCeqqusGuqgehqpl2qd4PhPp2gBHzgx9d1gLnmWiDtQAAAABJRU5ErkJggg==) no-repeat 3px;\n',
+        '}\n',
+        '#P-content select{\n',
+        '    cursor: pointer;\n',
+        '    margin-left: 5px;\n',
+        '    background-image: linear-gradient(#FCFCFC, #F8F8F8);\n',
+        '    border: 1px solid #d3d3d3;\n',
+        '    color: #333 !important;\n',
+        '    font-family: arial,sans-serif;\n',
+        '    font-size: 11px;\n',
+        '    font-weight: bold;\n',
+        '    height: 26px;\n',
+        '    padding: 0 1em;\n',
+        '    text-shadow: none;\n',
+        '    -moz-appearance: none;\n',
+        '    -webkit-appearance: none;\n',
+        '}\n',
+        '#P-content select option{\n',
+        '    padding: 0;\n',
+        '    padding: 0 1em;\n',
+        '}\n',
+        '.P-header{\n',
+        '    height: 20px;\n',
+        '    margin: 0;\n',
+        '    padding: 24px 0 0;\n',
+        '}\n',
+        '.P-save{\n',
+        '    background: #167AC6;\n',
+        '    border-color: #167AC6;\n',
+        '    border-radius: 2px;\n',
+        '    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);\n',
+        '    color: #fff;\n',
+        '    cursor: pointer;\n',
+        '    display: inline-block;\n',
+        '    float: right;\n',
+        '    font-size: 11px;\n',
+        '    font-weight: bold;\n',
+        '    height: 28px;\n',
+        '    line-height: normal;\n',
+        '    margin-right: 20px;\n',
+        '    margin-top: -5px;\n',
+        '    outline: 0 none;\n',
+        '    padding: 0 20px;\n',
+        '    vertical-align: middle;\n',
+        '    white-space: nowrap;\n',
+        '    word-wrap: normal;\n',
+        '}\n',
+        '.P-save:hover{\n',
+        '    background: #126DB3;\n',
+        '}\n',
+        '.P-save:active{\n',
+        '    background: #095B99;\n',
+        '}\n',
+        '.P-horz{\n',
+        '    border-bottom: 0 none;\n',
+        '    border-top: 1px solid #e2e2e2;\n',
+        '    height: 0;\n',
+        '    margin: 20px 0 0 -15px;\n',
+        '    position: relative;\n',
+        '}\n',
+        '#P-settings select{\n',
+        '    color: transparent !important;\n',
+        '    text-shadow: 0 0 0 #333;\n',
+        '}\n',
+        '#P-settings option{\n',
+        '    color: #000;\n',
+        '    text-shadow: none;\n',
+        '}\n',
+        '#P{\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;\n',
+        '    margin-left: 10px;\n',
+        '    cursor: pointer;\n',
+        '    opacity: 0.55;\n',
+        '    height: 28px;\n',
+        '    width: 19px;\n',
+        '    vertical-align: middle;\n',
+        '}\n',
+        '#P:hover{\n',
+        '    opacity: 0.85;\n',
+        '}\n',
+        '.P-hide{\n',
+        '    display: none;\n',
+        '}\n',
+        '#body #uploaded-videos{\n',
+        '    font-size: 11px;\n',
+        '    color: #666;\n',
+        '    display: initial;\n',
+        '    font-weight: initial;\n',
+        '    overflow: initial;\n',
+        '    vertical-align: initial;\n',
+        '}\n',
+        '.yt-user-info > span{\n',
+        '    font-size: 11px;\n',
+        '    color: #666;\n',
+        '}\n',
+        '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
+        '    display: none;\n',
+        '}\n',
+        '#masthead-appbar{\n',
+        '    display: block !important;\n',
+        '}\n',
+        '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMA8KS9FQYBt8gPhw6JigvJyoYcNuUAAABRSURBVHhevdE5DsAgDERRs8ZAtrn/ZaMIiSKD5AbllX8qg/wubnHam0JPYSkACIl69nj5LB8VXRXm4EbggdvKYbCHHd1hHc3PxMqFuxhfsdwDNLwDxD27Q0MAAAAASUVORK5CYII=") no-repeat;\n',
+        '    width: 24px;\n',
+        '    height: 24px;\n',
+        '}\n',
+        '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat;\n',
+        '    width: 24px;\n',
+        '    height: 24px;\n',
+        '}\n'
     ].join('');
     document.documentElement.appendChild(styleSheet);
     function xhr(a, b, c) {
@@ -557,29 +721,29 @@
             settingsButton,
             htEl = {
                 title: function (content, tag) {
-                    return '<' + tag + '>' + lang[content].en + '</' + tag + '>\n';
+                    return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
                 },
                 select: function (id, list) {
-                    var select = '<label for="' + id + '">' + lang[id].en + '</label>\n' +
+                    var select = '<label for="' + id + '">' + userLang(id) + '</label>\n' +
                         '<select id="' + id + '">\n';
                     Object.keys(list).forEach(function (a) {
                         select += '<option';
                         if (get(id) === list[a]) {
                             select += ' selected="true"';
                         }
-                        select += ' value="' + list[a] + '">' + lang[a].en + '</option>\n';
+                        select += ' value="' + list[a] + '">' + userLang(a) + '</option>\n';
                     });
                     select += '</select>\n';
                     return select;
                 },
                 radio: function (name, list) {
-                    var radio = '<label>' + lang[name].en + '</label>\n';
+                    var radio = '<label>' + userLang(name) + '</label>\n';
                     Object.keys(list).forEach(function (a) {
                         radio += '<input id="' + a + '" name="' + name + '" value="' + list[a] + '" type="radio"';
                         if (get(name) === list[a]) {
                             radio += ' checked="true"';
                         }
-                        radio += '>\n<label for="' + a + '">' + lang[a].en + '</label>';
+                        radio += '>\n<label for="' + a + '">' + userLang(a) + '</label>';
                     });
                     return radio;
                 },
@@ -593,13 +757,9 @@
                     } else if (get(id) === true) {
                         input += ' checked="true"';
                     }
-                    input += '>\n<label for="' + id + '">' + lang[id].en + '</label>\n';
+                    input += '>\n<label for="' + id + '">' + userLang(id) + '</label>\n';
                     return input;
                 }
-            },
-            string2HTML = function (string) {
-                var mortar = new DOMParser();
-                return mortar.parseFromString(string, 'text/html');
             },
             menus = {
                 setMenu: [
@@ -607,19 +767,19 @@
                     '    <div id="P-container">\n',
                     '        <div id="P-sidebar">\n',
                     '            <ul id="P-sidebar-list">\n',
-                    '                <li id="genMenu" class="selected">General</li>\n',
-                    '                <li id="vidMenu">Video</li>\n',
-                    '                <li id="chnMenu">Channels</li>\n',
-                    '                <li id="abtMenu">About</li>\n',
+                    '                <li id="GEN" class="selected">' + userLang('GEN') + '</li>\n',
+                    '                <li id="VID">' + userLang('VID') + '</li>\n',
+                    '                <li id="CHN">' + userLang('CHN') + '</li>\n',
+                    '                <li id="ABT">' + userLang('ABT') + '</li>\n',
                     '            </ul>\n',
                     '        </div>\n',
                     '    </div>\n',
                     '</div>\n'
                 ].join(''),
-                genMenu: [
+                GEN: [
                     '<div id="P-content">\n',
                     '    <div class="P-header">\n',
-                    '        <button class="P-save">Save</button>\n',
+                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
                     htEl.title('GEN_TTL', 'h2'),
                     '    </div>\n',
                     '    <hr class="P-horz">\n',
@@ -627,22 +787,22 @@
                     htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
                     htEl.title('GEN_LYT', 'h3'),
                     htEl.input('GEN_BTTR_NTF', 'checkbox'),
+                    htEl.input('GEN_DSB_HVRC', 'checkbox'),
                     htEl.input('GEN_CNTR_LYT', 'checkbox'),
                     htEl.input('GEN_CMPT_TTLS', 'checkbox'),
                     htEl.input('GEN_BLUE_GLOW', 'checkbox'),
                     htEl.input('GEN_HIDE_FTR', 'checkbox'),
-                    htEl.input('GEN_REM_RECM_SDBR', 'checkbox'),
-                    htEl.input('GEN_GRID_SUBS', 'checkbox'),
-                    htEl.input('GEN_GRID_SRCH', 'checkbox'),
-                    htEl.input('GEN_CMPT_TITL', 'checkbox'),
+                    htEl.input('GEN_HDE_RECM_SDBR', 'checkbox'),
+                    htEl.input('GEN_HDE_SRCH_SDBR', 'checkbox'),
+                    htEl.input('GEN_HDE_CHN_SDBR', 'checkbox'),
                     htEl.title('GEN_ENHC', 'h3'),
                     htEl.input('GEN_USER_LNKS', 'checkbox'),
                     '</div>\n'
                 ].join(''),
-                vidMenu: [
+                VID: [
                     '<div id="P-content">\n',
                     '    <div class="P-header">\n',
-                    '        <button class="P-save">Save</button>\n',
+                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
                     htEl.title('VID_TTL', 'h2'),
                     '    </div>\n',
                     '    <hr class="P-horz">\n',
@@ -706,10 +866,10 @@
                     htEl.input('VID_HIDE_COMS', 'checkbox'),
                     '</div>\n'
                 ].join(''),
-                chnMenu: [
+                CHN: [
                     '<div id="P-content">\n',
                     '    <div class="P-header">\n',
-                    '        <button class="P-save">Save</button>\n',
+                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
                     htEl.title('CHN_TTL', 'h2'),
                     '    </div>\n',
                     '    <hr class="P-horz">\n',
@@ -729,18 +889,26 @@
                     '    <br>',
                     '</div>\n'
                 ].join(''),
-                abtMenu: [
+                ABT: [
                     '<div id="P-content">\n',
                     '    <div class="P-header">\n',
                     htEl.title('ABT_TTL', 'h2'),
                     '    </div>\n',
                     '    <hr class="P-horz">\n',
                     htEl.title('ABT_INFO', 'h3'),
-                    '<a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
-                    '<a href="https://greasyfork.org/en/scripts/">Greasy Fork</a>\n',
-                    '<a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
+                    '    <div>\n',
+                    '        <a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
+                    '    </div>\n',
+                    '    <div>\n',
+                    '        <a href="https://greasyfork.org/en/scripts/">Greasy Fork</a>\n',
+                    '    </div>\n',
+                    '    <div>\n',
+                    '        <a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
+                    '    </div>\n',
                     htEl.title('ABT_PRBL', 'h3'),
-                    '<a href="https://github.com/ParticleCore/Particle/issues">Click here for instructions</a>\n',
+                    '    <div>\n',
+                    '        <a href="https://github.com/ParticleCore/Particle/issues">Click here for instructions</a>\n',
+                    '    </div>\n',
                     '</div>\n'
                 ].join('')
             };
@@ -751,7 +919,8 @@
                     savedSets = JSON.parse(window.localStorage.Particle),
                     userSets = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
                     length = userSets.length;
-                while (length--) {
+                while (length) {
+                    length -= 1;
                     value = (userSets[length].checked && (userSets[length].value === 'on' || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute('type') === 'text' && userSets[length].value);
                     if (value) {
                         savedSets[userSets[length].name || userSets[length].id] = value;
@@ -761,14 +930,15 @@
                 }
                 window.localStorage.Particle = JSON.stringify(savedSets);
             }
-            if (typeof a === 'string' || a.target.parentNode.id === 'P-sidebar-list') {
+            if (a.target.classList.contains('P-save')) {
+                saveSettings();
+            } else if (a.target.parentNode.id === 'P-sidebar-list') {
                 document.getElementById('P-content').remove();
                 pContainer = document.getElementById('P-container');
                 pContent = string2HTML(menus[a.target.id]).querySelector('#P-content');
                 pContainer.appendChild(pContent);
                 a.target.parentNode.querySelector('.selected').removeAttribute('class');
                 a.target.className = 'selected';
-                a = a.target.id;
             }
         }
         function settingsTemplate() {
@@ -781,15 +951,11 @@
                 bodyContainer = document.getElementById('body-container');
                 pageContainer = document.getElementById('page-container');
                 pWrapper = string2HTML(menus.setMenu).querySelector('#P-settings');
-                pWrapper.querySelector('#P-container').appendChild(string2HTML(menus.genMenu).querySelector('#P-content'));
+                pWrapper.querySelector('#P-container').appendChild(string2HTML(menus.GEN).querySelector('#P-content'));
                 bodyContainer.insertBefore(pWrapper, pageContainer);
                 pWrapper.addEventListener('click', navigateSettings);
             }
-            if (window.chrome) {
-                document.body.scrollTop = 0;
-            } else {
-                document.documentElement.scrollTop = 0;
-            }
+            document[(window.chrome) ? 'body' : 'documentElement'].scrollTop = 0;
         }
         buttonsSection = document.getElementById('yt-masthead-user') || document.getElementById('yt-masthead-signin');
         if (buttonsSection && !document.getElementById('P')) {
@@ -798,6 +964,288 @@
             settingsButton.title = 'YouTube+ settings';
             settingsButton.addEventListener('click', settingsTemplate);
             buttonsSection.appendChild(settingsButton);
+        }
+    }
+    function customStyles() {
+        if ((get('GEN_HDE_RECM_SDBR') && location.href.contains('/feed/')) || (get('GEN_HDE_SRCH_SDBR') && location.href.contains('/results')) || (get('GEN_HDE_CHN_SDBR') && /\/(channel|user|c)\//.test(location.href))) {
+            if (document.querySelector('.branded-page-v2-secondary-col')) {
+                document.querySelector('.branded-page-v2-secondary-col').remove();
+            }
+        }
+        if (document.readyState !== 'interactive') {
+            return;
+        }
+        if (get('VID_DESC_SHRT')) {
+            styleSheet.textContent +=
+                '#watch8-secondary-actions{\n' +
+                '    left: 0 !important;\n' +
+                '}\n' +
+                '#watch8-secondary-actions .yt-uix-button-content{\n' +
+                '    display: none;\n' +
+                '}\n' +
+                '#watch8-secondary-actions button{\n' +
+                '    padding: 0;\n' +
+                '}\n';
+        }
+        if (get('VID_TTL_CMPT')) {
+            styleSheet.textContent +=
+                '#watch-headline-title{\n' +
+                '    display: block !important;\n' +
+                '    white-space: nowrap !important;\n' +
+                '}\n' +
+                '#watch-headline-title h1{\n' +
+                '    display: block !important;\n' +
+                '    text-overflow: ellipsis !important;\n' +
+                '}\n';
+        }
+        if (get('GEN_CMPT_TTLS')) {
+            styleSheet.textContent +=
+                '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{\n' +
+                '    white-space: nowrap !important;\n' +
+                '    display: inherit !important;\n' +
+                '}\n';
+        }
+        if (get('GEN_CNTR_LYT')) {
+            styleSheet.textContent +=
+                '#yt-masthead, #footer{\n' +
+                '    max-width: 1262px !important;\n' +
+                '}\n';
+        }
+        if (get('GEN_BLUE_GLOW')) {
+            styleSheet.textContent +=
+                '.yt-uix-button:focus, .yt-uix-button:focus:hover{\n' +
+                '    box-shadow: initial !important;\n' +
+                '}\n';
+        }
+        if (get('GEN_BTTR_NTF')) {
+            styleSheet.textContent +=
+                '#appbar-main-guide-notification-container{\n' +
+                '    box-shadow: 0 1px 2px #eee inset;\n' +
+                '    display: inline-block;\n' +
+                '    top: 1px !important;\n' +
+                '    left: auto !important;\n' +
+                '    margin-left: 79px !important;\n' +
+                '    opacity: 0;\n' +
+                '    overflow: hidden !important;\n' +
+                '    position: absolute !important;\n' +
+                '    visibility: hidden;\n' +
+                '    width: auto;\n' +
+                '    z-index: 1;\n' +
+                '}\n' +
+                '#appbar-main-guide-notification-container .appbar-guide-notification{\n' +
+                '    height: 27px !important;\n' +
+                '}\n' +
+                '.show-guide-button-notification #appbar-main-guide-notification-container{\n' +
+                '    visibility: visible;\n' +
+                '    opacity: 1;\n' +
+                '}\n' +
+                '#appbar-main-guide-notification-container{\n' +
+                '    transition: visibility .3s linear .1s, opacity .3s linear .1s;\n' +
+                '}\n' +
+                '#appbar-guide-button-notification-check{\n' +
+                '    display: none !important;\n' +
+                '}\n' +
+                '.show-guide-button-notification #appbar-guide-button{\n' +
+                '    opacity: 1 !important;\n' +
+                '}\n';
+        }
+        if (get('GEN_HIDE_FTR')) {
+            styleSheet.textContent +=
+                '#footer-container{\n' +
+                '    visibility: hidden;\n' +
+                '}\n' +
+                '#body-container{\n' +
+                '    padding-bottom: initial;\n' +
+                '}\n';
+        }
+        if (get('VID_PLST_SEP')) {
+            styleSheet.textContent +=
+                '#watch-appbar-playlist{\n' +
+                '    margin-left: 0 !important;\n' +
+                '}\n';
+        }
+        if (!get('VID_PLR_FIT')) {
+            styleSheet.textContent +=
+                '#body #player:not(.watch-small) #player-api{\n' +
+                '    width: 854px !important;\n' +
+                '}\n' +
+                '@media screen and (min-width:1320px) and (min-height:870px){\n' +
+                '    #body #player: not(.watch-small) #player-api{\n' +
+                '        width: 1280px !important;\n' +
+                '    }\n' +
+                '}\n';
+        }
+        if (get('GEN_DSB_HVRC')) {
+            styleSheet.textContent +=
+                'iframe[src*="hovercard"]{\n' +
+                '    display: none !important;\n' +
+                '}\n';
+        }
+        styleSheet.textContent +=
+            '#player{\n' +
+            '    position: relative;\n' +
+            '    width: 100% !important;\n' +
+            '}\n' +
+            '#theater-background{\n' +
+            '    height: 100% !important;\n' +
+            '}\n' +
+            '#player #player-api, #player #player-unavailable{\n' +
+            '    position: relative !important;\n' +
+            '    height: auto !important;\n' +
+            '}\n' +
+            '#player:not(.watch-small) #player-api, #player:not(.watch-small) #player-unavailable{\n' +
+            '    max-width: ' + get('VID_PLR_FIT_WDTH') + ' !important;\n' +
+            '    width: 100% !important;\n' +
+            '}\n' +
+            '#player #player-api:before, #player #player-unavailable:before{\n' +
+            '    content: "";\n' +
+            '    display: block;\n' +
+            '    padding-top: 56.25%\n' +
+            '}\n' +
+            '#player #movie_player{\n' +
+            '    bottom: 0 !important;\n' +
+            '    left: 0 !important;\n' +
+            '    position: absolute !important;\n' +
+            '    right: 0 !important;\n' +
+            '    top: 0 !important;\n' +
+            '}\n' +
+            '#player-unavailable:not(.hid) + #player-api{\n' +
+            '    display: none;\n' +
+            '}\n' +
+            '.watch-stage-mode #player-unavailable{\n' +
+            '    margin: 0 auto;\n' +
+            '    float: none;\n' +
+            '}\n';
+        if (get('VID_PLR_CTRL_VIS') > 1) {
+            styleSheet.textContent +=
+                '#player-api{\n' +
+                '    padding-bottom: 30px;\n' +
+                '}\n';
+        } else if (get('VID_PLR_CTRL_VIS') < 1) {
+            styleSheet.textContent +=
+                '#player-api{\n' +
+                '   padding-bottom: 35px;\n' +
+                '}\n';
+        } else if (get('VID_PLR_CTRL_VIS') === '1') {
+            styleSheet.textContent +=
+                '#player-api{\n' +
+                '    padding-bottom: 0;\n' +
+                '}\n';
+        }
+        if (get('VID_PLR_DYN_SIZE')) {
+            styleSheet.textContent +=
+                '.watch-non-stage-mode #watch7-content{\n' +
+                '    width: 640px !important;\n' +
+                '}\n' +
+                '.watch-non-stage-mode #content.content-alignment, .watch-non-stage-mode #player.watch-small{\n' +
+                '    max-width: 1066px !important;\n' +
+                '}\n' +
+                '.watch-non-stage-mode #watch7-preview{\n' +
+                '    margin-top: -750px !important;\n' +
+                '}\n' +
+                '.watch-non-stage-mode #watch7-sidebar{\n' +
+                '    margin-left: 650px !important;\n' +
+                '    margin-top: ';
+            if (get('VID_PLR_CTRL_VIS') > 1) {
+                styleSheet.textContent += '-390px';
+            } else if (get('VID_PLR_CTRL_VIS') < 1) {
+                styleSheet.textContent += '-395px';
+            } else if (get('VID_PLR_CTRL_VIS') === '1') {
+                styleSheet.textContent += '-360px';
+            }
+            styleSheet.textContent +=
+                ';\n' +
+                '    top: 0;\n' +
+                '}\n' +
+                '.watch-non-stage-mode .player-width{\n' +
+                '    width: 640px !important;\n' +
+                '}\n' +
+                '.watch-non-stage-mode .player-height{\n' +
+                '    height: 390px !important;\n' +
+                '}\n' +
+                '.watch-non-stage-mode .watch-playlist{\n' +
+                '    height: ';
+            if (get('VID_PLR_CTRL_VIS') > 1) {
+                styleSheet.textContent += '390px';
+            } else if (get('VID_PLR_CTRL_VIS') < 1) {
+                styleSheet.textContent += '395px';
+            } else if (get('VID_PLR_CTRL_VIS') === '1') {
+                styleSheet.textContent += '360px';
+            }
+            styleSheet.textContent +=
+                ' !important;\n' +
+                '}\n';
+        }
+        if (!get('VID_PLR_DYN_SIZE')) {
+            styleSheet.textContent +=
+                '#watch7-sidebar{\n' +
+                '    margin-top: ';
+            if (get('VID_PLR_CTRL_VIS') > 1) {
+                styleSheet.textContent += '-390px';
+            } else if (get('VID_PLR_CTRL_VIS') < 1) {
+                styleSheet.textContent += '-395px';
+            } else if (get('VID_PLR_CTRL_VIS') === '1') {
+                styleSheet.textContent += '-360px';
+            }
+            styleSheet.textContent +=
+                ';\n' +
+                '}\n' +
+                '#watch-appbar-playlist{\n' +
+                '    height: ';
+            if (get('VID_PLR_CTRL_VIS') > 1) {
+                styleSheet.textContent += '390px';
+            } else if (get('VID_PLR_CTRL_VIS') < 1) {
+                styleSheet.textContent += '395px';
+            } else if (get('VID_PLR_CTRL_VIS') === '1') {
+                styleSheet.textContent += '360px';
+            }
+            styleSheet.textContent +=
+                ';\n' +
+                '}\n' +
+                '@media screen and (min-width:1294px) and (min-height:630px){\n' +
+                '    #watch-appbar-playlist{\n' +
+                '        height: ';
+            if (get('VID_PLR_CTRL_VIS') > 1) {
+                styleSheet.textContent += '510px';
+            } else if (get('VID_PLR_CTRL_VIS') < 1) {
+                styleSheet.textContent += '515px';
+            } else if (get('VID_PLR_CTRL_VIS') === '1') {
+                styleSheet.textContent += '480px';
+            }
+            styleSheet.textContent +=
+                ';\n' +
+                '    }\n' +
+                '}\n' +
+                '@media screen and (min-width:1720px) and (min-height:980px){\n' +
+                '    #watch-appbar-playlist{\n' +
+                '    height: ';
+            if (get('VID_PLR_CTRL_VIS') > 1) {
+                styleSheet.textContent += '750px';
+            } else if (get('VID_PLR_CTRL_VIS') < 1) {
+                styleSheet.textContent += '755px';
+            } else if (get('VID_PLR_CTRL_VIS') === '1') {
+                styleSheet.textContent += '720px';
+            }
+            styleSheet.textContent +=
+                ';\n' +
+                '    }\n' +
+                '}\n';
+        }
+        if (get('VID_HIDE_COMS')) {
+            styleSheet.textContent +=
+                '#watch-discussion{\n' +
+                '    opacity: 0;\n' +
+                '    height :0;\n' +
+                '    overflow: hidden;\n' +
+                '}\n' +
+                '#P-show-comments button{\n' +
+                '    border-top: none;\n' +
+                '    padding-top: 2px;\n' +
+                '}\n' +
+                '.show{\n' +
+                '    opacity: 1 !important;\n' +
+                '    height: auto !important;\n' +
+                '}\n';
         }
     }
     function enhancedDetails() {
@@ -864,21 +1312,19 @@
     }
     function commentsButton() {
         var comments = document.getElementById('watch-discussion'),
-            wrapper,
-            button;
+            wrapper;
         function showComments() {
             comments.classList.toggle('show');
-            button.textContent = userLang((comments.classList.contains('show') && lang.HIDE_CMTS) || lang.SHOW_CMTS);
+            wrapper.querySelector('button').textContent = userLang((comments.classList.contains('show')) ? 'HIDE_CMTS' : 'SHOW_CMTS');
         }
         if (comments && !document.getElementById('P-show-comments') && get('VID_HIDE_COMS')) {
-            button = document.createElement('button');
-            button.className = 'yt-uix-button yt-uix-button-expander';
-            button.textContent = userLang(lang.SHOW_CMTS);
-            button.addEventListener('click', showComments, false);
-            wrapper = document.createElement('div');
-            wrapper.id = 'P-show-comments';
-            wrapper.className = 'yt-card';
-            wrapper.appendChild(button);
+            wrapper = [
+                '<div id="P-show-comments" class="yt-card">\n',
+                '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n',
+                '</div>\n'
+            ].join('');
+            wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
+            wrapper.addEventListener('click', showComments, false);
             comments.parentNode.insertBefore(wrapper, comments);
         }
     }
@@ -899,13 +1345,15 @@
         var base = (a.args.iurl_webp) ? '_webp' : '',
             hdThumb,
             maxRes;
-        function checkThumbnail(a) {
+        function checkThumbnail(b) {
             var img,
-                hdURL = a.args['iurl' + base].replace('hqdefault', 'maxresdefault');
+                hdURL = b.args['iurl' + base].replace('hqdefault', 'maxresdefault');
             function widthReport() {
-                if (img.width > 120 && img.height > 90 && !a.args['iurlmaxres' + base] && api && api.getPlayerState && api.getPlayerState() === 5) {
-                    a.args['iurl' + base] = a.args['iurlsd' + base] = a.args['iurlmq' + base] = a.args['iurlhq' + base] = a.args['iurlmaxres' + base] = hdURL;
-                    api.cueVideoByPlayerVars(a.args);
+                if (img.width > 120 && img.height > 90 && !b.args['iurlmaxres' + base] && api && api.getPlayerState && api.getPlayerState() === 5) {
+                    ['iurl', 'iurlsd', 'iurlmq', 'iurlhq', 'iurlmaxres'].forEach(function (c) {
+                        b.args[c + base] = hdURL;
+                    });
+                    api.cueVideoByPlayerVars(b.args);
                     api.setPlaybackQuality(get('VID_DFLT_QLTY'));
                     if (get('VID_PLR_VOL_MEM')) {
                         api.setVolume(get('volLev') || 50);
@@ -959,7 +1407,7 @@
         }
     }
     function playerReady(a) {
-        function playerState(b) {
+        function playerState() {
             var args = {},
                 vidData = api.getVideoData(),
                 beacon = vidData.video_id + vidData.list;
@@ -1041,19 +1489,9 @@
         function baseDetour(b) {
             return function () {
                 b.apply(this, arguments);
-                [
-                    'ADS_DATA',
-                    'CONVERSION_CONFIG_DICT',
-                    'PYV_IFRAME_CONTENT',
-                    'PYV_IFRAME_ID',
-                    'DELAYED_EMBED',
-                    'TIMING_ACTION',
-                    'TIMING_INFO',
-                    get('VID_END_SHRE') && 'SHARE_ON_VIDEO_END',
-                    'UNIVERSAL_HOVERCARDS'
-                ].forEach(function (c) {
-                    delete window.yt.config_[c];
-                });
+                if (get('VID_END_SHRE')) {
+                    window.yt.config_.SHARE_ON_VIDEO_END = false;
+                }
             };
         }
         function embedDetour(b) {
@@ -1141,9 +1579,6 @@
                 });
             } else if (a === 'www/watch') {
                 window.yt.www.watch.lists.getState = html5Fix(window.yt.www.watch.lists.getState);
-                window.yt.www.watch.ads = function () {
-                    return;
-                };
             } else if (a === 'html5player/html5player') {
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
@@ -1170,39 +1605,39 @@
                 list = document.getElementById('playlist-autoscroll-list'),
                 videos = list.getElementsByTagName('li'),
                 length = videos.length;
-            while (length--) {
+            while (length) {
+                length -= 1;
                 list.appendChild(videos[length]);
             }
             temp = prev.href;
             prev.href = next.href;
             next.href = temp;
-            api.updatePlaylist();
+            if (api) {
+                api.updatePlaylist();
+            }
             list.scrollTop = document.querySelector('.currently-playing').offsetTop;
         }
         function reverseButton(a) {
-            a = (window.chrome && a.target.parentNode) || a.target;
+            a = (window.chrome) ? a.target.parentNode : a.target;
             a.classList.toggle('yt-uix-button-toggled');
-            set('plRev', (a.classList.contains('yt-uix-button-toggled') && window.yt.config_.LIST_ID) || false);
+            set('plRev', (a.classList.contains('yt-uix-button-toggled')) ? window.yt.config_.LIST_ID : false);
             reverseControl();
         }
         function autoplayButton(a) {
-            a = (window.chrome && a.target.parentNode) || a.target;
+            a = (window.chrome) ? a.target.parentNode : a.target;
             a.classList.toggle('yt-uix-button-toggled');
             set('plApl', a.classList.contains('yt-uix-button-toggled'));
         }
         function createButton(a, b, c) {
-            var spanIcon = document.createElement('span'),
-                navControls = document.querySelector('.playlist-nav-controls'),
+            var navControls = document.querySelector('.playlist-nav-controls'),
                 playlistBar = document.getElementById('watch-appbar-playlist'),
-                button = document.createElement('button');
+                button = [
+                    '<button data-tooltip-text="' + a + '" class="yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' + (((b === true || window.location.href.indexOf(b) > -1) && ' yt-uix-button-toggled') || '') + '" type="button" title="' + a + '" id="' + a + '">\n',
+                    '    <span class="yt-uix-button-icon yt-uix-button-icon-watch-appbar-' + a.toLowerCase() + '-video-list"></span>\n',
+                    '</button>\n'
+                ].join('');
             playlistBar.className = playlistBar.className.replace('radio-playlist', '');
-            spanIcon.className = 'yt-uix-button-icon yt-uix-button-icon-watch-appbar-' + a.toLowerCase() + '-video-list';
-            button.id = a;
-            button.title = a;
-            button.type = 'button';
-            button.className = 'yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' + (((b === true || window.location.href.indexOf(b) > -1) && ' yt-uix-button-toggled') || '');
-            button.setAttribute('data-tooltip-text', a);
-            button.appendChild(spanIcon);
+            button = string2HTML(button).querySelector('button');
             button.addEventListener('click', c);
             navControls.appendChild(button);
         }
@@ -1219,6 +1654,7 @@
         }
     }
     function htmlGate() {
+        customStyles();
         settingsMenu();
         plControls();
         playerMode();
