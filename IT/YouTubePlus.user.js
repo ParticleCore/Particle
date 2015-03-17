@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.3.7
+// @version     1.3.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -36,6 +36,7 @@
     if (document.getElementById('P-style') || window.self !== window.top) {
         return;
     }
+    //yt-uix-simple-thumb-wrap
     lang = {
         SHOW_CMTS: {
             en: 'Show comments',
@@ -967,7 +968,7 @@
         }
     }
     function customStyles() {
-        if ((get('GEN_HDE_RECM_SDBR') && location.href.contains('/feed/')) || (get('GEN_HDE_SRCH_SDBR') && location.href.contains('/results')) || (get('GEN_HDE_CHN_SDBR') && /\/(channel|user|c)\//.test(location.href))) {
+        if ((get('GEN_HDE_RECM_SDBR') && /\/feed\//.test(location.href)) || (get('GEN_HDE_SRCH_SDBR') && /\/results/.test(location.href)) || (get('GEN_HDE_CHN_SDBR') && /\/(channel|user|c)\//.test(location.href))) {
             if (document.querySelector('.branded-page-v2-secondary-col')) {
                 document.querySelector('.branded-page-v2-secondary-col').remove();
             }
