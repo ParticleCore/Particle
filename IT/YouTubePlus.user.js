@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.1
+// @version     1.4.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -801,6 +801,20 @@
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAVFBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkwc6KAAAAG3RSTlMAABOb4hrc6AROTQIXOHnZaHdEzu9A9dfz6/cz7bX/AAAAiUlEQVR4Xm3QVw6DQAxF0alMo6aWu/99ZhiHRES8L+tILrJqMck6Z5OppdYrxBxoCTkKxZlv5tgoA0tfSr8AeSUTYJCRAwRTKcGoPhkhVbJgNjJgKzkoGxVwQpMX8ZOQBTqhjtZ4egEIATyu6saeuCj+iQM6ajw99xSusvp3RNc+4e/ndqpUWr8Ba0MPBQ06LVcAAAAASUVORK5CYII=") no-repeat center;\n',
         '    width: 18px;\n',
         '}\n',
+        '#screenshot-result{\n',
+        '    bottom: 15px;\n',
+        '    font-size: 0;\n',
+        '    margin: 5px;\n',
+        '    position: fixed;\n',
+        '    right: 15px;\n',
+        '    width: 30%;\n',
+        '    z-index: 1000;\n',
+        '}\n',
+        '#screenshot-result > canvas{\n',
+        '    border-radius: 5px;\n',
+        '    box-shadow: 0 0 15px #000000;\n',
+        '    width: 100%;\n',
+        '}\n',
         'html.player-console #watch-header, html.player-console #page.watch-stage-mode #watch7-sidebar{\n',
         '    margin-top: 40px;\n',
         '}\n',
@@ -1588,7 +1602,13 @@
                 }
                 b.apply(this, args);
                 if (api) {
-                    api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                    if (get('VID_PLR_ATPL')) {
+                        api.pauseVideo();
+                        api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                        api.playVideo();
+                    } else {
+                        api.setPlaybackQuality(get('VID_DFLT_QLTY'));
+                    }
                 }
             };
         }
@@ -1773,6 +1793,25 @@
                 window.open(thumbURL);
             }
             function saveSS() {
+                var w,
+                    h,
+                    ratio,
+                    video = document.querySelector('video'),
+                    container = document.getElementById('screenshot-result') || document.createElement('div'),
+                    canvas = container.querySelector('canvas') || document.createElement('canvas'),
+                    context = canvas.getContext('2d');
+                ratio = video.videoWidth / video.videoHeight;
+                w = video.videoWidth;
+                h = parseInt(w / ratio, 10);
+                canvas.width = w;
+                canvas.height = h;
+                context.fillRect(0, 0, w, h);
+                context.drawImage(video, 0, 0, w, h);
+                if (!container.id) {
+                    container.id = 'screenshot-result';
+                    container.appendChild(canvas);
+                    document.body.appendChild(container);
+                }
             }
             autoPlay.addEventListener('click', togglePlay);
             loopButton.addEventListener('click', toggleLoop);
@@ -1800,10 +1839,12 @@
             document.documentElement.classList.toggle('player-console');
         }
         if (location.href.split('/watch').length > 1 && header && !consoleButton) {
-            consoleButton = '<div id="console-button" class="yt-uix-tooltip" data-tooltip-text="Player console"></div>';
+            consoleButton = '<div id="console-button" title="Player console"></div>';
             consoleButton = string2HTML(consoleButton).querySelector('div');
             consoleButton.addEventListener('click', toggleConsole);
             header.appendChild(consoleButton);
+        } else if (document.documentElement.classList.contains('player-console')) {
+            document.documentElement.classList.remove('player-console');
         }
     }
     function htmlGate() {
