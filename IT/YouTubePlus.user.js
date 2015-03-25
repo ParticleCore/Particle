@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.2
+// @version     1.4.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -20,7 +20,10 @@
         channelId = {},
         defaultSettings,
         usingChrome = typeof window.chrome === 'object';
-    if (document.body) {
+    if (document.getElementById('P-style')) {
+        return;
+    }
+    if (document.body || document.querySelector('[name="html5player/html5player"]')) {
         window.location.reload(false);
     } else if (!document.getElementById('Particle')) {
         injection = document.createElement('script');
@@ -594,15 +597,15 @@
         '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAQlBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZma1tx8vAAAAFXRSTlMAdRg22LcS6r1mJyQw/OcJ80UzaRuV38qbAAAANElEQVQIHQWAhxGAIBDA8oDYsABm/1U9gDMBkIsuCeqqusGuqgehqpl2qd4PhPp2gBHzgx9d1gLnmWiDtQAAAABJRU5ErkJggg==) no-repeat 3px;\n',
         '}\n',
         '#P-content select{\n',
-        '    cursor: pointer;\n',
-        '    margin-left: 5px;\n',
         '    background-image: linear-gradient(#FCFCFC, #F8F8F8);\n',
         '    border: 1px solid #d3d3d3;\n',
         '    color: #333 !important;\n',
+        '    cursor: pointer;\n',
         '    font-family: arial,sans-serif;\n',
         '    font-size: 11px;\n',
         '    font-weight: bold;\n',
         '    height: 26px;\n',
+        '    margin-left: 5px;\n',
         '    padding: 0 1em;\n',
         '    text-shadow: none;\n',
         '    -moz-appearance: none;\n',
@@ -661,12 +664,12 @@
         '}\n',
         '#P{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;\n',
-        '    margin-left: 10px;\n',
         '    cursor: pointer;\n',
-        '    opacity: 0.55;\n',
         '    height: 28px;\n',
-        '    width: 19px;\n',
+        '    margin-left: 10px;\n',
+        '    opacity: 0.55;\n',
         '    vertical-align: middle;\n',
+        '    width: 19px;\n',
         '}\n',
         '#P:hover{\n',
         '    opacity: 0.85;\n',
@@ -675,16 +678,16 @@
         '    display: none;\n',
         '}\n',
         '#body #uploaded-videos{\n',
-        '    font-size: 11px;\n',
         '    color: #666;\n',
         '    display: initial;\n',
+        '    font-size: 11px;\n',
         '    font-weight: initial;\n',
         '    overflow: initial;\n',
         '    vertical-align: initial;\n',
         '}\n',
         '.yt-user-info > span{\n',
-        '    font-size: 11px;\n',
         '    color: #666;\n',
+        '    font-size: 11px;\n',
         '}\n',
         '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
         '    display: none;\n',
@@ -694,13 +697,13 @@
         '}\n',
         '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMA8KS9FQYBt8gPhw6JigvJyoYcNuUAAABRSURBVHhevdE5DsAgDERRs8ZAtrn/ZaMIiSKD5AbllX8qg/wubnHam0JPYSkACIl69nj5LB8VXRXm4EbggdvKYbCHHd1hHc3PxMqFuxhfsdwDNLwDxD27Q0MAAAAASUVORK5CYII=") no-repeat;\n',
-        '    width: 24px;\n',
         '    height: 24px;\n',
+        '    width: 24px;\n',
         '}\n',
         '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat;\n',
-        '    width: 24px;\n',
         '    height: 24px;\n',
+        '    width: 24px;\n',
         '}\n',
         '#player{\n',
         '    position: relative;\n',
@@ -710,8 +713,8 @@
         '    height: 100% !important;\n',
         '}\n',
         '#player #player-api, #player #player-unavailable{\n',
-        '    position: relative !important;\n',
         '    height: auto !important;\n',
+        '    position: relative !important;\n',
         '}\n',
         '#player #player-api:before, #player #player-unavailable:before{\n',
         '    content: "";\n',
@@ -738,6 +741,9 @@
         '    width: 45px !important;\n',
         '    z-index: 1;\n',
         '}\n',
+        '.invisible{\n',
+        '    display: none;\n',
+        '}\n',
         // player console section
         '#watch-header{\n',
         '    position: relative;\n',
@@ -755,21 +761,28 @@
         '    opacity: 1;\n',
         '}\n',
         '#player-console{\n',
-        '    position: absolute;\n',
+        '    display: none;\n',
+        '    font-size: 0;\n',
         '    height: 40px;\n',
         '    left: 0;\n',
+        '    position: absolute;\n',
         '    right: 0;\n',
         '    top: 100%;\n',
         '    text-align: center;\n',
         '    z-index: 1;\n',
         '}\n',
+        '.player-console #player-console{\n',
+        '    display: initial;\n',
+        '}\n',
         '#player-console > div{\n',
         '    cursor: pointer;\n',
         '    display: inline-block;\n',
-        '    font-size: 0;\n',
-        '    height: 100%;\n',
+        '    height: 30px;\n',
         '    opacity: 0.4;\n',
-        '    padding: 0 5px;\n',
+        '    padding: 0 7px;\n',
+        '    position: relative;\n',
+        '    top: 50%;\n',
+        '    transform: translateY(-50%);\n',
         '}\n',
         '#player-console > div.active{\n',
         '    opacity: 0.8 !important;\n',
@@ -790,7 +803,7 @@
         '    width: 18px;\n',
         '}\n',
         '#screenshot-button{\n',
-        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASCAMAAABo+94fAAAAP1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABL3bRJAAAAFHRSTlMAAAIcsv1AaN7PFT8DlSLrC9zK0U+0sRAAAABxSURBVHhehc9LDoAgDEXRZ0H+4o/9r1XBBjVN9A4gOQNKcZWdc+t6HnloXbrMhZuXm2krvY06T+XR1Dj4IvIBrKNVRMqO7GCNaEV2ZotktDYJ9sUKpl4G6sUEXVmDvlk+8j9SflCs01lWl5d5hF3qHg7uHhXy95LQMAAAAABJRU5ErkJggg==") no-repeat center;\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASCAMAAABo+94fAAAAQlBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4warDAAAAFXRSTlMAAAJAHGj94JnP3j8VzZUi6wvcytGH5aKYAAAAcUlEQVR4XoXPSQ6AIAxAUSwzAjLI/a/qQIOSJvoXNHkLoKy3OedKOY9tueuaU8NSfhhqG1UYHNureLO3jWQ9Q1VSAAip0Bnqyo3Whq/oyJKHawQuJxamTyMmBt1ZwzfTS/6fpB8k6wymXcvTLPM71d0f5EgYnuxfALoAAAAASUVORK5CYII=") no-repeat center;\n',
         '    width: 22px;\n',
         '}\n',
         '#loop-button{\n',
@@ -803,22 +816,38 @@
         '}\n',
         '#screenshot-result{\n',
         '    bottom: 15px;\n',
+        '    box-shadow: 0 0 15px #000000;\n',
         '    font-size: 0;\n',
         '    margin: 5px;\n',
+        '    max-width: 420px;\n',
+        '    overflow: hidden;\n',
         '    position: fixed;\n',
         '    right: 15px;\n',
         '    width: 30%;\n',
         '    z-index: 1000;\n',
         '}\n',
         '#screenshot-result > canvas{\n',
-        '    border-radius: 5px;\n',
-        '    box-shadow: 0 0 15px #000000;\n',
         '    width: 100%;\n',
         '}\n',
-        'html.player-console #watch-header, html.player-console #page.watch-stage-mode #watch7-sidebar{\n',
+        '#close-screenshot{\n',
+        '    background: rgba(0, 0, 0, 0.5);\n',
+        '    border-bottom-left-radius: 5px;\n',
+        '    color: #F1F1F1;\n',
+        '    cursor: pointer;\n',
+        '    font-size: 10px;\n',
+        '    padding: 5px;\n',
+        '    position: absolute;\n',
+        '    right: 0;\n',
+        '    text-transform: uppercase;\n',
+        '    top: 0;\n',
+        '}\n',
+        '#close-screenshot:hover{\n',
+        '    background: rgba(0, 0, 0, 0.8);\n',
+        '}\n',
+        '.player-console #watch-header, #page.player-console.watch-stage-mode #watch7-sidebar{\n',
         '    margin-top: 40px;\n',
         '}\n',
-        'html.player-console #player-api{\n',
+        '.player-console #player-api{\n',
         '    overflow: initial !important;\n',
         '}\n'
     ].join('');
@@ -1034,7 +1063,7 @@
         function navigateSettings(a) {
             function saveSettings() {
                 var value,
-                    navId = document.querySelector('.selected').id,
+                    navId = document.getElementsByClassName('selected')[0].id,
                     savedSets = JSON.parse(window.localStorage.Particle),
                     userSets = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
                     length = userSets.length;
@@ -1056,7 +1085,7 @@
                 pContainer = document.getElementById('P-container');
                 pContent = string2HTML(menus[a.target.id]).querySelector('#P-content');
                 pContainer.appendChild(pContent);
-                a.target.parentNode.querySelector('.selected').removeAttribute('class');
+                a.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
                 a.target.className = 'selected';
             }
         }
@@ -1088,8 +1117,8 @@
     function customStyles() {
         var href = window.location.href;
         if ((get('GEN_HDE_RECM_SDBR') && href.split('/feed/').length > 1) || (get('GEN_HDE_SRCH_SDBR') && href.split('/results').length > 1) || (get('GEN_HDE_CHN_SDBR') && /\/(channel|user|c)\//.test(href))) {
-            if (document.querySelector('.branded-page-v2-secondary-col')) {
-                document.querySelector('.branded-page-v2-secondary-col').remove();
+            if (document.getElementsByClassName('branded-page-v2-secondary-col')[0]) {
+                document.getElementsByClassName('branded-page-v2-secondary-col')[0].remove();
             }
         }
         if (document.readyState !== 'interactive') {
@@ -1335,14 +1364,14 @@
                 span,
                 user,
                 verified,
-                name = document.querySelector('.yt-user-info');
+                name = document.getElementsByClassName('yt-user-info')[0];
             function videoCounter() {
                 link.href = user.getAttribute('href') + '/videos';
                 span = document.createElement('span');
                 span.textContent = ' · ';
                 name.appendChild(span);
                 name.appendChild(link);
-                verified = document.querySelector('.yt-channel-title-icon-verified');
+                verified = document.getElementsByClassName('yt-channel-title-icon-verified')[0];
                 if (verified) {
                     user.className += ' yt-uix-tooltip';
                     user.setAttribute('data-tooltip-text', verified.getAttribute('data-tooltip-text'));
@@ -1369,7 +1398,7 @@
             }
         }
         function publishedTime() {
-            var watchTime = document.querySelector('.watch-time-text');
+            var watchTime = document.getElementsByClassName('watch-time-text')[0];
             function getInfo(a) {
                 if (watchTime.textContent.split('·').length < 2) {
                     a = JSON.parse(a).body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
@@ -1523,9 +1552,9 @@
             var prev,
                 button,
                 playerBar;
-            if (!document.querySelector('.ytp-button-stop')) {
-                playerBar = document.querySelector('.html5-player-chrome');
-                prev = document.querySelector('.ytp-button-prev');
+            if (!document.getElementsByClassName('ytp-button-stop')[0]) {
+                playerBar = document.getElementsByClassName('html5-player-chrome')[0];
+                prev = document.getElementsByClassName('ytp-button-prev')[0];
                 button = '<div role="button" class="ytp-button ytp-button-stop"></div>';
                 button = string2HTML(button).querySelector('div');
                 button.addEventListener('click', api.stopVideo);
@@ -1542,8 +1571,8 @@
                 stopButton();
             }
             if (!get('VID_PLR_ATPL')) {
-                if (document.querySelector('video')) {
-                    document.querySelector('video').removeAttribute('src');
+                if (document.getElementsByTagName('video')[0]) {
+                    document.getElementsByTagName('video')[0].removeAttribute('src');
                 }
                 argsCleaner(window.ytplayer.config);
                 api.cueVideoByPlayerVars(window.ytplayer.config.args);
@@ -1631,7 +1660,7 @@
                             changed = c.apply(this, arguments);
                         if (changed.width && changed.height && !fullscreen) {
                             player = document.getElementById('movie_player');
-                            canvas = document.querySelector('.html5-video-container');
+                            canvas = document.getElementsByClassName('html5-video-container')[0];
                             if (player && canvas) {
                                 changed.width = (d && player.offsetWidth) || canvas.offsetWidth;
                                 changed.height = (d && player.offsetHeight) || canvas.offsetHeight;
@@ -1693,7 +1722,7 @@
     function title() {
         var observer,
             config = {childList: true},
-            titleElement = document.querySelector('title'),
+            titleElement = document.getElementsByTagName('title')[0],
             titleStatus = titleElement.id === 'observing',
             state = api && api.getPlayerState && api.getPlayerState();
         if (!titleStatus) {
@@ -1705,11 +1734,12 @@
         }
     }
     function plControls() {
-        var href = window.location.href;
+        var href = window.location.href,
+            playlistBar = document.getElementById('watch-appbar-playlist');
         function reverseControl() {
             var temp,
-                prev = document.querySelector('.prev-playlist-list-item'),
-                next = document.querySelector('.next-playlist-list-item'),
+                prev = document.getElementsByClassName('prev-playlist-list-item')[0],
+                next = document.getElementsByClassName('next-playlist-list-item')[0],
                 list = document.getElementById('playlist-autoscroll-list'),
                 videos = list.getElementsByTagName('li'),
                 length = videos.length;
@@ -1720,7 +1750,7 @@
             temp = prev.href;
             prev.href = next.href;
             next.href = temp;
-            list.scrollTop = document.querySelector('.currently-playing').offsetTop;
+            list.scrollTop = document.getElementsByClassName('currently-playing')[0].offsetTop;
             if (api) {
                 api.updatePlaylist();
             }
@@ -1737,8 +1767,7 @@
             set('plApl', a.classList.contains('yt-uix-button-toggled'));
         }
         function createButton(a, b, c) {
-            var navControls = document.querySelector('.playlist-nav-controls'),
-                playlistBar = document.getElementById('watch-appbar-playlist'),
+            var navControls = document.getElementsByClassName('playlist-nav-controls')[0],
                 button = [
                     '<button data-tooltip-text="' + a + '" class="yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' + (((b === true || href.split(b).length > 1) && ' yt-uix-button-toggled') || '') + '" type="button" title="' + a + '" id="' + a + '">\n',
                     '    <span class="yt-uix-button-icon yt-uix-button-icon-watch-appbar-' + a.toLowerCase() + '-video-list"></span>\n',
@@ -1749,7 +1778,7 @@
             button.addEventListener('click', c);
             navControls.appendChild(button);
         }
-        if (href.split('list=').length > 1 && href.split('/watch').length > 1) {
+        if (playlistBar) {
             if (document.readyState === 'complete' && href.split(get('plRev')).length > 1) {
                 reverseControl();
             }
@@ -1762,12 +1791,13 @@
         }
     }
     function playerConsole() {
-        var header = document.getElementById('watch-header'),
+        var page = document.getElementById('page'),
+            header = document.getElementById('watch-header'),
             player = document.getElementById('player-api'),
             consoleButton = document.getElementById('console-button'),
             controls = document.getElementById('player-console');
         function hookButtons() {
-            var videoPlayer = document.querySelector('video'),
+            var videoPlayer = document.getElementsByTagName('video')[0],
                 autoPlay = controls.querySelector('#autoplay-button'),
                 loopButton = controls.querySelector('#loop-button'),
                 audioOnly = controls.querySelector('#audio-only'),
@@ -1785,6 +1815,57 @@
             function toggleAudio() {
             }
             function toggleMap() {
+                var container = document.getElementById('seek-thumb-map') || false,
+                    storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
+                    thumbs = [],
+                    matrix = storyBoard && storyBoard.split('|'),
+                    base = matrix[0];
+                function parseThumbs() {
+                    matrix.forEach(function (qualities, level) {
+                        var i,
+                            currentBase,
+                            details,
+                            thumbAmount,
+                            gridX = 0,
+                            gridY = 0,
+                            frameAmount = 0;
+                        if (qualities.split('storyboard').length < 2) {
+                            details = qualities.split('#');
+                            currentBase = base.replace('$L', level - 1).replace('$N', details[6]);
+                            thumbAmount = details[2];
+                            for (i = 0; i < thumbAmount; i += 1) {
+                                if (!thumbs[level - 1]) {
+                                    thumbs[level - 1] = '';
+                                }
+                                thumbs[level - 1] += [
+                                    '<span class="seek-thumbs quality-' + level + '" style="',
+                                    'background-image: url(\'' + currentBase.replace('$M', frameAmount) + '?sigh=' + details[7] + '\');',
+                                    'background-position: -' + (gridX * details[0]) + 'px -' + (gridY * details[1]) + 'px;',
+                                    'margin: 10px 5px; width: ' + (details[0] - 2) + 'px; height: ' + details[1] + 'px; display: inline-block;"></span>\n'
+                                ].join('');
+                                if (gridX === details[3] - 1 && gridY === details[4] - 1) {
+                                    frameAmount += 1;
+                                    gridY = gridX = 0;
+                                } else {
+                                    gridY = (gridX === details[3] - 1) ? gridY + 1 : gridY;
+                                    gridX = (gridX === details[3] - 1) ? 0 : gridX + 1;
+                                }
+                            }
+                        }
+                    });
+                    return thumbs;
+                }
+                if (storyBoard && !container) {
+                    parseThumbs();
+                    container +=
+                        '<div id="seek-thumb-map" style="background: rgba(0, 0, 0, 0.8); overflow-x: scroll; position: absolute; z-index: 910; width: 100%; white-space: nowrap; font-size: 0px; box-shadow: 0px 0px 10px rgb(0, 0, 0); top: 50%; transform: translateY(-50%);">\n' +
+                        (thumbs[3] || thumbs[2] || thumbs[1]) +
+                        '</div>';
+                    container = string2HTML(container).querySelector('#seek-thumb-map');
+                    document.getElementById('movie_player').appendChild(container);
+                    console.info(container);
+                } else if (container.id) {
+                }
             }
             function dlThumb() {
                 var args = window.ytplayer.config.args,
@@ -1793,24 +1874,34 @@
                 window.open(thumbURL);
             }
             function saveSS() {
-                var w,
-                    h,
-                    ratio,
-                    video = document.querySelector('video'),
+                var width,
+                    height,
+                    aspectRatio,
+                    video = document.getElementsByTagName('video')[0],
                     container = document.getElementById('screenshot-result') || document.createElement('div'),
                     canvas = container.querySelector('canvas') || document.createElement('canvas'),
+                    close = document.createElement('div'),
                     context = canvas.getContext('2d');
-                ratio = video.videoWidth / video.videoHeight;
-                w = video.videoWidth;
-                h = parseInt(w / ratio, 10);
-                canvas.width = w;
-                canvas.height = h;
-                context.fillRect(0, 0, w, h);
-                context.drawImage(video, 0, 0, w, h);
+                function hideContainer() {
+                    container.classList.toggle('invisible');
+                }
+                aspectRatio = video.videoWidth / video.videoHeight;
+                width = video.videoWidth;
+                height = parseInt(width / aspectRatio, 10);
+                canvas.width = width;
+                canvas.height = height;
+                context.fillRect(0, 0, width, height);
+                context.drawImage(video, 0, 0, width, height);
                 if (!container.id) {
                     container.id = 'screenshot-result';
                     container.appendChild(canvas);
+                    close.id = 'close-screenshot';
+                    close.textContent = 'close';
+                    close.addEventListener('click', hideContainer);
+                    container.appendChild(close);
                     document.body.appendChild(container);
+                } else if (container.id && container.classList.contains('invisible')) {
+                    container.classList.toggle('invisible');
                 }
             }
             autoPlay.addEventListener('click', togglePlay);
@@ -1836,15 +1927,15 @@
                 player.appendChild(controls);
                 hookButtons();
             }
-            document.documentElement.classList.toggle('player-console');
+            page.classList.toggle('player-console');
         }
         if (location.href.split('/watch').length > 1 && header && !consoleButton) {
             consoleButton = '<div id="console-button" title="Player console"></div>';
             consoleButton = string2HTML(consoleButton).querySelector('div');
             consoleButton.addEventListener('click', toggleConsole);
             header.appendChild(consoleButton);
-        } else if (document.documentElement.classList.contains('player-console')) {
-            document.documentElement.classList.remove('player-console');
+        } else if (page.classList.contains('player-console')) {
+            page.classList.remove('player-console');
         }
     }
     function htmlGate() {
