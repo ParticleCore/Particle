@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.4
+// @version     1.4.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -875,15 +875,12 @@
         '    color: #F1F1F1;\n',
         '}\n',
         '#seek-thumbs{\n',
+        '    background: rgba(0, 0, 0, 0.8);\n',
         '    overflow: auto;\n',
         '}\n',
         '#seek-thumbs span{\n',
-        '    background: rgba(0, 0, 0, 0.8);\n',
-        '    background-clip: padding-box;\n',
-        '    border-color: rgba(0, 0, 0, 0.8);\n',
-        '    border-style: solid;\n',
-        '    border-width: 10px 5px 20px;\n',
         '    display: inline-block;\n',
+        '    margin: 10px 5px 20px;\n',
         '    position: relative;\n',
         '}\n',
         '#seek-thumbs .timer{\n',
@@ -911,10 +908,11 @@
         request.open(method, url, true);
         request.send();
     }
-    function timeConv(seconds) {
-        var days = Math.floor(seconds / 86400),
-            hours = Math.floor((seconds % 86400) / 3600),
-            minutes = Math.floor((seconds % 3600) / 60),
+    function timeConv(time) {
+        var days = Math.floor(time / 86400),
+            hours = Math.floor((time % 86400) / 3600),
+            minutes = Math.floor((time % 3600) / 60),
+            seconds = Math.ceil((time % 3600) % 60),
             matrix = [];
         if (days > 0) {
             matrix.push(days);
@@ -1890,7 +1888,7 @@
                     thumbsContainer = document.getElementById('seek-thumbs');
                     thumbJump = thumbsContainer.getElementsByTagName('span')[1];
                     if (videoPlayer && videoPlayer.currentTime > 0 && !container.classList.contains('invisible')) {
-                        thumbsContainer.scrollLeft = thumbJump.offsetWidth * (videoPlayer.currentTime / thumbJump.getAttribute('data-time-jump')) - (thumbsContainer.offsetWidth / 2) + (thumbJump.offsetWidth / 2);
+                        thumbsContainer.scrollLeft = (thumbJump.offsetWidth + 10) * (videoPlayer.currentTime / thumbJump.getAttribute('data-time-jump')) - (thumbsContainer.offsetWidth / 2) + (thumbJump.offsetWidth / 2);
                     } else {
                         thumbsContainer.scrollLeft = 0;
                     }
