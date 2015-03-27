@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.3
+// @version     1.4.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -844,6 +844,56 @@
         '#close-screenshot:hover{\n',
         '    background: rgba(0, 0, 0, 0.8);\n',
         '}\n',
+        '#seek-thumb-map{\n',
+        '    font-size: 0;\n',
+        '    position: absolute;\n',
+        '    top: 50%;\n',
+        '    transform: translateY(-50%);\n',
+        '    width: 100%;\n',
+        '    white-space: nowrap;\n',
+        '    z-index: 910;\n',
+        '}\n',
+        '#seek-controls{\n',
+        '    background: rgba(0, 0, 0, 0.8);\n',
+        '    border-top-left-radius: 5px;\n',
+        '    border-top-right-radius: 5px;\n',
+        '    bottom: 100%;\n',
+        '    left: 50%;\n',
+        '    padding: 5px 5px 0;\n',
+        '    position: absolute;\n',
+        '    transform: translateX(-50%);\n',
+        '}\n',
+        '#seek-controls > div{\n',
+        '    color: rgba(255,255,255, 0.5);\n',
+        '    cursor: pointer;\n',
+        '    font-size: 10px;\n',
+        '    display: inline;\n',
+        '    font-size: 10px;\n',
+        '    margin: 5px;\n',
+        '}\n',
+        '#seek-controls > div:hover{\n',
+        '    color: #F1F1F1;\n',
+        '}\n',
+        '#seek-thumbs{\n',
+        '    overflow: auto;\n',
+        '}\n',
+        '#seek-thumbs span{\n',
+        '    background: rgba(0, 0, 0, 0.8);\n',
+        '    background-clip: padding-box;\n',
+        '    border-color: rgba(0, 0, 0, 0.8);\n',
+        '    border-style: solid;\n',
+        '    border-width: 10px 5px 20px;\n',
+        '    display: inline-block;\n',
+        '    position: relative;\n',
+        '}\n',
+        '#seek-thumbs .timer{\n',
+        '    font-size: 11px;\n',
+        '    line-height: 20px;\n',
+        '    position: absolute;\n',
+        '    text-align: center;\n',
+        '    top: 100%;\n',
+        '    width: 100%;\n',
+        '}\n',
         '.player-console #watch-header, #page.player-console.watch-stage-mode #watch7-sidebar{\n',
         '    margin-top: 40px;\n',
         '}\n',
@@ -860,6 +910,20 @@
         request.onload = process;
         request.open(method, url, true);
         request.send();
+    }
+    function timeConv(seconds) {
+        var days = Math.floor(seconds / 86400),
+            hours = Math.floor((seconds % 86400) / 3600),
+            minutes = Math.floor((seconds % 3600) / 60),
+            matrix = [];
+        if (days > 0) {
+            matrix.push(days);
+        }
+        if (hours > 0) {
+            matrix.push((((days > 0 && '0') || '') + hours).slice(-2));
+        }
+        matrix.push((((hours > 0 && '0') || '') + minutes).slice(-2), ('0' + seconds).slice(-2));
+        return matrix.join(':');
     }
     function settingsMenu() {
         var pContent,
@@ -1138,13 +1202,11 @@
         }
         if (get('VID_TTL_CMPT')) {
             styleSheet.textContent +=
-                '#watch-headline-title{\n' +
-                '    display: block !important;\n' +
-                '    white-space: nowrap !important;\n' +
-                '}\n' +
-                '#watch-headline-title h1{\n' +
-                '    display: block !important;\n' +
-                '    text-overflow: ellipsis !important;\n' +
+                '#eow-title{\n' +
+                '    display: block;\n' +
+                '    overflow: hidden;\n' +
+                '    text-overflow: ellipsis;\n' +
+                '    white-space: nowrap;\n' +
                 '}\n';
         }
         if (get('GEN_CMPT_TTLS')) {
@@ -1817,10 +1879,50 @@
             function toggleMap() {
                 var container = document.getElementById('seek-thumb-map') || false,
                     storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
+                    thumbControls,
+                    thumbsContainer,
                     thumbs = [],
                     matrix = storyBoard && storyBoard.split('|'),
                     base = matrix[0];
+                function centerThumb() {
+                    var thumbJump;
+                    videoPlayer = document.getElementsByTagName('video')[0];
+                    thumbsContainer = document.getElementById('seek-thumbs');
+                    thumbJump = thumbsContainer.getElementsByTagName('span')[1];
+                    if (videoPlayer && videoPlayer.currentTime > 0 && !container.classList.contains('invisible')) {
+                        thumbsContainer.scrollLeft = thumbJump.offsetWidth * (videoPlayer.currentTime / thumbJump.getAttribute('data-time-jump')) - (thumbsContainer.offsetWidth / 2) + (thumbJump.offsetWidth / 2);
+                    } else {
+                        thumbsContainer.scrollLeft = 0;
+                    }
+                }
+                function removeOld() {
+                    if (container) {
+                        container.remove();
+                        seekMap.classList.remove('active');
+                    } else {
+                        window.removeEventListener('spfdone', removeOld);
+                    }
+                }
+                function clickManager(event) {
+                    var timeJump = event.target.getAttribute('data-time-jump'),
+                        quality = event.target.className.split('quality').length;
+                    if (timeJump) {
+                        if (videoPlayer.src !== '') {
+                            videoPlayer.currentTime = timeJump;
+                        } else {
+                            window.yt.www.watch.player.seekTo(timeJump);
+                        }
+                    }
+                    if (quality > 1 && event.target.tagName === 'DIV') {
+                        thumbsContainer.remove();
+                        thumbsContainer = '<div id="seek-thumbs">' + thumbs[event.target.className.replace('quality-', '')] + '</div>\n';
+                        thumbsContainer = string2HTML(thumbsContainer).querySelector('#seek-thumbs');
+                        container.appendChild(thumbsContainer);
+                        centerThumb();
+                    }
+                }
                 function parseThumbs() {
+                    thumbControls = '<div id="seek-controls">\n';
                     matrix.forEach(function (qualities, level) {
                         var i,
                             currentBase,
@@ -1829,19 +1931,22 @@
                             gridX = 0,
                             gridY = 0,
                             frameAmount = 0;
-                        if (qualities.split('storyboard').length < 2) {
+                        if (qualities.split('storyboard').length < 2 && qualities.split('default').length < 2) {
                             details = qualities.split('#');
                             currentBase = base.replace('$L', level - 1).replace('$N', details[6]);
-                            thumbAmount = details[2];
+                            thumbAmount = details[2] - 1;
                             for (i = 0; i < thumbAmount; i += 1) {
                                 if (!thumbs[level - 1]) {
                                     thumbs[level - 1] = '';
                                 }
                                 thumbs[level - 1] += [
-                                    '<span class="seek-thumbs quality-' + level + '" style="',
-                                    'background-image: url(\'' + currentBase.replace('$M', frameAmount) + '?sigh=' + details[7] + '\');',
+                                    '<span class="quality-' + level + '"',
+                                    'data-time-jump="' + ((i * details[5]) / 1000) + '"',
+                                    ' style="background-image: url(\'' + currentBase.replace('$M', frameAmount) + '?sigh=' + details[7] + '\');',
                                     'background-position: -' + (gridX * details[0]) + 'px -' + (gridY * details[1]) + 'px;',
-                                    'margin: 10px 5px; width: ' + (details[0] - 2) + 'px; height: ' + details[1] + 'px; display: inline-block;"></span>\n'
+                                    'width: ' + (details[0] - 2) + 'px; height: ' + details[1] + 'px;">\n',
+                                    '    <div class="timer">' + timeConv((i * details[5]) / 1000) + '</div>\n',
+                                    '</span>\n'
                                 ].join('');
                                 if (gridX === details[3] - 1 && gridY === details[4] - 1) {
                                     frameAmount += 1;
@@ -1852,19 +1957,29 @@
                                 }
                             }
                         }
+                        if (level > 1) {
+                            thumbControls += '<div class="quality-' + (level - 1) + '">' + ((level < 3 && 'SMALL') || (level < 4 && 'MEDIUM') || (level < 5 && 'LARGE')) + '</div>\n';
+                        }
                     });
-                    return thumbs;
+                    thumbControls += '</div>\n';
                 }
                 if (storyBoard && !container) {
+                    seekMap.classList.toggle('active');
                     parseThumbs();
                     container +=
-                        '<div id="seek-thumb-map" style="background: rgba(0, 0, 0, 0.8); overflow-x: scroll; position: absolute; z-index: 910; width: 100%; white-space: nowrap; font-size: 0px; box-shadow: 0px 0px 10px rgb(0, 0, 0); top: 50%; transform: translateY(-50%);">\n' +
-                        (thumbs[3] || thumbs[2] || thumbs[1]) +
+                        '<div id="seek-thumb-map">\n' +
+                        thumbControls +
+                        '<div id="seek-thumbs">' + (thumbs[2] || thumbs[1]) + '</div>\n' +
                         '</div>';
                     container = string2HTML(container).querySelector('#seek-thumb-map');
                     document.getElementById('movie_player').appendChild(container);
-                    console.info(container);
+                    centerThumb();
+                    container.addEventListener('click', clickManager);
+                    window.addEventListener('spfdone', removeOld);
                 } else if (container.id) {
+                    seekMap.classList.toggle('active');
+                    container.classList.toggle('invisible');
+                    centerThumb();
                 }
             }
             function dlThumb() {
