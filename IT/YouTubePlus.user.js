@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.5
+// @version     1.4.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -7,9 +7,33 @@
 // @match       https://www.youtube.com/*
 // @run-at      document-start
 // @downloadURL https://github.com/ParticleCore/Particle/raw/master/IT/YouTubePlus.user.js
-// @grant       none
+// @grant       GM_xmlhttpRequest
 // @noframes
 // ==/UserScript==
+(function () {
+    'use strict';
+    function xhr(a) {
+        if (typeof a.data !== 'object' || !a.data.id) {
+            return;
+        }
+        a = a.data;
+        function process(b) {
+            a[a.id] = b.response;
+            window.postMessage(a, '*');
+        }
+        GM_xmlhttpRequest({
+            url: a.url,
+            method: a.method,
+            onload: process
+        });
+    }
+    if (typeof GM_info !== 'undefined') {
+        window.localStorage.GM_userscript = '1';
+        window.addEventListener('message', xhr);
+    } else {
+        window.localStorage.GM_userscript = '0';
+    }
+}());
 (function particle() {
     'use strict';
     var api,
@@ -846,6 +870,7 @@
         '}\n',
         '#seek-thumb-map{\n',
         '    font-size: 0;\n',
+        '    overflow: auto;\n',
         '    position: absolute;\n',
         '    top: 50%;\n',
         '    transform: translateY(-50%);\n',
@@ -858,9 +883,10 @@
         '    border-top-left-radius: 5px;\n',
         '    border-top-right-radius: 5px;\n',
         '    bottom: 100%;\n',
+        '    display: inline-block;\n',
         '    left: 50%;\n',
         '    padding: 5px 5px 0;\n',
-        '    position: absolute;\n',
+        '    position: relative;\n',
         '    transform: translateX(-50%);\n',
         '}\n',
         '#seek-controls > div{\n',
@@ -899,14 +925,20 @@
         '}\n'
     ].join('');
     document.documentElement.appendChild(styleSheet);
-    function xhr(method, url, callback) {
-        var request = new XMLHttpRequest();
-        function process() {
-            callback(request.responseText);
+    function xhr(a) {
+        var request;
+        function process(b) {
+            a[a.id] = b.target.response;
+            window.postMessage(a, '*');
         }
-        request.onload = process;
-        request.open(method, url, true);
-        request.send();
+        if (window.localStorage.GM_userscript === '0') {
+            request = new XMLHttpRequest();
+            request.onload = process;
+            request.open(a.method, a.url, true);
+            request.send();
+        } else {
+            window.postMessage(a, '*');
+        }
     }
     function timeConv(time) {
         var days = Math.floor(time / 86400),
@@ -1439,10 +1471,14 @@
                     verified.remove();
                 }
             }
-            function getInfo(a) {
-                link.className = 'spf-link';
-                link.textContent = channelId[user.getAttribute('data-ytid')] = JSON.parse(a).body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '').replace('&#39;', '\'');
-                videoCounter();
+            function getPLInfo(a) {
+                a = a.data;
+                if (a.getPLInfo) {
+                    window.removeEventListener('message', getPLInfo);
+                    link.className = 'spf-link';
+                    link.textContent = channelId[user.getAttribute('data-ytid')] = JSON.parse(a.getPLInfo).body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '').replace('&#39;', '\'');
+                    videoCounter();
+                }
             }
             if (!document.getElementById('uploaded-videos') && name) {
                 link = document.createElement('a');
@@ -1453,22 +1489,36 @@
                     link.textContent = channelId[user.getAttribute('data-ytid')];
                     videoCounter();
                 } else {
-                    xhr('GET', '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'), getInfo);
+                    xhr({
+                        method: 'GET',
+                        url: window.location.origin + '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
+                        id: 'getPLInfo'
+                    });
+                    window.addEventListener('message', getPLInfo);
                 }
             }
         }
         function publishedTime() {
             var watchTime = document.getElementsByClassName('watch-time-text')[0];
-            function getInfo(a) {
-                if (watchTime.textContent.split('·').length < 2) {
-                    a = JSON.parse(a).body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
-                    if (a) {
-                        watchTime.textContent += ' · ' + a[1].split('</li><li>')[0];
+            function getCHInfo(a) {
+                a = a.data;
+                if (a.getCHInfo) {
+                    window.removeEventListener('message', getCHInfo);
+                    if (watchTime.textContent.split('·').length < 2) {
+                        a = JSON.parse(a.getCHInfo).body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
+                        if (a) {
+                            watchTime.textContent += ' · ' + a[1].split('</li><li>')[0];
+                        }
                     }
                 }
             }
             if (watchTime) {
-                xhr('GET', '/channel/' + window.ytplayer.config.args.ucid + '/search?spf=navigate&query="' + window.ytplayer.config.args.video_id, getInfo);
+                xhr({
+                    method: 'GET',
+                    url: window.location.origin + '/channel/' + window.ytplayer.config.args.ucid + '/search?spf=navigate&query="' + window.ytplayer.config.args.video_id,
+                    id: 'getCHInfo'
+                });
+                window.addEventListener('message', getCHInfo);
             }
         }
         if (window.location.href.split('/watch').length > 1) {
@@ -1503,7 +1553,6 @@
             playerElement = document.getElementById('player');
         if (get('VID_PLR_SIZE_MEM') && get('theaterMode') && (cookie.split('wide=0').length > 1 || cookie.split('wide=1').length < 2)) {
             document.cookie = 'wide=1; domain=.youtube.com; path=/';
-            //document.cookie = 'wide=1; host=www.youtube.com; path=/';
             if (playerElement && window.location.href.split('/watch').length > 1) {
                 playerElement.className = playerElement.className.replace('small', 'large');
                 document.getElementById('watch7-container').className = 'watch-wide';
@@ -1519,7 +1568,7 @@
                 hdURL = b.args['iurl' + base].replace('hqdefault', 'maxresdefault'),
                 state = api && api.getPlayerState && api.getPlayerState();
             function widthReport() {
-                if (img.width > 120 && !b.args['iurlmaxres' + base] && state && state === 5) {
+                if (img.width > 120 && !b.args['iurlmaxres' + base] && state && (state === 5 || state === 3)) {
                     ['iurl', 'iurlsd', 'iurlmq', 'iurlhq', 'iurlmaxres'].forEach(function (c) {
                         b.args[c + base] = hdURL;
                     });
@@ -1876,10 +1925,10 @@
             }
             function toggleMap() {
                 var container = document.getElementById('seek-thumb-map') || false,
-                    storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
                     thumbControls,
                     thumbsContainer,
                     thumbs = [],
+                    storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
                     matrix = storyBoard && storyBoard.split('|'),
                     base = matrix[0];
                 function centerThumb() {
@@ -2025,13 +2074,14 @@
             screenShot.addEventListener('click', saveSS);
         }
         function toggleConsole() {
+            var storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
             if (!controls) {
                 controls = [
                     '<div id="player-console">\n',
                     '    <div id="autoplay-button" class="yt-uix-tooltip' + ((get('VID_PLR_ATPL')) ? ' active' : '') + '" data-tooltip-text="Autoplay videos"></div>\n',
                     '    <div id="loop-button" class="yt-uix-tooltip" data-tooltip-text="Repeat video"></div>\n',
                     '    <div id="audio-only" class="yt-uix-tooltip" data-tooltip-text="Play audio only"></div>\n',
-                    '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="Seek map"></div>\n',
+                    '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? 'Seek map' : 'No thumbs found') + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="Save thumbnail"></div>\n',
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="Take screenshot"></div>\n',
                     '</div>'
