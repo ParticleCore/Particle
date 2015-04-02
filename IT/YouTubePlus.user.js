@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.8
+// @version     1.4.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -45,6 +45,7 @@
         styleSheet,
         fullscreen,
         channelId = {},
+        eventStock = {},
         defaultSettings,
         usingChrome = typeof window.chrome === 'object';
     if (document.getElementById('P-style')) {
@@ -896,15 +897,18 @@
         '    transform: translateX(-50%);\n',
         '}\n',
         '#seek-controls > div{\n',
-        '    color: rgba(255,255,255, 0.5);\n',
+        '    color: rgba(255,255,255, 0.4);\n',
         '    cursor: pointer;\n',
         '    font-size: 10px;\n',
         '    display: inline;\n',
         '    font-size: 10px;\n',
         '    margin: 5px;\n',
         '}\n',
+        '.quality-1 .quality-1, .quality-2 .quality-2, .quality-3 .quality-3{\n',
+        '    color: rgba(255,255,255, 0.7) !important;\n',
+        '}\n',
         '#seek-controls > div:hover{\n',
-        '    color: #F1F1F1;\n',
+        '    color: #F1F1F1 !important;\n',
         '}\n',
         '#seek-thumbs{\n',
         '    background: rgba(0, 0, 0, 0.8);\n',
@@ -930,6 +934,7 @@
         '    width: 100%;\n',
         '}\n',
         '#podcast-container{\n',
+        '    background-position: center;\n',
         '    background-size: cover;\n',
         '    pointer-events: none;\n',
         '    z-index: 900;\n',
@@ -950,16 +955,16 @@
         '    position: absolute;\n',
         '    top: 50%;\n',
         '    transform: translate(-50%, -50%);\n',
-        '    width: 50%;\n',
+        '    width: 70%;\n',
         '    z-index: 1;\n',
         '}\n',
         '#podcast-poster{\n',
         '    background: rgba(0, 0, 0, 0.3);\n',
-        '    box-sizing: padding-box;\n',
+        '    box-sizing: border-box;\n',
         '    float: left;\n',
-        '    overflow: hidden;\n',
         '    padding: 5px;\n',
         '    width: 30%;\n',
+        '    margin-right: 10px;\n',
         '}\n',
         '#podcast-poster div{\n',
         '    background: #000 no-repeat center / cover content-box;\n',
@@ -971,21 +976,28 @@
         '    padding-top: 100%\n',
         '}\n',
         '#podcast-info{\n',
-        '    box-sizing: padding-box;\n',
-        '    padding-left: 10px;\n',
-        '    position: absolute;\n',
+        '    left: 30%;\n',
+        '    margin-left: 10px;\n',
+        '    overflow: hidden;\n',
+        '    text-overflow: ellipsis;\n',
         '    top: 50%;\n',
         '    transform: translateY(-50%);\n',
-        '    right: 0;\n',
+        '    position: absolute;\n',
         '    width: 70%;\n',
+        '    white-space: nowrap;\n',
         '}\n',
         '#podcast-info div{\n',
-        '    margin-bottom: 10px;\n',
+        '    margin: 10px 0;\n',
         '    text-shadow: 1px 1px 2px #000;\n',
         '}\n',
+        '#podcast-info div:last-child{\n',
+        '    margin-bottom: 0;\n',
+        '}\n',
         '#podcast-title{\n',
+        '    display: inline;\n',
         '    font-size: 15px;\n',
         '    font-weight: bold;\n',
+        '    line-height: 20px;\n',
         '}\n',
         '#podcast-progress{\n',
         '    height: 13px;\n',
@@ -1021,6 +1033,28 @@
             request.send();
         } else {
             window.postMessage(a, '*');
+        }
+    }
+    function addEvent(target, event, call, capture) {
+        var name = call.name,
+            capture = !!capture;
+        if (eventStock[name] && eventStock[name][event]) {
+            eventStock[name][event][0].removeEventListener(event, eventStock[name][event][1], eventStock[name][event][2]);
+        }
+        target.addEventListener(event, call, capture);
+        if (!eventStock[name]) {
+            eventStock[name] = {};
+        }
+        if (!eventStock[name][event]) {
+            eventStock[name][event] = {};
+        }
+        eventStock[name][event] = [target, call, capture];
+    }
+    function remEvent(target, event, call, capture) {
+        var name = call.name,
+            capture = !!capture;
+        if (eventStock[name] && eventStock[name][event]) {
+            eventStock[name][event][0].removeEventListener(event, eventStock[name][event][1], eventStock[name][event][2]);
         }
     }
     function timeConv(time) {
@@ -1278,7 +1312,7 @@
                 pWrapper = string2HTML(menus.setMenu).querySelector('#P-settings');
                 pWrapper.querySelector('#P-container').appendChild(string2HTML(menus.GEN).querySelector('#P-content'));
                 bodyContainer.insertBefore(pWrapper, pageContainer);
-                pWrapper.addEventListener('click', navigateSettings);
+                addEvent(pWrapper, 'click', navigateSettings);
             }
             document[usingChrome ? 'body' : 'documentElement'].scrollTop = 0;
         }
@@ -1287,7 +1321,7 @@
             settingsButton = document.createElement('button');
             settingsButton.id = 'P';
             settingsButton.title = 'YouTube+ settings';
-            settingsButton.addEventListener('click', settingsTemplate);
+            addEvent(settingsButton, 'click', settingsTemplate);
             buttonsSection.appendChild(settingsButton);
         }
     }
@@ -1585,7 +1619,7 @@
             function getPLInfo(details) {
                 details = details.data;
                 if (details.getPLInfo) {
-                    window.removeEventListener('message', getPLInfo);
+                    remEvent(window, 'message', getPLInfo);
                     details = JSON.parse(details.getPLInfo);
                     details = details.body && details.body.content && details.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '').replace('&#39;', '\'');
                     if (details) {
@@ -1609,7 +1643,7 @@
                         url: window.location.origin + '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
                         id: 'getPLInfo'
                     });
-                    window.addEventListener('message', getPLInfo);
+                    addEvent(window, 'message', getPLInfo);
                 }
             }
         }
@@ -1618,7 +1652,7 @@
             function getCHInfo(details) {
                 details = details.data;
                 if (details.getCHInfo) {
-                    window.removeEventListener('message', getCHInfo);
+                    remEvent(window, 'message', getCHInfo);
                     if (watchTime.textContent.split('·').length < 2) {
                         details = JSON.parse(details.getCHInfo);
                         details = details.body && details.body.content && details.body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
@@ -1628,13 +1662,13 @@
                     }
                 }
             }
-            if (watchTime) {
+            if (watchTime && window.ytplayer.config) {
                 xhr({
                     method: 'GET',
                     url: window.location.origin + '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
                     id: 'getCHInfo'
                 });
-                window.addEventListener('message', getCHInfo);
+                addEvent(window, 'message', getCHInfo);
             }
         }
         if (window.location.href.split('/watch').length > 1) {
@@ -1660,7 +1694,7 @@
                 '</div>\n'
             ].join('');
             wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
-            wrapper.addEventListener('click', showComments);
+            addEvent(wrapper, 'click', showComments);
             comments.parentNode.insertBefore(wrapper, comments);
         }
     }
@@ -1685,7 +1719,7 @@
                 hdURL = config.args['iurl' + base].replace('hqdefault', 'maxresdefault'),
                 state = api && api.getPlayerState && api.getPlayerState();
             function widthReport() {
-                img.removeEventListener('load', widthReport);
+                remEvent(img, 'load', widthReport);
                 if (img.width > 120 && !config.args['iurlmaxres' + base] && state && (state === 5 || (state === 3 && video && video.src === ''))) {
                     ['iurl', 'iurlsd', 'iurlmq', 'iurlhq', 'iurlmaxres'].forEach(function (prefix) {
                         config.args[prefix + base] = hdURL;
@@ -1698,7 +1732,7 @@
                 }
             }
             img = new Image();
-            img.addEventListener('load', widthReport);
+            addEvent(img, 'load', widthReport);
             img.src = hdURL;
         }
         if (config.args.video_id) {
@@ -1752,7 +1786,7 @@
             function go(c) {
                 c = c.data;
                 if (c.go) {
-                    window.removeEventListener('message', go);
+                    remEvent(window, 'message', go);
                     c.split('&').forEach(function (d) {
                         args[d.split('=')[0]] = window.decodeURIComponent(d.split('=')[1].replace(/\+/g, ' '));
                     });
@@ -1770,7 +1804,7 @@
                     url: window.location.origin + '/get_video_info?el=detailpage&video_id=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list)) || ''),
                     id: 'go'
                 });
-                window.addEventListener('message', go);
+                addEvent(window, 'message', go);
             }
         }
         function playerFullscreen(b) {
@@ -1786,22 +1820,37 @@
         function stopButton() {
             var prev,
                 button,
+                playBtn,
                 playerBar;
+            function resumeVideo(a) {
+                var currentQuality = api.getPlaybackQuality(),
+                    currentTime = api.getCurrentTime();
+                remEvent(playBtn, 'click', resumeVideo);
+                document.getElementById('movie_player').remove();
+                api.loadNewVideoConfig(window.ytplayer.config, 'html5');
+                api.setPlaybackQuality(currentQuality);
+                api.seekTo(currentTime);
+            }
+            function stopVideo() {
+                api.stopVideo();
+                playBtn = document.getElementsByClassName('ytp-button-pause')[0] || document.getElementsByClassName('ytp-button-play')[0];
+                addEvent(playBtn, 'click', resumeVideo);
+            }
             if (!document.getElementsByClassName('ytp-button-stop')[0]) {
                 playerBar = document.getElementsByClassName('html5-player-chrome')[0];
                 prev = document.getElementsByClassName('ytp-button-prev')[0];
                 button = '<div role="button" class="ytp-button ytp-button-stop"></div>';
                 button = string2HTML(button).querySelector('div');
-                button.addEventListener('click', api.stopVideo);
+                addEvent(button, 'click', stopVideo);
                 playerBar.insertBefore(button, prev);
             }
         }
         if (typeof a === 'object' && !document.getElementById('c4-player')) {
             api = a;
-            api.addEventListener('onFullscreenChange', playerFullscreen);
-            api.addEventListener('onVolumeChange', volumeChanged);
-            api.addEventListener('onStateChange', playerState);
-            api.addEventListener('SIZE_CLICKED', sizeChanged);
+            addEvent(api, 'onFullscreenChange', playerFullscreen);
+            addEvent(api, 'onVolumeChange', volumeChanged);
+            addEvent(api, 'onStateChange', playerState);
+            addEvent(api, 'SIZE_CLICKED', sizeChanged);
             if (get('VID_STP_BTN')) {
                 stopButton();
             }
@@ -1927,7 +1976,7 @@
         function html5Fix(b) {
             return function () {
                 var changed = b.apply(this, arguments);
-                if (changed && changed.list && changed.index !== changed.video.length - 1) {
+                if ((!api.getPlayerState || api.getPlayerState() !== 0) && changed && changed.list && changed.index !== changed.video.length - 1) {
                     changed.loop = false;
                     changed.index = changed.video.length - 1;
                 }
@@ -2010,7 +2059,7 @@
                 ].join('');
             playlistBar.className = playlistBar.className.replace('radio-playlist', '');
             button = string2HTML(button).querySelector('button');
-            button.addEventListener('click', c);
+            addEvent(button, 'click', c);
             navControls.appendChild(button);
         }
         if (playlistBar) {
@@ -2033,7 +2082,6 @@
             controls = document.getElementById('player-console');
         function hookButtons() {
             var videoPlayer = document.getElementsByTagName('video')[0],
-                videoSource = videoPlayer.src,
                 autoPlay = controls.querySelector('#autoplay-button'),
                 loopButton = controls.querySelector('#loop-button'),
                 audioOnly = controls.querySelector('#audio-only'),
@@ -2049,17 +2097,19 @@
                 loopButton.classList[(videoPlayer.loop) ? 'add' : 'remove']('active');
             }
             function toggleAudio() {
-                var streams = {},
+                var streams,
                     loadStream,
-                    container = document.getElementById('podcast-container'),
-                    user = window.ytplayer.config.args.author || document.querySelector('.yt-user-info > a').textContent,
-                    base = window.ytplayer.config.args.iurl_webp ? '_webp' : '',
-                    poster = window.ytplayer.config.args['iurlmaxres' + base] || window.ytplayer.config.args['iurl' + base];
+                    currentTime,
+                    currentQuality,
+                    container,
+                    user,
+                    base,
+                    poster;
                 function timeProgress() {
                     var total = document.getElementById('podcast-total'),
                         elapsed = document.getElementById('podcast-current');
                     if (!total) {
-                        videoPlayer.removeEventListener('timeupdate', timeProgress);
+                        remEvent(videoPlayer, 'timeupdate', timeProgress);
                         return;
                     }
                     if (elapsed) {
@@ -2070,31 +2120,33 @@
                     }
                 }
                 function initAudioMode() {
-                    videoPlayer.src = loadStream.url;
                     api.playVideo();
-                    if (!container) {
-                        container = [
-                            '<div id="podcast-container" style="background-image:url(\'' + poster + '\')">\n',
-                            '    <div id="podcast-elements">\n',
-                            '        <div id="podcast-poster">\n',
-                            '            <div style="background-image:url(\'' + poster + '\')"></div>\n',
-                            '        </div>\n',
-                            '        <div id="podcast-info">\n',
-                            '            <div id="podcast-title">' + document.title.replace(' - YouTube', '').replace('▶ ', '') + '</div>\n',
-                            '            <div id="podcast-channel">' + user + '</div>\n',
-                            '            <div id="podcast-progress">\n',
-                            '                <div id="podcast-current"></div>\n',
-                            '                <div id="podcast-total"></div>\n',
-                            '            </div>\n',
-                            '        </div>\n',
-                            '    </div>\n',
-                            '</div>\n'
-                        ].join('');
-                        container = string2HTML(container).querySelector('#podcast-container');
+                    videoPlayer.src = loadStream.url;
+                    videoPlayer.play();
+                    if (container) {
+                        container.remove();
                     }
+                    container = [
+                        '<div id="podcast-container" style="background-image:url(\'' + poster + '\')">\n',
+                        '    <div id="podcast-elements">\n',
+                        '        <div id="podcast-poster">\n',
+                        '            <div style="background-image:url(\'' + poster + '\')"></div>\n',
+                        '        </div>\n',
+                        '        <div id="podcast-info">\n',
+                        '            <div id="podcast-title">' + document.title.replace(' - YouTube', '').replace('▶ ', '') + '</div>\n',
+                        '            <div id="podcast-channel">' + user + '</div>\n',
+                        '            <div id="podcast-progress">\n',
+                        '                <div id="podcast-current"></div>\n',
+                        '                <div id="podcast-total"></div>\n',
+                        '            </div>\n',
+                        '        </div>\n',
+                        '    </div>\n',
+                        '</div>\n'
+                    ].join('');
+                    container = string2HTML(container).querySelector('#podcast-container');
                     document.getElementById('movie_player').appendChild(container);
-                    videoPlayer.addEventListener('timeupdate', timeProgress);
-                    audioOnly.classList.add('active');
+                    addEvent(document.getElementsByTagName('video')[0], 'timeupdate', timeProgress);
+                    document.getElementById('audio-only').classList.add('active');
                 }
                 function cipherAlgorithm(event) {
                     var deCipher,
@@ -2110,7 +2162,7 @@
                         deCipher = string2Function(JSON.parse(prevCipher)[html5ID]);
                         console.info('local', deCipher + String());
                     } else if (event && event.data.cipherAlgorithm) {
-                        window.removeEventListener('message', cipherAlgorithm);
+                        remEvent(window, 'message', cipherAlgorithm);
                         event = event.data.cipherAlgorithm;
                         cipherFunction =
                             event.match(/var [\w]{2}\=\{[\w]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0] +
@@ -2128,7 +2180,7 @@
                             url: location.protocol + html5,
                             id: 'cipherAlgorithm'
                         });
-                        window.addEventListener('message', cipherAlgorithm);
+                        addEvent(window, 'message', cipherAlgorithm);
                         return;
                     }
                     if (deCipher) {
@@ -2136,14 +2188,16 @@
                         initAudioMode();
                     }
                 }
-                if (audioOnly.classList.contains('active')) {
-                    container.remove();
-                    audioOnly.classList.remove('active');
-                    window.ytplayer.config.loaded = false;
-                    api.loadNewVideoConfig(window.ytplayer.config, 'html5');
-                    window.ytplayer.config.loaded = true;
-                } else {
-                    videoSource = videoPlayer.src;
+                function startAudioMode() {
+                    if (!window.ytplayer.config) {
+                        return;
+                    }
+                    videoPlayer = document.getElementsByTagName('video')[0];
+                    container = document.getElementById('podcast-container');
+                    user = window.ytplayer.config.args.author || document.querySelector('.yt-user-info > a').textContent;
+                    base = window.ytplayer.config.args.iurl_webp ? '_webp' : '';
+                    poster = window.ytplayer.config.args['iurlmaxres' + base] || window.ytplayer.config.args['iurl' + base];
+                    streams = {};
                     window.ytplayer.config.args.adaptive_fmts.split(',').forEach(
                         function (stream) {
                             var itag = stream.match(/itag\=([0-9]{3})/)[1];
@@ -2165,6 +2219,20 @@
                         }
                     }
                 }
+                if (audioOnly.classList.contains('active')) {
+                    remEvent(window, 'spfdone', startAudioMode);
+                    container = document.getElementById('podcast-container').remove();
+                    audioOnly.classList.remove('active');
+                    currentQuality = api.getPlaybackQuality();
+                    currentTime = api.getCurrentTime();
+                    document.getElementById('movie_player').remove();
+                    api.loadNewVideoConfig(window.ytplayer.config, 'html5');
+                    api.setPlaybackQuality(currentQuality);
+                    api.seekTo(currentTime);
+                } else {
+                    addEvent(window, 'spfdone', startAudioMode);
+                    startAudioMode();
+                }
             }
             function toggleMap() {
                 var container = document.getElementById('seek-thumb-map') || false,
@@ -2185,14 +2253,6 @@
                         thumbsContainer.scrollLeft = 0;
                     }
                 }
-                function removeOld() {
-                    if (container) {
-                        container.remove();
-                        seekMap.classList.remove('active');
-                    } else {
-                        window.removeEventListener('spfdone', removeOld);
-                    }
-                }
                 function clickManager(event) {
                     var timeJump = event.target.getAttribute('data-time-jump'),
                         quality = event.target.className.split('quality').length;
@@ -2204,12 +2264,21 @@
                         }
                     }
                     if (quality > 1 && event.target.tagName === 'DIV') {
+                        container.className = event.target.className;
                         thumbsContainer.remove();
                         thumbsContainer = '<div id="seek-thumbs">' + thumbs[event.target.className.replace('quality-', '')] + '</div>\n';
                         thumbsContainer = string2HTML(thumbsContainer).querySelector('#seek-thumbs');
                         container.appendChild(thumbsContainer);
                         centerThumb();
                     }
+                }
+                function removeOld() {
+                    if (container) {
+                        container.remove();
+                        seekMap.classList.remove('active');
+                    }
+                    addEvent(container, 'click', clickManager);
+                    remEvent(window, 'spfdone', removeOld);
                 }
                 function parseThumbs() {
                     thumbControls = '<div id="seek-controls">\n';
@@ -2230,11 +2299,11 @@
                                     thumbs[level - 1] = '';
                                 }
                                 thumbs[level - 1] += [
-                                    '<span class="quality-' + level + '"',
-                                    'data-time-jump="' + ((i * details[5]) / 1000) + '"',
+                                    '<span class="quality-' + (level - 1) + '"',
+                                    ' data-time-jump="' + ((i * details[5]) / 1000) + '"',
                                     ' style="background-image: url(\'' + currentBase.replace('$M', frameAmount) + '?sigh=' + details[7] + '\');',
-                                    'background-position: -' + (gridX * details[0]) + 'px -' + (gridY * details[1]) + 'px;',
-                                    'width: ' + (details[0] - 2) + 'px; height: ' + details[1] + 'px;">\n',
+                                    ' background-position: -' + (gridX * details[0]) + 'px -' + (gridY * details[1]) + 'px;',
+                                    ' width: ' + (details[0] - 2) + 'px; height: ' + details[1] + 'px;">\n',
                                     '    <div class="timer">' + timeConv((i * details[5]) / 1000) + '</div>\n',
                                     '</span>\n'
                                 ].join('');
@@ -2260,15 +2329,15 @@
                         seekMap.classList.toggle('active');
                         parseThumbs();
                         container +=
-                            '<div id="seek-thumb-map">\n' +
+                            '<div id="seek-thumb-map" class="' + ((thumbs[2] && 'quality-2') || (thumbs[1] && 'quality-1')) + '">\n' +
                             thumbControls +
                             '<div id="seek-thumbs">' + (thumbs[2] || thumbs[1]) + '</div>\n' +
                             '</div>';
                         container = string2HTML(container).querySelector('#seek-thumb-map');
                         document.getElementById('movie_player').appendChild(container);
                         centerThumb();
-                        container.addEventListener('click', clickManager);
-                        window.addEventListener('spfdone', removeOld);
+                        addEvent(container, 'click', clickManager);
+                        addEvent(window, 'spfdone', removeOld);
                     } else if (container.id) {
                         seekMap.classList.toggle('active');
                         container.classList.toggle('invisible');
@@ -2306,34 +2375,35 @@
                     container.appendChild(canvas);
                     close.id = 'close-screenshot';
                     close.textContent = 'close';
-                    close.addEventListener('click', hideContainer);
+                    addEvent(close, 'click', hideContainer);
                     container.appendChild(close);
                     document.body.appendChild(container);
                 } else if (container.id && container.classList.contains('invisible')) {
                     container.classList.toggle('invisible');
                 }
             }
-            autoPlay.addEventListener('click', togglePlay);
-            loopButton.addEventListener('click', toggleLoop);
-            audioOnly.addEventListener('click', toggleAudio);
-            seekMap.addEventListener('click', toggleMap);
-            saveThumb.addEventListener('click', dlThumb);
-            screenShot.addEventListener('click', saveSS);
+            addEvent(autoPlay, 'click', togglePlay);
+            addEvent(loopButton, 'click', toggleLoop);
+            addEvent(audioOnly, 'click', toggleAudio);
+            addEvent(seekMap, 'click', toggleMap);
+            addEvent(saveThumb, 'click', dlThumb);
+            addEvent(screenShot, 'click', saveSS);
         }
         function toggleConsole(event) {
-            var storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
+            var storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
+                videoPlayer = document.getElementsByTagName('video')[0];
             if (controls) {
                 controls.remove();
             }
             controls = [
                 '<div id="player-console">\n',
                 '    <div id="autoplay-button" class="yt-uix-tooltip' + ((get('VID_PLR_ATPL')) ? ' active' : '') + '" data-tooltip-text="Autoplay videos"></div>\n',
-                '    <div id="loop-button" class="yt-uix-tooltip" data-tooltip-text="Repeat video"></div>\n',
-                '    <div id="audio-only" class="yt-uix-tooltip" data-tooltip-text="Play audio only"></div>\n',
+                '    <div id="loop-button" class="yt-uix-tooltip' + ((videoPlayer && videoPlayer.loop) ? ' active' : '') + '" data-tooltip-text="Repeat video"></div>\n',
+                '    <div id="audio-only" class="yt-uix-tooltip' + ((document.getElementById('podcast-container')) ? ' active' : '') + '" data-tooltip-text="Play audio only"></div>\n',
                 '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? 'Seek map' : 'No thumbs found') + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                 '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="Save thumbnail"></div>\n',
                 '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="Take screenshot"></div>\n',
-                '</div>'
+                '</div>\n'
             ].join('');
             controls = string2HTML(controls).querySelector('div');
             player.appendChild(controls);
@@ -2345,7 +2415,7 @@
         if (location.href.split('/watch').length > 1 && header && !consoleButton) {
             consoleButton = '<div id="console-button" title="Player console"></div>';
             consoleButton = string2HTML(consoleButton).querySelector('div');
-            consoleButton.addEventListener('click', toggleConsole);
+            addEvent(consoleButton, 'click', toggleConsole);
             header.appendChild(consoleButton);
         }
         if (page.classList.contains('player-console')) {
@@ -2382,13 +2452,13 @@
         }
     }
     window.onYouTubePlayerReady = playerReady;
-    window.addEventListener('spfdone', htmlGate);
-    window.addEventListener('spfrequest', request);
-    window.addEventListener('readystatechange', htmlGate, true);
-    window.addEventListener('beforescriptexecute', scriptEntry);
+    addEvent(window, 'spfdone', htmlGate);
+    addEvent(window, 'spfrequest', request);
+    addEvent(window, 'readystatechange', htmlGate, true);
+    addEvent(window, 'beforescriptexecute', scriptEntry);
     if (usingChrome) {
-        document.documentElement.addEventListener('load', scriptExit, true);
+        addEvent(document.documentElement, 'load', scriptExit, true);
     } else {
-        window.addEventListener('afterscriptexecute', scriptExit);
+        addEvent(window, 'afterscriptexecute', scriptExit);
     }
 }());
