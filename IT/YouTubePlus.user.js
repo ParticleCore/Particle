@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.4.9
+// @version     1.5.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -780,27 +780,32 @@
         '    position: relative;\n',
         '}\n',
         '#console-button{\n',
-        '    border-bottom: 20px solid transparent;\n',
-        '    border-right: 20px solid #333333;\n',
+        '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKAQMAAABVIEaHAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABBJREFUeF5j+P8DhMAAkw0AsQkLy6q+yNQAAAAASUVORK5CYII=) no-repeat center;\n',
         '    cursor: pointer;\n',
+        '    height: 20px;\n',
         '    opacity: 0.5;\n',
         '    position: absolute;\n',
-        '    right: 0;\n',
         '    top: 0;\n',
+        '    right: 0;\n',
+        '    width: 23px;\n',
+        '    z-index: 1;\n',
         '}\n',
         '#console-button:hover{\n',
+        '    opacity: 0.8;\n',
+        '}\n',
+        '.player-console #console-button{\n',
         '    opacity: 1;\n',
         '}\n',
         '#player-console{\n',
         '    display: none;\n',
         '    font-size: 0;\n',
         '    height: 40px;\n',
-        '    left: 0;\n',
         '    position: absolute;\n',
-        '    right: 0;\n',
-        '    top: 100%;\n',
+        '    right: 20px;\n',
+        '    top: 10px;\n',
         '    text-align: center;\n',
-        '    z-index: 1;\n',
+        '    border-left: 20px solid;\n',
+        '    border-image: linear-gradient(to left, #FFF 20%, transparent 100%) 1 100%;\n',
         '}\n',
         '.player-console #player-console{\n',
         '    display: initial;\n',
@@ -814,6 +819,14 @@
         '    position: relative;\n',
         '    top: 50%;\n',
         '    transform: translateY(-50%);\n',
+        '}\n',
+        '#player-console:before{\n',
+        '    background: #FFF;\n',
+        '    border-right: 20px solid white;\n',
+        '    content: "";\n',
+        '    height: 100%;\n',
+        '    position: absolute;\n',
+        '    width: 100%;\n',
         '}\n',
         '#player-console > div.active{\n',
         '    opacity: 0.8 !important;\n',
@@ -976,46 +989,41 @@
         '    padding-top: 100%\n',
         '}\n',
         '#podcast-info{\n',
+        '    font-size: 18px;\n',
+        '    font-weight: bold;\n',
         '    left: 30%;\n',
-        '    margin-left: 10px;\n',
+        '    margin-left: 2%;\n',
         '    overflow: hidden;\n',
         '    text-overflow: ellipsis;\n',
+        '    text-shadow: 1px 1px 2px #000;\n',
         '    top: 50%;\n',
         '    transform: translateY(-50%);\n',
         '    position: absolute;\n',
         '    width: 70%;\n',
         '    white-space: nowrap;\n',
         '}\n',
-        '#podcast-info div{\n',
-        '    margin: 10px 0;\n',
-        '    text-shadow: 1px 1px 2px #000;\n',
+        '#podcast-info > div:not(:first-child){\n',
+        '    font-size: 15px;\n',
+        '    font-weight: initial;\n',
+        '    margin: 2% 0;\n',
         '}\n',
         '#podcast-info div:last-child{\n',
         '    margin-bottom: 0;\n',
         '}\n',
         '#podcast-title{\n',
         '    display: inline;\n',
-        '    font-size: 15px;\n',
-        '    font-weight: bold;\n',
-        '    line-height: 20px;\n',
         '}\n',
         '#podcast-progress{\n',
-        '    height: 13px;\n',
+        '    min-height: 13px;\n',
         '}\n',
         '#podcast-progress div{\n',
         '    display: inline;\n',
         '}\n',
         '#podcast-total{\n',
-        '    color: rgba(255,255,255,0.8);\n',
+        '    color: rgba(255, 255, 255, 0.8);\n',
         '}\n',
         '#podcast-current{\n',
-        '    color: rgba(255,255,255,0.6);\n',
-        '}\n',
-        '.player-console #watch-header, .player-console #page.watch-stage-mode #watch7-sidebar{\n',
-        '    margin-top: 40px;\n',
-        '}\n',
-        '.player-console #player-api{\n',
-        '    overflow: initial !important;\n',
+        '    color: rgba(255, 255, 255, 0.6);\n',
         '}\n'
     ].join('');
     document.documentElement.appendChild(styleSheet);
@@ -1042,12 +1050,8 @@
             eventStock[name][event][0].removeEventListener(event, eventStock[name][event][1], eventStock[name][event][2]);
         }
         target.addEventListener(event, call, capture);
-        if (!eventStock[name]) {
-            eventStock[name] = {};
-        }
-        if (!eventStock[name][event]) {
-            eventStock[name][event] = {};
-        }
+        eventStock[name] = eventStock[name] || {};
+        eventStock[name][event] = eventStock[name][event] || {};
         eventStock[name][event] = [target, call, capture];
     }
     function remEvent(target, event, call, capture) {
@@ -1703,6 +1707,7 @@
             playerElement = document.getElementById('player');
         if (get('VID_PLR_SIZE_MEM') && get('theaterMode') && (cookie.split('wide=0').length > 1 || cookie.split('wide=1').length < 2)) {
             document.cookie = 'wide=1; domain=.youtube.com; path=/';
+            document.cookie = 'wide=1; host=www.youtube.com; path=/';
             if (playerElement && window.location.href.split('/watch').length > 1) {
                 playerElement.className = playerElement.className.replace('small', 'large');
                 document.getElementById('watch7-container').className = 'watch-wide';
@@ -1826,7 +1831,7 @@
                 var currentQuality = api.getPlaybackQuality(),
                     currentTime = api.getCurrentTime();
                 remEvent(playBtn, 'click', resumeVideo);
-                document.getElementById('movie_player').remove();
+                window.ytplayer.config.loaded = false;
                 api.loadNewVideoConfig(window.ytplayer.config, 'html5');
                 api.setPlaybackQuality(currentQuality);
                 api.seekTo(currentTime);
@@ -2079,7 +2084,9 @@
             header = document.getElementById('watch-header'),
             player = document.getElementById('player-api'),
             consoleButton = document.getElementById('console-button'),
-            controls = document.getElementById('player-console');
+            controls = document.getElementById('player-console'),
+            storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
+            videoPlayer = document.getElementsByTagName('video')[0];
         function hookButtons() {
             var videoPlayer = document.getElementsByTagName('video')[0],
                 autoPlay = controls.querySelector('#autoplay-button'),
@@ -2225,7 +2232,7 @@
                     audioOnly.classList.remove('active');
                     currentQuality = api.getPlaybackQuality();
                     currentTime = api.getCurrentTime();
-                    document.getElementById('movie_player').remove();
+                    window.ytplayer.config.loaded = false;
                     api.loadNewVideoConfig(window.ytplayer.config, 'html5');
                     api.setPlaybackQuality(currentQuality);
                     api.seekTo(currentTime);
@@ -2390,8 +2397,15 @@
             addEvent(screenShot, 'click', saveSS);
         }
         function toggleConsole(event) {
-            var storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
-                videoPlayer = document.getElementsByTagName('video')[0];
+            if (event) {
+                page.classList.toggle('player-console');
+            }
+        }
+        if (location.href.split('/watch').length > 1 && header && !consoleButton) {
+            consoleButton = '<div id="console-button" title="Player console"></div>';
+            consoleButton = string2HTML(consoleButton).querySelector('div');
+            addEvent(consoleButton, 'click', toggleConsole);
+            header.appendChild(consoleButton);
             if (controls) {
                 controls.remove();
             }
@@ -2406,17 +2420,8 @@
                 '</div>\n'
             ].join('');
             controls = string2HTML(controls).querySelector('div');
-            player.appendChild(controls);
+            document.getElementById('watch-header').appendChild(controls);
             hookButtons();
-            if (event) {
-                page.classList.toggle('player-console');
-            }
-        }
-        if (location.href.split('/watch').length > 1 && header && !consoleButton) {
-            consoleButton = '<div id="console-button" title="Player console"></div>';
-            consoleButton = string2HTML(consoleButton).querySelector('div');
-            addEvent(consoleButton, 'click', toggleConsole);
-            header.appendChild(consoleButton);
         }
         if (page.classList.contains('player-console')) {
             toggleConsole();
