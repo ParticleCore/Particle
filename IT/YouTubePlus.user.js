@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.2
+// @version     1.5.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1811,7 +1811,7 @@
             sidebarSize = sidebar.getBoundingClientRect();
             function updatePos() {
                 sidebarSize = sidebar.getBoundingClientRect();
-                videoPlayer.style['margin-left'] = sidebarSize.left + 'px';
+                videoPlayer.style.marginLeft = sidebarSize.left + 'px';
                 videoPlayer.style.width = sidebarSize.width + 'px';
                 videoPlayer.style.height = sidebarSize.width / aspectRatio + 'px';
             }
@@ -1820,7 +1820,7 @@
                 width = sidebarSize.width;
                 height = sidebarSize.width / aspectRatio;
                 videoPlayer.classList.toggle('floater');
-                videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + sidebarSize.left + 'px !important;');
+                videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + sidebarSize.left + 'px;');
                 addEvent(window, 'resize', updatePos);
             } else if (videoPlayer && containerSize.bottom > ((containerSize.height / 2) + 51) && videoPlayer.classList.contains('floater')) {
                 remEvent('resize', updatePos);
