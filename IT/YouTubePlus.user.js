@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.3
+// @version     1.5.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -263,6 +263,10 @@
         },
         VID_PLR_TYPE_HTML: {
             en: 'HTML5'
+        },
+        VID_PLR_ALVIS: {
+            en: 'Always visible',
+            'pt-PT': 'Sempre visível'
         },
         VID_PLR_ATPL: {
             en: 'Autoplay videos',
@@ -1078,7 +1082,7 @@
         '#podcast-current{\n',
         '    color: rgba(255, 255, 255, 0.6);\n',
         '}\n',
-        '#player #movie_player.floater, #float-button{\n',
+        'html:not([data-player-size="fullscreen"]) #player #movie_player.floater{\n',
         '    position: fixed !important;\n',
         '    top: 50% !important;\n',
         '    transform: translateY(-50%);\n',
@@ -1086,20 +1090,20 @@
         '}\n'
     ].join('');
     document.documentElement.appendChild(styleSheet);
-    function xhr(a) {
+    function xhr(details) {
         var request;
-        function process(b) {
+        function process(xhrResponse) {
             var response = {};
-            response[a.id] = b.target.response;
+            response[details.id] = xhrResponse.target.response;
             window.postMessage(response, '*');
         }
         if (window.localStorage.GM_userscript === '0') {
             request = new XMLHttpRequest();
             request.onload = process;
-            request.open(a.method, a.url, true);
+            request.open(details.method, details.url, true);
             request.send();
         } else {
-            window.postMessage(a, '*');
+            window.postMessage(details, '*');
         }
     }
     function addEvent(target, event, call, capture) {
@@ -1227,6 +1231,7 @@
                     '    </div>\n',
                     '    <hr class="P-horz">\n',
                     htEl.title('VID_PLR', 'h3'),
+                    htEl.input('VID_PLR_ALVIS', 'checkbox'),
                     htEl.input('VID_PLR_ATPL', 'checkbox'),
                     htEl.input('VID_PLR_ADS', 'checkbox'),
                     htEl.input('VID_PLR_CC', 'checkbox'),
@@ -1828,13 +1833,15 @@
                 videoPlayer.classList.toggle('floater');
             }
         }
-        if (location.href.split('/watch').length > 1) {
-            addEvent(window, 'scroll', initFloater);
-        } else if (location.href.split('/watch').length < 2) {
-            remEvent('scroll', initFloater);
+        if (get('VID_PLR_ALVIS')) {
+            if (location.href.split('/watch').length > 1) {
+                addEvent(window, 'scroll', initFloater);
+            } else if (location.href.split('/watch').length < 2) {
+                remEvent('scroll', initFloater);
+            }
         }
     }
-    function playerReady(a) {
+    function playerReady(playerApi) {
         function playerState() {
             var vidData = api.getVideoData(),
                 beacon = vidData.video_id + vidData.list;
@@ -1843,29 +1850,29 @@
                 window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
             }
         }
-        function fsControl(b) {
+        function fsControl(fsEvent) {
             return function () {
                 if (!requesting && fullscreen) {
-                    b.apply(this, arguments);
+                    fsEvent.apply(this, arguments);
                 }
                 return true;
             };
         }
-        function playerFullscreen(b) {
+        function playerFullscreen(fsState) {
             window.beacon = api.getVideoData().video_id + api.getVideoData().list;
-            fullscreen = b.fullscreen;
+            fullscreen = fsState.fullscreen;
         }
-        function volumeChanged(b) {
-            set('volLev', b.volume);
+        function volumeChanged(volState) {
+            set('volLev', volState.volume);
         }
-        function sizeChanged(b) {
-            set('theaterMode', b);
+        function sizeChanged(sizeState) {
+            set('theaterMode', sizeState);
         }
         function stopButton() {
             var prev,
                 button,
                 playBtn,
-                playerBar;
+                playerBar = document.getElementsByClassName('html5-player-chrome')[0];
             function resumeVideo() {
                 var currentQuality = api.getPlaybackQuality(),
                     currentTime = api.getCurrentTime();
@@ -1880,8 +1887,7 @@
                 playBtn = document.getElementsByClassName('ytp-button-pause')[0] || document.getElementsByClassName('ytp-button-play')[0];
                 addEvent(playBtn, 'click', resumeVideo);
             }
-            if (!document.getElementsByClassName('ytp-button-stop')[0]) {
-                playerBar = document.getElementsByClassName('html5-player-chrome')[0];
+            if (!document.getElementsByClassName('ytp-button-stop')[0] && playerBar) {
                 prev = document.getElementsByClassName('ytp-button-prev')[0];
                 button = '<div role="button" class="ytp-button ytp-button-stop"></div>';
                 button = string2HTML(button).querySelector('div');
@@ -1889,9 +1895,9 @@
                 playerBar.insertBefore(button, prev);
             }
         }
-        if (typeof a === 'object' && !document.getElementById('c4-player')) {
+        if (typeof playerApi === 'object' && !document.getElementById('c4-player')) {
             document[usingChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[usingChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
-            api = a;
+            api = playerApi;
             addEvent(api, 'onStateChange', playerState);
             addEvent(api, 'onFullscreenChange', playerFullscreen);
             addEvent(api, 'onVolumeChange', volumeChanged);
@@ -1926,7 +1932,6 @@
                 window.ytplayer = window.ytplayer || {};
                 window.ytplayer.config = JSON.parse('{' + ytConfig + '}');
                 argsCleaner(window.ytplayer.config);
-                a.target.remove();
             }
         } else if (a.target.textContent.split('ytspf.enabled = false').length > 1) {
             a.preventDefault();
@@ -2403,8 +2408,6 @@
                 canvas.width = width;
                 canvas.height = height;
                 context.drawImage(video, 0, 0, width, height);
-                //wo = window.open();
-                //wo.document.body.appendChild(canvas);
                 if (!container.id) {
                     container.id = 'screenshot-result';
                     container.appendChild(canvas);
@@ -2465,9 +2468,9 @@
             document.documentElement.scrollTop = document.body.scrollTop = 0;
         }
     }
-    function request(a) {
-        var url = a.detail.url,
-            previous = a.detail.previous,
+    function request(requestEvent) {
+        var url = requestEvent.detail.url,
+            previous = requestEvent.detail.previous,
             videoBefore = previous.split('/watch?').length < 2,
             videoAfter = url.split('/watch?').length > 1,
             listBefore = previous.split('list=').length > 1,
