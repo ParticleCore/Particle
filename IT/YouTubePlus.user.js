@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.4
+// @version     1.5.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -13,19 +13,19 @@
 (function () {
     'use strict';
     var userscript = typeof GM_info;
-    function xhr(a) {
-        if (typeof a.data !== 'object' || !a.data.id) {
+    function xhr(details) {
+        if (typeof details.data !== 'object' || !details.data.id) {
             return;
         }
-        a = a.data;
-        function process(b) {
+        details = details.data;
+        function process(xhrResponse) {
             var response = {};
-            response[a.id] = b.response;
+            response[details.id] = xhrResponse.response;
             window.postMessage(response, '*');
         }
         GM_xmlhttpRequest({
-            url: a.url,
-            method: a.method,
+            url: details.url,
+            method: details.method,
             onload: process
         });
     }
@@ -62,6 +62,10 @@
         return;
     }
     lang = {
+        BLCK_ADD: {
+            en: 'Add to blacklist',
+            'pt-PT': 'Adicionar à lista negra'
+        },
         CNSL_CNSL: {
             en: 'Console',
             'pt-PT': 'Consola'
@@ -142,9 +146,9 @@
             en: 'Channels',
             'pt-PT': 'Canais'
         },
-        EXT: {
-            en: 'Extras',
-            'pt-PT': 'Extras'
+        BLK: {
+            en: 'Blacklist',
+            'pt-PT': 'Lista negra'
         },
         ABT: {
             en: 'About',
@@ -448,6 +452,18 @@
             en: 'About',
             'pt-PT': 'Acerca de'
         },
+        BLK_TTL: {
+            en: 'Blacklist settings',
+            'pt-PT': 'Definições da lista negra'
+        },
+        BLK_BLK: {
+            en: 'Blacklist',
+            'pt-PT': 'Lista negra'
+        },
+        BLK_ON: {
+            en: 'Enable blacklist',
+            'pt-PT': 'Activar lista negra'
+        },
         ABT_TTL: {
             en: 'Information and useful links',
             'pt-PT': 'Informação e ligações úteis'
@@ -490,7 +506,8 @@
         volLev: false,
         plApl: true,
         plRev: false,
-        theaterMode: true
+        theaterMode: true,
+        blacklist: {}
     };
     window.localStorage.Particle = window.localStorage.Particle || JSON.stringify(defaultSettings);
     function string2HTML(string) {
@@ -753,6 +770,31 @@
         '    color: #000;\n',
         '    text-shadow: none;\n',
         '}\n',
+        '#blacklist .blacklist{\n',
+        '    border: 1px solid #C6C6C6;\n',
+        '    cursor: default;\n',
+        '    display: inline-block;\n',
+        '    overflow: hidden !important;\n',
+        '    padding: 0 10px;\n',
+        '    position: relative;\n',
+        '}\n',
+        '#blacklist .blacklist .close{\n',
+        '    background: #FFF;\n',
+        '    border: 1px solid #C6C6C6;\n',
+        '    border-right: none;\n',
+        '    border-top: none;\n',
+        '    color: #666;\n',
+        '    cursor: pointer;\n',
+        '    display: none;\n',
+        '    font-size: 10px;\n',
+        '    font-weight: bold;\n',
+        '    position: absolute;\n',
+        '    right: 0;\n',
+        '    top: 0;\n',
+        '}\n',
+        '#blacklist .blacklist:hover .close{\n',
+        '    display: initial;\n',
+        '}\n',
         '#P{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;\n',
         '    cursor: pointer;\n',
@@ -779,6 +821,19 @@
         '.yt-user-info > span{\n',
         '    color: #666;\n',
         '    font-size: 11px;\n',
+        '}\n',
+        '.thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{\n',
+        '    background: #FFF;\n',
+        '    bottom: 0px;\n',
+        '    color: #666;\n',
+        '    cursor: pointer;\n',
+        '    display: none;\n',
+        '    font-size: 12px;\n',
+        '    position: absolute;\n',
+        '    padding: 4px;\n',
+        '}\n',
+        '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist{\n',
+        '    display: initial;\n',
         '}\n',
         '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
         '    display: none;\n',
@@ -1144,6 +1199,17 @@
             pContainer,
             buttonsSection,
             settingsButton,
+            custom = function () {
+                var button = '',
+                    list = get('blacklist');
+                function buildList(ytid){
+                    button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close">❌</button>' + list[ytid] + '</div>\n';
+                }
+                if (Object.keys(list).length > 0) {
+                    Object.keys(list).forEach(buildList);
+                }
+                return button;
+            },
             htEl = {
                 title: function (content, tag) {
                     return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
@@ -1195,6 +1261,7 @@
                     '                <li id="GEN" class="selected">' + userLang('GEN') + '</li>\n',
                     '                <li id="VID">' + userLang('VID') + '</li>\n',
                     '                <li id="CHN">' + userLang('CHN') + '</li>\n',
+                    '                <li id="BLK">' + userLang('BLK') + '</li>\n',
                     '                <li id="ABT">' + userLang('ABT') + '</li>\n',
                     '            </ul>\n',
                     '        </div>\n',
@@ -1315,6 +1382,21 @@
                     '    <br>',
                     '</div>\n'
                 ].join(''),
+                BLK: [
+                    '<div id="P-content">\n',
+                    '    <div class="P-header">\n',
+                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                    htEl.title('BLK_TTL', 'h2'),
+                    '    </div>\n',
+                    '    <hr class="P-horz">\n',
+                    htEl.title('BLK_BLK', 'h3'),
+                    htEl.input('BLK_ON', 'checkbox'),
+                    '    <div id="blacklist">\n',
+                    '    ' + custom(),
+                    '    </div>\n',
+                    '    <br>',
+                    '</div>\n'
+                ].join(''),
                 ABT: [
                     '<div id="P-content">\n',
                     '    <div class="P-header">\n',
@@ -1339,6 +1421,12 @@
                 ].join('')
             };
         function navigateSettings(a) {
+            function remBlackList() {
+                var newKey = get('blacklist');
+                delete newKey[a.target.parentNode.getAttribute('data-ytid')];
+                a.target.parentNode.remove();
+                set('blacklist', newKey);
+            }
             function saveSettings() {
                 var value,
                     navId = document.getElementsByClassName('selected')[0].id,
@@ -1358,6 +1446,8 @@
             }
             if (a.target.classList.contains('P-save')) {
                 saveSettings();
+            } else if (a.target.classList.contains('close')) {
+                remBlackList();
             } else if (a.target.parentNode.id === 'P-sidebar-list') {
                 document.getElementById('P-content').remove();
                 pContainer = document.getElementById('P-container');
@@ -2041,6 +2131,63 @@
             }
         }
     }
+    function blackList() {
+        var i,
+            list,
+            user,
+            button,
+            autoplay,
+            userList = get('blacklist') || {};
+        if (!get('BLK_ON')) {
+            return;
+        }
+        function initBlackList(target) {
+            var newEntry;
+            if (target.target.className === 'blacklist yt-uix-tooltip') {
+                newEntry = get('blacklist');
+                newEntry[target.target.getAttribute('data-ytid')] = target.target.getAttribute('data-user');
+                set('blacklist', newEntry);
+                blackList();
+            }
+        }
+        function createButton(userID, userName) {
+            button = document.createElement('div');
+            button.className = 'blacklist yt-uix-tooltip';
+            button.setAttribute('data-tooltip-text', userLang('BLCK_ADD'));
+            button.setAttribute('data-ytid', userID);
+            button.setAttribute('data-user', userName);
+            button.textContent = '❌';
+            return button;
+        }
+        if (location.pathname === '/' && document.getElementsByClassName('shelf-content')[0]) {
+            list = document.getElementsByClassName('shelf-content')[0].getElementsByClassName('yt-shelf-grid-item');
+        } else if (location.pathname === '/watch') {
+            list = document.getElementsByClassName('video-list-item');
+        } else if (location.pathname === '/results') {
+            list = document.getElementsByClassName('yt-lockup-video');
+        }
+        if (list) {
+            i = list.length;
+            autoplay = document.getElementsByClassName('watch-sidebar-section')[0];
+            while (i) {
+                i -= 1;
+                user = list[i].getElementsByClassName('g-hovercard')[(location.pathname === '/watch') ? 1 : 0];
+                if (list[i]) {
+                    if (user && userList[user.getAttribute('data-ytid')]) {
+                        if (autoplay && autoplay.contains(list[i])) {
+                            autoplay.remove();
+                            document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
+                        }
+                        list[i].remove();
+                    } else if (!list[i].getElementsByClassName('blacklist')[0] && list[i].getElementsByClassName((location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
+                        button = createButton(user.getAttribute('data-ytid'), user.textContent);
+                        list[i].getElementsByClassName((location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
+                    }
+                }
+            }
+            addEvent(window, 'click', initBlackList);
+        }
+    }
     function title() {
         var observer,
             config = {childList: true},
@@ -2462,6 +2609,7 @@
         playerConsole();
         title();
         floater();
+        blackList();
         enhancedDetails();
         commentsButton();
         if (location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
