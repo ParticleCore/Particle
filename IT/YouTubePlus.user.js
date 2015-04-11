@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.6
+// @version     1.5.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -503,6 +503,7 @@
         VID_CTRL_BAR_CLR: 'light',
         VID_PLR_SIZE_MEM: true,
         CHN_DFLT_PAGE: 'channels',
+        BLK_ON: true,
         volLev: false,
         plApl: true,
         plRev: false,
@@ -833,6 +834,7 @@
         '    font-size: 12px;\n',
         '    height: 17px;\n',
         '    line-height: 1;\n',
+        '    left: 0;\n',
         '    position: absolute;\n',
         '    width: 17px;\n',
         '}\n',
@@ -2149,6 +2151,8 @@
             ytid,
             button,
             autoplay,
+            observer,
+            loadMore,
             userList = get('blacklist') || {};
         if (!get('BLK_ON')) {
             return;
@@ -2172,10 +2176,17 @@
         }
         if (location.pathname === '/' && document.getElementsByClassName('shelf-content')[0]) {
             list = document.getElementsByClassName('shelf-content')[0].getElementsByClassName('yt-shelf-grid-item');
+            loadMore = document.getElementsByClassName('load-more-button')[0];
         } else if (location.pathname === '/watch') {
             list = document.getElementsByClassName('video-list-item');
+            loadMore = document.getElementById('watch-more-related');
         } else if (location.pathname === '/results') {
             list = document.getElementsByClassName('yt-lockup-video');
+            loadMore = document.getElementsByClassName('yt-uix-tile')[0];
+            while (loadMore) {
+                loadMore.classList.remove('yt-uix-tile');
+                loadMore = document.getElementsByClassName('yt-uix-tile')[0];
+            }
         }
         if (list) {
             i = list.length;
@@ -2200,6 +2211,15 @@
                 }
             }
             addEvent(window, 'click', initBlackList);
+        }
+        if (loadMore && !loadMore.classList.contains('hooked')) {
+            loadMore.classList.add('hooked'); 
+            observer = new MutationObserver(blackList);
+            observer.observe(loadMore, {
+                childList: true,
+                attributes: true,
+                attributeOldValue: true
+            });
         }
     }
     function title() {
