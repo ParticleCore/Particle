@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.7
+// @version     1.5.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -782,7 +782,7 @@
         '#blacklist .blacklist .close{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAARBAMAAADNtor0AAAAJ1BMVEVmZmZzc3N/f3+Kioqqqqqzs7PFxcXOzs7X19fn5+fv7+/39/f///+6PEy9AAAAXElEQVR4XnXO0QnAMAgE0EszhV0lPxmhozhQRhEoEJIWHKpW288IB48DReg/55JXUx3iZFKtJZhaR3CCahanMqwMTlgZ7EjtY91AQVu3I84jy8Tu5PLGeYtn8dkDuUZuK/X5jU8AAAAASUVORK5CYII=") #FFF no-repeat center / contain;\n',
         '    border: 1px solid #C6C6C6;\n',
-        '    border-right: none;\n',
+        '    border-left: none;\n',
         '    border-top: none;\n',
         '    color: #666;\n',
         '    cursor: pointer;\n',
@@ -791,7 +791,7 @@
         '    font-size: 10px;\n',
         '    font-weight: bold;\n',
         '    position: absolute;\n',
-        '    right: 0;\n',
+        '    left: 0;\n',
         '    top: 0;\n',
         '    width: 17px;\n',
         '}\n',
@@ -1778,7 +1778,7 @@
                 addEvent(window, 'message', getCHInfo);
             }
         }
-        if (window.location.href.split('/watch').length > 1) {
+        if (window.location.pathname === '/watch') {
             if (get('VID_VID_CNT')) {
                 username();
             }
@@ -1813,7 +1813,7 @@
             if (window.navigator.cookieEnabled && (cookie.split('wide=0').length > 1 || cookie.split('wide=1').length < 2)) {
                 document.cookie = 'wide=1; path=/';
             }
-            if (playerElement && window.location.href.split('/watch').length > 1) {
+            if (playerElement && window.location.pathname === '/watch') {
                 pageElement.className = pageElement.className.replace('non-', '');
                 playerElement.className = playerElement.className.replace('small', 'large');
                 document.getElementById('watch7-container').className = 'watch-wide';
@@ -1822,7 +1822,7 @@
             if (window.navigator.cookieEnabled && (cookie.split('wide=1').length > 1 || cookie.split('wide=0').length < 2)) {
                 document.cookie = 'wide=0; path=/';
             }
-            if (playerElement && window.location.href.split('/watch').length > 1) {
+            if (playerElement && window.location.pathname === '/watch') {
                 pageElement.className = pageElement.className.replace('watch-stage', 'watch-non-stage');
                 playerElement.className = playerElement.className.replace('large', 'small').replace('medium', 'small');
                 document.getElementById('watch7-container').removeAttribute('class');
@@ -1893,7 +1893,7 @@
                     });
                 }
             }
-            if (window.location.href.split('/watch').length > 1 && window.ytplayer && window.ytplayer.config === null) {
+            if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
                 window.ytplayer.config = config;
             }
         }
@@ -1915,12 +1915,16 @@
             playerSize = videoPlayer && videoPlayer.getBoundingClientRect();
             containerSize = playerContainer.getBoundingClientRect();
             sidebar = document.getElementById('watch7-sidebar');
-            sidebarSize = sidebar.getBoundingClientRect();
+            sidebarSize = sidebar && sidebar.getBoundingClientRect();
             function updatePos() {
                 sidebarSize = sidebar.getBoundingClientRect();
                 videoPlayer.style.marginLeft = sidebarSize.left + 'px';
                 videoPlayer.style.width = sidebarSize.width + 'px';
                 videoPlayer.style.height = sidebarSize.width / aspectRatio + 'px';
+            }
+            if (!sidebar) {
+                remEvent('scroll', initFloater);
+                return;
             }
             if (videoPlayer && containerSize.bottom < ((containerSize.height / 2) + 51) && !videoPlayer.classList.contains('floater')) {
                 aspectRatio = playerSize.width / playerSize.height;
@@ -1936,9 +1940,9 @@
             }
         }
         if (get('VID_PLR_ALVIS')) {
-            if (location.href.split('/watch').length > 1) {
+            if (window.location.pathname === '/watch') {
                 addEvent(window, 'scroll', initFloater);
-            } else if (location.href.split('/watch').length < 2) {
+            } else if (window.location.pathname === '/watch') {
                 remEvent('scroll', initFloater);
             }
         }
@@ -2029,7 +2033,7 @@
         if (a.target.textContent.split('var ytplayer = ytplayer').length > 1) {
             a.preventDefault();
             a.stopPropagation();
-            if (window.location.href.split('/watch').length > 1) {
+            if (window.location.pathname === '/watch') {
                 ytConfig = a.target.textContent.match(/ytplayer\.config = \{([\w\W]*?)\};/)[1];
                 window.ytplayer = window.ytplayer || {};
                 window.ytplayer.config = JSON.parse('{' + ytConfig + '}');
@@ -2150,9 +2154,12 @@
             name,
             ytid,
             button,
+            length,
             autoplay,
+            feedList,
             observer,
             loadMore,
+            clickTitle,
             userList = get('blacklist') || {};
         if (!get('BLK_ON')) {
             return;
@@ -2174,26 +2181,35 @@
             button.setAttribute('data-user', userName);
             return button;
         }
-        if (location.pathname === '/' && document.getElementsByClassName('shelf-content')[0]) {
-            list = document.getElementsByClassName('shelf-content')[0].getElementsByClassName('yt-shelf-grid-item');
+        if (window.location.pathname === '/' || window.location.pathname === '/feed/music') {
+            list = document.getElementsByClassName('yt-shelf-grid-item');
             loadMore = document.getElementsByClassName('load-more-button')[0];
-        } else if (location.pathname === '/watch') {
+        } else if (window.location.pathname === '/feed/recommended') {
+            list = document.getElementsByClassName('yt-lockup-video');
+            loadMore = document.getElementsByClassName('load-more-button')[0];
+            clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
+            while (clickTitle) {
+                clickTitle.classList.remove('yt-uix-tile');
+                clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
+            }
+        } else if (window.location.pathname === '/watch') {
             list = document.getElementsByClassName('video-list-item');
             loadMore = document.getElementById('watch-more-related');
-        } else if (location.pathname === '/results') {
+        } else if (window.location.pathname === '/results') {
             list = document.getElementsByClassName('yt-lockup-video');
-            loadMore = document.getElementsByClassName('yt-uix-tile')[0];
-            while (loadMore) {
-                loadMore.classList.remove('yt-uix-tile');
-                loadMore = document.getElementsByClassName('yt-uix-tile')[0];
+            clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
+            while (clickTitle) {
+                clickTitle.classList.remove('yt-uix-tile');
+                clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
             }
         }
         if (list) {
             i = list.length;
             autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
+            feedList = document.getElementsByClassName('feed-item-container');
             while (i) {
                 i -= 1;
-                user = list[i].getElementsByClassName('g-hovercard')[(location.pathname === '/watch') ? 1 : 0];
+                user = list[i].getElementsByClassName('g-hovercard')[(window.location.pathname === '/watch') ? 1 : 0];
                 if (user && list[i]) {
                     name = user.textContent;
                     ytid = user.getAttribute('data-ytid');
@@ -2201,19 +2217,28 @@
                         if (autoplay && autoplay.contains(list[i])) {
                             autoplay.remove();
                             document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
-                        } else {
+                        } else if (list[i]) {
                             list[i].remove();
                         }
-                    } else if (!list[i].getElementsByClassName('blacklist')[0] && list[i].getElementsByClassName((location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
+                    } else if (!list[i].getElementsByClassName('blacklist')[0] && list[i].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
                         button = createButton(ytid, name);
-                        list[i].getElementsByClassName((location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
+                        list[i].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
+                    }
+                }
+            }
+            if (feedList.length > 0) {
+                length = feedList.length;
+                while (length) {
+                    length -= 1;
+                    if (feedList[length].getElementsByTagName('li').length < 2) {
+                        feedList[length].remove();
                     }
                 }
             }
             addEvent(window, 'click', initBlackList);
         }
         if (loadMore && !loadMore.classList.contains('hooked')) {
-            loadMore.classList.add('hooked'); 
+            loadMore.classList.add('hooked');
             observer = new MutationObserver(blackList);
             observer.observe(loadMore, {
                 childList: true,
@@ -2397,7 +2422,7 @@
                     } else if (!event && (!prevCipher || prevCipher.split(html5ID).length < 2)) {
                         xhr({
                             method: 'GET',
-                            url: location.protocol + html5,
+                            url: window.location.protocol + html5,
                             id: 'cipherAlgorithm'
                         });
                         addEvent(window, 'message', cipherAlgorithm);
@@ -2611,7 +2636,7 @@
         function toggleConsole() {
             page.classList.toggle('player-console');
         }
-        if (location.href.split('/watch').length > 1 && header && !consoleButton) {
+        if (window.location.pathname === '/watch' && header && !consoleButton) {
             consoleButton = '<button id="console-button" title="Player console"></button>';
             consoleButton = string2HTML(consoleButton).querySelector('#console-button');
             addEvent(consoleButton, 'click', toggleConsole);
@@ -2646,7 +2671,7 @@
         blackList();
         enhancedDetails();
         commentsButton();
-        if (location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
+        if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
             document.documentElement.scrollTop = document.body.scrollTop = 0;
         }
     }
