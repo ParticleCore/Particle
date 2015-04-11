@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.5
+// @version     1.5.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -779,18 +779,20 @@
         '    position: relative;\n',
         '}\n',
         '#blacklist .blacklist .close{\n',
-        '    background: #FFF;\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAARBAMAAADNtor0AAAAJ1BMVEVmZmZzc3N/f3+Kioqqqqqzs7PFxcXOzs7X19fn5+fv7+/39/f///+6PEy9AAAAXElEQVR4XnXO0QnAMAgE0EszhV0lPxmhozhQRhEoEJIWHKpW288IB48DReg/55JXUx3iZFKtJZhaR3CCahanMqwMTlgZ7EjtY91AQVu3I84jy8Tu5PLGeYtn8dkDuUZuK/X5jU8AAAAASUVORK5CYII=") #FFF no-repeat center / contain;\n',
         '    border: 1px solid #C6C6C6;\n',
         '    border-right: none;\n',
         '    border-top: none;\n',
         '    color: #666;\n',
         '    cursor: pointer;\n',
         '    display: none;\n',
+        '    height: 17px;\n',
         '    font-size: 10px;\n',
         '    font-weight: bold;\n',
         '    position: absolute;\n',
         '    right: 0;\n',
         '    top: 0;\n',
+        '    width: 17px;\n',
         '}\n',
         '#blacklist .blacklist:hover .close{\n',
         '    display: initial;\n',
@@ -823,14 +825,16 @@
         '    font-size: 11px;\n',
         '}\n',
         '.thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{\n',
-        '    background: #FFF;\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAARBAMAAADNtor0AAAAJ1BMVEVmZmZzc3N/f3+Kioqqqqqzs7PFxcXOzs7X19fn5+fv7+/39/f///+6PEy9AAAAXElEQVR4XnXO0QnAMAgE0EszhV0lPxmhozhQRhEoEJIWHKpW288IB48DReg/55JXUx3iZFKtJZhaR3CCahanMqwMTlgZ7EjtY91AQVu3I84jy8Tu5PLGeYtn8dkDuUZuK/X5jU8AAAAASUVORK5CYII=") #FFF no-repeat center / contain;\n',
         '    bottom: 0px;\n',
         '    color: #666;\n',
         '    cursor: pointer;\n',
         '    display: none;\n',
         '    font-size: 12px;\n',
+        '    height: 17px;\n',
+        '    line-height: 1;\n',
         '    position: absolute;\n',
-        '    padding: 4px;\n',
+        '    width: 17px;\n',
         '}\n',
         '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist{\n',
         '    display: initial;\n',
@@ -1199,17 +1203,64 @@
             pContainer,
             buttonsSection,
             settingsButton,
+            custom,
+            htEl,
+            menus;
+        if (document.readyState === 'complete') {
+            return;
+        }
+        function navigateSettings(a) {
+            function remBlackList() {
+                var newKey = get('blacklist');
+                delete newKey[a.target.parentNode.getAttribute('data-ytid')];
+                a.target.parentNode.remove();
+                set('blacklist', newKey);
+            }
+            function saveSettings() {
+                var value,
+                    navId = document.getElementsByClassName('selected')[0].id,
+                    savedSets = JSON.parse(window.localStorage.Particle),
+                    userSets = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
+                    length = userSets.length;
+                while (length) {
+                    length -= 1;
+                    value = (userSets[length].checked && (userSets[length].value === 'on' || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute('type') === 'text' && userSets[length].value);
+                    if (value) {
+                        savedSets[userSets[length].name || userSets[length].id] = value;
+                    } else if (!value && userSets[length].type !== 'radio') {
+                        delete savedSets[userSets[length].id];
+                    }
+                }
+                window.localStorage.Particle = JSON.stringify(savedSets);
+            }
+            if (a.target.classList.contains('P-save')) {
+                saveSettings();
+            } else if (a.target.classList.contains('close')) {
+                remBlackList();
+            } else if (a.target.parentNode.id === 'P-sidebar-list') {
+                document.getElementById('P-content').remove();
+                pContainer = document.getElementById('P-container');
+                pContent = string2HTML(menus[a.target.id]).querySelector('#P-content');
+                pContainer.appendChild(pContent);
+                a.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
+                a.target.className = 'selected';
+            }
+        }
+        function settingsTemplate() {
+            var bodyContainer,
+                pageContainer,
+                pWrapper = document.getElementById('P-settings');
             custom = function () {
                 var button = '',
                     list = get('blacklist');
                 function buildList(ytid){
-                    button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close">❌</button>' + list[ytid] + '</div>\n';
+                    button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button>' + list[ytid] + '</div>\n';
                 }
                 if (Object.keys(list).length > 0) {
                     Object.keys(list).forEach(buildList);
                 }
                 return button;
-            },
+            };
             htEl = {
                 title: function (content, tag) {
                     return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
@@ -1251,7 +1302,7 @@
                     input += '>\n<label for="' + id + '">' + userLang(id) + '</label>\n';
                     return input;
                 }
-            },
+            };
             menus = {
                 setMenu: [
                     '<div id="P-settings">\n',
@@ -1420,49 +1471,8 @@
                     '</div>\n'
                 ].join('')
             };
-        function navigateSettings(a) {
-            function remBlackList() {
-                var newKey = get('blacklist');
-                delete newKey[a.target.parentNode.getAttribute('data-ytid')];
-                a.target.parentNode.remove();
-                set('blacklist', newKey);
-            }
-            function saveSettings() {
-                var value,
-                    navId = document.getElementsByClassName('selected')[0].id,
-                    savedSets = JSON.parse(window.localStorage.Particle),
-                    userSets = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
-                    length = userSets.length;
-                while (length) {
-                    length -= 1;
-                    value = (userSets[length].checked && (userSets[length].value === 'on' || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute('type') === 'text' && userSets[length].value);
-                    if (value) {
-                        savedSets[userSets[length].name || userSets[length].id] = value;
-                    } else if (!value && userSets[length].type !== 'radio') {
-                        delete savedSets[userSets[length].id];
-                    }
-                }
-                window.localStorage.Particle = JSON.stringify(savedSets);
-            }
-            if (a.target.classList.contains('P-save')) {
-                saveSettings();
-            } else if (a.target.classList.contains('close')) {
-                remBlackList();
-            } else if (a.target.parentNode.id === 'P-sidebar-list') {
-                document.getElementById('P-content').remove();
-                pContainer = document.getElementById('P-container');
-                pContent = string2HTML(menus[a.target.id]).querySelector('#P-content');
-                pContainer.appendChild(pContent);
-                a.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
-                a.target.className = 'selected';
-            }
-        }
-        function settingsTemplate() {
-            var bodyContainer,
-                pageContainer,
-                pWrapper = document.getElementById('P-settings');
             if (pWrapper) {
-                pWrapper.classList.toggle('P-hide');
+                pWrapper.remove();
             } else {
                 bodyContainer = document.getElementById('body-container');
                 pageContainer = document.getElementById('page-container');
@@ -2135,6 +2145,8 @@
         var i,
             list,
             user,
+            name,
+            ytid,
             button,
             autoplay,
             userList = get('blacklist') || {};
@@ -2156,7 +2168,6 @@
             button.setAttribute('data-tooltip-text', userLang('BLCK_ADD'));
             button.setAttribute('data-ytid', userID);
             button.setAttribute('data-user', userName);
-            button.textContent = '❌';
             return button;
         }
         if (location.pathname === '/' && document.getElementsByClassName('shelf-content')[0]) {
@@ -2168,19 +2179,22 @@
         }
         if (list) {
             i = list.length;
-            autoplay = document.getElementsByClassName('watch-sidebar-section')[0];
+            autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
             while (i) {
                 i -= 1;
                 user = list[i].getElementsByClassName('g-hovercard')[(location.pathname === '/watch') ? 1 : 0];
-                if (list[i]) {
-                    if (user && userList[user.getAttribute('data-ytid')]) {
+                if (user && list[i]) {
+                    name = user.textContent;
+                    ytid = user.getAttribute('data-ytid');
+                    if (userList[ytid]) {
                         if (autoplay && autoplay.contains(list[i])) {
                             autoplay.remove();
                             document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
+                        } else {
+                            list[i].remove();
                         }
-                        list[i].remove();
                     } else if (!list[i].getElementsByClassName('blacklist')[0] && list[i].getElementsByClassName((location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
-                        button = createButton(user.getAttribute('data-ytid'), user.textContent);
+                        button = createButton(ytid, name);
                         list[i].getElementsByClassName((location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
                     }
                 }
