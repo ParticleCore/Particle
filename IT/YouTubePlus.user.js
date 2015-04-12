@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.8
+// @version     1.5.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -12,30 +12,32 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript = typeof GM_info;
+    var userscript = typeof GM_info === 'object';
     function xhr(details) {
+        var request;
         if (typeof details.data !== 'object' || !details.data.id) {
             return;
         }
-        details = details.data;
         function process(xhrResponse) {
             var response = {};
-            response[details.id] = xhrResponse.response;
+            response[details.id] = userscript ? xhrResponse.response : xhrResponse.target.response;
             window.postMessage(response, '*');
         }
-        GM_xmlhttpRequest({
-            url: details.url,
-            method: details.method,
-            onload: process
-        });
+        details = details.data;
+        if (userscript) {
+            GM_xmlhttpRequest({
+                url: details.url,
+                method: details.method,
+                onload: process
+            });
+        } else {
+            request = new XMLHttpRequest();
+            request.onload = process;
+            request.open(details.method, details.url, true);
+            request.send();
+        }
     }
-    if (userscript !== 'undefined') {
-        window.localStorage.GM_userscript = '1';
-        window.removeEventListener('message', xhr);
-        window.addEventListener('message', xhr);
-    } else {
-        window.localStorage.GM_userscript = '0';
-    }
+    window.addEventListener('message', xhr);
 }());
 (function particle() {
     'use strict';
@@ -511,29 +513,6 @@
         blacklist: {}
     };
     window.localStorage.Particle = window.localStorage.Particle || JSON.stringify(defaultSettings);
-    function string2HTML(string) {
-        var mortar = new window.DOMParser();
-        return mortar.parseFromString(string, 'text/html');
-    }
-    function get(setting) {
-        return JSON.parse(window.localStorage.Particle)[setting];
-    }
-    function set(setting, newValue) {
-        var userSettings = JSON.parse(window.localStorage.Particle);
-        if (newValue !== undefined) {
-            userSettings[setting] = newValue;
-        } else {
-            delete userSettings[setting];
-        }
-        window.localStorage.Particle = JSON.stringify(userSettings);
-    }
-    function userLang(placeHolder) {
-        var ytlang = window.yt.config_.FEEDBACK_LOCALE_LANGUAGE || 'en';
-        if (lang[placeHolder][ytlang]) {
-            return lang[placeHolder][ytlang];
-        }
-        return lang[placeHolder].en;
-    }
     styleSheet = document.createElement('style');
     styleSheet.id = 'P-style';
     styleSheet.textContent = [
@@ -1151,21 +1130,28 @@
         '}\n'
     ].join('');
     document.documentElement.appendChild(styleSheet);
-    function xhr(details) {
-        var request;
-        function process(xhrResponse) {
-            var response = {};
-            response[details.id] = xhrResponse.target.response;
-            window.postMessage(response, '*');
-        }
-        if (window.localStorage.GM_userscript === '0') {
-            request = new XMLHttpRequest();
-            request.onload = process;
-            request.open(details.method, details.url, true);
-            request.send();
+    function string2HTML(string) {
+        var mortar = new window.DOMParser();
+        return mortar.parseFromString(string, 'text/html');
+    }
+    function get(setting) {
+        return JSON.parse(window.localStorage.Particle)[setting];
+    }
+    function set(setting, newValue) {
+        var userSettings = JSON.parse(window.localStorage.Particle);
+        if (newValue !== undefined) {
+            userSettings[setting] = newValue;
         } else {
-            window.postMessage(details, '*');
+            delete userSettings[setting];
         }
+        window.localStorage.Particle = JSON.stringify(userSettings);
+    }
+    function userLang(placeHolder) {
+        var ytlang = window.yt.config_.FEEDBACK_LOCALE_LANGUAGE || 'en';
+        if (lang[placeHolder][ytlang]) {
+            return lang[placeHolder][ytlang];
+        }
+        return lang[placeHolder].en;
     }
     function addEvent(target, event, call, capture) {
         var name = call.name;
@@ -1255,7 +1241,7 @@
             custom = function () {
                 var button = '',
                     list = get('blacklist');
-                function buildList(ytid){
+                function buildList(ytid) {
                     button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button>' + list[ytid] + '</div>\n';
                 }
                 if (Object.keys(list).length > 0) {
@@ -1745,11 +1731,11 @@
                     link.textContent = channelId[user.getAttribute('data-ytid')];
                     videoCounter();
                 } else {
-                    xhr({
+                    window.postMessage({
                         method: 'GET',
                         url: window.location.origin + '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
                         id: 'getPLInfo'
-                    });
+                    }, '*');
                     addEvent(window, 'message', getPLInfo);
                 }
             }
@@ -1770,11 +1756,11 @@
                 }
             }
             if (watchTime && window.ytplayer.config) {
-                xhr({
+                window.postMessage({
                     method: 'GET',
                     url: window.location.origin + '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
                     id: 'getCHInfo'
-                });
+                }, '*');
                 addEvent(window, 'message', getCHInfo);
             }
         }
@@ -1956,23 +1942,23 @@
                 window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
             }
         }
-        function fsControl(fsEvent) {
+        function fsControl(event) {
             return function () {
                 if (!requesting && fullscreen) {
-                    fsEvent.apply(this, arguments);
+                    event.apply(this, arguments);
                 }
                 return true;
             };
         }
-        function playerFullscreen(fsState) {
+        function playerFullscreen(event) {
             window.beacon = api.getVideoData().video_id + api.getVideoData().list;
-            fullscreen = fsState.fullscreen;
+            fullscreen = event.fullscreen;
         }
-        function volumeChanged(volState) {
-            set('volLev', volState.volume);
+        function volumeChanged(event) {
+            set('volLev', event.volume);
         }
-        function sizeChanged(sizeState) {
-            set('theaterMode', sizeState);
+        function sizeChanged(event) {
+            set('theaterMode', event);
         }
         function stopButton() {
             var prev,
@@ -2028,20 +2014,20 @@
             }
         }
     }
-    function scriptEntry(a) {
+    function scriptEntry(event) {
         var ytConfig;
-        if (a.target.textContent.split('var ytplayer = ytplayer').length > 1) {
-            a.preventDefault();
-            a.stopPropagation();
+        if (event.target.textContent.split('var ytplayer = ytplayer').length > 1) {
+            event.preventDefault();
+            event.stopPropagation();
             if (window.location.pathname === '/watch') {
-                ytConfig = a.target.textContent.match(/ytplayer\.config = \{([\w\W]*?)\};/)[1];
+                ytConfig = event.target.textContent.match(/ytplayer\.config = \{([\w\W]*?)\};/)[1];
                 window.ytplayer = window.ytplayer || {};
                 window.ytplayer.config = JSON.parse('{' + ytConfig + '}');
                 argsCleaner(window.ytplayer.config);
             }
-        } else if (a.target.textContent.split('ytspf.enabled = false').length > 1) {
-            a.preventDefault();
-            a.stopPropagation();
+        } else if (event.target.textContent.split('ytspf.enabled = false').length > 1) {
+            event.preventDefault();
+            event.stopPropagation();
             window.ytspf = {
                 enabled: true,
                 config: {
@@ -2053,23 +2039,23 @@
             };
         }
     }
-    function scriptExit(a) {
-        function baseDetour(b) {
+    function scriptExit(event) {
+        function baseDetour(originalFunction) {
             return function () {
-                b.apply(this, arguments);
+                originalFunction.apply(this, arguments);
                 if (get('VID_END_SHRE')) {
                     window.yt.config_.SHARE_ON_VIDEO_END = false;
                 }
             };
         }
-        function embedDetour(b) {
+        function embedDetour(originalFunction) {
             return function () {
                 var args = arguments;
                 argsCleaner(args[1]);
                 if (args[0].id === 'upsell-video') {
-                    return b.apply(this, args);
+                    return originalFunction.apply(this, args);
                 }
-                b.apply(this, args);
+                originalFunction.apply(this, args);
                 if (api) {
                     if (get('VID_PLR_ATPL')) {
                         api.pauseVideo();
@@ -2081,75 +2067,77 @@
                 }
             };
         }
-        function autoplayDetour(b) {
+        function autoplayDetour(originalFunction) {
             return function () {
                 var args = arguments;
                 if (!args[1] || get('plApl') || (!get('plApl') && args[1].feature && args[1].feature !== 'autoplay')) {
-                    b.apply(this, arguments);
+                    originalFunction.apply(this, arguments);
                 }
             };
         }
-        function html5Detour(b) {
+        function html5Detour(originalFunction) {
             return function () {
-                var pi,
+                var playerInstance,
                     args = arguments;
-                function html5Pointers(c, d) {
+                function html5Pointers(originalPointer, salt) {
                     return function () {
                         var player,
                             canvas,
-                            changed = c.apply(this, arguments);
+                            changed = originalPointer.apply(this, arguments);
                         if (changed.width && changed.height && !fullscreen) {
                             player = document.getElementById('movie_player');
                             canvas = document.getElementsByClassName('html5-video-container')[0];
                             if (player && canvas) {
-                                changed.width = (d && player.offsetWidth) || canvas.offsetWidth;
-                                changed.height = (d && player.offsetHeight) || canvas.offsetHeight;
+                                changed.width = (salt && player.offsetWidth) || canvas.offsetWidth;
+                                changed.height = (salt && player.offsetHeight) || canvas.offsetHeight;
                             }
                         }
                         return changed;
                     };
                 }
-                if (args[0].id === 'upsell-video') {
-                    b.apply(this, arguments);
-                } else if (typeof args[0] === 'object') {
-                    pi = b.apply(this, arguments);
-                    Object.keys(pi).forEach(function (c) {
-                        if (typeof pi[c] === 'object' && pi[c] && pi[c].element) {
-                            Object.keys(Object.getPrototypeOf(pi[c])).forEach(function (d) {
-                                if (typeof pi[c][d] === 'function' && (pi[c][d] + String()).split('"detailpage"!=').length > 1) {
-                                    if ((pi[c][d] + String()).split('!0)').length > 1) {
-                                        pi[c][d] = html5Pointers(pi[c][d], '');
-                                    } else if ((pi[c][d] + String()).split('!0)').length < 2) {
-                                        pi[c][d] = html5Pointers(pi[c][d]);
-                                    }
-                                }
-                            });
+                function sizesIterator(keys) {
+                    function keysIterator(sizes) {
+                        if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
+                            if ((playerInstance[keys][sizes] + String()).split('!0)').length > 1) {
+                                playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes], '');
+                            } else if ((playerInstance[keys][sizes] + String()).split('!0)').length < 2) {
+                                playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
+                            }
                         }
-                    });
+                    }
+                    if (typeof playerInstance[keys] === 'object' && playerInstance[keys] && playerInstance[keys].element) {
+                        Object.keys(Object.getPrototypeOf(playerInstance[keys])).forEach(keysIterator);
+                    }
+                }
+                if (args[0].id === 'upsell-video') {
+                    originalFunction.apply(this, arguments);
+                } else if (typeof args[0] === 'object') {
+                    playerInstance = originalFunction.apply(this, arguments);
+                    Object.keys(playerInstance).forEach(sizesIterator);
                 }
             };
         }
-        a = a.target.getAttribute('name');
-        if (a) {
-            if (a === 'www/base') {
+        function ytIterator(keys) {
+            if (typeof window._yt_www[keys] === 'function') {
+                if ((window._yt_www[keys] + String()).split('player-added').length > 1) {
+                    window._yt_www[keys] = embedDetour(window._yt_www[keys]);
+                } else if ((window._yt_www[keys] + String()).split('window.spf.navigate').length > 1) {
+                    window._yt_www[keys] = autoplayDetour(window._yt_www[keys]);
+                }
+            }
+        }
+        event = event.target.getAttribute('name');
+        if (event) {
+            if (event === 'www/base') {
                 window.yt.setConfig = baseDetour(window.yt.setConfig);
-                Object.keys(window._yt_www).some(function (b) {
-                    if (typeof window._yt_www[b] === 'function') {
-                        if ((window._yt_www[b] + String()).split('player-added').length > 1) {
-                            window._yt_www[b] = embedDetour(window._yt_www[b]);
-                        } else if ((window._yt_www[b] + String()).split('window.spf.navigate').length > 1) {
-                            window._yt_www[b] = autoplayDetour(window._yt_www[b]);
-                        }
-                    }
-                });
-            } else if (a === 'html5player/html5player') {
+                Object.keys(window._yt_www).some(ytIterator);
+            } else if (event === 'html5player/html5player') {
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
         }
     }
     function blackList() {
-        var i,
-            list,
+        var list,
             user,
             name,
             ytid,
@@ -2204,25 +2192,25 @@
             }
         }
         if (list) {
-            i = list.length;
+            length = list.length;
             autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
             feedList = document.getElementsByClassName('feed-item-container');
-            while (i) {
-                i -= 1;
-                user = list[i].getElementsByClassName('g-hovercard')[(window.location.pathname === '/watch') ? 1 : 0];
-                if (user && list[i]) {
+            while (length) {
+                length -= 1;
+                user = list[length].getElementsByClassName('g-hovercard')[(window.location.pathname === '/watch') ? 1 : 0];
+                if (user && list[length]) {
                     name = user.textContent;
                     ytid = user.getAttribute('data-ytid');
                     if (userList[ytid]) {
-                        if (autoplay && autoplay.contains(list[i])) {
+                        if (autoplay && autoplay.contains(list[length])) {
                             autoplay.remove();
                             document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
-                        } else if (list[i]) {
-                            list[i].remove();
+                        } else if (list[length]) {
+                            list[length].remove();
                         }
-                    } else if (!list[i].getElementsByClassName('blacklist')[0] && list[i].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
+                    } else if (!list[length].getElementsByClassName('blacklist')[0] && list[length].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
                         button = createButton(ytid, name);
-                        list[i].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
+                        list[length].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
                     }
                 }
             }
@@ -2239,7 +2227,7 @@
         }
         if (loadMore && !loadMore.classList.contains('hooked')) {
             loadMore.classList.add('hooked');
-            observer = new MutationObserver(blackList);
+            observer = new window.MutationObserver(blackList);
             observer.observe(loadMore, {
                 childList: true,
                 attributes: true,
@@ -2420,11 +2408,11 @@
                         localStorage.cipherAlgorithm = JSON.stringify(algo);
                         console.info(deCipher + String());
                     } else if (!event && (!prevCipher || prevCipher.split(html5ID).length < 2)) {
-                        xhr({
+                        window.postMessage({
                             method: 'GET',
                             url: window.location.protocol + html5,
                             id: 'cipherAlgorithm'
-                        });
+                        }, '*');
                         addEvent(window, 'message', cipherAlgorithm);
                         return;
                     }
@@ -2675,9 +2663,9 @@
             document.documentElement.scrollTop = document.body.scrollTop = 0;
         }
     }
-    function request(requestEvent) {
-        var url = requestEvent.detail.url,
-            previous = requestEvent.detail.previous,
+    function request(event) {
+        var url = event.detail.url,
+            previous = event.detail.previous,
             videoBefore = previous.split('/watch?').length < 2,
             videoAfter = url.split('/watch?').length > 1,
             listBefore = previous.split('list=').length > 1,
