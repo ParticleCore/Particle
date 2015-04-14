@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.5.9
+// @version     1.6.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -15,26 +15,25 @@
     var userscript = typeof GM_info === 'object';
     function xhr(details) {
         var request;
-        if (typeof details.data !== 'object' || !details.data.id) {
-            return;
-        }
+        details = details.data;
         function process(xhrResponse) {
             var response = {};
             response[details.id] = userscript ? xhrResponse.response : xhrResponse.target.response;
             window.postMessage(response, '*');
         }
-        details = details.data;
-        if (userscript) {
-            GM_xmlhttpRequest({
-                url: details.url,
-                method: details.method,
-                onload: process
-            });
-        } else {
-            request = new XMLHttpRequest();
-            request.onload = process;
-            request.open(details.method, details.url, true);
-            request.send();
+        if (typeof details === 'object' && details.id) {
+            if (userscript) {
+                GM_xmlhttpRequest({
+                    onload: process,
+                    method: details.method,
+                    url: details.url
+                });
+            } else {
+                request = new XMLHttpRequest();
+                request.onload = process;
+                request.open(details.method, details.url, true);
+                request.send();
+            }
         }
     }
     window.addEventListener('message', xhr);
@@ -350,13 +349,13 @@
             en: 'Disable advertisements',
             'pt-PT': 'Desactivar publicidades'
         },
+        VID_SUB_ADS: {
+            en: 'Enable advertisements only in videos from subscribed channels',
+            'pt-PT': 'Activar publicidades só para vídeos de canais subscritos'
+        },
         VID_PLR_ANTS: {
             en: 'Disable annotations',
             'pt-PT': 'Desactivar notas'
-        },
-        VID_PLR_DASH: {
-            en: 'Disable DASH playback',
-            'pt-PT': 'Desactivar reprodução DASH'
         },
         VID_PLR_CC: {
             en: 'Disable subtitles',
@@ -1131,8 +1130,8 @@
     ].join('');
     document.documentElement.appendChild(styleSheet);
     function string2HTML(string) {
-        var mortar = new window.DOMParser();
-        return mortar.parseFromString(string, 'text/html');
+        var html = new window.DOMParser();
+        return html.parseFromString(string, 'text/html');
     }
     function get(setting) {
         return JSON.parse(window.localStorage.Particle)[setting];
@@ -1197,11 +1196,11 @@
         if (document.readyState === 'complete') {
             return;
         }
-        function navigateSettings(a) {
+        function navigateSettings(event) {
             function remBlackList() {
                 var newKey = get('blacklist');
-                delete newKey[a.target.parentNode.getAttribute('data-ytid')];
-                a.target.parentNode.remove();
+                delete newKey[event.target.parentNode.getAttribute('data-ytid')];
+                event.target.parentNode.remove();
                 set('blacklist', newKey);
             }
             function saveSettings() {
@@ -1221,17 +1220,17 @@
                 }
                 window.localStorage.Particle = JSON.stringify(savedSets);
             }
-            if (a.target.classList.contains('P-save')) {
+            if (event.target.classList.contains('P-save')) {
                 saveSettings();
-            } else if (a.target.classList.contains('close')) {
+            } else if (event.target.classList.contains('close')) {
                 remBlackList();
-            } else if (a.target.parentNode.id === 'P-sidebar-list') {
+            } else if (event.target.parentNode.id === 'P-sidebar-list') {
                 document.getElementById('P-content').remove();
                 pContainer = document.getElementById('P-container');
-                pContent = string2HTML(menus[a.target.id]).querySelector('#P-content');
+                pContent = string2HTML(menus[event.target.id]).querySelector('#P-content');
                 pContainer.appendChild(pContent);
-                a.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
-                a.target.className = 'selected';
+                event.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
+                event.target.className = 'selected';
             }
         }
         function settingsTemplate() {
@@ -1256,25 +1255,27 @@
                 select: function (id, list) {
                     var select = '<label for="' + id + '">' + userLang(id) + '</label>\n' +
                         '<select id="' + id + '">\n';
-                    Object.keys(list).forEach(function (a) {
+                    function keysIterator(keys) {
                         select += '<option';
-                        if (get(id) === list[a]) {
+                        if (get(id) === list[keys]) {
                             select += ' selected="true"';
                         }
-                        select += ' value="' + list[a] + '">' + userLang(a) + '</option>\n';
-                    });
+                        select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
+                    }
+                    Object.keys(list).forEach(keysIterator);
                     select += '</select>\n';
                     return select;
                 },
                 radio: function (name, list) {
                     var radio = '<label>' + userLang(name) + '</label>\n';
-                    Object.keys(list).forEach(function (a) {
-                        radio += '<input id="' + a + '" name="' + name + '" value="' + list[a] + '" type="radio"';
-                        if (get(name) === list[a]) {
+                    function keysIterator(keys) {
+                        radio += '<input id="' + keys + '" name="' + name + '" value="' + list[keys] + '" type="radio"';
+                        if (get(name) === list[keys]) {
                             radio += ' checked="true"';
                         }
-                        radio += '>\n<label for="' + a + '">' + userLang(a) + '</label>';
-                    });
+                        radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>';
+                    }
+                    Object.keys(list).forEach(keysIterator);
                     return radio;
                 },
                 input: function (id, type, placeholder, size) {
@@ -1337,15 +1338,15 @@
                     '    </div>\n',
                     '    <hr class="P-horz">\n',
                     htEl.title('VID_PLR', 'h3'),
+                    htEl.input('VID_PLR_ADS', 'checkbox'),
+                    htEl.input('VID_SUB_ADS', 'checkbox'),
                     htEl.input('VID_PLR_ALVIS', 'checkbox'),
                     htEl.input('VID_PLR_ATPL', 'checkbox'),
-                    htEl.input('VID_PLR_ADS', 'checkbox'),
                     htEl.input('VID_PLR_CC', 'checkbox'),
                     htEl.input('VID_PLR_ANTS', 'checkbox'),
                     htEl.input('VID_END_SHRE', 'checkbox'),
                     htEl.input('VID_PLR_VOL_MEM', 'checkbox'),
                     htEl.input('VID_PLR_SIZE_MEM', 'checkbox'),
-                    htEl.input('VID_PLR_DASH', 'checkbox'),
                     htEl.radio('VID_PLR_TYPE', {
                         'VID_PLR_TYPE_FLSH': 'flash',
                         'VID_PLR_TYPE_HTML': 'html5'
@@ -1506,7 +1507,7 @@
         }
         if (get('VID_TTL_CMPT')) {
             styleSheet.textContent +=
-                '#eow-title{\n' +
+                '#watch7-headline:not(:hover) #eow-title{\n' +
                 '    display: block;\n' +
                 '    overflow: hidden;\n' +
                 '    text-overflow: ellipsis;\n' +
@@ -1515,7 +1516,7 @@
         }
         if (get('GEN_CMPT_TTLS')) {
             styleSheet.textContent +=
-                '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{\n' +
+                '.feed-item-container .yt-ui-ellipsis:not(:hover), .yt-shelf-grid-item .yt-ui-ellipsis:not(:hover){\n' +
                 '    white-space: nowrap !important;\n' +
                 '    display: inherit !important;\n' +
                 '}\n';
@@ -1714,10 +1715,11 @@
                 if (details.getPLInfo) {
                     remEvent('message', getPLInfo);
                     details = JSON.parse(details.getPLInfo);
-                    details = details.body && details.body.content && details.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1].split('</li><li>')[1].replace('</li>', '').replace('&#39;', '\'');
+                    details = details.body && details.body.content && details.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
+                    details = details && details.match(/<li>([\w\W]*?)<\/li>/g)[1];
                     if (details) {
                         link.className = 'spf-link';
-                        link.textContent = channelId[user.getAttribute('data-ytid')] = details;
+                        link.textContent = channelId[user.getAttribute('data-ytid')] = details.replace(/<\/?li>/g, '').replace('&#39;', '\'');
                         videoCounter();
                     }
                 }
@@ -1826,10 +1828,11 @@
                 state = api && api.getPlayerState && api.getPlayerState();
             function widthReport() {
                 remEvent('load', widthReport);
+                function prefixIterator(prefix) {
+                    config.args[prefix + base] = hdURL;
+                }
                 if (img.width > 120 && !config.args['iurlmaxres' + base] && state && (state === 5 || (state === 3 && video && video.src === ''))) {
-                    ['iurl', 'iurlsd', 'iurlmq', 'iurlhq', 'iurlmaxres'].forEach(function (prefix) {
-                        config.args[prefix + base] = hdURL;
-                    });
+                    ['iurl', 'iurlsd', 'iurlmq', 'iurlhq', 'iurlmaxres'].forEach(prefixIterator);
                     api.cueVideoByPlayerVars(config.args);
                     api.setPlaybackQuality(get('VID_DFLT_QLTY'));
                     if (get('VID_PLR_VOL_MEM')) {
@@ -1841,8 +1844,11 @@
             addEvent(img, 'load', widthReport);
             img.src = hdURL;
         }
+        function prefixIterator(prefix) {
+            config.args[prefix + base] = config.args['iurlmaxres' + base];
+        }
         if (config.args.video_id) {
-            if (get('VID_PLR_ADS')) {
+            if (get('VID_PLR_ADS') && (!get('VID_SUB_ADS') || (get('VID_SUB_ADS') && config.args.subscribed !== '1'))) {
                 delete config.args.ad3_module;
             }
             if (get('VID_PLR_SIZE_MEM') && get('theaterMode')) {
@@ -1859,7 +1865,6 @@
             } else {
                 config.args.autohide = get('VID_PLR_CTRL_VIS');
             }
-            config.args.dash = (get('VID_PLR_DASH')) ? '0' : '1';
             config.args.vq = get('VID_DFLT_QLTY');
             config.args.autoplay = (get('VID_PLR_ATPL')) ? '1' : '0';
             config.args.theme = get('VID_CTRL_BAR_CLR');
@@ -1874,9 +1879,7 @@
                     delete config.args['iurlmaxres' + base];
                     checkThumbnail();
                 } else if (config.args['iurlmaxres' + base]) {
-                    ['iurl', 'iurlsd', 'iurlmq', 'iurlhq'].forEach(function (prefix) {
-                        config.args[prefix + base] = config.args['iurlmaxres' + base];
-                    });
+                    ['iurl', 'iurlsd', 'iurlmq', 'iurlhq'].forEach(prefixIterator);
                 }
             }
             if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
@@ -1884,7 +1887,7 @@
             }
         }
     }
-    function floater() {
+    function alwaysVisible() {
         var width,
             height,
             aspectRatio,
@@ -2249,7 +2252,7 @@
             titleElement.textContent = titleElement.textContent.replace('▶ ', '');
         }
     }
-    function plControls() {
+    function playlistControls() {
         var href = window.location.href,
             playlistBar = document.getElementById('watch-appbar-playlist');
         function reverseControl() {
@@ -2271,16 +2274,16 @@
                 api.updatePlaylist();
             }
         }
-        function reverseButton(a) {
-            a = usingChrome ? a.target.parentNode : a.target;
-            a.classList.toggle('yt-uix-button-toggled');
-            set('plRev', (a.classList.contains('yt-uix-button-toggled')) ? window.yt.config_.LIST_ID : false);
+        function reverseButton(event) {
+            event = usingChrome ? event.target.parentNode : event.target;
+            event.classList.toggle('yt-uix-button-toggled');
+            set('plRev', (event.classList.contains('yt-uix-button-toggled')) ? window.yt.config_.LIST_ID : false);
             reverseControl();
         }
-        function autoplayButton(a) {
-            a = usingChrome ? a.target.parentNode : a.target;
-            a.classList.toggle('yt-uix-button-toggled');
-            set('plApl', a.classList.contains('yt-uix-button-toggled'));
+        function autoplayButton(event) {
+            event = usingChrome ? event.target.parentNode : event.target;
+            event.classList.toggle('yt-uix-button-toggled');
+            set('plApl', event.classList.contains('yt-uix-button-toggled'));
         }
         function createButton(type, placeHolder, boolean, call) {
             var navControls = document.getElementsByClassName('playlist-nav-controls')[0],
@@ -2431,17 +2434,15 @@
                     base = window.ytplayer.config.args.iurl_webp ? '_webp' : '';
                     poster = window.ytplayer.config.args['iurlmaxres' + base] || window.ytplayer.config.args['iurl' + base];
                     streams = {};
-                    window.ytplayer.config.args.adaptive_fmts.split(',').forEach(
-                        function (stream) {
-                            var itag = stream.match(/itag\=([0-9]{3})/)[1];
-                            streams[itag] = {};
-                            stream.split('&').forEach(
-                                function (details) {
-                                    streams[itag][details.split('=')[0]] = decodeURIComponent(details.split('=')[1]).replace(/\+/g, ' ');
-                                }
-                            );
+                    function adaptiveIterator(stream) {
+                        var itag = stream.match(/itag\=([0-9]{3})/)[1];
+                        streams[itag] = {};
+                        function streamIterator(details) {
+                            streams[itag][details.split('=')[0]] = decodeURIComponent(details.split('=')[1]).replace(/\+/g, ' ');
                         }
-                    );
+                        stream.split('&').forEach(streamIterator);
+                    }
+                    window.ytplayer.config.args.adaptive_fmts.split(',').forEach(adaptiveIterator);
                     loadStream = streams['171'] || streams['140'];
                     console.info(streams);
                     if (loadStream) {
@@ -2515,7 +2516,7 @@
                 }
                 function parseThumbs() {
                     thumbControls = '<div id="seek-controls">\n';
-                    matrix.forEach(function (qualities, level) {
+                    function matrixIterator(qualities, level) {
                         var i,
                             currentBase,
                             details,
@@ -2552,7 +2553,8 @@
                         if (level > 1) {
                             thumbControls += '<div class="quality-' + (level - 1) + '">' + ((level < 3 && userLang('CNSL_SKMP_SMAL')) || (level < 4 && userLang('CNSL_SKMP_MED')) || (level < 5 && userLang('CNSL_SKMP_LRGE'))) + '</div>\n';
                         }
-                    });
+                    }
+                    matrix.forEach(matrixIterator);
                     thumbControls += '</div>\n';
                 }
                 if (storyBoard) {
@@ -2647,15 +2649,15 @@
             hookButtons();
         }
     }
-    function htmlGate() {
+    function initFunctions() {
         requesting = false;
         customStyles();
         settingsMenu();
-        plControls();
+        playlistControls();
         playerMode();
         playerConsole();
         title();
-        floater();
+        alwaysVisible();
         blackList();
         enhancedDetails();
         commentsButton();
@@ -2681,9 +2683,9 @@
         }
     }
     window.onYouTubePlayerReady = playerReady;
-    addEvent(window, 'spfdone', htmlGate);
+    addEvent(window, 'spfdone', initFunctions);
     addEvent(window, 'spfrequest', request);
-    addEvent(window, 'readystatechange', htmlGate, true);
+    addEvent(window, 'readystatechange', initFunctions, true);
     addEvent(window, 'beforescriptexecute', scriptEntry);
     if (usingChrome) {
         addEvent(document.documentElement, 'load', scriptExit, true);
