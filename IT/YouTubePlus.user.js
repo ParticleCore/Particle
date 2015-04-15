@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.0
+// @version     1.6.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -63,6 +63,10 @@
         return;
     }
     lang = {
+        SUB_PLST: {
+            en: 'Play recent uploads',
+            'pt-PT': 'Reproduzir vídeos recentes'
+        },
         BLCK_ADD: {
             en: 'Add to blacklist',
             'pt-PT': 'Adicionar à lista negra'
@@ -1126,6 +1130,19 @@
         '    top: 50% !important;\n',
         '    transform: translateY(-50%);\n',
         '    z-index: 10;\n',
+        '}\n',
+        '#subscription-playlist-icon{\n',
+        '    margin-right: -20px;\n',
+        '}\n',
+        '#subscription-playlist span{\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAZlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwbJTWAAAAIXRSTlMAAnkBEP3p7/mGCwUHWwOoURVpQ5hCTvVZZARvBgmIDJcLZgxgAAAAVUlEQVR4Xl3ORRLAIBBE0YFAQtxd+/6XDEuav3xVI9L2wgGTYfDlBYNPVxHADiUD4OqGAcg6xQCkYxLBTJAtNLJuKlzq9iM8a8+LHtM3vf68EvYZoX5HKg99MDC3NAAAAABJRU5ErkJggg==") no-repeat scroll center;\n',
+        '    display: block;\n',
+        '    height: 100%;\n',
+        '    opacity: 0.4;\n',
+        '    width: 20px;\n',
+        '}\n',
+        '#subscription-playlist:hover span{\n',
+        '    opacity: 1;\n',
         '}\n'
     ].join('');
     document.documentElement.appendChild(styleSheet);
@@ -1507,7 +1524,7 @@
         }
         if (get('VID_TTL_CMPT')) {
             styleSheet.textContent +=
-                '#watch7-headline:not(:hover) #eow-title{\n' +
+                '#watch7-headline #eow-title{\n' +
                 '    display: block;\n' +
                 '    overflow: hidden;\n' +
                 '    text-overflow: ellipsis;\n' +
@@ -1516,7 +1533,7 @@
         }
         if (get('GEN_CMPT_TTLS')) {
             styleSheet.textContent +=
-                '.feed-item-container .yt-ui-ellipsis:not(:hover), .yt-shelf-grid-item .yt-ui-ellipsis:not(:hover){\n' +
+                '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{\n' +
                 '    white-space: nowrap !important;\n' +
                 '    display: inherit !important;\n' +
                 '}\n';
@@ -1848,7 +1865,7 @@
             config.args[prefix + base] = config.args['iurlmaxres' + base];
         }
         if (config.args.video_id) {
-            if (get('VID_PLR_ADS') && (!get('VID_SUB_ADS') || (get('VID_SUB_ADS') && config.args.subscribed !== '1'))) {
+            if (get('VID_PLR_ADS') && (!get('VID_SUB_ADS') || (get('VID_SUB_ADS') && !config.args.subscribed))) {
                 delete config.args.ad3_module;
             }
             if (get('VID_PLR_SIZE_MEM') && get('theaterMode')) {
@@ -1934,6 +1951,45 @@
             } else if (window.location.pathname === '/watch') {
                 remEvent('scroll', initFloater);
             }
+        }
+    }
+    function subPlaylist() {
+        var list = '',
+            button = document.getElementById('subscription-playlist'),
+            navMenu = document.getElementById('channel-navigation-menu'),
+            listTitle = document.getElementsByClassName('appbar-nav-menu')[0],
+            videoList = document.getElementsByClassName('addto-watch-later-button');
+        function listIterator(keys) {
+            list += videoList[keys].getAttribute('data-video-ids') + '%2C';
+        }
+        function initSubPlaylist(event) {
+            event = event.data;
+            if (event && event.initSubPlaylist) {
+                remEvent('message', initSubPlaylist);
+                button.href = '/watch?v=' + videoList[0].getAttribute('data-video-ids') + '&list=' + JSON.parse(event.initSubPlaylist)[1].data.swfcfg.args.list;
+            }
+        }
+        if (window.location.pathname === '/feed/subscriptions' && !button && listTitle && videoList) {
+            button = [
+                '<li id="subscription-playlist-icon">\n',
+                '    <a id="subscription-playlist" title="' + userLang('SUB_PLST') + '" class="yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default">\n',
+                '        <span class="yt-uix-button-content"></span>\n',
+                '    </a>\n',
+                '</li>'
+            ].join('');
+            button = string2HTML(button).querySelector('li');
+            navMenu.insertBefore(button, navMenu.firstChild);
+            Object.keys(videoList).forEach(listIterator);
+            //listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent.replace(/\n?  /g, '');
+            listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent;
+            button = document.getElementById('subscription-playlist');
+            button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
+            window.postMessage({
+                method: 'GET',
+                url: window.location.origin + '/watch_videos?title=' + listTitle + '&spf=navigate&video_ids=' + list,
+                id: 'initSubPlaylist'
+            }, '*');
+            addEvent(window, 'message', initSubPlaylist);
         }
     }
     function playerReady(playerApi) {
@@ -2333,26 +2389,27 @@
                 loopButton.classList[(videoPlayer.loop) ? 'add' : 'remove']('active');
             }
             function toggleAudio() {
-                var streams,
+                var user,
+                    base,
+                    poster,
+                    streams,
+                    container,
                     loadStream,
                     currentTime,
-                    currentQuality,
-                    container,
-                    user,
-                    base,
-                    poster;
+                    currentQuality;
                 function timeProgress() {
                     var total = document.getElementById('podcast-total'),
-                        elapsed = document.getElementById('podcast-current');
+                        elapsed = document.getElementById('podcast-current'),
+                        progress = timeConv(Math.floor(api.getCurrentTime())) + ' ';
                     if (!total) {
                         remEvent('timeupdate', timeProgress);
                         return;
                     }
-                    if (elapsed) {
-                        elapsed.textContent = timeConv(Math.floor(api.getCurrentTime())) + ' ';
-                    }
-                    if (total.textContent === '' && videoPlayer.duration) {
-                        total.textContent = '/ ' + timeConv(videoPlayer.duration - 1);
+                    if (elapsed && elapsed.textContent !== progress) {
+                        elapsed.textContent = progress;
+                        if (total.textContent === '' && videoPlayer.duration) {
+                            total.textContent = '/ ' + timeConv(videoPlayer.duration - 1);
+                        }
                     }
                 }
                 function initAudioMode() {
@@ -2385,32 +2442,63 @@
                     document.getElementById('audio-only').classList.add('active');
                 }
                 function cipherAlgorithm(event) {
-                    var deCipher,
-                        algo = {},
-                        cipherFunction,
-                        prevCipher = localStorage.cipherAlgorithm,
+                    var algo = {},
+                        storedCipher = localStorage.cipherAlgorithm,
                         html5 = window.ytplayer.config.assets.js,
                         html5ID = html5.match(/html5player-([\w\W]*?)\/html5player/)[1];
-                    function string2Function(string) {
-                        return new Function('sig', string);
+                    function buildCipher(string) {
+                        var replace,
+                            splice,
+                            reverse,
+                            firstMatch = string.match(/var [\w]{2}\=\{[\w]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
+                            secondMatch = string.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0];
+                        function iterateFirstMatch(string) {
+                            if (string.match('.length')) {
+                                replace = string.split(':')[0];
+                            } else if (string.match('.splice')) {
+                                splice = string.split(':')[0];
+                            } else if (string.match('.reverse')) {
+                                reverse = string.split(':')[0];
+                            }
+                        }
+                        function iterateSecondMatch(string) {
+                            if (string.match('.' + replace)) {
+                                algo[html5ID].push(Number(string.match(/,([0-9]{2})\)/)[1]));
+                            } else if (string.match('.' + splice)) {
+                                algo[html5ID].push(-Number(string.match(/,([0-9]{2})\)/)[1]));
+                            } else if (string.match('.' + reverse)) {
+                                algo[html5ID].push(0);
+                            }
+                        }
+                        firstMatch.replace(/var ([\w\W]*?)=\{/, '').split('},').forEach(iterateFirstMatch);
+                        secondMatch.split(';').forEach(iterateSecondMatch);
+                        console.info(algo, replace, splice, reverse);
                     }
-                    if (!event && prevCipher && prevCipher.split(html5ID).length > 1) {
-                        deCipher = string2Function(JSON.parse(prevCipher)[html5ID]);
-                        console.info('local', deCipher + String());
-                    } else if (event && event.data.cipherAlgorithm) {
+                    function deCipher(sig) {
+                        var temp,
+                            cipher = JSON.parse(storedCipher)[html5ID];
+                        console.info(cipher);
+                        sig = sig.split('');
+                        cipher.forEach(function (value) {
+                            if (value > 0) {
+                                temp = sig[0];
+                                sig[0] = sig[value % sig.length];
+                                sig[value] = temp;
+                            } else if (value < 0) {
+                                sig.splice(0, value);
+                            } else {
+                                sig.reverse();
+                            }
+                        });
+                        return sig.join('');
+                    }
+                    if (event && event.data.cipherAlgorithm) {
                         remEvent('message', cipherAlgorithm);
                         event = event.data.cipherAlgorithm;
-                        cipherFunction =
-                            event.match(/var [\w]{2}\=\{[\w]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0] +
-                            event.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0]
-                            .replace(/a\=a/g, 'sig=sig')
-                            .replace(/ a\./g, ' sig.')
-                            .replace(/a\,/g, 'sig,');
-                        deCipher = string2Function(cipherFunction);
-                        algo[html5ID] = cipherFunction + String();
-                        localStorage.cipherAlgorithm = JSON.stringify(algo);
-                        console.info(deCipher + String());
-                    } else if (!event && (!prevCipher || prevCipher.split(html5ID).length < 2)) {
+                        algo[html5ID] = [];
+                        buildCipher(event);
+                        storedCipher = localStorage.cipherAlgorithm = JSON.stringify(algo);
+                    } else if (!event && (!storedCipher || storedCipher.split(html5ID).length < 2)) {
                         window.postMessage({
                             method: 'GET',
                             url: window.location.protocol + html5,
@@ -2419,7 +2507,7 @@
                         addEvent(window, 'message', cipherAlgorithm);
                         return;
                     }
-                    if (deCipher) {
+                    if (storedCipher && storedCipher.split(html5ID).length > 1) {
                         loadStream.url += '&signature=' + deCipher(loadStream.s);
                         initAudioMode();
                     }
@@ -2428,12 +2516,12 @@
                     if (!window.ytplayer.config) {
                         return;
                     }
+                    streams = {};
                     videoPlayer = document.getElementsByTagName('video')[0];
                     container = document.getElementById('podcast-container');
                     user = window.ytplayer.config.args.author || document.querySelector('.yt-user-info > a').textContent;
                     base = window.ytplayer.config.args.iurl_webp ? '_webp' : '';
                     poster = window.ytplayer.config.args['iurlmaxres' + base] || window.ytplayer.config.args['iurl' + base];
-                    streams = {};
                     function adaptiveIterator(stream) {
                         var itag = stream.match(/itag\=([0-9]{3})/)[1];
                         streams[itag] = {};
@@ -2657,6 +2745,7 @@
         playerMode();
         playerConsole();
         title();
+        subPlaylist();
         alwaysVisible();
         blackList();
         enhancedDetails();
