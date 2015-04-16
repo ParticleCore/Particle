@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.2
+// @version     1.6.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -702,10 +702,10 @@
         '    padding: 0;\n',
         '    padding: 0 1em;\n',
         '}\n',
-        '#P-content #blacklist-list-import, #P-content #blacklist-list-export{\n',
+        '#blacklist-list-import, #blacklist-list-export{\n',
         '    display: none;\n',
         '}\n',
-        '#P-content #blacklist-list-export{\n',
+        '#blacklist-list-export{\n',
         '    -moz-user-select: all;\n',
         '    -webkit-user-select: all;\n',
         '}\n',
