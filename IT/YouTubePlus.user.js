@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.1
+// @version     1.6.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -63,6 +63,10 @@
         return;
     }
     lang = {
+        ADV_OPTS: {
+            en: 'Advanced options',
+            'pt-PT': 'Opções avançadas'
+        },
         SUB_PLST: {
             en: 'Play recent uploads',
             'pt-PT': 'Reproduzir vídeos recentes'
@@ -195,14 +199,6 @@
             en: 'Hide channel sidebar',
             'pt-PT': 'Esconder barra lateral nos canais'
         },
-        GEN_ENHC: {
-            en: 'Enhancements',
-            'pt-PT': 'Melhorias'
-        },
-        GEN_USER_LNKS: {
-            en: 'Enable user links in recommended videos',
-            'pt-PT': 'Activar links dos utilizadores nos videos recomendados'
-        },
         GEN_CMPT_TTLS: {
             en: 'Compact titles in feeds',
             'pt-PT': 'Títulos compactos nas listas'
@@ -262,16 +258,6 @@
         },
         VID_DFLT_QLTY_ORIG: {
             en: '2160p'
-        },
-        VID_PLR_TYPE: {
-            en: 'Player type:',
-            'pt-PT': 'Tipo de reproductor:'
-        },
-        VID_PLR_TYPE_FLSH: {
-            en: 'Flash'
-        },
-        VID_PLR_TYPE_HTML: {
-            en: 'HTML5'
         },
         VID_PLR_ALVIS: {
             en: 'Always visible',
@@ -390,7 +376,7 @@
             'pt-PT': 'Ajustar na página no modo cinema'
         },
         VID_PLR_FIT_WDTH: {
-            en: 'Fit to page max width:',
+            en: 'Fit to page maximum width:',
             'pt-PT': 'Largura máxima do ajuste na página:'
         },
         VID_PLR_DYN_SIZE: {
@@ -403,23 +389,11 @@
         },
         VID_TTL_CMPT: {
             en: 'Compact title in video description',
-            'pt-PT': 'Título compacto ba descrição do vídeo'
+            'pt-PT': 'Título compacto na descrição do vídeo'
         },
         CHN_TTL: {
             en: 'Channel settings',
             'pt-PT': 'Definições de canais'
-        },
-        CHN_FAV: {
-            en: 'Favorites',
-            'pt-PT': 'Favoritos'
-        },
-        CHN_FAV_ADS: {
-            en: 'Enable ads in favorite channels',
-            'pt-PT': 'Activar publicidades nos canais favoritos'
-        },
-        CHN_ALK: {
-            en: 'Auto-like',
-            'pt-PT': 'Gostar automaticamente'
         },
         CHN_BVR: {
             en: 'Behavior',
@@ -429,9 +403,13 @@
             en: 'Disable trailer autoplay',
             'pt-PT': 'Desactivar começo automático do trailer'
         },
+        CHN_REM_SDBR: {
+            en: 'Remove sidebars',
+            'pt-PT': 'Retirar barras laterais'
+        },
         CHN_DFLT_PAGE: {
-            en: 'Default landing page:',
-            'pt-PT': 'Página de destino:'
+            en: 'Default channel page:',
+            'pt-PT': 'Página de canal predefenida:'
         },
         CHN_DFLT_PAGE_DFLT: {
             en: 'Default',
@@ -496,23 +474,37 @@
         }
     };
     defaultSettings = {
+        GEN_BTTR_NTF: true,
         GEN_YT_LOGO_LINK: true,
+        GEN_CMPT_TTLS: true,
         GEN_BLUE_GLOW: true,
         VID_END_SHRE: true,
         VID_DFLT_QLTY: 'auto',
-        VID_PLR_TYPE: 'html5',
+        VID_PLST_SEP: true,
         VID_PLST_ATPL: true,
         VID_PLST_RVRS: true,
+        VID_PLR_ANTS: true,
+        VID_PLR_CC: true,
+        VID_PLR_ALVIS: true,
+        VID_PLR_ADS: true,
+        VID_PLR_SIZE_MEM: true,
+        VID_PLR_CTRL_VIS: '1',
+        VID_PLR_DYN_SIZE: true,
         VID_PLR_FIT_WDTH: '1280px',
         VID_PROG_BAR_CLR: 'red',
         VID_CTRL_BAR_CLR: 'light',
-        VID_PLR_SIZE_MEM: true,
+        VID_HIDE_COMS: true,
+        VID_POST_TIME: true,
+        VID_VID_CNT: true,
+        VID_DESC_SHRT: true,
+        VID_TTL_CMPT: true,
+        VID_STP_BTN: true,
         CHN_DFLT_PAGE: 'channels',
         BLK_ON: true,
         volLev: false,
-        plApl: true,
+        plApl: false,
         plRev: false,
-        theaterMode: true,
+        advOpts: true,
         blacklist: {}
     };
     window.localStorage.Particle = window.localStorage.Particle || JSON.stringify(defaultSettings);
@@ -521,6 +513,9 @@
     styleSheet.textContent = [
         'input[type="checkbox"], input[type="radio"]{\n',
         '    opacity: 0;\n',
+        '}\n',
+        '.playing-mode video{\n',
+        '    top: 0 !important;\n',
         '}\n',
         ':focus{\n',
         '    outline: none;\n',
@@ -571,6 +566,7 @@
         '}\n',
         '#P-sidebar, #P-content{\n',
         '    -moz-user-select: none;\n',
+        '    -webkit-user-select: none;\n',
         '}\n',
         '#P-container{\n',
         '    margin: 10px auto 0;\n',
@@ -706,6 +702,13 @@
         '    padding: 0;\n',
         '    padding: 0 1em;\n',
         '}\n',
+        '#P-content #blacklist-list-import, #P-content #blacklist-list-export{\n',
+        '    display: none;\n',
+        '}\n',
+        '#P-content #blacklist-list-export{\n',
+        '    -moz-user-select: all;\n',
+        '    -webkit-user-select: all;\n',
+        '}\n',
         '.P-header{\n',
         '    height: 20px;\n',
         '    margin: 0;\n',
@@ -752,6 +755,9 @@
         '#P-settings option{\n',
         '    color: #000;\n',
         '    text-shadow: none;\n',
+        '}\n',
+        '#blacklist{\n',
+        '    margin: 15px 15px 0 0;\n',
         '}\n',
         '#blacklist .blacklist{\n',
         '    border: 1px solid #C6C6C6;\n',
@@ -1141,6 +1147,9 @@
         '    opacity: 0.4;\n',
         '    width: 20px;\n',
         '}\n',
+        '#blacklist-import, #blacklist-export{\n',
+        '    margin-top: 10px;\n',
+        '}\n',
         '#subscription-playlist:hover span{\n',
         '    opacity: 1;\n',
         '}\n'
@@ -1206,22 +1215,260 @@
         var pContent,
             pContainer,
             buttonsSection,
-            settingsButton,
-            custom,
-            htEl,
-            menus;
+            settingsButton;
         if (document.readyState === 'complete') {
             return;
         }
+        function template() {
+            var custom = function () {
+                    var button = '',
+                        list = get('blacklist');
+                    function buildList(ytid) {
+                        button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button>' + list[ytid] + '</div>\n';
+                    }
+                    if (Object.keys(list).length > 0) {
+                        Object.keys(list).forEach(buildList);
+                    }
+                    return button;
+                },
+                htEl = {
+                    title: function (content, tag) {
+                        return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
+                    },
+                    select: function (id, list) {
+                        var select = '<label for="' + id + '">' + userLang(id) + '</label>\n' +
+                            '<select id="' + id + '">\n';
+                        function keysIterator(keys) {
+                            select += '<option';
+                            if (get(id) === list[keys]) {
+                                select += ' selected="true"';
+                            }
+                            select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
+                        }
+                        Object.keys(list).forEach(keysIterator);
+                        select += '</select>\n';
+                        return select;
+                    },
+                    radio: function (name, list) {
+                        var radio = '<label>' + userLang(name) + '</label>\n';
+                        function keysIterator(keys) {
+                            radio += '<input id="' + keys + '" name="' + name + '" value="' + list[keys] + '" type="radio"';
+                            if (get(name) === list[keys]) {
+                                radio += ' checked="true"';
+                            }
+                            radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>';
+                        }
+                        Object.keys(list).forEach(keysIterator);
+                        return radio;
+                    },
+                    input: function (id, type, placeholder, size) {
+                        var input = '<input id="' + id + '" type="' + type + '"';
+                        if (placeholder) {
+                            input += ' placeholder="' + placeholder + '" size="' + size + '"';
+                            if (typeof get(id) === 'string') {
+                                input += ' value="' + get(id) + '"';
+                            }
+                        } else if (get(id) === true) {
+                            input += ' checked="true"';
+                        }
+                        input += '>\n<label for="' + id + '">' + userLang(id) + '</label>\n';
+                        return input;
+                    }
+                },
+                menus = {
+                    setMenu: [
+                        '<div id="P-settings">\n',
+                        '    <div id="P-container">\n',
+                        '        <div id="P-sidebar">\n',
+                        '            <ul id="P-sidebar-list">\n',
+                        '                <li id="GEN" class="selected">' + userLang('GEN') + '</li>\n',
+                        '                <li id="VID">' + userLang('VID') + '</li>\n',
+                        '                <li id="CHN">' + userLang('CHN') + '</li>\n',
+                        '                <li id="BLK">' + userLang('BLK') + '</li>\n',
+                        '                <li id="ABT">' + userLang('ABT') + '</li>\n',
+                        '            </ul>\n',
+                        '        </div>\n',
+                        '    </div>\n',
+                        '</div>\n'
+                    ].join(''),
+                    GEN: [
+                        '<div id="P-content">\n',
+                        '    <div class="P-header">\n',
+                        '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        htEl.title('GEN_TTL', 'h2'),
+                        '    </div>\n',
+                        '    <hr class="P-horz">\n',
+                        htEl.title('GEN_GEN', 'h3'),
+                        htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
+                        htEl.title('GEN_LYT', 'h3'),
+                        htEl.input('GEN_BTTR_NTF', 'checkbox'),
+                        htEl.input('GEN_DSB_HVRC', 'checkbox'),
+                        htEl.input('GEN_CMPT_TTLS', 'checkbox'),
+                        htEl.input('GEN_BLUE_GLOW', 'checkbox'),
+                        htEl.input('GEN_HIDE_FTR', 'checkbox'),
+                        htEl.input('GEN_HDE_RECM_SDBR', 'checkbox'),
+                        htEl.input('GEN_HDE_SRCH_SDBR', 'checkbox'),
+                        htEl.input('GEN_HDE_CHN_SDBR', 'checkbox'),
+                        '</div>\n'
+                    ].join(''),
+                    VID: [
+                        '<div id="P-content">\n',
+                        '    <div class="P-header">\n',
+                        '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        htEl.title('VID_TTL', 'h2'),
+                        '    </div>\n',
+                        '    <hr class="P-horz">\n',
+                        htEl.title('VID_PLR', 'h3'),
+                        htEl.input('VID_PLR_ADS', 'checkbox'),
+                        htEl.input('VID_SUB_ADS', 'checkbox'),
+                        htEl.input('VID_PLR_ALVIS', 'checkbox'),
+                        htEl.input('VID_PLR_ATPL', 'checkbox'),
+                        htEl.input('VID_PLR_CC', 'checkbox'),
+                        htEl.input('VID_PLR_ANTS', 'checkbox'),
+                        htEl.input('VID_END_SHRE', 'checkbox'),
+                        htEl.input('VID_PLR_VOL_MEM', 'checkbox'),
+                        htEl.input('VID_PLR_SIZE_MEM', 'checkbox'),
+                        '    <br>',
+                        htEl.select('VID_DFLT_QLTY', {
+                            'VID_DFLT_QLTY_AUTO': 'auto',
+                            'VID_DFLT_QLTY_ORIG': 'highres',
+                            'VID_DFLT_QLTY_1440': 'hd1440',
+                            'VID_DFLT_QLTY_1080': 'hd1080',
+                            'VID_DFLT_QLTY_720': 'hd720',
+                            'VID_DFLT_QLTY_LRG': 'large',
+                            'VID_DFLT_QLTY_MDM': 'medium',
+                            'VID_DFLT_QLTY_SML': 'small',
+                            'VID_DFLT_QLTY_TNY': 'tiny'
+                        }),
+                        '    <br>',
+                        htEl.title('VID_PLR_LYT', 'h3'),
+                        htEl.input('VID_STP_BTN', 'checkbox'),
+                        htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
+                        htEl.input('VID_PLR_FIT', 'checkbox'),
+                        htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
+                        '    <br>',
+                        htEl.radio('VID_PROG_BAR_CLR', {
+                            'VID_PROG_BAR_CLR_RED': 'red',
+                            'VID_PROG_BAR_CLR_WHT': 'white'
+                        }),
+                        '    <br>',
+                        htEl.radio('VID_CTRL_BAR_CLR', {
+                            'VID_CTRL_BAR_CLR_DARK': 'dark',
+                            'VID_CTRL_BAR_CLR_LGHT': 'light'
+                        }),
+                        '    <br>',
+                        htEl.select('VID_PLR_CTRL_VIS', {
+                            'VID_PLR_CTRL_VIS_HIDE_PROG': '2',
+                            'VID_PLR_CTRL_VIS_HIDE_ALL': '1',
+                            'VID_PLR_CTRL_VIS_SHOW_ALL': '0',
+                            'VID_PLR_CTRL_VIS_RMV_ALL': '3'
+                        }),
+                        '    <br>',
+                        htEl.title('VID_PLST', 'h3'),
+                        htEl.input('VID_PLST_SEP', 'checkbox'),
+                        htEl.input('VID_PLST_ATPL', 'checkbox'),
+                        htEl.input('VID_PLST_RVRS', 'checkbox'),
+                        htEl.title('VID_LAYT', 'h3'),
+                        htEl.input('VID_TTL_CMPT', 'checkbox'),
+                        htEl.input('VID_DESC_SHRT', 'checkbox'),
+                        htEl.input('VID_VID_CNT', 'checkbox'),
+                        htEl.input('VID_POST_TIME', 'checkbox'),
+                        htEl.input('VID_HIDE_COMS', 'checkbox'),
+                        '</div>\n'
+                    ].join(''),
+                    CHN: [
+                        '<div id="P-content">\n',
+                        '    <div class="P-header">\n',
+                        '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        htEl.title('CHN_TTL', 'h2'),
+                        '    </div>\n',
+                        '    <hr class="P-horz">\n',
+                        htEl.title('CHN_BVR', 'h3'),
+                        htEl.input('CHN_TRL_ATP', 'checkbox'),
+                        htEl.input('CHN_REM_SDBR', 'checkbox'),
+                        htEl.select('CHN_DFLT_PAGE', {
+                            'CHN_DFLT_PAGE_DFLT': 'default',
+                            'CHN_DFLT_PAGE_VID': 'videos',
+                            'CHN_DFLT_PAGE_PL': 'playlists',
+                            'CHN_DFLT_PAGE_CHN': 'channels',
+                            'CHN_DFLT_PAGE_DISC': 'discussion',
+                            'CHN_DFLT_PAGE_ABT': 'about'
+                        }),
+                        '    <br>',
+                        '</div>\n'
+                    ].join(''),
+                    BLK: [
+                        '<div id="P-content">\n',
+                        '    <div class="P-header">\n',
+                        '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        htEl.title('BLK_TTL', 'h2'),
+                        '    </div>\n',
+                        '    <hr class="P-horz">\n',
+                        htEl.title('BLK_BLK', 'h3'),
+                        htEl.input('BLK_ON', 'checkbox'),
+                        '    <button id="blacklist-import" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
+                        '        <span class="yt-uix-button-content">Import</span>\n',
+                        '    </button>\n',
+                        '    <button id="blacklist-export" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
+                        '        <span class="yt-uix-button-content">Export</span>\n',
+                        '    </button>\n',
+                        '    <div id="blacklist">\n',
+                        '        ' + custom() + '\n',
+                        '        <textarea id="blacklist-list-import"></textarea>\n',
+                        '        <pre id="blacklist-list-export"></pre>\n',
+                        '    </div>\n',
+                        '    <br>',
+                        '</div>\n'
+                    ].join(''),
+                    ABT: [
+                        '<div id="P-content">\n',
+                        '    <div class="P-header">\n',
+                        htEl.title('ABT_TTL', 'h2'),
+                        '    </div>\n',
+                        '    <hr class="P-horz">\n',
+                        htEl.title('ABT_INFO', 'h3'),
+                        '    <div>\n',
+                        '        <a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
+                        '    </div>\n',
+                        '    <div>\n',
+                        '        <a href="https://greasyfork.org/en/scripts/">Greasy Fork</a>\n',
+                        '    </div>\n',
+                        '    <div>\n',
+                        '        <a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
+                        '    </div>\n',
+                        htEl.title('ABT_PRBL', 'h3'),
+                        '    <div>\n',
+                        '        <a href="https://github.com/ParticleCore/Particle/issues">Click here for instructions</a>\n',
+                        '    </div>\n',
+                        '</div>\n'
+                    ].join('')
+                };
+            return menus;
+        }
         function navigateSettings(event) {
+            function manageBlackList(target) {
+                var imp,
+                    exp;
+                if (target.id === 'blacklist-import') {
+                    imp = document.getElementById('blacklist-list-import');
+                } else if (target.id === 'blacklist-export') {
+                    exp = document.getElementById('blacklist-list-export');
+                    exp.textContent = JSON.stringify(get('blacklist'))
+                        .replace(/":"/g, '": "')
+                        .replace(/","/g, '"\n"')
+                        .replace('{"', '"')
+                        .replace('"}', '"');
+                }
+            }
             function remBlackList() {
                 var newKey = get('blacklist');
                 delete newKey[event.target.parentNode.getAttribute('data-ytid')];
                 event.target.parentNode.remove();
                 set('blacklist', newKey);
             }
-            function saveSettings() {
+            function saveSettings(salt) {
                 var value,
+                    notification = document.getElementById('appbar-main-guide-notification-container'),
                     navId = document.getElementsByClassName('selected')[0].id,
                     savedSets = JSON.parse(window.localStorage.Particle),
                     userSets = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
@@ -1236,15 +1483,43 @@
                     }
                 }
                 window.localStorage.Particle = JSON.stringify(savedSets);
+                if (!salt) {
+                    if (notification.childNodes.length < 1) {
+                        notification.remove();
+                        notification = [
+                            '<div id="appbar-main-guide-notification-container">\n',
+                            '    <div class="appbar-guide-notification" role="alert">\n',
+                            '        <span class="appbar-guide-notification-content-wrapper yt-valign">\n',
+                            '            <span class="appbar-guide-notification-icon yt-sprite"></span>\n',
+                            '            <span class="appbar-guide-notification-text-content"></span>\n',
+                            '        </span>\n',
+                            '    </div>\n',
+                            '</div>'
+                        ].join('');
+                        notification = string2HTML(notification).querySelector('#appbar-main-guide-notification-container');
+                        document.getElementsByClassName('yt-masthead-logo-container')[0].appendChild(notification);
+                    }
+                    document.getElementsByClassName('appbar-guide-notification-text-content')[0].textContent = 'Settings saved';
+                    document.body.classList.add('show-guide-button-notification');
+                    window.setTimeout(function () {
+                        document.body.classList.remove('show-guide-button-notification');
+                    }, 2000);
+                }
             }
             if (event.target.classList.contains('P-save')) {
                 saveSettings();
             } else if (event.target.classList.contains('close')) {
                 remBlackList();
+            } else if (event.target.id === 'blacklist-import' || event.target.id === 'blacklist-export') {
+                manageBlackList(event.target);
+            } else if (event.target.id === 'P-container' || event.target.id === 'P-settings') {
+                event = (event.target.id === 'P-settings') ? event.target : event.target.parentNode;
+                event.remove();
             } else if (event.target.parentNode.id === 'P-sidebar-list') {
+                saveSettings('no-notification');
                 document.getElementById('P-content').remove();
                 pContainer = document.getElementById('P-container');
-                pContent = string2HTML(menus[event.target.id]).querySelector('#P-content');
+                pContent = string2HTML(template()[event.target.id]).querySelector('#P-content');
                 pContainer.appendChild(pContent);
                 event.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
                 event.target.className = 'selected';
@@ -1254,236 +1529,13 @@
             var bodyContainer,
                 pageContainer,
                 pWrapper = document.getElementById('P-settings');
-            custom = function () {
-                var button = '',
-                    list = get('blacklist');
-                function buildList(ytid) {
-                    button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button>' + list[ytid] + '</div>\n';
-                }
-                if (Object.keys(list).length > 0) {
-                    Object.keys(list).forEach(buildList);
-                }
-                return button;
-            };
-            htEl = {
-                title: function (content, tag) {
-                    return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
-                },
-                select: function (id, list) {
-                    var select = '<label for="' + id + '">' + userLang(id) + '</label>\n' +
-                        '<select id="' + id + '">\n';
-                    function keysIterator(keys) {
-                        select += '<option';
-                        if (get(id) === list[keys]) {
-                            select += ' selected="true"';
-                        }
-                        select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
-                    }
-                    Object.keys(list).forEach(keysIterator);
-                    select += '</select>\n';
-                    return select;
-                },
-                radio: function (name, list) {
-                    var radio = '<label>' + userLang(name) + '</label>\n';
-                    function keysIterator(keys) {
-                        radio += '<input id="' + keys + '" name="' + name + '" value="' + list[keys] + '" type="radio"';
-                        if (get(name) === list[keys]) {
-                            radio += ' checked="true"';
-                        }
-                        radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>';
-                    }
-                    Object.keys(list).forEach(keysIterator);
-                    return radio;
-                },
-                input: function (id, type, placeholder, size) {
-                    var input = '<input id="' + id + '" type="' + type + '"';
-                    if (placeholder) {
-                        input += ' placeholder="' + placeholder + '" size="' + size + '"';
-                        if (typeof get(id) === 'string') {
-                            input += ' value="' + get(id) + '"';
-                        }
-                    } else if (get(id) === true) {
-                        input += ' checked="true"';
-                    }
-                    input += '>\n<label for="' + id + '">' + userLang(id) + '</label>\n';
-                    return input;
-                }
-            };
-            menus = {
-                setMenu: [
-                    '<div id="P-settings">\n',
-                    '    <div id="P-container">\n',
-                    '        <div id="P-sidebar">\n',
-                    '            <ul id="P-sidebar-list">\n',
-                    '                <li id="GEN" class="selected">' + userLang('GEN') + '</li>\n',
-                    '                <li id="VID">' + userLang('VID') + '</li>\n',
-                    '                <li id="CHN">' + userLang('CHN') + '</li>\n',
-                    '                <li id="BLK">' + userLang('BLK') + '</li>\n',
-                    '                <li id="ABT">' + userLang('ABT') + '</li>\n',
-                    '            </ul>\n',
-                    '        </div>\n',
-                    '    </div>\n',
-                    '</div>\n'
-                ].join(''),
-                GEN: [
-                    '<div id="P-content">\n',
-                    '    <div class="P-header">\n',
-                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                    htEl.title('GEN_TTL', 'h2'),
-                    '    </div>\n',
-                    '    <hr class="P-horz">\n',
-                    htEl.title('GEN_GEN', 'h3'),
-                    htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
-                    htEl.title('GEN_LYT', 'h3'),
-                    htEl.input('GEN_BTTR_NTF', 'checkbox'),
-                    htEl.input('GEN_DSB_HVRC', 'checkbox'),
-                    htEl.input('GEN_CMPT_TTLS', 'checkbox'),
-                    htEl.input('GEN_BLUE_GLOW', 'checkbox'),
-                    htEl.input('GEN_HIDE_FTR', 'checkbox'),
-                    htEl.input('GEN_HDE_RECM_SDBR', 'checkbox'),
-                    htEl.input('GEN_HDE_SRCH_SDBR', 'checkbox'),
-                    htEl.input('GEN_HDE_CHN_SDBR', 'checkbox'),
-                    htEl.title('GEN_ENHC', 'h3'),
-                    htEl.input('GEN_USER_LNKS', 'checkbox'),
-                    '</div>\n'
-                ].join(''),
-                VID: [
-                    '<div id="P-content">\n',
-                    '    <div class="P-header">\n',
-                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                    htEl.title('VID_TTL', 'h2'),
-                    '    </div>\n',
-                    '    <hr class="P-horz">\n',
-                    htEl.title('VID_PLR', 'h3'),
-                    htEl.input('VID_PLR_ADS', 'checkbox'),
-                    htEl.input('VID_SUB_ADS', 'checkbox'),
-                    htEl.input('VID_PLR_ALVIS', 'checkbox'),
-                    htEl.input('VID_PLR_ATPL', 'checkbox'),
-                    htEl.input('VID_PLR_CC', 'checkbox'),
-                    htEl.input('VID_PLR_ANTS', 'checkbox'),
-                    htEl.input('VID_END_SHRE', 'checkbox'),
-                    htEl.input('VID_PLR_VOL_MEM', 'checkbox'),
-                    htEl.input('VID_PLR_SIZE_MEM', 'checkbox'),
-                    htEl.radio('VID_PLR_TYPE', {
-                        'VID_PLR_TYPE_FLSH': 'flash',
-                        'VID_PLR_TYPE_HTML': 'html5'
-                    }),
-                    '    <br>',
-                    htEl.select('VID_DFLT_QLTY', {
-                        'VID_DFLT_QLTY_AUTO': 'auto',
-                        'VID_DFLT_QLTY_ORIG': 'highres',
-                        'VID_DFLT_QLTY_1440': 'hd1440',
-                        'VID_DFLT_QLTY_1080': 'hd1080',
-                        'VID_DFLT_QLTY_720': 'hd720',
-                        'VID_DFLT_QLTY_LRG': 'large',
-                        'VID_DFLT_QLTY_MDM': 'medium',
-                        'VID_DFLT_QLTY_SML': 'small',
-                        'VID_DFLT_QLTY_TNY': 'tiny'
-                    }),
-                    '    <br>',
-                    htEl.title('VID_PLR_LYT', 'h3'),
-                    htEl.input('VID_STP_BTN', 'checkbox'),
-                    htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
-                    htEl.input('VID_PLR_FIT', 'checkbox'),
-                    htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
-                    '    <br>',
-                    htEl.radio('VID_PROG_BAR_CLR', {
-                        'VID_PROG_BAR_CLR_RED': 'red',
-                        'VID_PROG_BAR_CLR_WHT': 'white'
-                    }),
-                    '    <br>',
-                    htEl.radio('VID_CTRL_BAR_CLR', {
-                        'VID_CTRL_BAR_CLR_DARK': 'dark',
-                        'VID_CTRL_BAR_CLR_LGHT': 'light'
-                    }),
-                    '    <br>',
-                    htEl.select('VID_PLR_CTRL_VIS', {
-                        'VID_PLR_CTRL_VIS_HIDE_PROG': '2',
-                        'VID_PLR_CTRL_VIS_HIDE_ALL': '1',
-                        'VID_PLR_CTRL_VIS_SHOW_ALL': '0',
-                        'VID_PLR_CTRL_VIS_RMV_ALL': '3'
-                    }),
-                    '    <br>',
-                    htEl.title('VID_PLST', 'h3'),
-                    htEl.input('VID_PLST_SEP', 'checkbox'),
-                    htEl.input('VID_PLST_ATPL', 'checkbox'),
-                    htEl.input('VID_PLST_RVRS', 'checkbox'),
-                    htEl.title('VID_LAYT', 'h3'),
-                    htEl.input('VID_TTL_CMPT', 'checkbox'),
-                    htEl.input('VID_DESC_SHRT', 'checkbox'),
-                    htEl.input('VID_VID_CNT', 'checkbox'),
-                    htEl.input('VID_POST_TIME', 'checkbox'),
-                    htEl.input('VID_HIDE_COMS', 'checkbox'),
-                    '</div>\n'
-                ].join(''),
-                CHN: [
-                    '<div id="P-content">\n',
-                    '    <div class="P-header">\n',
-                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                    htEl.title('CHN_TTL', 'h2'),
-                    '    </div>\n',
-                    '    <hr class="P-horz">\n',
-                    htEl.title('CHN_FAV', 'h3'),
-                    htEl.input('CHN_FAV_ADS', 'checkbox'),
-                    htEl.input('CHN_ALK', 'checkbox'),
-                    htEl.title('CHN_BVR', 'h3'),
-                    htEl.input('CHN_TRL_ATP', 'checkbox'),
-                    htEl.select('CHN_DFLT_PAGE', {
-                        'CHN_DFLT_PAGE_DFLT': 'default',
-                        'CHN_DFLT_PAGE_VID': 'videos',
-                        'CHN_DFLT_PAGE_PL': 'playlists',
-                        'CHN_DFLT_PAGE_CHN': 'channels',
-                        'CHN_DFLT_PAGE_DISC': 'discussion',
-                        'CHN_DFLT_PAGE_ABT': 'about'
-                    }),
-                    '    <br>',
-                    '</div>\n'
-                ].join(''),
-                BLK: [
-                    '<div id="P-content">\n',
-                    '    <div class="P-header">\n',
-                    '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                    htEl.title('BLK_TTL', 'h2'),
-                    '    </div>\n',
-                    '    <hr class="P-horz">\n',
-                    htEl.title('BLK_BLK', 'h3'),
-                    htEl.input('BLK_ON', 'checkbox'),
-                    '    <div id="blacklist">\n',
-                    '    ' + custom(),
-                    '    </div>\n',
-                    '    <br>',
-                    '</div>\n'
-                ].join(''),
-                ABT: [
-                    '<div id="P-content">\n',
-                    '    <div class="P-header">\n',
-                    htEl.title('ABT_TTL', 'h2'),
-                    '    </div>\n',
-                    '    <hr class="P-horz">\n',
-                    htEl.title('ABT_INFO', 'h3'),
-                    '    <div>\n',
-                    '        <a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
-                    '    </div>\n',
-                    '    <div>\n',
-                    '        <a href="https://greasyfork.org/en/scripts/">Greasy Fork</a>\n',
-                    '    </div>\n',
-                    '    <div>\n',
-                    '        <a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
-                    '    </div>\n',
-                    htEl.title('ABT_PRBL', 'h3'),
-                    '    <div>\n',
-                    '        <a href="https://github.com/ParticleCore/Particle/issues">Click here for instructions</a>\n',
-                    '    </div>\n',
-                    '</div>\n'
-                ].join('')
-            };
             if (pWrapper) {
                 pWrapper.remove();
             } else {
                 bodyContainer = document.getElementById('body-container');
                 pageContainer = document.getElementById('page-container');
-                pWrapper = string2HTML(menus.setMenu).querySelector('#P-settings');
-                pWrapper.querySelector('#P-container').appendChild(string2HTML(menus.GEN).querySelector('#P-content'));
+                pWrapper = string2HTML(template().setMenu).querySelector('#P-settings');
+                pWrapper.querySelector('#P-container').appendChild(string2HTML(template().GEN).querySelector('#P-content'));
                 bodyContainer.insertBefore(pWrapper, pageContainer);
                 addEvent(pWrapper, 'click', navigateSettings);
             }
@@ -1886,7 +1938,7 @@
             config.args.autoplay = (get('VID_PLR_ATPL')) ? '1' : '0';
             config.args.theme = get('VID_CTRL_BAR_CLR');
             config.args.color = get('VID_PROG_BAR_CLR');
-            config.html5 = get('VID_PLR_TYPE') === 'html5';
+            config.html5 = true;
             config.params.wmode = 'gpu';
             if (config.args.autoplay === '0') {
                 hdThumb = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]');
@@ -1960,7 +2012,9 @@
             listTitle = document.getElementsByClassName('appbar-nav-menu')[0],
             videoList = document.getElementsByClassName('addto-watch-later-button');
         function listIterator(keys) {
-            list += videoList[keys].getAttribute('data-video-ids') + '%2C';
+            if (keys !== 'length') {
+                list += videoList[keys].getAttribute('data-video-ids') + '%2C';
+            }
         }
         function initSubPlaylist(event) {
             event = event.data;
@@ -2138,17 +2192,15 @@
             return function () {
                 var playerInstance,
                     args = arguments;
-                function html5Pointers(originalPointer, salt) {
+                function html5Pointers(originalPointer) {
                     return function () {
                         var player,
-                            canvas,
                             changed = originalPointer.apply(this, arguments);
                         if (changed.width && changed.height && !fullscreen) {
                             player = document.getElementById('movie_player');
-                            canvas = document.getElementsByClassName('html5-video-container')[0];
-                            if (player && canvas) {
-                                changed.width = (salt && player.offsetWidth) || canvas.offsetWidth;
-                                changed.height = (salt && player.offsetHeight) || canvas.offsetHeight;
+                            if (player) {
+                                changed.width = player.offsetWidth;
+                                changed.height = player.offsetHeight;
                             }
                         }
                         return changed;
@@ -2157,11 +2209,7 @@
                 function sizesIterator(keys) {
                     function keysIterator(sizes) {
                         if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
-                            if ((playerInstance[keys][sizes] + String()).split('!0)').length > 1) {
-                                playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes], '');
-                            } else if ((playerInstance[keys][sizes] + String()).split('!0)').length < 2) {
-                                playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
-                            }
+                            playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
                         }
                     }
                     if (typeof playerInstance[keys] === 'object' && playerInstance[keys] && playerInstance[keys].element) {
@@ -2365,7 +2413,7 @@
             }
         }
     }
-    function playerConsole() {
+    function advancedOptions() {
         var page = document.getElementsByTagName('html')[0],
             header = document.getElementById('watch-header'),
             consoleButton = document.getElementById('console-button'),
@@ -2713,9 +2761,10 @@
         }
         function toggleConsole() {
             page.classList.toggle('player-console');
+            set('advOpts', page.classList.contains('player-console'));
         }
         if (window.location.pathname === '/watch' && header && !consoleButton) {
-            consoleButton = '<button id="console-button" title="Player console"></button>';
+            consoleButton = '<button id="console-button" title="' + userLang('ADV_OPTS') + '"></button>';
             consoleButton = string2HTML(consoleButton).querySelector('#console-button');
             addEvent(consoleButton, 'click', toggleConsole);
             header.appendChild(consoleButton);
@@ -2735,6 +2784,9 @@
             controls = string2HTML(controls).querySelector('div');
             document.getElementById('watch-header').appendChild(controls);
             hookButtons();
+            if (get('advOpts')) {
+                page.classList.add('player-console');
+            }
         }
     }
     function initFunctions() {
@@ -2743,7 +2795,7 @@
         settingsMenu();
         playlistControls();
         playerMode();
-        playerConsole();
+        advancedOptions();
         title();
         subPlaylist();
         alwaysVisible();
