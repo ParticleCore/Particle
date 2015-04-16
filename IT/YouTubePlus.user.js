@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.3
+// @version     1.6.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -139,6 +139,10 @@
             en: 'Hide comments',
             'pt-PT': 'Esconder comentários'
         },
+        GLB_RSET: {
+            en: 'Reset',
+            'pt-PT': 'Repor'
+        },
         GLB_SVE: {
             en: 'Save',
             'pt-PT': 'Guardar'
@@ -197,7 +201,7 @@
         },
         GEN_HDE_CHN_SDBR: {
             en: 'Hide channel sidebar',
-            'pt-PT': 'Esconder barra lateral nos canais'
+            'pt-PT': 'Esconder barra lateral dos canais'
         },
         GEN_CMPT_TTLS: {
             en: 'Compact titles in feeds',
@@ -391,47 +395,31 @@
             en: 'Compact title in video description',
             'pt-PT': 'Título compacto na descrição do vídeo'
         },
-        CHN_TTL: {
-            en: 'Channel settings',
-            'pt-PT': 'Definições de canais'
-        },
-        CHN_BVR: {
-            en: 'Behavior',
-            'pt-PT': 'Comportamento'
-        },
-        CHN_TRL_ATP: {
-            en: 'Disable trailer autoplay',
-            'pt-PT': 'Desactivar começo automático do trailer'
-        },
-        CHN_REM_SDBR: {
-            en: 'Remove sidebars',
-            'pt-PT': 'Retirar barras laterais'
-        },
-        CHN_DFLT_PAGE: {
+        GEN_CHN_DFLT_PAGE: {
             en: 'Default channel page:',
             'pt-PT': 'Página de canal predefenida:'
         },
-        CHN_DFLT_PAGE_DFLT: {
+        GEN_CHN_DFLT_PAGE_DFLT: {
             en: 'Default',
             'pt-PT': 'Padrão'
         },
-        CHN_DFLT_PAGE_VID: {
+        GEN_CHN_DFLT_PAGE_VID: {
             en: 'Videos',
             'pt-PT': 'Vídeos'
         },
-        CHN_DFLT_PAGE_PL: {
+        GEN_CHN_DFLT_PAGE_PL: {
             en: 'Playlists',
             'pt-PT': 'Listas de reprodução'
         },
-        CHN_DFLT_PAGE_CHN: {
+        GEN_CHN_DFLT_PAGE_CHN: {
             en: 'Channels',
             'pt-PT': 'Canais'
         },
-        CHN_DFLT_PAGE_DISC: {
+        GEN_CHN_DFLT_PAGE_DISC: {
             en: 'Discussion',
             'pt-PT': 'Discussão'
         },
-        CHN_DFLT_PAGE_ABT: {
+        GEN_CHN_DFLT_PAGE_ABT: {
             en: 'About',
             'pt-PT': 'Acerca de'
         },
@@ -478,6 +466,7 @@
         GEN_YT_LOGO_LINK: true,
         GEN_CMPT_TTLS: true,
         GEN_BLUE_GLOW: true,
+        GEN_CHN_DFLT_PAGE: 'channels',
         VID_END_SHRE: true,
         VID_DFLT_QLTY: 'auto',
         VID_PLST_SEP: true,
@@ -499,7 +488,6 @@
         VID_DESC_SHRT: true,
         VID_TTL_CMPT: true,
         VID_STP_BTN: true,
-        CHN_DFLT_PAGE: 'channels',
         BLK_ON: true,
         volLev: false,
         plApl: false,
@@ -514,7 +502,7 @@
         'input[type="checkbox"], input[type="radio"]{\n',
         '    opacity: 0;\n',
         '}\n',
-        '.playing-mode video{\n',
+        '.playing-mode:not(.ideal-aspect) video{\n',
         '    top: 0 !important;\n',
         '}\n',
         ':focus{\n',
@@ -540,6 +528,11 @@
         '    max-width: 1262px;\n',
         '    min-width: initial;\n',
         '    width: auto;\n',
+        '}\n',
+        '.show-guide #appbar-guide-menu{\n',
+        '    border-bottom: 1px solid #E8E8E8;\n',
+        '    border-right: 1px solid #E8E8E8;\n',
+        '    box-shadow: none;\n',
         '}\n',
         '.not-yt-legacy-css .watch-sidebar{\n',
         '    width: initial;\n',
@@ -714,7 +707,7 @@
         '    margin: 0;\n',
         '    padding: 24px 0 0;\n',
         '}\n',
-        '.P-save{\n',
+        '.P-save, .P-reset{\n',
         '    background: #167AC6;\n',
         '    border-color: #167AC6;\n',
         '    border-radius: 2px;\n',
@@ -734,6 +727,18 @@
         '    vertical-align: middle;\n',
         '    white-space: nowrap;\n',
         '    word-wrap: normal;\n',
+        '}\n',
+        '.P-reset{\n',
+        '    background: #F8F8F8;\n',
+        '    border: 1px solid #D3D3D3;\n',
+        '    color: #333;\n',
+        '}\n',
+        '.P-reset:hover{\n',
+        '    background: #F0F0F0;\n',
+        '    border-color: #C6C6C6;\n',
+        '}\n',
+        '.P-reset:active{\n',
+        '    background: #E9E9E9;\n',
         '}\n',
         '.P-save:hover{\n',
         '    background: #126DB3;\n',
@@ -1283,7 +1288,6 @@
                         '            <ul id="P-sidebar-list">\n',
                         '                <li id="GEN" class="selected">' + userLang('GEN') + '</li>\n',
                         '                <li id="VID">' + userLang('VID') + '</li>\n',
-                        '                <li id="CHN">' + userLang('CHN') + '</li>\n',
                         '                <li id="BLK">' + userLang('BLK') + '</li>\n',
                         '                <li id="ABT">' + userLang('ABT') + '</li>\n',
                         '            </ul>\n',
@@ -1295,11 +1299,20 @@
                         '<div id="P-content">\n',
                         '    <div class="P-header">\n',
                         '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        '        <button class="P-reset">' + userLang('GLB_RSET') + '</button>\n',
                         htEl.title('GEN_TTL', 'h2'),
                         '    </div>\n',
                         '    <hr class="P-horz">\n',
                         htEl.title('GEN_GEN', 'h3'),
                         htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
+                        htEl.select('GEN_CHN_DFLT_PAGE', {
+                            'GEN_CHN_DFLT_PAGE_DFLT': 'default',
+                            'GEN_CHN_DFLT_PAGE_VID': 'videos',
+                            'GEN_CHN_DFLT_PAGE_PL': 'playlists',
+                            'GEN_CHN_DFLT_PAGE_CHN': 'channels',
+                            'GEN_CHN_DFLT_PAGE_DISC': 'discussion',
+                            'GEN_CHN_DFLT_PAGE_ABT': 'about'
+                        }),
                         htEl.title('GEN_LYT', 'h3'),
                         htEl.input('GEN_BTTR_NTF', 'checkbox'),
                         htEl.input('GEN_DSB_HVRC', 'checkbox'),
@@ -1315,6 +1328,7 @@
                         '<div id="P-content">\n',
                         '    <div class="P-header">\n',
                         '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        '        <button class="P-reset">' + userLang('GLB_RSET') + '</button>\n',
                         htEl.title('VID_TTL', 'h2'),
                         '    </div>\n',
                         '    <hr class="P-horz">\n',
@@ -1376,31 +1390,11 @@
                         htEl.input('VID_HIDE_COMS', 'checkbox'),
                         '</div>\n'
                     ].join(''),
-                    CHN: [
-                        '<div id="P-content">\n',
-                        '    <div class="P-header">\n',
-                        '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                        htEl.title('CHN_TTL', 'h2'),
-                        '    </div>\n',
-                        '    <hr class="P-horz">\n',
-                        htEl.title('CHN_BVR', 'h3'),
-                        htEl.input('CHN_TRL_ATP', 'checkbox'),
-                        htEl.input('CHN_REM_SDBR', 'checkbox'),
-                        htEl.select('CHN_DFLT_PAGE', {
-                            'CHN_DFLT_PAGE_DFLT': 'default',
-                            'CHN_DFLT_PAGE_VID': 'videos',
-                            'CHN_DFLT_PAGE_PL': 'playlists',
-                            'CHN_DFLT_PAGE_CHN': 'channels',
-                            'CHN_DFLT_PAGE_DISC': 'discussion',
-                            'CHN_DFLT_PAGE_ABT': 'about'
-                        }),
-                        '    <br>',
-                        '</div>\n'
-                    ].join(''),
                     BLK: [
                         '<div id="P-content">\n',
                         '    <div class="P-header">\n',
                         '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
+                        '        <button class="P-reset">' + userLang('GLB_RSET') + '</button>\n',
                         htEl.title('BLK_TTL', 'h2'),
                         '    </div>\n',
                         '    <hr class="P-horz">\n',
@@ -1508,6 +1502,8 @@
             }
             if (event.target.classList.contains('P-save')) {
                 saveSettings();
+            } else if (event.target.classList.contains('P-reset')) {
+                localStorage.Particle = JSON.stringify(defaultSettings);
             } else if (event.target.classList.contains('close')) {
                 remBlackList();
             } else if (event.target.id === 'blacklist-import' || event.target.id === 'blacklist-export') {
@@ -1556,7 +1552,7 @@
         if (sidebar && ((get('GEN_HDE_RECM_SDBR') && href.split('/feed/').length > 1) || (get('GEN_HDE_SRCH_SDBR') && href.split('/results').length > 1) || (get('GEN_HDE_CHN_SDBR') && /\/(channel|user|c)\//.test(href)))) {
             sidebar.remove();
         }
-        if (href.split('/results?').length > 1 && sidebar && sidebar.querySelectorAll('*').length < 10) { //Remove sidebar ad in search
+        if (href.split('/results?').length > 1 && sidebar && sidebar.querySelectorAll('*').length < 10) {
             sidebar.remove();
         }
         if (document.readyState !== 'interactive') {
@@ -1766,7 +1762,7 @@
                 verified,
                 name = document.getElementsByClassName('yt-user-info')[0];
             function videoCounter() {
-                link.href = user.getAttribute('href') + '/videos';
+                link.href = window.location.origin + '/channel/' + user.getAttribute('data-ytid') + '/videos';
                 span = document.createElement('span');
                 span.textContent = ' · ';
                 name.appendChild(span);
@@ -1963,14 +1959,12 @@
             playerContainer,
             containerSize,
             videoPlayer,
-            playerSize,
             sidebar,
             sidebarSize;
         function initFloater() {
             playerContainer = document.getElementById('player-api');
             containerSize = playerContainer && playerContainer.getBoundingClientRect();
             videoPlayer = document.getElementById('movie_player');
-            playerSize = videoPlayer && videoPlayer.getBoundingClientRect();
             containerSize = playerContainer.getBoundingClientRect();
             sidebar = document.getElementById('watch7-sidebar');
             sidebarSize = sidebar && sidebar.getBoundingClientRect();
@@ -1985,7 +1979,7 @@
                 return;
             }
             if (videoPlayer && containerSize.bottom < ((containerSize.height / 2) + 51) && !videoPlayer.classList.contains('floater')) {
-                aspectRatio = playerSize.width / playerSize.height;
+                aspectRatio = 16 / 9;
                 width = sidebarSize.width;
                 height = sidebarSize.width / aspectRatio;
                 videoPlayer.classList.toggle('floater');
@@ -2789,6 +2783,24 @@
             }
         }
     }
+    function generalChanges() {
+        var logo = document.getElementById('logo-container'),
+            channelLink = document.querySelectorAll('[href*="/channel/"]');
+        function linkIterator(link) {
+            if (channelLink[link].href.split('/').length < 6 && get('GEN_CHN_DFLT_PAGE') !== 'default') {
+                channelLink[link].href += '/' + get('GEN_CHN_DFLT_PAGE');
+            }
+        }
+        if (get('GEN_YT_LOGO_LINK') && logo && logo.href === window.location.origin + '/') {
+            logo.href = '/feed/subscriptions';
+        }
+        if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
+            Object.keys(channelLink).forEach(linkIterator);
+        }
+        if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
+            document.documentElement.scrollTop = document.body.scrollTop = 0;
+        }
+    }
     function initFunctions() {
         requesting = false;
         customStyles();
@@ -2802,9 +2814,7 @@
         blackList();
         enhancedDetails();
         commentsButton();
-        if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
-            document.documentElement.scrollTop = document.body.scrollTop = 0;
-        }
+        generalChanges();
     }
     function request(event) {
         var url = event.detail.url,
