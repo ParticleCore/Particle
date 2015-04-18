@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.6
+// @version     1.6.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -822,6 +822,9 @@
         '}\n',
         '#blacklist .blacklist:hover .close{\n',
         '    display: initial;\n',
+        '}\n',
+        '#blacklist-edit span, #blacklist-save span, #blacklist-close span{\n',
+        '    pointer-events: none;\n',
         '}\n',
         '#blacklist.edit .blacklist, #blacklist.edit #blacklist-edit, #blacklist:not(.edit) #blacklist-save, #blacklist:not(.edit) #blacklist-close, #blacklist:not(.edit) #blacklist-edit-list{\n',
         '    display: none;\n',
