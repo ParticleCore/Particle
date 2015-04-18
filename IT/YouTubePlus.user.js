@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.7
+// @version     1.6.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -134,6 +134,10 @@
         CNSL_SS_CLS: {
             en: 'CLOSE',
             'pt-PT': 'FECHAR'
+        },
+        CNSL_SDBR: {
+            en: 'Sidebar mode',
+            'pt-PT': 'Modo barra lateral'
         },
         PLST_AP: {
             en: 'Autoplay',
@@ -395,6 +399,22 @@
             en: 'Compact title in video description',
             'pt-PT': 'Título compacto na descrição do vídeo'
         },
+        VID_SDBR_ALGN: {
+            en: 'Sidebar mode alignment',
+            'pt-PT': 'Alinhar modo barra lateral'
+        },
+        VID_SDBR_ALGN_NONE: {
+            en: 'None',
+            'pt-PT': 'Nenhum'
+        },
+        VID_SDBR_ALGN_LEFT: {
+            en: 'Left',
+            'pt-PT': 'Esquerda'
+        },
+        VID_SDBR_ALGN_RIGHT: {
+            en: 'Right',
+            'pt-PT': 'Direita'
+        },
         GEN_CHN_DFLT_PAGE: {
             en: 'Default channel page:',
             'pt-PT': 'Página de canal predefinida:'
@@ -485,6 +505,7 @@
         VID_POST_TIME: true,
         VID_VID_CNT: true,
         VID_DESC_SHRT: true,
+        VID_SDBR_ALGN: '1',
         VID_TTL_CMPT: true,
         VID_STP_BTN: true,
         BLK_ON: true,
@@ -1007,6 +1028,10 @@
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASCAMAAABo+94fAAAAQlBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4warDAAAAFXRSTlMAAAJAHGj94JnP3j8VzZUi6wvcytGH5aKYAAAAcUlEQVR4XoXPSQ6AIAxAUSwzAjLI/a/qQIOSJvoXNHkLoKy3OedKOY9tueuaU8NSfhhqG1UYHNureLO3jWQ9Q1VSAAip0Bnqyo3Whq/oyJKHawQuJxamTyMmBt1ZwzfTS/6fpB8k6wymXcvTLPM71d0f5EgYnuxfALoAAAAASUVORK5CYII=") no-repeat center;\n',
         '    width: 22px;\n',
         '}\n',
+        '#sidebar-button{\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASAQMAAABl67xuAAAABlBMVEUAAAD///+l2Z/dAAAADklEQVR4XmNgbGCgBgYARvEJE30TDdMAAAAASUVORK5CYII=") no-repeat center;\n',
+        '    width: 22px;\n',
+        '}\n',
         '#loop-button{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAMAAABsDg4iAAAAY1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcL/mXAAAAIHRSTlMAAKVZHRNz5BQCyFAYsgEfmk71I4KrKdfMBEcGVwWGf0tiNMIAAACRSURBVHhebdBXDsIwEADRxSVu6fQ+9z8lhgRLCbwfSyNZXq/MjFbOKW1kk03JVswq+43tnqLppniTgZh8CD5FaOw7Hti2u1o+6h6qHNsjp/YsszqCERmAixQJtFxHYLyX6EHJA4BniQFcPhwEWUcFXpbXRTSk1UMiBmK9HCmroF8On9mG9TezrvlZyO/q/i75BYzRD2BnJL4kAAAAAElFTkSuQmCC") no-repeat center;\n',
         '    width: 20px;\n',
@@ -1184,6 +1209,11 @@
         '    top: 50% !important;\n',
         '    transform: translateY(-50%);\n',
         '    z-index: 10;\n',
+        '}\n',
+        'html:not([data-player-size="fullscreen"]).content-snap-width-skinny-mode #player #movie_player.floater{\n',
+        '    position: fixed !important;\n',
+        '    top: 60px !important;\n',
+        '    transform: none;\n',
         '}\n',
         '#subscription-playlist-icon{\n',
         '    margin-right: -20px;\n',
@@ -1373,7 +1403,6 @@
                         htEl.input('VID_END_SHRE', 'checkbox'),
                         htEl.input('VID_PLR_VOL_MEM', 'checkbox'),
                         htEl.input('VID_PLR_SIZE_MEM', 'checkbox'),
-                        '    <br>',
                         htEl.select('VID_DFLT_QLTY', {
                             'VID_DFLT_QLTY_AUTO': 'auto',
                             'VID_DFLT_QLTY_ORIG': 'highres',
@@ -1411,6 +1440,12 @@
                         htEl.input('VID_PLST_ATPL', 'checkbox'),
                         htEl.input('VID_PLST_RVRS', 'checkbox'),
                         htEl.title('VID_LAYT', 'h3'),
+                        htEl.select('VID_SDBR_ALGN', {
+                            'VID_SDBR_ALGN_NONE': '0',
+                            'VID_SDBR_ALGN_LEFT': '1',
+                            'VID_SDBR_ALGN_RIGHT': '2'
+                        }),
+                        '    <br>',
                         htEl.input('VID_TTL_CMPT', 'checkbox'),
                         htEl.input('VID_DESC_SHRT', 'checkbox'),
                         htEl.input('VID_VID_CNT', 'checkbox'),
@@ -1903,10 +1938,12 @@
             aspectRatio,
             playerContainer,
             containerSize,
-            videoPlayer,
+            skinny,
             sidebar,
-            sidebarSize;
+            sidebarSize,
+            videoPlayer = document.getElementById('movie_player');
         function initFloater() {
+            skinny = document.documentElement.classList.contains('content-snap-width-skinny-mode');
             playerContainer = document.getElementById('player-api');
             containerSize = playerContainer && playerContainer.getBoundingClientRect();
             videoPlayer = document.getElementById('movie_player');
@@ -1923,14 +1960,14 @@
                 remEvent('scroll', initFloater);
                 return;
             }
-            if (videoPlayer && containerSize.bottom < ((containerSize.height / 2) + 51) && !videoPlayer.classList.contains('floater')) {
+            if (videoPlayer && (containerSize.bottom < ((containerSize.height / 2) + 51) || skinny) && !videoPlayer.classList.contains('floater')) {
                 aspectRatio = 16 / 9;
                 width = sidebarSize.width;
                 height = sidebarSize.width / aspectRatio;
                 videoPlayer.classList.toggle('floater');
                 videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + sidebarSize.left + 'px;');
                 addEvent(window, 'resize', updatePos);
-            } else if (videoPlayer && containerSize.bottom > ((containerSize.height / 2) + 51) && videoPlayer.classList.contains('floater')) {
+            } else if (videoPlayer && (containerSize.bottom > ((containerSize.height / 2) + 51) && !skinny) && videoPlayer.classList.contains('floater')) {
                 remEvent('resize', updatePos);
                 videoPlayer.removeAttribute('style');
                 videoPlayer.classList.toggle('floater');
@@ -1939,6 +1976,7 @@
         if (get('VID_PLR_ALVIS')) {
             if (window.location.pathname === '/watch') {
                 addEvent(window, 'scroll', initFloater);
+                initFloater();
             } else if (window.location.pathname === '/watch') {
                 remEvent('scroll', initFloater);
             }
@@ -2365,7 +2403,8 @@
                 audioOnly = controls.querySelector('#audio-only'),
                 seekMap = controls.querySelector('#seek-map'),
                 saveThumb = controls.querySelector('#save-thumbnail-button'),
-                screenShot = controls.querySelector('#screenshot-button');
+                screenShot = controls.querySelector('#screenshot-button'),
+                sidebarMode = controls.querySelector('#sidebar-button');
             function togglePlay() {
                 set('VID_PLR_ATPL', !get('VID_PLR_ATPL'));
                 autoPlay.classList[(get('VID_PLR_ATPL')) ? 'add' : 'remove']('active');
@@ -2692,12 +2731,23 @@
                     container.classList.toggle('invisible');
                 }
             }
+            function openSidebar() {
+                var sidebarAlign = (get('VID_SDBR_ALGN') > 1) ? ',left=' + (window.screen.availWidth - 467) : (get('VID_SDBR_ALGN') < 1) ? '' : ',left=0',
+                    newSidebar = window.open(location.href, document.title, 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
+                function snapFit() {
+                    if (newSidebar.document.readyState === 'interactive') {
+                        newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
+                    }
+                }
+                newSidebar.addEventListener('readystatechange', snapFit, true);
+            }
             addEvent(autoPlay, 'click', togglePlay);
             addEvent(loopButton, 'click', toggleLoop);
             addEvent(audioOnly, 'click', toggleAudio);
             addEvent(seekMap, 'click', toggleMap);
             addEvent(saveThumb, 'click', dlThumb);
             addEvent(screenShot, 'click', saveSS);
+            addEvent(sidebarMode, 'click', openSidebar);
         }
         function toggleConsole() {
             page.classList.toggle('player-console');
@@ -2719,6 +2769,7 @@
                 '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                 '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                 '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
+                '    <div id="sidebar-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SDBR') + '"></div>\n',
                 '</div>\n'
             ].join('');
             controls = string2HTML(controls).querySelector('div');
