@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.5
+// @version     1.6.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -74,6 +74,18 @@
         BLCK_ADD: {
             en: 'Add to blacklist',
             'pt-PT': 'Adicionar à lista negra'
+        },
+        BLCK_EDIT: {
+            en: 'Edit',
+            'pt-PT': 'Editar'
+        },
+        BLCK_SAVE: {
+            en: 'Save',
+            'pt-PT': 'Guardar'
+        },
+        BLCK_CLSE: {
+            en: 'Close',
+            'pt-PT': 'Fechar'
         },
         CNSL_CNSL: {
             en: 'Console',
@@ -585,10 +597,6 @@
         '    right: 0;\n',
         '    z-index: 1000;\n',
         '}\n',
-        '#P-sidebar, #P-content{\n',
-        '    -moz-user-select: none;\n',
-        '    -webkit-user-select: none;\n',
-        '}\n',
         '#P-container{\n',
         '    margin: 10px auto 0;\n',
         '    max-width: 1262px;\n',
@@ -723,13 +731,6 @@
         '    padding: 0;\n',
         '    padding: 0 1em;\n',
         '}\n',
-        '#blacklist-list-import, #blacklist-list-export{\n',
-        '    display: none;\n',
-        '}\n',
-        '#blacklist-list-export{\n',
-        '    -moz-user-select: all;\n',
-        '    -webkit-user-select: all;\n',
-        '}\n',
         '.P-header{\n',
         '    height: 20px;\n',
         '    margin: 0;\n',
@@ -790,7 +791,10 @@
         '    text-shadow: none;\n',
         '}\n',
         '#blacklist{\n',
-        '    margin: 15px 15px 0 0;\n',
+        '    margin: 10px 15px 0 0;\n',
+        '}\n',
+        '#blacklist-controls{\n',
+        '    margin-bottom: 10px;\n',
         '}\n',
         '#blacklist .blacklist{\n',
         '    border: 1px solid #C6C6C6;\n',
@@ -818,6 +822,14 @@
         '}\n',
         '#blacklist .blacklist:hover .close{\n',
         '    display: initial;\n',
+        '}\n',
+        '#blacklist.edit .blacklist, #blacklist.edit #blacklist-edit, #blacklist:not(.edit) #blacklist-save, #blacklist:not(.edit) #blacklist-close, #blacklist:not(.edit) #blacklist-edit-list{\n',
+        '    display: none;\n',
+        '}\n',
+        '#blacklist-edit-list{\n',
+        '    font-family: Consolas, Lucida Console, monospace;\n',
+        '    height: 200px;\n',
+        '    width: calc(100% - 10px);\n',
         '}\n',
         '#P{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;\n',
@@ -1413,16 +1425,20 @@
                         '    <hr class="P-horz">\n',
                         htEl.title('BLK_BLK', 'h3'),
                         htEl.input('BLK_ON', 'checkbox'),
-                        '    <button id="blacklist-import" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
-                        '        <span class="yt-uix-button-content">Import</span>\n',
-                        '    </button>\n',
-                        '    <button id="blacklist-export" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
-                        '        <span class="yt-uix-button-content">Export</span>\n',
-                        '    </button>\n',
                         '    <div id="blacklist">\n',
+                        '        <div id="blacklist-controls">\n',
+                        '            <button id="blacklist-edit" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
+                        '                <span class="yt-uix-button-content">' + userLang('BLCK_EDIT') + '</span>\n',
+                        '            </button>\n',
+                        '            <button id="blacklist-save" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
+                        '                <span class="yt-uix-button-content">' + userLang('BLCK_SAVE') + '</span>\n',
+                        '            </button>\n',
+                        '            <button id="blacklist-close" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
+                        '                <span class="yt-uix-button-content">' + userLang('BLCK_CLSE') + '</span>\n',
+                        '            </button>\n',
+                        '        </div>\n',
                         '        ' + custom() + '\n',
-                        '        <textarea id="blacklist-list-import"></textarea>\n',
-                        '        <pre id="blacklist-list-export"></pre>\n',
+                        '        <textarea id="blacklist-edit-list"></textarea>\n',
                         '    </div>\n',
                         '    <br>',
                         '</div>\n'
@@ -1454,17 +1470,16 @@
         }
         function navigateSettings(event) {
             function manageBlackList(target) {
-                var imp,
-                    exp;
-                if (target.id === 'blacklist-import') {
-                    imp = document.getElementById('blacklist-list-import');
-                } else if (target.id === 'blacklist-export') {
-                    exp = document.getElementById('blacklist-list-export');
-                    exp.textContent = JSON.stringify(get('blacklist'))
-                        .replace(/":"/g, '": "')
-                        .replace(/","/g, '"\n"')
-                        .replace('{"', '"')
-                        .replace('"}', '"');
+                function removeEmptyLines(string) {
+                    return (/\S/).test(string);
+                }
+                if (target.id === 'blacklist-edit') {
+                    document.getElementById('blacklist').classList.add('edit');
+                    document.getElementById('blacklist-edit-list').value = JSON.stringify(get('blacklist')).replace(/":"/g, '": "').replace(/","/g, '"\n"').replace('{"', '"').replace('"}', '"');
+                } else if (target.id === 'blacklist-save') {
+                    set('blacklist', JSON.parse('{' + document.getElementById('blacklist-edit-list').value.split('\n').filter(removeEmptyLines).join(',') + '}'));
+                } else if (target.id === 'blacklist-close') {
+                    document.getElementById('BLK').click();
                 }
             }
             function remBlackList() {
@@ -1519,7 +1534,7 @@
                 localStorage.Particle = JSON.stringify(defaultSettings);
             } else if (event.target.classList.contains('close')) {
                 remBlackList();
-            } else if (event.target.id === 'blacklist-import' || event.target.id === 'blacklist-export') {
+            } else if (event.target.id === 'blacklist-edit' || event.target.id === 'blacklist-save' || event.target.id === 'blacklist-close') {
                 manageBlackList(event.target);
             } else if (event.target.id === 'P-container' || event.target.id === 'P-settings') {
                 event = (event.target.id === 'P-settings') ? event.target : event.target.parentNode;
@@ -1562,7 +1577,7 @@
     function customStyles() {
         var href = window.location.href,
             sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0];
-        if (sidebar && ((get('GEN_HDE_RECM_SDBR') && href.split('/feed/').length > 1) || (get('GEN_HDE_SRCH_SDBR') && href.split('/results').length > 1) || (get('GEN_HDE_CHN_SDBR') && /\/(channel|user|c)\//.test(href)))) {
+        if (sidebar && ((get('GEN_HDE_RECM_SDBR') && href.split('/feed/').length > 1) || (get('GEN_HDE_SRCH_SDBR') && href.split('/results').length > 1) || (get('GEN_HDE_CHN_SDBR') && href.split(/\/(channel|user|c)\//).length > 1))) {
             sidebar.remove();
         }
         if (href.split('/results?').length > 1 && sidebar && sidebar.querySelectorAll('*').length < 10) {
@@ -1886,14 +1901,12 @@
             playerContainer,
             containerSize,
             videoPlayer,
-            playerSize,
             sidebar,
             sidebarSize;
         function initFloater() {
             playerContainer = document.getElementById('player-api');
             containerSize = playerContainer && playerContainer.getBoundingClientRect();
             videoPlayer = document.getElementById('movie_player');
-            playerSize = videoPlayer && videoPlayer.getBoundingClientRect();
             containerSize = playerContainer.getBoundingClientRect();
             sidebar = document.getElementById('watch7-sidebar');
             sidebarSize = sidebar && sidebar.getBoundingClientRect();
@@ -2371,16 +2384,17 @@
                 function timeProgress() {
                     var total = document.getElementById('podcast-total'),
                         elapsed = document.getElementById('podcast-current'),
-                        progress = timeConv(Math.floor(api.getCurrentTime())) + ' ';
+                        ending = document.getElementsByClassName('ytp-time-duration')[0],
+                        progress = document.getElementsByClassName('ytp-time-current')[0];
                     if (!total) {
                         remEvent('timeupdate', timeProgress);
                         return;
                     }
-                    if (elapsed && elapsed.textContent !== progress) {
-                        elapsed.textContent = progress;
-                        if (total.textContent === '' && videoPlayer.duration) {
-                            total.textContent = '/ ' + timeConv(videoPlayer.duration - 1);
-                        }
+                    if (elapsed && progress && elapsed.textContent !== progress.textContent) {
+                        elapsed.textContent = progress.textContent;
+                    }
+                    if (total && ending && total.textContent !== '/ ' + ending.textContent) {
+                        total.textContent = '/ ' + ending.textContent;
                     }
                 }
                 function initAudioMode() {
