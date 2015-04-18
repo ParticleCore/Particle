@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.8
+// @version     1.6.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -569,6 +569,9 @@
         '}\n',
         '.not-yt-legacy-css .watch-sidebar{\n',
         '    width: initial;\n',
+        '}\n',
+        '.content-snap-width-skinny-mode #footer-container{\n',
+        '    display: none;\n',
         '}\n',
         '#footer-container{\n',
         '    max-width: initial;\n',
@@ -2735,9 +2738,7 @@
                 var sidebarAlign = (get('VID_SDBR_ALGN') > 1) ? ',left=' + (window.screen.availWidth - 467) : (get('VID_SDBR_ALGN') < 1) ? '' : ',left=0',
                     newSidebar = window.open(location.href, document.title, 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
                 function snapFit() {
-                    if (newSidebar.document.readyState === 'interactive') {
-                        newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
-                    }
+                    newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                 }
                 newSidebar.addEventListener('readystatechange', snapFit, true);
             }
