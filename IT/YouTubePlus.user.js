@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.6.9
+// @version     1.7.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1215,7 +1215,7 @@
         '}\n',
         'html:not([data-player-size="fullscreen"]).content-snap-width-skinny-mode #player #movie_player.floater{\n',
         '    position: fixed !important;\n',
-        '    top: 60px !important;\n',
+        '    top: 50px !important;\n',
         '    transform: none;\n',
         '}\n',
         '#subscription-playlist-icon{\n',
@@ -1963,14 +1963,14 @@
                 remEvent('scroll', initFloater);
                 return;
             }
-            if (videoPlayer && (containerSize.bottom < ((containerSize.height / 2) + 51) || skinny) && !videoPlayer.classList.contains('floater')) {
+            if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 1) || (containerSize.height / 2)) + 51) && !videoPlayer.classList.contains('floater')) {
                 aspectRatio = 16 / 9;
                 width = sidebarSize.width;
                 height = sidebarSize.width / aspectRatio;
                 videoPlayer.classList.toggle('floater');
                 videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + sidebarSize.left + 'px;');
                 addEvent(window, 'resize', updatePos);
-            } else if (videoPlayer && (containerSize.bottom > ((containerSize.height / 2) + 51) && !skinny) && videoPlayer.classList.contains('floater')) {
+            } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 1) || (!skinny && (containerSize.height / 2))) + 51) && videoPlayer.classList.contains('floater')) {
                 remEvent('resize', updatePos);
                 videoPlayer.removeAttribute('style');
                 videoPlayer.classList.toggle('floater');
