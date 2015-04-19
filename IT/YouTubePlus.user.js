@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.7.1
+// @version     1.7.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -579,6 +579,12 @@
         '}\n',
         '.content-snap-width-skinny-mode #footer-container{\n',
         '    display: none;\n',
+        '}\n',
+        '.content-snap-width-skinny-mode #player-api{\n',
+        '    width: 100%;\n',
+        '}\n',
+        '.content-snap-width-skinny-mode #player{\n',
+        '    margin-top: 0;\n',
         '}\n',
         '#footer-container{\n',
         '    max-width: initial;\n',
@@ -1975,22 +1981,22 @@
             sidebarSize = sidebar && sidebar.getBoundingClientRect();
             function updatePos() {
                 sidebarSize = sidebar.getBoundingClientRect();
-                videoPlayer.style.marginLeft = sidebarSize.left + 'px';
-                videoPlayer.style.width = sidebarSize.width + 'px';
-                videoPlayer.style.height = sidebarSize.width / aspectRatio + 'px';
+                videoPlayer.style.marginLeft = ((skinny && '0') || sidebarSize.left) + 'px';
+                videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
+                videoPlayer.style.height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio + 'px';
             }
             if (!sidebar) {
                 remEvent('scroll', initFloater);
                 return;
             }
-            if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 1) || (containerSize.height / 2)) + 51) && !videoPlayer.classList.contains('floater')) {
+            if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !videoPlayer.classList.contains('floater')) {
                 aspectRatio = 16 / 9;
-                width = sidebarSize.width;
-                height = sidebarSize.width / aspectRatio;
+                width = (skinny && containerSize.width) || sidebarSize.width;
+                height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio;
                 videoPlayer.classList.toggle('floater');
-                videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + sidebarSize.left + 'px;');
+                videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                 addEvent(window, 'resize', updatePos);
-            } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 1) || (!skinny && (containerSize.height / 2))) + 51) && videoPlayer.classList.contains('floater')) {
+            } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && videoPlayer.classList.contains('floater')) {
                 remEvent('resize', updatePos);
                 videoPlayer.removeAttribute('style');
                 videoPlayer.classList.toggle('floater');
@@ -2238,7 +2244,8 @@
             if (event === 'www/base') {
                 window.yt.setConfig = baseDetour(window.yt.setConfig);
                 Object.keys(window._yt_www).some(ytIterator);
-            } else if (event === 'html5player/html5player') {
+            } else if ((event === 'html5player/html5player' || (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) && !window.html5Patched) {
+                window.html5Patched = true;
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
         }
