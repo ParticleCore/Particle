@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.7.2
+// @version     1.7.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -65,6 +65,14 @@
         SUB_PLST: {
             en: 'Play recent uploads',
             'pt-PT': 'Reproduzir vídeos recentes'
+        },
+        GEN_SDBR_ON: {
+            en: 'Enable sidebar mode',
+            'pt-PT': 'Activar modo barra lateral'
+        },
+        SDBR_OPEN: {
+            en: 'Open in sidebar',
+            'pt-PT': 'Abrir barra lateral'
         },
         BLCK_ADD: {
             en: 'Add to blacklist',
@@ -908,10 +916,23 @@
         '    line-height: 1;\n',
         '    position: absolute;\n',
         '    right: 0;\n',
-        '    top: 0px;\n',
+        '    top: 0;\n',
         '    width: 17px;\n',
         '}\n',
-        '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist{\n',
+        '.thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{\n',
+        '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAIAQMAAAD6NPz1AAAABlBMVEX///9mZmaO7mygAAAAAXRSTlMAQObYZgAAAA1JREFUeF5jeH8AKwIAonQNedxnO+oAAAAASUVORK5CYII=") #FFF no-repeat center;\n',
+        '    bottom: 0;\n',
+        '    color: #666;\n',
+        '    cursor: pointer;\n',
+        '    display: none;\n',
+        '    font-size: 12px;\n',
+        '    height: 17px;\n',
+        '    left: 0;\n',
+        '    line-height: 1;\n',
+        '    position: absolute;\n',
+        '    width: 17px;\n',
+        '}\n',
+        '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist, .thumb-wrapper:hover .sidebarmode, .yt-lockup-thumbnail:hover .sidebarmode{\n',
         '    display: initial;\n',
         '}\n',
         '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
@@ -1090,11 +1111,10 @@
         '    font-size: 0;\n',
         '    overflow: auto;\n',
         '    position: absolute;\n',
-        '    top: 50%;\n',
-        '    transform: translateY(-50%);\n',
+        '    bottom: 0;\n',
         '    width: 100%;\n',
         '    white-space: nowrap;\n',
-        '    z-index: 910;\n',
+        '    z-index: 940;\n',
         '}\n',
         '#seek-controls{\n',
         '    background: rgba(0, 0, 0, 0.8);\n',
@@ -1254,7 +1274,7 @@
         return html.parseFromString(string, 'text/html');
     }
     function userLang(placeHolder) {
-        var ytlang = window.yt.config_.FEEDBACK_LOCALE_LANGUAGE || 'en';
+        var ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || 'en';
         if (lang[placeHolder][ytlang]) {
             return lang[placeHolder][ytlang];
         }
@@ -1379,6 +1399,7 @@
                         '    <hr class="P-horz">\n',
                         htEl.title('GEN_GEN', 'h3'),
                         htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
+                        htEl.input('GEN_SDBR_ON', 'checkbox'),
                         htEl.input('GEN_REM_APUN', 'checkbox'),
                         htEl.select('GEN_CHN_DFLT_PAGE', {
                             'GEN_CHN_DFLT_PAGE_DFLT': 'default',
@@ -2244,101 +2265,161 @@
             if (event === 'www/base') {
                 window.yt.setConfig = baseDetour(window.yt.setConfig);
                 Object.keys(window._yt_www).some(ytIterator);
-            } else if ((event === 'html5player/html5player' || (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) && !window.html5Patched) {
+            } else if (!window.html5Patched && (event === 'html5player/html5player' || (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create))) {
                 window.html5Patched = true;
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
         }
     }
-    function blackList() {
-        var list,
-            user,
-            name,
-            ytid,
-            button,
-            length,
-            autoplay,
-            feedList,
-            observer,
+    function thumbMod() {
+        var userId,
+            userName,
             loadMore,
+            videoLink,
+            infoField,
+            titleField,
+            thumbField,
             clickTitle,
-            userList = get('blacklist') || {};
-        if (!get('BLK_ON')) {
-            return;
-        }
-        function initBlackList(target) {
-            var newEntry;
-            if (target.target.className === 'blacklist yt-uix-tooltip') {
-                newEntry = get('blacklist');
-                newEntry[target.target.getAttribute('data-ytid')] = target.target.getAttribute('data-user');
-                set('blacklist', newEntry);
-                blackList();
+            detailList = [],
+            masterList = [];
+        function initThumbMod(event) {
+            var user,
+                list,
+                ytid,
+                length,
+                autoplay,
+                feedList,
+                observer,
+                userList = get('blacklist');
+            function initSidebarMode() {
+                var sidebarAlign = (get('VID_SDBR_ALGN') > 1) ? ',left=' + (window.screen.availWidth - 467) : (get('VID_SDBR_ALGN') < 1) ? '' : ',left=0',
+                    newSidebar = window.open(event.getAttribute('data-link'), 'sidebarMode', 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
+                function snapFit() {
+                    newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
+                }
+                newSidebar.addEventListener('readystatechange', snapFit, true);
             }
-        }
-        function createButton(userID, userName) {
-            button = document.createElement('div');
-            button.className = 'blacklist yt-uix-tooltip';
-            button.setAttribute('data-tooltip-text', userLang('BLCK_ADD'));
-            button.setAttribute('data-ytid', userID);
-            button.setAttribute('data-user', userName);
-            return button;
-        }
-        function findList(checkList) {
-            if (!list && document.getElementsByClassName(checkList)[0]) {
-                list = document.getElementsByClassName(checkList);
+            function initBlackList() {
+                userList[event.getAttribute('data-ytid')] = event.getAttribute('data-user');
+                set('blacklist', userList);
+                thumbMod();
             }
-        }
-        if (window.location.pathname !== '/feed/subscriptions') {
-            ['yt-shelf-grid-item', 'yt-lockup-video', 'video-list-item'].forEach(findList);
+            function findList(checkList) {
+                if (!list && document.getElementsByClassName(checkList)[0]) {
+                    list = document.getElementsByClassName(checkList);
+                }
+            }
             clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
             loadMore = document.getElementsByClassName('load-more-button')[0] || document.getElementById('watch-more-related');
+            ['yt-shelf-grid-item', 'yt-lockup-video', 'video-list-item'].forEach(findList);
+            if (list) {
+                length = list.length;
+                autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
+                feedList = document.getElementsByClassName('feed-item-container');
+                while (length) {
+                    length -= 1;
+                    user = list[length].getElementsByClassName('g-hovercard')[(window.location.pathname === '/watch') ? 1 : 0];
+                    if (user && list[length]) {
+                        ytid = user.getAttribute('data-ytid');
+                        if (userList[ytid]) {
+                            if (autoplay && autoplay.contains(list[length])) {
+                                autoplay.remove();
+                                document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
+                            } else if (list[length]) {
+                                list[length].remove();
+                            }
+                        }
+                    }
+                }
+                if (feedList.length > 0) {
+                    length = feedList.length;
+                    while (length) {
+                        length -= 1;
+                        if (feedList[length].getElementsByTagName('li').length < 2) {
+                            feedList[length].remove();
+                        }
+                    }
+                }
+            }
             while (clickTitle) {
                 clickTitle.classList.remove('yt-uix-tile');
                 clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
             }
-        }
-        if (list) {
-            length = list.length;
-            autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
-            feedList = document.getElementsByClassName('feed-item-container');
-            while (length) {
-                length -= 1;
-                user = list[length].getElementsByClassName('g-hovercard')[(window.location.pathname === '/watch') ? 1 : 0];
-                if (user && list[length]) {
-                    name = user.textContent;
-                    ytid = user.getAttribute('data-ytid');
-                    if (userList[ytid]) {
-                        if (autoplay && autoplay.contains(list[length])) {
-                            autoplay.remove();
-                            document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
-                        } else if (list[length]) {
-                            list[length].remove();
-                        }
-                    } else if (!list[length].getElementsByClassName('blacklist')[0] && list[length].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0]) {
-                        button = createButton(ytid, name);
-                        list[length].getElementsByClassName((window.location.pathname === '/watch') ? 'thumb-wrapper' : 'yt-lockup-thumbnail')[0].appendChild(button);
-                    }
+            if (event) {
+                event = event.target;
+                if (event.className === 'sidebarmode yt-uix-tooltip') {
+                    initSidebarMode();
+                } else if (event.className === 'blacklist yt-uix-tooltip') {
+                    initBlackList();
                 }
             }
-            if (feedList.length > 0) {
-                length = feedList.length;
-                while (length) {
-                    length -= 1;
-                    if (feedList[length].getElementsByTagName('li').length < 2) {
-                        feedList[length].remove();
-                    }
+            if (loadMore && !loadMore.classList.contains('hooked')) {
+                loadMore.classList.add('hooked');
+                observer = new window.MutationObserver(thumbMod);
+                observer.observe(loadMore, {
+                    childList: true,
+                    attributes: true,
+                    attributeOldValue: true
+                });
+            }
+            addEvent(window, 'click', initThumbMod);
+        }
+        function insertButtons(i) {
+            function createButton(type, details) {
+                var button;
+                if (type === 'sidebarmode') {
+                    button = '<div title="' + userLang('SDBR_OPEN') + '" data-link="' + details.videolink + '" data-tooltip-text="' + userLang('SDBR_OPEN') + '" class="' + type + ' yt-uix-tooltip"></div>';
+                } else {
+                    button = '<div title="' + userLang('BLCK_ADD') + '" data-user="' + details.username + '" data-ytid="' + details.youtubeid + '" data-tooltip-text="' + userLang('BLCK_ADD') + '" class="' + type + ' yt-uix-tooltip"></div>';
+                }
+                return string2HTML(button).querySelector('div');
+            }
+            if (detailList[i]) {
+                if (get('GEN_SDBR_ON') && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
+                    detailList[i].thumbfield.appendChild(createButton('sidebarmode', detailList[i]));
+                }
+                if (get('BLK_ON') && window.location.pathname !== '/feed/subscriptions' && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
+                    detailList[i].thumbfield.appendChild(createButton('blacklist', detailList[i]));
                 }
             }
-            addEvent(window, 'click', initBlackList);
         }
-        if (loadMore && !loadMore.classList.contains('hooked')) {
-            loadMore.classList.add('hooked');
-            observer = new window.MutationObserver(blackList);
-            observer.observe(loadMore, {
-                childList: true,
-                attributes: true,
-                attributeOldValue: true
-            });
+        function buildDetailList(i) {
+            if (i > -1) {
+                infoField = masterList[i].getElementsByClassName('g-hovercard')[1] || masterList[i].getElementsByClassName('g-hovercard')[0];
+                titleField = masterList[i].getElementsByClassName('yt-uix-tile-link')[0] || masterList[i].getElementsByClassName('yt-ui-ellipsis')[0] || masterList[i].getElementsByClassName('content-link')[0] || masterList[i].getElementsByTagName('a')[0];
+                thumbField = masterList[i].getElementsByClassName('yt-lockup-thumbnail')[0] || masterList[i].getElementsByClassName('thumb-wrapper')[0] || masterList[i].getElementsByClassName('yt-pl-thumb')[0];
+                userId = infoField && infoField.getAttribute('data-ytid');
+                userName = infoField && infoField.textContent;
+                videoLink = titleField && titleField.href;
+                detailList[i] = undefined;
+                if (userName && userId && videoLink && thumbField) {
+                    detailList[i] = {
+                        username: userName,
+                        youtubeid: userId,
+                        videolink: videoLink,
+                        thumbfield: thumbField
+                    };
+                }
+            }
+        }
+        function filterEmpty(list) {
+            if (list.length > 0) {
+                masterList = list;
+                return;
+            }
+        }
+        if (get('BLK_ON') || get('GEN_SDBR_ON')) {
+            masterList.push(
+                document.getElementsByClassName('yt-lockup-tile'),
+                document.getElementsByClassName('video-list-item'),
+                document.getElementsByClassName('yt-shelf-grid-item')
+            );
+            if (masterList.join('').length > 0) {
+                masterList.filter(filterEmpty);
+                Object.keys(masterList).forEach(buildDetailList);
+                Object.keys(detailList).forEach(insertButtons);
+                initThumbMod();
+            }
         }
     }
     function title() {
@@ -2755,7 +2836,7 @@
             }
             function openSidebar() {
                 var sidebarAlign = (get('VID_SDBR_ALGN') > 1) ? ',left=' + (window.screen.availWidth - 467) : (get('VID_SDBR_ALGN') < 1) ? '' : ',left=0',
-                    newSidebar = window.open(location.href, document.title, 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
+                    newSidebar = window.open(window.location.href, 'sidebarMode', 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
                 function snapFit() {
                     newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                 }
@@ -2789,7 +2870,7 @@
                 '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                 '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                 '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
-                '    <div id="sidebar-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SDBR') + '"></div>\n',
+                '    <div id="sidebar-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SDBR') + '"' + ((window.opener) ? ' style="display:none"' : '') + '></div>\n',
                 '</div>\n'
             ].join('');
             controls = string2HTML(controls).querySelector('div');
@@ -2839,7 +2920,7 @@
         title();
         subPlaylist();
         alwaysVisible();
-        blackList();
+        thumbMod();
         enhancedDetails();
         commentsButton();
         generalChanges();
