@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.7.3
+// @version     1.7.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2280,16 +2280,12 @@
             titleField,
             thumbField,
             clickTitle,
+            masterList,
+            trashList = [],
             detailList = [],
-            masterList = [];
+            blackList = get('blacklist');
         function initThumbMod(event) {
-            var user,
-                list,
-                ytid,
-                length,
-                autoplay,
-                feedList,
-                observer,
+            var observer,
                 userList = get('blacklist');
             function initSidebarMode() {
                 var sidebarAlign = (get('VID_SDBR_ALGN') > 1) ? ',left=' + (window.screen.availWidth - 467) : (get('VID_SDBR_ALGN') < 1) ? '' : ',left=0',
@@ -2304,54 +2300,11 @@
                 set('blacklist', userList);
                 thumbMod();
             }
-            function findList(checkList) {
-                if (!list && document.getElementsByClassName(checkList)[0]) {
-                    list = document.getElementsByClassName(checkList);
-                }
-            }
-            clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
             loadMore = document.getElementsByClassName('load-more-button')[0] || document.getElementById('watch-more-related');
-            ['yt-shelf-grid-item', 'yt-lockup-video', 'video-list-item'].forEach(findList);
-            if (list) {
-                length = list.length;
-                autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
-                feedList = document.getElementsByClassName('feed-item-container');
-                while (length) {
-                    length -= 1;
-                    user = list[length].getElementsByClassName('g-hovercard')[(window.location.pathname === '/watch') ? 1 : 0];
-                    if (user && list[length]) {
-                        ytid = user.getAttribute('data-ytid');
-                        if (userList[ytid]) {
-                            if (autoplay && autoplay.contains(list[length])) {
-                                autoplay.remove();
-                                document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
-                            } else if (list[length]) {
-                                list[length].remove();
-                            }
-                        }
-                    }
-                }
-                if (feedList.length > 0) {
-                    length = feedList.length;
-                    while (length) {
-                        length -= 1;
-                        if (feedList[length].getElementsByTagName('li').length < 2) {
-                            feedList[length].remove();
-                        }
-                    }
-                }
-            }
+            clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
             while (clickTitle) {
                 clickTitle.classList.remove('yt-uix-tile');
                 clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
-            }
-            if (event) {
-                event = event.target;
-                if (event.className === 'sidebarmode yt-uix-tooltip') {
-                    initSidebarMode();
-                } else if (event.className === 'blacklist yt-uix-tooltip') {
-                    initBlackList();
-                }
             }
             if (loadMore && !loadMore.classList.contains('hooked')) {
                 loadMore.classList.add('hooked');
@@ -2361,6 +2314,14 @@
                     attributes: true,
                     attributeOldValue: true
                 });
+            }
+            if (event) {
+                event = event.target;
+                if (event.className === 'sidebarmode yt-uix-tooltip') {
+                    initSidebarMode();
+                } else if (event.className === 'blacklist yt-uix-tooltip') {
+                    initBlackList();
+                }
             }
             addEvent(window, 'click', initThumbMod);
         }
@@ -2375,7 +2336,7 @@
                 return string2HTML(button).querySelector('div');
             }
             if (detailList[i]) {
-                if (get('GEN_SDBR_ON') && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
+                if (get('GEN_SDBR_ON') && !window.opener && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
                     detailList[i].thumbfield.appendChild(createButton('sidebarmode', detailList[i]));
                 }
                 if (get('BLK_ON') && window.location.pathname !== '/feed/subscriptions' && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
@@ -2384,7 +2345,8 @@
             }
         }
         function buildDetailList(i) {
-            if (i > -1) {
+            var autoplay;
+            if (i > -1 && masterList[i]) {
                 infoField = masterList[i].getElementsByClassName('g-hovercard')[1] || masterList[i].getElementsByClassName('g-hovercard')[0];
                 titleField = masterList[i].getElementsByClassName('yt-uix-tile-link')[0] || masterList[i].getElementsByClassName('yt-ui-ellipsis')[0] || masterList[i].getElementsByClassName('content-link')[0] || masterList[i].getElementsByTagName('a')[0];
                 thumbField = masterList[i].getElementsByClassName('yt-lockup-thumbnail')[0] || masterList[i].getElementsByClassName('thumb-wrapper')[0] || masterList[i].getElementsByClassName('yt-pl-thumb')[0];
@@ -2392,7 +2354,21 @@
                 userName = infoField && infoField.textContent;
                 videoLink = titleField && titleField.href;
                 detailList[i] = undefined;
-                if (userName && userId && videoLink && thumbField) {
+                if (blackList[userId]) {
+                    autoplay = document.getElementsByClassName('autoplay-bar')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
+                    if (autoplay && autoplay.contains(thumbField)) {
+                        autoplay.remove();
+                        document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
+                    } else {
+                        while (thumbField) {
+                            thumbField = thumbField.parentNode;
+                            if (thumbField.tagName === 'LI') {
+                                trashList.push(thumbField);
+                                break;
+                            }
+                        }
+                    }
+                } else if (userName && userId && videoLink && thumbField) {
                     detailList[i] = {
                         username: userName,
                         youtubeid: userId,
@@ -2402,21 +2378,20 @@
                 }
             }
         }
-        function filterEmpty(list) {
+        function cleanList(trash) {
+            trashList[trash].remove();
+        }
+        function getList(list) {
+            list = document.getElementsByClassName(list);
             if (list.length > 0) {
                 masterList = list;
-                return;
             }
         }
-        if (get('BLK_ON') || get('GEN_SDBR_ON')) {
-            masterList.push(
-                document.getElementsByClassName('yt-lockup-tile'),
-                document.getElementsByClassName('video-list-item'),
-                document.getElementsByClassName('yt-shelf-grid-item')
-            );
-            if (masterList.join('').length > 0) {
-                masterList.filter(filterEmpty);
+        if ((get('BLK_ON') || get('GEN_SDBR_ON')) && (window.location.pathname === '/' || window.location.pathname === '/results' || window.location.pathname === '/watch' || window.location.pathname === '/feed/music')) {
+            ['yt-lockup-tile', 'video-list-item', 'yt-shelf-grid-item'].forEach(getList);
+            if (masterList) {
                 Object.keys(masterList).forEach(buildDetailList);
+                Object.keys(trashList).forEach(cleanList);
                 Object.keys(detailList).forEach(insertButtons);
                 initThumbMod();
             }
