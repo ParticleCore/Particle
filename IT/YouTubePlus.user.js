@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.7.4
+// @version     1.7.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -41,15 +41,487 @@
 (function particle() {
     'use strict';
     var api,
-        lang,
         injection,
         styleSheet,
         fullscreen,
         requesting,
         channelId = {},
-        eventStock = {},
-        defaultSettings,
-        usingChrome = typeof window.chrome === 'object';
+        eventStock = [],
+        usingChrome = typeof window.chrome === 'object',
+        defaultSettings = {
+            GEN_BTTR_NTF: true,
+            GEN_YT_LOGO_LINK: true,
+            GEN_CMPT_TTLS: true,
+            GEN_BLUE_GLOW: true,
+            GEN_CHN_DFLT_PAGE: 'videos',
+            GEN_SDBR_ON: true,
+            VID_END_SHRE: true,
+            VID_DFLT_QLTY: 'auto',
+            VID_PLST_SEP: true,
+            VID_PLST_ATPL: true,
+            VID_PLST_RVRS: true,
+            VID_PLR_ANTS: true,
+            VID_PLR_CC: true,
+            VID_PLR_ALVIS: true,
+            VID_PLR_ADS: true,
+            VID_PLR_SIZE_MEM: true,
+            VID_PLR_CTRL_VIS: '1',
+            VID_PLR_FIT_WDTH: '1280px',
+            VID_PROG_BAR_CLR: 'red',
+            VID_CTRL_BAR_CLR: 'light',
+            VID_HIDE_COMS: true,
+            VID_POST_TIME: true,
+            VID_VID_CNT: true,
+            VID_DESC_SHRT: true,
+            VID_SDBR_ALGN: '1',
+            VID_TTL_CMPT: true,
+            VID_STP_BTN: true,
+            BLK_ON: true,
+            volLev: false,
+            plApl: false,
+            plRev: false,
+            advOpts: true,
+            blacklist: {}
+        },
+        lang = {
+            ADV_OPTS: {
+                en: 'Advanced options',
+                'pt-PT': 'Opções avançadas'
+            },
+            SUB_PLST: {
+                en: 'Play recent uploads',
+                'pt-PT': 'Reproduzir vídeos recentes'
+            },
+            GEN_SDBR_ON: {
+                en: 'Enable sidebar mode',
+                'pt-PT': 'Activar modo barra lateral'
+            },
+            SDBR_OPEN: {
+                en: 'Open in sidebar',
+                'pt-PT': 'Abrir barra lateral'
+            },
+            BLCK_ADD: {
+                en: 'Add to blacklist',
+                'pt-PT': 'Adicionar à lista negra'
+            },
+            BLCK_EDIT: {
+                en: 'Edit',
+                'pt-PT': 'Editar'
+            },
+            BLCK_SAVE: {
+                en: 'Save',
+                'pt-PT': 'Guardar'
+            },
+            BLCK_CLSE: {
+                en: 'Close',
+                'pt-PT': 'Fechar'
+            },
+            CNSL_CNSL: {
+                en: 'Console',
+                'pt-PT': 'Consola'
+            },
+            CNSL_AP: {
+                en: 'Autoplay',
+                'pt-PT': 'Início automático'
+            },
+            CNSL_RPT: {
+                en: 'Repeat video',
+                'pt-PT': 'Repetir vídeo'
+            },
+            CNSL_AUDI: {
+                en: 'Audio only',
+                'pt-PT': 'Só áudio'
+            },
+            CNSL_SKMP: {
+                en: 'Seek map',
+                'pt-PT': 'Mapa de procura'
+            },
+            CNSL_SKMP_OFF: {
+                en: 'No thumbs found',
+                'pt-PT': 'Não existem imagens'
+            },
+            CNSL_SKMP_SMAL: {
+                en: 'SMALL',
+                'pt-PT': 'PEQUENO'
+            },
+            CNSL_SKMP_MED: {
+                en: 'MEDIUM',
+                'pt-PT': 'MÉDIO'
+            },
+            CNSL_SKMP_LRGE: {
+                en: 'LARGE',
+                'pt-PT': 'GRANDE'
+            },
+            CNSL_SVTH: {
+                en: 'Save thumbnail',
+                'pt-PT': 'Guardar fundo'
+            },
+            CNSL_SS: {
+                en: 'Take screenshot',
+                'pt-PT': 'Capturar imagem'
+            },
+            CNSL_SS_CLS: {
+                en: 'CLOSE',
+                'pt-PT': 'FECHAR'
+            },
+            CNSL_SDBR: {
+                en: 'Sidebar mode',
+                'pt-PT': 'Modo barra lateral'
+            },
+            PLST_AP: {
+                en: 'Autoplay',
+                'pt-PT': 'Início automático'
+            },
+            PLST_RVRS: {
+                en: 'Reverse',
+                'pt-PT': 'Inverter'
+            },
+            SHOW_CMTS: {
+                en: 'Show comments',
+                'pt-PT': 'Mostrar comentários'
+            },
+            HIDE_CMTS: {
+                en: 'Hide comments',
+                'pt-PT': 'Esconder comentários'
+            },
+            GLB_RSET: {
+                en: 'Reset',
+                'pt-PT': 'Repor'
+            },
+            GLB_SVE: {
+                en: 'Save',
+                'pt-PT': 'Guardar'
+            },
+            GEN: {
+                en: 'General',
+                'pt-PT': 'Geral'
+            },
+            VID: {
+                en: 'Video',
+                'pt-PT': 'Video'
+            },
+            CHN: {
+                en: 'Channels',
+                'pt-PT': 'Canais'
+            },
+            BLK: {
+                en: 'Blacklist',
+                'pt-PT': 'Lista negra'
+            },
+            ABT: {
+                en: 'About',
+                'pt-PT': 'Sobre'
+            },
+            GEN_TTL: {
+                en: 'General settings',
+                'pt-PT': 'Definições gerais'
+            },
+            GEN_GEN: {
+                en: 'General',
+                'pt-PT': 'Geral'
+            },
+            GEN_LYT: {
+                en: 'Layout',
+                'pt-PT': 'Aparência'
+            },
+            GEN_YT_LOGO_LINK: {
+                en: 'YouTube logo redirects to subscriptions',
+                'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
+            },
+            GEN_REM_APUN: {
+                en: 'Remove autoplay up next',
+                'pt-PT': 'Remover reprodução automática do vídeo a seguir'
+            },
+            GEN_HIDE_FTR: {
+                en: 'Hide footer',
+                'pt-PT': 'Esconder rodapé'
+            },
+            GEN_BLUE_GLOW: {
+                en: 'Remove blue glow around clicked buttons',
+                'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
+            },
+            GEN_HDE_RECM_SDBR: {
+                en: 'Hide recommended channels sidebar',
+                'pt-PT': 'Esconder barra lateral de canais recomendados'
+            },
+            GEN_HDE_SRCH_SDBR: {
+                en: 'Hide search results sidebar',
+                'pt-PT': 'Esconder barra lateral nos resultados de pesquisa'
+            },
+            GEN_HDE_CHN_SDBR: {
+                en: 'Hide channel sidebar',
+                'pt-PT': 'Esconder barra lateral dos canais'
+            },
+            GEN_CMPT_TTLS: {
+                en: 'Compact titles in feeds',
+                'pt-PT': 'Títulos compactos nas listas'
+            },
+            GEN_DSB_HVRC: {
+                en: 'Disable hovercards',
+                'pt-PT': 'Desactivar hovercards'
+            },
+            GEN_BTTR_NTF: {
+                en: 'Improved blue notification box',
+                'pt-PT': 'Caixa de notificação azul melhorada'
+            },
+            VID_TTL: {
+                en: 'Video settings',
+                'pt-PT': 'Definições de vídeo'
+            },
+            VID_PLR: {
+                en: 'Player settings',
+                'pt-PT': 'Definições do reproductor'
+            },
+            VID_PLR_LYT: {
+                en: 'Player layout',
+                'pt-PT': 'Aspecto do reproductor'
+            },
+            VID_STP_BTN: {
+                en: 'Add stop button to the player',
+                'pt-PT': 'Adicionar botão de parar ao reproductor'
+            },
+            VID_DFLT_QLTY: {
+                en: 'Default video quality:',
+                'pt-PT': 'Qualidade de vídeo padrão:'
+            },
+            VID_DFLT_QLTY_AUTO: {
+                en: 'Auto',
+                'pt-PT': 'Auto'
+            },
+            VID_DFLT_QLTY_TNY: {
+                en: '144p'
+            },
+            VID_DFLT_QLTY_SML: {
+                en: '240p'
+            },
+            VID_DFLT_QLTY_MDM: {
+                en: '360p'
+            },
+            VID_DFLT_QLTY_LRG: {
+                en: '480p'
+            },
+            VID_DFLT_QLTY_720: {
+                en: '720p'
+            },
+            VID_DFLT_QLTY_1080: {
+                en: '1080p'
+            },
+            VID_DFLT_QLTY_1440: {
+                en: '1440p'
+            },
+            VID_DFLT_QLTY_ORIG: {
+                en: '2160p'
+            },
+            VID_PLR_ALVIS: {
+                en: 'Always visible',
+                'pt-PT': 'Sempre visível'
+            },
+            VID_PLR_ATPL: {
+                en: 'Autoplay videos',
+                'pt-PT': 'Iniciar vídeos automáticamente'
+            },
+            VID_PROG_BAR_CLR: {
+                en: 'Progress bar color:',
+                'pt-PT': 'Cor da barra de progresso:'
+            },
+            VID_PROG_BAR_CLR_RED: {
+                en: 'Red',
+                'pt-PT': 'Vermelha'
+            },
+            VID_PROG_BAR_CLR_WHT: {
+                en: 'White',
+                'pt-PT': 'Branca'
+            },
+            VID_CTRL_BAR_CLR: {
+                en: 'Control bar color:',
+                'pt-PT': 'Cor da barra de controlos:'
+            },
+            VID_CTRL_BAR_CLR_DARK: {
+                en: 'Dark',
+                'pt-PT': 'Escura'
+            },
+            VID_CTRL_BAR_CLR_LGHT: {
+                en: 'Light',
+                'pt-PT': 'Clara'
+            },
+            VID_LAYT: {
+                en: 'Layout',
+                'pt-PT': 'Aparência'
+            },
+            VID_VID_CNT: {
+                en: 'Show link with number of uploaded videos',
+                'pt-PT': 'Mostrar link com número de vídeos carregados'
+            },
+            VID_POST_TIME: {
+                en: 'Show how long the video has been published',
+                'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
+            },
+            VID_HIDE_DETLS: {
+                en: 'Hide video details',
+                'pt-PT': 'Esconder detalhes do vídeo'
+            },
+            VID_HIDE_COMS: {
+                en: 'Hide comment section',
+                'pt-PT': 'Esconder secção de comentários'
+            },
+            VID_END_SHRE: {
+                en: 'Disable share panel when video ends',
+                'pt-PT': 'Desactivar painel de partilha quando o video acaba'
+            },
+            VID_PLST: {
+                en: 'Playlists',
+                'pt-PT': 'Listas'
+            },
+            VID_PLST_SEP: {
+                en: 'Separate playlist from player',
+                'pt-PT': 'Separar lista de reprodução do reproductor'
+            },
+            VID_PLST_ATPL: {
+                en: 'Enable playlist autoplay control',
+                'pt-PT': 'Activar controlo de início automático das listas'
+            },
+            VID_PLST_RVRS: {
+                en: 'Enable reverse playlist control',
+                'pt-PT': 'Activar controlo de inversão das listas'
+            },
+            VID_PLR_SIZE_MEM: {
+                en: 'Memorize player mode',
+                'pt-PT': 'Memorizar tamanho do reproductor'
+            },
+            VID_PLR_VOL_MEM: {
+                en: 'Memorize audio volume',
+                'pt-PT': 'Memorizar volume de audio'
+            },
+            VID_PLR_ADS: {
+                en: 'Disable advertisements',
+                'pt-PT': 'Desactivar publicidades'
+            },
+            VID_SUB_ADS: {
+                en: 'Enable advertisements only in videos from subscribed channels',
+                'pt-PT': 'Activar publicidades só para vídeos de canais subscritos'
+            },
+            VID_PLR_ANTS: {
+                en: 'Disable annotations',
+                'pt-PT': 'Desactivar notas'
+            },
+            VID_PLR_DASH: {
+                en: 'Disable DASH playback',
+                'pt-PT': 'Desactivar reprodução DASH'
+            },
+            VID_PLR_CC: {
+                en: 'Disable subtitles',
+                'pt-PT': 'Desactivar legendas'
+            },
+            VID_PLR_CTRL_VIS: {
+                en: 'Player bar visibility:',
+                'pt-PT': 'Visibilidade da barra do reproductor:'
+            },
+            VID_PLR_CTRL_VIS_HIDE_ALL: {
+                en: 'Hide',
+                'pt-PT': 'Esconder'
+            },
+            VID_PLR_CTRL_VIS_HIDE_PROG: {
+                en: 'Default',
+                'pt-PT': 'Predefinido'
+            },
+            VID_PLR_FIT: {
+                en: 'Fit to page in theater mode',
+                'pt-PT': 'Ajustar na página no modo cinema'
+            },
+            VID_PLR_FIT_WDTH: {
+                en: 'Fit to page maximum width:',
+                'pt-PT': 'Largura máxima do ajuste na página:'
+            },
+            VID_DESC_SHRT: {
+                en: 'Short video description buttons',
+                'pt-PT': 'Botões curtos na descrição do vídeo'
+            },
+            VID_TTL_CMPT: {
+                en: 'Compact title in video description',
+                'pt-PT': 'Título compacto na descrição do vídeo'
+            },
+            VID_SDBR_ALGN: {
+                en: 'Sidebar mode alignment',
+                'pt-PT': 'Alinhar modo barra lateral'
+            },
+            VID_SDBR_ALGN_NONE: {
+                en: 'None',
+                'pt-PT': 'Nenhum'
+            },
+            VID_SDBR_ALGN_LEFT: {
+                en: 'Left',
+                'pt-PT': 'Esquerda'
+            },
+            VID_SDBR_ALGN_RIGHT: {
+                en: 'Right',
+                'pt-PT': 'Direita'
+            },
+            GEN_CHN_DFLT_PAGE: {
+                en: 'Default channel page:',
+                'pt-PT': 'Página de canal predefinida:'
+            },
+            GEN_CHN_DFLT_PAGE_DFLT: {
+                en: 'Default',
+                'pt-PT': 'Padrão'
+            },
+            GEN_CHN_DFLT_PAGE_VID: {
+                en: 'Videos',
+                'pt-PT': 'Vídeos'
+            },
+            GEN_CHN_DFLT_PAGE_PL: {
+                en: 'Playlists',
+                'pt-PT': 'Listas de reprodução'
+            },
+            GEN_CHN_DFLT_PAGE_CHN: {
+                en: 'Channels',
+                'pt-PT': 'Canais'
+            },
+            GEN_CHN_DFLT_PAGE_DISC: {
+                en: 'Discussion',
+                'pt-PT': 'Discussão'
+            },
+            GEN_CHN_DFLT_PAGE_ABT: {
+                en: 'About',
+                'pt-PT': 'Acerca de'
+            },
+            BLK_TTL: {
+                en: 'Blacklist settings',
+                'pt-PT': 'Definições da lista negra'
+            },
+            BLK_BLK: {
+                en: 'Blacklist',
+                'pt-PT': 'Lista negra'
+            },
+            BLK_ON: {
+                en: 'Enable blacklist',
+                'pt-PT': 'Activar lista negra'
+            },
+            ABT_TTL: {
+                en: 'Information and useful links',
+                'pt-PT': 'Informação e ligações úteis'
+            },
+            ABT_INFO: {
+                en: 'Official pages',
+                'pt-PT': 'Páginas oficiais'
+            },
+            ABT_LNK_GHB: {
+                en: 'GitHub'
+            },
+            ABT_LNK_GRFK: {
+                en: 'Greasy Fork'
+            },
+            ABT_LNK_OPNU: {
+                en: 'OpenUserJS'
+            },
+            ABT_PRBL: {
+                en: 'Report a problem',
+                'pt-PT': 'Reportar problema'
+            },
+            ABT_LNK_PRBL: {
+                en: 'Click here for instructions',
+                'pt-PT': 'Clique aqui para instruções'
+            }
+        };
     if (!document.getElementById('Particle')) {
         injection = document.createElement('script');
         injection.id = 'Particle';
@@ -57,479 +529,6 @@
         document.documentElement.appendChild(injection);
         return;
     }
-    lang = {
-        ADV_OPTS: {
-            en: 'Advanced options',
-            'pt-PT': 'Opções avançadas'
-        },
-        SUB_PLST: {
-            en: 'Play recent uploads',
-            'pt-PT': 'Reproduzir vídeos recentes'
-        },
-        GEN_SDBR_ON: {
-            en: 'Enable sidebar mode',
-            'pt-PT': 'Activar modo barra lateral'
-        },
-        SDBR_OPEN: {
-            en: 'Open in sidebar',
-            'pt-PT': 'Abrir barra lateral'
-        },
-        BLCK_ADD: {
-            en: 'Add to blacklist',
-            'pt-PT': 'Adicionar à lista negra'
-        },
-        BLCK_EDIT: {
-            en: 'Edit',
-            'pt-PT': 'Editar'
-        },
-        BLCK_SAVE: {
-            en: 'Save',
-            'pt-PT': 'Guardar'
-        },
-        BLCK_CLSE: {
-            en: 'Close',
-            'pt-PT': 'Fechar'
-        },
-        CNSL_CNSL: {
-            en: 'Console',
-            'pt-PT': 'Consola'
-        },
-        CNSL_AP: {
-            en: 'Autoplay',
-            'pt-PT': 'Início automático'
-        },
-        CNSL_RPT: {
-            en: 'Repeat video',
-            'pt-PT': 'Repetir vídeo'
-        },
-        CNSL_AUDI: {
-            en: 'Audio only',
-            'pt-PT': 'Só áudio'
-        },
-        CNSL_SKMP: {
-            en: 'Seek map',
-            'pt-PT': 'Mapa de procura'
-        },
-        CNSL_SKMP_OFF: {
-            en: 'No thumbs found',
-            'pt-PT': 'Não existem imagens'
-        },
-        CNSL_SKMP_SMAL: {
-            en: 'SMALL',
-            'pt-PT': 'PEQUENO'
-        },
-        CNSL_SKMP_MED: {
-            en: 'MEDIUM',
-            'pt-PT': 'MÉDIO'
-        },
-        CNSL_SKMP_LRGE: {
-            en: 'LARGE',
-            'pt-PT': 'GRANDE'
-        },
-        CNSL_SVTH: {
-            en: 'Save thumbnail',
-            'pt-PT': 'Guardar fundo'
-        },
-        CNSL_SS: {
-            en: 'Take screenshot',
-            'pt-PT': 'Capturar imagem'
-        },
-        CNSL_SS_CLS: {
-            en: 'CLOSE',
-            'pt-PT': 'FECHAR'
-        },
-        CNSL_SDBR: {
-            en: 'Sidebar mode',
-            'pt-PT': 'Modo barra lateral'
-        },
-        PLST_AP: {
-            en: 'Autoplay',
-            'pt-PT': 'Início automático'
-        },
-        PLST_RVRS: {
-            en: 'Reverse',
-            'pt-PT': 'Inverter'
-        },
-        SHOW_CMTS: {
-            en: 'Show comments',
-            'pt-PT': 'Mostrar comentários'
-        },
-        HIDE_CMTS: {
-            en: 'Hide comments',
-            'pt-PT': 'Esconder comentários'
-        },
-        GLB_RSET: {
-            en: 'Reset',
-            'pt-PT': 'Repor'
-        },
-        GLB_SVE: {
-            en: 'Save',
-            'pt-PT': 'Guardar'
-        },
-        GEN: {
-            en: 'General',
-            'pt-PT': 'Geral'
-        },
-        VID: {
-            en: 'Video',
-            'pt-PT': 'Video'
-        },
-        CHN: {
-            en: 'Channels',
-            'pt-PT': 'Canais'
-        },
-        BLK: {
-            en: 'Blacklist',
-            'pt-PT': 'Lista negra'
-        },
-        ABT: {
-            en: 'About',
-            'pt-PT': 'Sobre'
-        },
-        GEN_TTL: {
-            en: 'General settings',
-            'pt-PT': 'Definições gerais'
-        },
-        GEN_GEN: {
-            en: 'General',
-            'pt-PT': 'Geral'
-        },
-        GEN_LYT: {
-            en: 'Layout',
-            'pt-PT': 'Aparência'
-        },
-        GEN_YT_LOGO_LINK: {
-            en: 'YouTube logo redirects to subscriptions',
-            'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
-        },
-        GEN_REM_APUN: {
-            en: 'Remove autoplay up next',
-            'pt-PT': 'Remover reprodução automática do vídeo a seguir'
-        },
-        GEN_HIDE_FTR: {
-            en: 'Hide footer',
-            'pt-PT': 'Esconder rodapé'
-        },
-        GEN_BLUE_GLOW: {
-            en: 'Remove blue glow around clicked buttons',
-            'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
-        },
-        GEN_HDE_RECM_SDBR: {
-            en: 'Hide recommended channels sidebar',
-            'pt-PT': 'Esconder barra lateral de canais recomendados'
-        },
-        GEN_HDE_SRCH_SDBR: {
-            en: 'Hide search results sidebar',
-            'pt-PT': 'Esconder barra lateral nos resultados de pesquisa'
-        },
-        GEN_HDE_CHN_SDBR: {
-            en: 'Hide channel sidebar',
-            'pt-PT': 'Esconder barra lateral dos canais'
-        },
-        GEN_CMPT_TTLS: {
-            en: 'Compact titles in feeds',
-            'pt-PT': 'Títulos compactos nas listas'
-        },
-        GEN_DSB_HVRC: {
-            en: 'Disable hovercards',
-            'pt-PT': 'Desactivar hovercards'
-        },
-        GEN_BTTR_NTF: {
-            en: 'Improved blue notification box',
-            'pt-PT': 'Caixa de notificação azul melhorada'
-        },
-        VID_TTL: {
-            en: 'Video settings',
-            'pt-PT': 'Definições de vídeo'
-        },
-        VID_PLR: {
-            en: 'Player settings',
-            'pt-PT': 'Definições do reproductor'
-        },
-        VID_PLR_LYT: {
-            en: 'Player layout',
-            'pt-PT': 'Aspecto do reproductor'
-        },
-        VID_STP_BTN: {
-            en: 'Add stop button to the player',
-            'pt-PT': 'Adicionar botão de parar ao reproductor'
-        },
-        VID_DFLT_QLTY: {
-            en: 'Default video quality:',
-            'pt-PT': 'Qualidade de vídeo padrão:'
-        },
-        VID_DFLT_QLTY_AUTO: {
-            en: 'Auto',
-            'pt-PT': 'Auto'
-        },
-        VID_DFLT_QLTY_TNY: {
-            en: '144p'
-        },
-        VID_DFLT_QLTY_SML: {
-            en: '240p'
-        },
-        VID_DFLT_QLTY_MDM: {
-            en: '360p'
-        },
-        VID_DFLT_QLTY_LRG: {
-            en: '480p'
-        },
-        VID_DFLT_QLTY_720: {
-            en: '720p'
-        },
-        VID_DFLT_QLTY_1080: {
-            en: '1080p'
-        },
-        VID_DFLT_QLTY_1440: {
-            en: '1440p'
-        },
-        VID_DFLT_QLTY_ORIG: {
-            en: '2160p'
-        },
-        VID_PLR_ALVIS: {
-            en: 'Always visible',
-            'pt-PT': 'Sempre visível'
-        },
-        VID_PLR_ATPL: {
-            en: 'Autoplay videos',
-            'pt-PT': 'Iniciar vídeos automáticamente'
-        },
-        VID_PROG_BAR_CLR: {
-            en: 'Progress bar color:',
-            'pt-PT': 'Cor da barra de progresso:'
-        },
-        VID_PROG_BAR_CLR_RED: {
-            en: 'Red',
-            'pt-PT': 'Vermelha'
-        },
-        VID_PROG_BAR_CLR_WHT: {
-            en: 'White',
-            'pt-PT': 'Branca'
-        },
-        VID_CTRL_BAR_CLR: {
-            en: 'Control bar color:',
-            'pt-PT': 'Cor da barra de controlos:'
-        },
-        VID_CTRL_BAR_CLR_DARK: {
-            en: 'Dark',
-            'pt-PT': 'Escura'
-        },
-        VID_CTRL_BAR_CLR_LGHT: {
-            en: 'Light',
-            'pt-PT': 'Clara'
-        },
-        VID_LAYT: {
-            en: 'Layout',
-            'pt-PT': 'Aparência'
-        },
-        VID_VID_CNT: {
-            en: 'Show link with number of uploaded videos',
-            'pt-PT': 'Mostrar link com número de vídeos carregados'
-        },
-        VID_POST_TIME: {
-            en: 'Show how long the video has been published',
-            'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
-        },
-        VID_HIDE_DETLS: {
-            en: 'Hide video details',
-            'pt-PT': 'Esconder detalhes do vídeo'
-        },
-        VID_HIDE_COMS: {
-            en: 'Hide comment section',
-            'pt-PT': 'Esconder secção de comentários'
-        },
-        VID_END_SHRE: {
-            en: 'Disable share panel when video ends',
-            'pt-PT': 'Desactivar painel de partilha quando o video acaba'
-        },
-        VID_PLST: {
-            en: 'Playlists',
-            'pt-PT': 'Listas'
-        },
-        VID_PLST_SEP: {
-            en: 'Separate playlist from player',
-            'pt-PT': 'Separar lista de reprodução do reproductor'
-        },
-        VID_PLST_ATPL: {
-            en: 'Enable playlist autoplay control',
-            'pt-PT': 'Activar controlo de início automático das listas'
-        },
-        VID_PLST_RVRS: {
-            en: 'Enable reverse playlist control',
-            'pt-PT': 'Activar controlo de inversão das listas'
-        },
-        VID_PLR_SIZE_MEM: {
-            en: 'Memorize player mode',
-            'pt-PT': 'Memorizar tamanho do reproductor'
-        },
-        VID_PLR_VOL_MEM: {
-            en: 'Memorize audio volume',
-            'pt-PT': 'Memorizar volume de audio'
-        },
-        VID_PLR_ADS: {
-            en: 'Disable advertisements',
-            'pt-PT': 'Desactivar publicidades'
-        },
-        VID_SUB_ADS: {
-            en: 'Enable advertisements only in videos from subscribed channels',
-            'pt-PT': 'Activar publicidades só para vídeos de canais subscritos'
-        },
-        VID_PLR_ANTS: {
-            en: 'Disable annotations',
-            'pt-PT': 'Desactivar notas'
-        },
-        VID_PLR_DASH: {
-            en: 'Disable DASH playback',
-            'pt-PT': 'Desactivar reprodução DASH'
-        },
-        VID_PLR_CC: {
-            en: 'Disable subtitles',
-            'pt-PT': 'Desactivar legendas'
-        },
-        VID_PLR_CTRL_VIS: {
-            en: 'Player bar visibility:',
-            'pt-PT': 'Visibilidade da barra do reproductor:'
-        },
-        VID_PLR_CTRL_VIS_HIDE_ALL: {
-            en: 'Hide',
-            'pt-PT': 'Esconder'
-        },
-        VID_PLR_CTRL_VIS_HIDE_PROG: {
-            en: 'Default',
-            'pt-PT': 'Predefinido'
-        },
-        VID_PLR_FIT: {
-            en: 'Fit to page in theater mode',
-            'pt-PT': 'Ajustar na página no modo cinema'
-        },
-        VID_PLR_FIT_WDTH: {
-            en: 'Fit to page maximum width:',
-            'pt-PT': 'Largura máxima do ajuste na página:'
-        },
-        VID_DESC_SHRT: {
-            en: 'Short video description buttons',
-            'pt-PT': 'Botões curtos na descrição do vídeo'
-        },
-        VID_TTL_CMPT: {
-            en: 'Compact title in video description',
-            'pt-PT': 'Título compacto na descrição do vídeo'
-        },
-        VID_SDBR_ALGN: {
-            en: 'Sidebar mode alignment',
-            'pt-PT': 'Alinhar modo barra lateral'
-        },
-        VID_SDBR_ALGN_NONE: {
-            en: 'None',
-            'pt-PT': 'Nenhum'
-        },
-        VID_SDBR_ALGN_LEFT: {
-            en: 'Left',
-            'pt-PT': 'Esquerda'
-        },
-        VID_SDBR_ALGN_RIGHT: {
-            en: 'Right',
-            'pt-PT': 'Direita'
-        },
-        GEN_CHN_DFLT_PAGE: {
-            en: 'Default channel page:',
-            'pt-PT': 'Página de canal predefinida:'
-        },
-        GEN_CHN_DFLT_PAGE_DFLT: {
-            en: 'Default',
-            'pt-PT': 'Padrão'
-        },
-        GEN_CHN_DFLT_PAGE_VID: {
-            en: 'Videos',
-            'pt-PT': 'Vídeos'
-        },
-        GEN_CHN_DFLT_PAGE_PL: {
-            en: 'Playlists',
-            'pt-PT': 'Listas de reprodução'
-        },
-        GEN_CHN_DFLT_PAGE_CHN: {
-            en: 'Channels',
-            'pt-PT': 'Canais'
-        },
-        GEN_CHN_DFLT_PAGE_DISC: {
-            en: 'Discussion',
-            'pt-PT': 'Discussão'
-        },
-        GEN_CHN_DFLT_PAGE_ABT: {
-            en: 'About',
-            'pt-PT': 'Acerca de'
-        },
-        BLK_TTL: {
-            en: 'Blacklist settings',
-            'pt-PT': 'Definições da lista negra'
-        },
-        BLK_BLK: {
-            en: 'Blacklist',
-            'pt-PT': 'Lista negra'
-        },
-        BLK_ON: {
-            en: 'Enable blacklist',
-            'pt-PT': 'Activar lista negra'
-        },
-        ABT_TTL: {
-            en: 'Information and useful links',
-            'pt-PT': 'Informação e ligações úteis'
-        },
-        ABT_INFO: {
-            en: 'Official pages',
-            'pt-PT': 'Páginas oficiais'
-        },
-        ABT_LNK_GHB: {
-            en: 'GitHub'
-        },
-        ABT_LNK_GRFK: {
-            en: 'Greasy Fork'
-        },
-        ABT_LNK_OPNU: {
-            en: 'OpenUserJS'
-        },
-        ABT_PRBL: {
-            en: 'Report a problem',
-            'pt-PT': 'Reportar problema'
-        },
-        ABT_LNK_PRBL: {
-            en: 'Click here for instructions',
-            'pt-PT': 'Clique aqui para instruções'
-        }
-    };
-    defaultSettings = {
-        GEN_BTTR_NTF: true,
-        GEN_YT_LOGO_LINK: true,
-        GEN_CMPT_TTLS: true,
-        GEN_BLUE_GLOW: true,
-        GEN_CHN_DFLT_PAGE: 'videos',
-        VID_END_SHRE: true,
-        VID_DFLT_QLTY: 'auto',
-        VID_PLST_SEP: true,
-        VID_PLST_ATPL: true,
-        VID_PLST_RVRS: true,
-        VID_PLR_ANTS: true,
-        VID_PLR_CC: true,
-        VID_PLR_ALVIS: true,
-        VID_PLR_ADS: true,
-        VID_PLR_SIZE_MEM: true,
-        VID_PLR_CTRL_VIS: '1',
-        VID_PLR_FIT_WDTH: '1280px',
-        VID_PROG_BAR_CLR: 'red',
-        VID_CTRL_BAR_CLR: 'light',
-        VID_HIDE_COMS: true,
-        VID_POST_TIME: true,
-        VID_VID_CNT: true,
-        VID_DESC_SHRT: true,
-        VID_SDBR_ALGN: '1',
-        VID_TTL_CMPT: true,
-        VID_STP_BTN: true,
-        BLK_ON: true,
-        volLev: false,
-        plApl: false,
-        plRev: false,
-        advOpts: true,
-        blacklist: {}
-    };
     window.localStorage.Particle = window.localStorage.Particle || JSON.stringify(defaultSettings);
     function get(setting) {
         return JSON.parse(window.localStorage.Particle)[setting];
@@ -544,7 +543,6 @@
         window.localStorage.Particle = JSON.stringify(userSettings);
     }
     styleSheet = document.createElement('style');
-    styleSheet.id = 'P-style';
     styleSheet.textContent = [
         'input[type="checkbox"], input[type="radio"]{\n',
         '    opacity: 0;\n',
@@ -883,10 +881,13 @@
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==") no-repeat 0 4px;\n',
         '    cursor: pointer;\n',
         '    height: 28px;\n',
-        '    margin-left: 10px;\n',
+        '    margin-right: 10px;\n',
         '    opacity: 0.55;\n',
         '    vertical-align: middle;\n',
         '    width: 19px;\n',
+        '}\n',
+        '.content-snap-width-skinny-mode #P{\n',
+        '    display: none;\n',
         '}\n',
         '#P:hover{\n',
         '    opacity: 0.85;\n',
@@ -1280,22 +1281,26 @@
         }
         return lang[placeHolder].en;
     }
-    function addEvent(target, event, call, capture) {
-        var name = call.name;
+    function handleEvents(type, target, event, call, capture) {
+        var name = call.name,
+            i = eventStock.length;
         capture = !!capture;
-        if (eventStock[name] && eventStock[name][event]) {
-            eventStock[name][event][0].removeEventListener(event, eventStock[name][event][1], eventStock[name][event][2]);
+        while (i) {
+            i -= 1;
+            if (eventStock[i].target === target && eventStock[i].event === event && eventStock[i].name === name && eventStock[i].capture === capture) {
+                target.removeEventListener(event, call, capture);
+                eventStock.splice(i, 1);
+            }
         }
-        target.addEventListener(event, call, capture);
-        eventStock[name] = eventStock[name] || {};
-        eventStock[name][event] = eventStock[name][event] || {};
-        eventStock[name][event] = [target, call, capture];
-    }
-    function remEvent(event, call, capture) {
-        var name = call.name;
-        capture = !!capture;
-        if (eventStock[name] && eventStock[name][event]) {
-            eventStock[name][event][0].removeEventListener(event, eventStock[name][event][1], eventStock[name][event][2]);
+        if (type === 'add') {
+            target.addEventListener(event, call, capture);
+            eventStock.push({
+                capture: capture,
+                target: target,
+                event: event,
+                name: name,
+                call: call
+            });
         }
     }
     function timeConv(time) {
@@ -1313,6 +1318,7 @@
     function settingsMenu() {
         var pContent,
             pContainer,
+            buttonNotif,
             buttonsSection,
             settingsButton;
         if (document.readyState === 'complete') {
@@ -1638,17 +1644,22 @@
                 pWrapper = string2HTML(template().setMenu).querySelector('#P-settings');
                 pWrapper.querySelector('#P-container').appendChild(string2HTML(template().GEN).querySelector('#P-content'));
                 bodyContainer.insertBefore(pWrapper, pageContainer);
-                addEvent(pWrapper, 'click', navigateSettings);
+                handleEvents('add', pWrapper, 'click', navigateSettings);
             }
             document[usingChrome ? 'body' : 'documentElement'].scrollTop = 0;
         }
+        buttonNotif = document.getElementsByClassName('notifications-container')[0];
         buttonsSection = document.getElementById('yt-masthead-user') || document.getElementById('yt-masthead-signin');
         if (buttonsSection && !document.getElementById('P')) {
             settingsButton = document.createElement('button');
             settingsButton.id = 'P';
             settingsButton.title = 'YouTube+ settings';
-            addEvent(settingsButton, 'click', settingsTemplate);
-            buttonsSection.appendChild(settingsButton);
+            handleEvents('add', settingsButton, 'click', settingsTemplate);
+            if (buttonNotif) {
+                buttonsSection.insertBefore(settingsButton, buttonNotif);
+            } else {
+                buttonsSection.appendChild(settingsButton);
+            }
         }
     }
     function customStyles() {
@@ -1807,7 +1818,7 @@
             function getPLInfo(details) {
                 details = details.data;
                 if (details.getPLInfo) {
-                    remEvent('message', getPLInfo);
+                    handleEvents('remove', window, 'message', getPLInfo);
                     details = JSON.parse(details.getPLInfo);
                     details = details.body && details.body.content && details.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
                     details = details && details.match(/<li>([\w\W]*?)<\/li>/g)[1];
@@ -1832,7 +1843,7 @@
                         url: window.location.origin + '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
                         id: 'getPLInfo'
                     }, '*');
-                    addEvent(window, 'message', getPLInfo);
+                    handleEvents('add', window, 'message', getPLInfo);
                 }
             }
         }
@@ -1841,7 +1852,7 @@
             function getCHInfo(details) {
                 details = details.data;
                 if (details.getCHInfo) {
-                    remEvent('message', getCHInfo);
+                    handleEvents('remove', window, 'message', getCHInfo);
                     if (watchTime.textContent.split('·').length < 2) {
                         details = JSON.parse(details.getCHInfo);
                         details = details.body && details.body.content && details.body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
@@ -1857,7 +1868,7 @@
                     url: window.location.origin + '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
                     id: 'getCHInfo'
                 }, '*');
-                addEvent(window, 'message', getCHInfo);
+                handleEvents('add', window, 'message', getCHInfo);
             }
         }
         if (window.location.pathname === '/watch') {
@@ -1883,7 +1894,7 @@
                 '</div>\n'
             ].join('');
             wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
-            addEvent(wrapper, 'click', showComments);
+            handleEvents('add', wrapper, 'click', showComments);
             comments.parentNode.insertBefore(wrapper, comments);
         }
     }
@@ -1921,7 +1932,7 @@
                 hdURL = config.args['iurl' + base].replace('hqdefault', 'maxresdefault'),
                 state = api && api.getPlayerState && api.getPlayerState();
             function widthReport() {
-                remEvent('load', widthReport);
+                handleEvents('remove', img, 'load', widthReport);
                 function prefixIterator(prefix) {
                     config.args[prefix + base] = hdURL;
                 }
@@ -1935,7 +1946,7 @@
                 }
             }
             img = new Image();
-            addEvent(img, 'load', widthReport);
+            handleEvents('add', img, 'load', widthReport);
             img.src = hdURL;
         }
         function prefixIterator(prefix) {
@@ -2007,7 +2018,7 @@
                 videoPlayer.style.height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio + 'px';
             }
             if (!sidebar) {
-                remEvent('scroll', initFloater);
+                handleEvents('remove', window, 'scroll', initFloater);
                 return;
             }
             if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !videoPlayer.classList.contains('floater')) {
@@ -2016,19 +2027,19 @@
                 height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio;
                 videoPlayer.classList.toggle('floater');
                 videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
-                addEvent(window, 'resize', updatePos);
+                handleEvents('add', window, 'resize', updatePos);
             } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && videoPlayer.classList.contains('floater')) {
-                remEvent('resize', updatePos);
+                handleEvents('remove', window, 'resize', updatePos);
                 videoPlayer.removeAttribute('style');
                 videoPlayer.classList.toggle('floater');
             }
         }
         if (get('VID_PLR_ALVIS')) {
             if (window.location.pathname === '/watch') {
-                addEvent(window, 'scroll', initFloater);
+                handleEvents('add', window, 'scroll', initFloater);
                 initFloater();
             } else if (window.location.pathname === '/watch') {
-                remEvent('scroll', initFloater);
+                handleEvents('remove', window, 'scroll', initFloater);
             }
         }
     }
@@ -2046,7 +2057,7 @@
         function initSubPlaylist(event) {
             event = event.data;
             if (event && event.initSubPlaylist) {
-                remEvent('message', initSubPlaylist);
+                handleEvents('remove', window, 'message', initSubPlaylist);
                 button.href = '/watch?v=' + videoList[0].getAttribute('data-video-ids') + '&list=' + JSON.parse(event.initSubPlaylist)[1].data.swfcfg.args.list;
             }
         }
@@ -2061,7 +2072,6 @@
             button = string2HTML(button).querySelector('li');
             navMenu.insertBefore(button, navMenu.firstChild);
             Object.keys(videoList).forEach(listIterator);
-            //listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent.replace(/\n?  /g, '');
             listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent;
             button = document.getElementById('subscription-playlist');
             button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
@@ -2070,7 +2080,7 @@
                 url: window.location.origin + '/watch_videos?title=' + listTitle + '&spf=navigate&video_ids=' + list,
                 id: 'initSubPlaylist'
             }, '*');
-            addEvent(window, 'message', initSubPlaylist);
+            handleEvents('add', window, 'message', initSubPlaylist);
         }
     }
     function playerReady(playerApi) {
@@ -2108,7 +2118,7 @@
             function resumeVideo() {
                 var currentQuality = api.getPlaybackQuality(),
                     currentTime = api.getCurrentTime();
-                remEvent('click', resumeVideo);
+                handleEvents('remove', playBtn, 'click', resumeVideo);
                 window.ytplayer.config.loaded = false;
                 api.loadNewVideoConfig(window.ytplayer.config, 'html5');
                 api.setPlaybackQuality(currentQuality);
@@ -2117,23 +2127,23 @@
             function stopVideo() {
                 api.stopVideo();
                 playBtn = document.getElementsByClassName('ytp-button-pause')[0] || document.getElementsByClassName('ytp-button-play')[0];
-                addEvent(playBtn, 'click', resumeVideo);
+                handleEvents('add', playBtn, 'click', resumeVideo);
             }
             if (!document.getElementsByClassName('ytp-button-stop')[0] && playerBar) {
                 prev = document.getElementsByClassName('ytp-button-prev')[0];
                 button = '<div role="button" class="ytp-button ytp-button-stop"></div>';
                 button = string2HTML(button).querySelector('div');
-                addEvent(button, 'click', stopVideo);
+                handleEvents('add', button, 'click', stopVideo);
                 playerBar.insertBefore(button, prev);
             }
         }
         if (typeof playerApi === 'object' && !document.getElementById('c4-player')) {
             document[usingChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[usingChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
             api = playerApi;
-            addEvent(api, 'onStateChange', playerState);
-            addEvent(api, 'onFullscreenChange', playerFullscreen);
-            addEvent(api, 'onVolumeChange', volumeChanged);
-            addEvent(api, 'SIZE_CLICKED', sizeChanged);
+            handleEvents('add', api, 'onStateChange', playerState);
+            handleEvents('add', api, 'onFullscreenChange', playerFullscreen);
+            handleEvents('add', api, 'onVolumeChange', volumeChanged);
+            handleEvents('add', api, 'SIZE_CLICKED', sizeChanged);
             if (get('VID_STP_BTN')) {
                 stopButton();
             }
@@ -2294,6 +2304,7 @@
                     newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                 }
                 newSidebar.addEventListener('readystatechange', snapFit, true);
+                newSidebar.focus();
             }
             function initBlackList() {
                 userList[event.getAttribute('data-ytid')] = event.getAttribute('data-user');
@@ -2323,11 +2334,10 @@
                     initBlackList();
                 }
             }
-            addEvent(window, 'click', initThumbMod);
         }
         function insertButtons(i) {
+            var button;
             function createButton(type, details) {
-                var button;
                 if (type === 'sidebarmode') {
                     button = '<div title="' + userLang('SDBR_OPEN') + '" data-link="' + details.videolink + '" data-tooltip-text="' + userLang('SDBR_OPEN') + '" class="' + type + ' yt-uix-tooltip"></div>';
                 } else {
@@ -2337,10 +2347,14 @@
             }
             if (detailList[i]) {
                 if (get('GEN_SDBR_ON') && !window.opener && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
-                    detailList[i].thumbfield.appendChild(createButton('sidebarmode', detailList[i]));
+                    button = createButton('sidebarmode', detailList[i]);
+                    handleEvents('add', button, 'click', initThumbMod);
+                    detailList[i].thumbfield.appendChild(button);
                 }
                 if (get('BLK_ON') && window.location.pathname !== '/feed/subscriptions' && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
-                    detailList[i].thumbfield.appendChild(createButton('blacklist', detailList[i]));
+                    button = createButton('blacklist', detailList[i]);
+                    handleEvents('add', button, 'click', initThumbMod);
+                    detailList[i].thumbfield.appendChild(button);
                 }
             }
         }
@@ -2387,7 +2401,7 @@
                 masterList = list;
             }
         }
-        if ((get('BLK_ON') || get('GEN_SDBR_ON')) && (window.location.pathname === '/' || window.location.pathname === '/results' || window.location.pathname === '/watch' || window.location.pathname === '/feed/music')) {
+        if ((get('BLK_ON') || get('GEN_SDBR_ON')) && (window.location.pathname === '/' || window.location.pathname === '/results' || window.location.pathname === '/watch' || window.location.pathname === '/feed/music' || window.location.pathname === '/feed/subscriptions')) {
             ['yt-lockup-tile', 'video-list-item', 'yt-shelf-grid-item'].forEach(getList);
             if (masterList) {
                 Object.keys(masterList).forEach(buildDetailList);
@@ -2453,7 +2467,7 @@
                 ].join('');
             playlistBar.className = playlistBar.className.replace('radio-playlist', '');
             button = string2HTML(button).querySelector('button');
-            addEvent(button, 'click', call);
+            handleEvents('add', button, 'click', call);
             navControls.appendChild(button);
         }
         if (playlistBar) {
@@ -2507,7 +2521,7 @@
                         ending = document.getElementsByClassName('ytp-time-duration')[0],
                         progress = document.getElementsByClassName('ytp-time-current')[0];
                     if (!total) {
-                        remEvent('timeupdate', timeProgress);
+                        handleEvents('remove', document.getElementsByTagName('video')[0], 'timeupdate', timeProgress);
                         return;
                     }
                     if (elapsed && progress && elapsed.textContent !== progress.textContent) {
@@ -2543,7 +2557,7 @@
                     ].join('');
                     container = string2HTML(container).querySelector('#podcast-container');
                     document.getElementById('movie_player').appendChild(container);
-                    addEvent(document.getElementsByTagName('video')[0], 'timeupdate', timeProgress);
+                    handleEvents('add', document.getElementsByTagName('video')[0], 'timeupdate', timeProgress);
                     document.getElementById('audio-only').classList.add('active');
                 }
                 function cipherAlgorithm(event) {
@@ -2598,7 +2612,7 @@
                         return sig.join('');
                     }
                     if (event && event.data.cipherAlgorithm) {
-                        remEvent('message', cipherAlgorithm);
+                        handleEvents('remove', window, 'message', cipherAlgorithm);
                         event = event.data.cipherAlgorithm;
                         algo[html5ID] = [];
                         buildCipher(event);
@@ -2609,7 +2623,7 @@
                             url: window.location.protocol + html5,
                             id: 'cipherAlgorithm'
                         }, '*');
-                        addEvent(window, 'message', cipherAlgorithm);
+                        handleEvents('add', window, 'message', cipherAlgorithm);
                         return;
                     }
                     if (storedCipher && storedCipher.split(html5ID).length > 1) {
@@ -2647,7 +2661,7 @@
                     }
                 }
                 if (audioOnly.classList.contains('active')) {
-                    remEvent('spfdone', startAudioMode);
+                    handleEvents('remove', window, 'spfdone', startAudioMode);
                     container = document.getElementById('podcast-container').remove();
                     audioOnly.classList.remove('active');
                     currentQuality = api.getPlaybackQuality();
@@ -2657,7 +2671,7 @@
                     api.setPlaybackQuality(currentQuality);
                     api.seekTo(currentTime);
                 } else {
-                    addEvent(window, 'spfdone', startAudioMode);
+                    handleEvents('add', window, 'spfdone', startAudioMode);
                     startAudioMode();
                 }
             }
@@ -2704,8 +2718,8 @@
                         container.remove();
                         seekMap.classList.remove('active');
                     }
-                    addEvent(container, 'click', clickManager);
-                    remEvent('spfdone', removeOld);
+                    handleEvents('add', container, 'click', clickManager);
+                    handleEvents('remove', window, 'spfdone', removeOld);
                 }
                 function parseThumbs() {
                     thumbControls = '<div id="seek-controls">\n';
@@ -2764,8 +2778,8 @@
                         container = string2HTML(container).querySelector('#seek-thumb-map');
                         document.getElementById('movie_player').appendChild(container);
                         centerThumb();
-                        addEvent(container, 'click', clickManager);
-                        addEvent(window, 'spfdone', removeOld);
+                        handleEvents('add', container, 'click', clickManager);
+                        handleEvents('add', window, 'spfdone', removeOld);
                     } else if (container.id) {
                         seekMap.classList.toggle('active');
                         container.classList.toggle('invisible');
@@ -2802,7 +2816,7 @@
                     container.appendChild(canvas);
                     close.id = 'close-screenshot';
                     close.textContent = userLang('CNSL_SS_CLS');
-                    addEvent(close, 'click', hideContainer);
+                    handleEvents('add', close, 'click', hideContainer);
                     container.appendChild(close);
                     document.body.appendChild(container);
                 } else if (container.id && container.classList.contains('invisible')) {
@@ -2816,14 +2830,15 @@
                     newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                 }
                 newSidebar.addEventListener('readystatechange', snapFit, true);
+                newSidebar.focus();
             }
-            addEvent(autoPlay, 'click', togglePlay);
-            addEvent(loopButton, 'click', toggleLoop);
-            addEvent(audioOnly, 'click', toggleAudio);
-            addEvent(seekMap, 'click', toggleMap);
-            addEvent(saveThumb, 'click', dlThumb);
-            addEvent(screenShot, 'click', saveSS);
-            addEvent(sidebarMode, 'click', openSidebar);
+            handleEvents('add', autoPlay, 'click', togglePlay);
+            handleEvents('add', loopButton, 'click', toggleLoop);
+            handleEvents('add', audioOnly, 'click', toggleAudio);
+            handleEvents('add', seekMap, 'click', toggleMap);
+            handleEvents('add', saveThumb, 'click', dlThumb);
+            handleEvents('add', screenShot, 'click', saveSS);
+            handleEvents('add', sidebarMode, 'click', openSidebar);
         }
         function toggleConsole() {
             page.classList.toggle('player-console');
@@ -2832,7 +2847,7 @@
         if (window.location.pathname === '/watch' && header && !consoleButton) {
             consoleButton = '<button id="console-button" title="' + userLang('ADV_OPTS') + '"></button>';
             consoleButton = string2HTML(consoleButton).querySelector('#console-button');
-            addEvent(consoleButton, 'click', toggleConsole);
+            handleEvents('add', consoleButton, 'click', toggleConsole);
             header.appendChild(consoleButton);
             if (controls) {
                 controls.remove();
@@ -2918,13 +2933,13 @@
         }
     }
     window.onYouTubePlayerReady = playerReady;
-    addEvent(window, 'spfdone', initFunctions);
-    addEvent(window, 'spfrequest', request);
-    addEvent(window, 'readystatechange', initFunctions, true);
-    addEvent(window, 'beforescriptexecute', scriptEntry);
+    handleEvents('add', window, 'spfdone', initFunctions);
+    handleEvents('add', window, 'spfrequest', request);
+    handleEvents('add', window, 'readystatechange', initFunctions, true);
+    handleEvents('add', window, 'beforescriptexecute', scriptEntry);
     if (usingChrome) {
-        addEvent(document.documentElement, 'load', scriptExit, true);
+        handleEvents('add', document.documentElement, 'load', scriptExit, true);
     } else {
-        addEvent(window, 'afterscriptexecute', scriptExit);
+        handleEvents('add', window, 'afterscriptexecute', scriptExit);
     }
 }());
