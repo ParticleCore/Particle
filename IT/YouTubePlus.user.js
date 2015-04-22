@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.7.5
+// @version     1.7.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -66,6 +66,7 @@
             VID_PLR_ADS: true,
             VID_PLR_SIZE_MEM: true,
             VID_PLR_CTRL_VIS: '1',
+            VID_PLR_DYN_SIZE: true,
             VID_PLR_FIT_WDTH: '1280px',
             VID_PROG_BAR_CLR: 'red',
             VID_CTRL_BAR_CLR: 'light',
@@ -431,6 +432,10 @@
             VID_PLR_FIT_WDTH: {
                 en: 'Fit to page maximum width:',
                 'pt-PT': 'Largura máxima do ajuste na página:'
+            },
+            VID_PLR_DYN_SIZE: {
+                en: 'Disable dynamic player size in default view',
+                'pt-PT': 'Desactivar tamanho dinâmico do reproductor na vista predefinida'
             },
             VID_DESC_SHRT: {
                 en: 'Short video description buttons',
@@ -907,7 +912,7 @@
         '    color: #666;\n',
         '    font-size: 11px;\n',
         '}\n',
-        '.thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{\n',
+        '.yt-pl-thumb .blacklist, .thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAARBAMAAADNtor0AAAAJ1BMVEVmZmZzc3N/f3+Kioqqqqqzs7PFxcXOzs7X19fn5+fv7+/39/f///+6PEy9AAAAXElEQVR4XnXO0QnAMAgE0EszhV0lPxmhozhQRhEoEJIWHKpW288IB48DReg/55JXUx3iZFKtJZhaR3CCahanMqwMTlgZ7EjtY91AQVu3I84jy8Tu5PLGeYtn8dkDuUZuK/X5jU8AAAAASUVORK5CYII=") #FFF no-repeat center / contain;\n',
         '    color: #666;\n',
         '    cursor: pointer;\n',
@@ -920,7 +925,7 @@
         '    top: 0;\n',
         '    width: 17px;\n',
         '}\n',
-        '.thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{\n',
+        '.yt-pl-thumb .sidebarmode, .thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{\n',
         '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAIAQMAAAD6NPz1AAAABlBMVEX///9mZmaO7mygAAAAAXRSTlMAQObYZgAAAA1JREFUeF5jeH8AKwIAonQNedxnO+oAAAAASUVORK5CYII=") #FFF no-repeat center;\n',
         '    bottom: 0;\n',
         '    color: #666;\n',
@@ -933,7 +938,7 @@
         '    position: absolute;\n',
         '    width: 17px;\n',
         '}\n',
-        '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist, .thumb-wrapper:hover .sidebarmode, .yt-lockup-thumbnail:hover .sidebarmode{\n',
+        '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist, .yt-pl-thumb:hover .blacklist, .yt-pl-thumb:hover .sidebarmode, .thumb-wrapper:hover .sidebarmode, .yt-lockup-thumbnail:hover .sidebarmode{\n',
         '    display: initial;\n',
         '}\n',
         '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
@@ -1195,42 +1200,43 @@
         '    box-sizing: border-box;\n',
         '    float: left;\n',
         '    padding: 5px;\n',
+        '    position: relative;\n',
         '    width: 30%;\n',
         '    margin-right: 10px;\n',
         '}\n',
-        '#podcast-poster div{\n',
+        '#podcast-poster #poster{\n',
         '    background: #000 no-repeat center / cover content-box;\n',
         '    width: 100%;\n',
         '}\n',
-        '#podcast-poster div:before{\n',
+        '#podcast-poster #poster:before{\n',
         '    content: "";\n',
         '    display: block;\n',
         '    padding-top: 100%\n',
         '}\n',
         '#podcast-info{\n',
-        '    font-size: 18px;\n',
         '    font-weight: bold;\n',
         '    left: 30%;\n',
         '    margin-left: 2%;\n',
-        '    overflow: hidden;\n',
-        '    text-overflow: ellipsis;\n',
         '    text-shadow: 1px 1px 2px #000;\n',
         '    top: 50%;\n',
         '    transform: translateY(-50%);\n',
         '    position: absolute;\n',
         '    width: 70%;\n',
-        '    white-space: nowrap;\n',
         '}\n',
         '#podcast-info > div:not(:first-child){\n',
         '    font-size: 15px;\n',
         '    font-weight: initial;\n',
-        '    margin: 2% 0;\n',
         '}\n',
         '#podcast-info div:last-child{\n',
-        '    margin-bottom: 0;\n',
+        '    margin-top: 2%;\n',
         '}\n',
-        '#podcast-title{\n',
-        '    display: inline;\n',
+        '#podcast-progress{\n',
+        '    background: rgba(0, 0, 0, 0.8);\n',
+        '    bottom: 10px;\n',
+        '    font-size: 10px;\n',
+        '    padding: 5px;\n',
+        '    position: absolute;\n',
+        '    right: 5px;\n',
         '}\n',
         '#podcast-progress div{\n',
         '    display: inline;\n',
@@ -1304,12 +1310,12 @@
         }
     }
     function timeConv(time) {
-        var days = Math.floor(time / 86400),
-            hours = Math.floor((time % 86400) / 3600),
-            minutes = Math.floor((time % 3600) / 60),
-            seconds = Math.ceil((time % 3600) % 60);
+        var days = time / 86400,
+            hours = (time % 86400) / 3600,
+            minutes = (time % 3600) / 60,
+            seconds = (time % 3600) % 60;
         function zero(trim) {
-            return ('0' + trim).slice(-2);
+            return ('0' + Math.floor(trim)).slice(-2);
         }
         time = zero(days) + ':' + zero(hours) + ':' + zero(minutes) + ':' + zero(seconds);
         time = time.replace(/^0(0:(0(0:(0)?)?)?)?/, '');
@@ -1459,6 +1465,7 @@
                         '    <br>',
                         htEl.title('VID_PLR_LYT', 'h3'),
                         htEl.input('VID_STP_BTN', 'checkbox'),
+                        htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
                         htEl.input('VID_PLR_FIT', 'checkbox'),
                         htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
                         '    <br>',
@@ -1793,6 +1800,75 @@
                 '    padding-top: 2px;\n' +
                 '}\n';
         }
+        if (get('VID_PLR_DYN_SIZE')) {
+            styleSheet.textContent +=
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-content{\n' +
+                '    width: 640px !important;\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #content.content-alignment, html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #player.watch-small{\n' +
+                '    max-width: 1066px !important;\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-preview{\n' +
+                '    margin-top: -750px !important;\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n' +
+                '    margin-left: 650px !important;\n' +
+                '    margin-top: ' + (
+                    (get('VID_PLR_CTRL_VIS') > 1 && '-390px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 &&  '-395px') ||
+                    (get('VID_PLR_CTRL_VIS') === '1' && '-360px')
+                ) + ';\n' +
+                '    top: 0;\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-width{\n' +
+                '    width: 640px !important;\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n' +
+                '    height: 390px !important;\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .watch-playlist{\n' +
+                '    height: ' + (
+                    (get('VID_PLR_CTRL_VIS') > 1 && '390px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '395px') ||
+                    (get('VID_PLR_CTRL_VIS') === '1' && '360px')
+                ) + ' !important;\n' +
+                '}\n';
+        }
+        if (!get('VID_PLR_DYN_SIZE')) {
+            styleSheet.textContent +=
+                'html:not(.content-snap-width-skinny-mode) #watch7-sidebar{\n' +
+                '    margin-top: ' + (
+                    (get('VID_PLR_CTRL_VIS') > 1 && '-390px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '-395px') ||
+                    (get('VID_PLR_CTRL_VIS') === '1' && '-360px')
+                ) + ';\n' +
+                '}\n' +
+                'html:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n' +
+                '    height: ' + (
+                    (get('VID_PLR_CTRL_VIS') > 1 && '390px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '395px') ||
+                    (get('VID_PLR_CTRL_VIS') === '1' && '360px')
+                ) + ';\n' +
+                '}\n' +
+                '@media screen and (min-width:1294px) and (min-height:630px){\n' +
+                '    html:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n' +
+                '        height: ' + (
+                    (get('VID_PLR_CTRL_VIS') > 1 && '510px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '515px') ||
+                    (get('VID_PLR_CTRL_VIS') === '1' && '480px')
+                ) + ';\n' +
+                '    }\n' +
+                '}\n' +
+                '@media screen and (min-width:1720px) and (min-height:980px){\n' +
+                '    html:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n' +
+                '    height: ' + (
+                    (get('VID_PLR_CTRL_VIS') > 1 && '750px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '755px') ||
+                    (get('VID_PLR_CTRL_VIS') === '1' && '720px')
+                ) + ';\n' +
+                '    }\n' +
+                '}\n';
+        }
     }
     function enhancedDetails() {
         function username() {
@@ -1888,11 +1964,10 @@
             wrapper.querySelector('button').textContent = userLang((comments.classList.contains('show')) ? 'HIDE_CMTS' : 'SHOW_CMTS');
         }
         if (comments && !document.getElementById('P-show-comments') && get('VID_HIDE_COMS')) {
-            wrapper = [
-                '<div id="P-show-comments" class="yt-card">\n',
-                '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n',
-                '</div>\n'
-            ].join('');
+            wrapper =
+                '<div id="P-show-comments" class="yt-card">\n' +
+                '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n' +
+                '</div>\n';
             wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
             handleEvents('add', wrapper, 'click', showComments);
             comments.parentNode.insertBefore(wrapper, comments);
@@ -2005,13 +2080,16 @@
             videoPlayer = document.getElementById('movie_player');
         function initFloater() {
             skinny = document.documentElement.classList.contains('content-snap-width-skinny-mode');
+            videoPlayer = document.getElementById('movie_player');
             playerContainer = document.getElementById('player-api');
             containerSize = playerContainer && playerContainer.getBoundingClientRect();
-            videoPlayer = document.getElementById('movie_player');
-            containerSize = playerContainer.getBoundingClientRect();
             sidebar = document.getElementById('watch7-sidebar');
             sidebarSize = sidebar && sidebar.getBoundingClientRect();
             function updatePos() {
+                if (!videoPlayer.classList.contains('floater')) {
+                    handleEvents('remove', window, 'resize', updatePos);
+                    return;
+                }
                 sidebarSize = sidebar.getBoundingClientRect();
                 videoPlayer.style.marginLeft = ((skinny && '0') || sidebarSize.left) + 'px';
                 videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
@@ -2029,9 +2107,9 @@
                 videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                 handleEvents('add', window, 'resize', updatePos);
             } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && videoPlayer.classList.contains('floater')) {
-                handleEvents('remove', window, 'resize', updatePos);
-                videoPlayer.removeAttribute('style');
                 videoPlayer.classList.toggle('floater');
+                videoPlayer.removeAttribute('style');
+                handleEvents('remove', window, 'resize', updatePos);
             }
         }
         if (get('VID_PLR_ALVIS')) {
@@ -2049,9 +2127,9 @@
             navMenu = document.getElementById('channel-navigation-menu'),
             listTitle = document.getElementsByClassName('appbar-nav-menu')[0],
             videoList = document.getElementsByClassName('addto-watch-later-button');
-        function listIterator(keys) {
-            if (keys !== 'length') {
-                list += videoList[keys].getAttribute('data-video-ids') + '%2C';
+        function listIterator(i) {
+            if (i > -1) {
+                list += videoList[i].getAttribute('data-video-ids') + '%2C';
             }
         }
         function initSubPlaylist(event) {
@@ -2062,13 +2140,12 @@
             }
         }
         if (window.location.pathname === '/feed/subscriptions' && !button && listTitle && videoList) {
-            button = [
-                '<li id="subscription-playlist-icon">\n',
-                '    <a id="subscription-playlist" title="' + userLang('SUB_PLST') + '" class="yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default">\n',
-                '        <span class="yt-uix-button-content"></span>\n',
-                '    </a>\n',
-                '</li>'
-            ].join('');
+            button =
+                '<li id="subscription-playlist-icon">\n' +
+                '    <a id="subscription-playlist" title="' + userLang('SUB_PLST') + '" class="yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default">\n' +
+                '        <span class="yt-uix-button-content"></span>\n' +
+                '    </a>\n' +
+                '</li>';
             button = string2HTML(button).querySelector('li');
             navMenu.insertBefore(button, navMenu.firstChild);
             Object.keys(videoList).forEach(listIterator);
@@ -2148,9 +2225,6 @@
                 stopButton();
             }
             if (!get('VID_PLR_ATPL')) {
-                if (document.getElementsByTagName('video')[0]) {
-                    document.getElementsByTagName('video')[0].removeAttribute('src');
-                }
                 argsCleaner(window.ytplayer.config);
                 api.cueVideoByPlayerVars(window.ytplayer.config.args);
                 api.setPlaybackQuality(get('VID_DFLT_QLTY'));
@@ -2542,15 +2616,15 @@
                         '<div id="podcast-container" style="background-image:url(\'' + poster + '\')">\n',
                         '    <div id="podcast-elements">\n',
                         '        <div id="podcast-poster">\n',
-                        '            <div style="background-image:url(\'' + poster + '\')"></div>\n',
+                        '            <div id="poster" style="background-image:url(\'' + poster + '\')"></div>\n',
+                        '            <div id="podcast-progress">\n',
+                        '                <div id="podcast-current">0:00</div>\n',
+                        '                <div id="podcast-total">/ ' + document.getElementsByClassName('ytp-time-duration')[0].textContent + '</div>\n',
+                        '            </div>\n',
                         '        </div>\n',
                         '        <div id="podcast-info">\n',
                         '            <div id="podcast-title">' + document.title.replace(' - YouTube', '').replace('▶ ', '') + '</div>\n',
                         '            <div id="podcast-channel">' + user + '</div>\n',
-                        '            <div id="podcast-progress">\n',
-                        '                <div id="podcast-current">0:00</div>\n',
-                        '                <div id="podcast-total"></div>\n',
-                        '            </div>\n',
                         '        </div>\n',
                         '    </div>\n',
                         '</div>\n'
