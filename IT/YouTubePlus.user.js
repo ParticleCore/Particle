@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.7.6
+// @version     1.7.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -561,6 +561,9 @@
         '}\n',
         '::-moz-focus-inner{\n',
         '    border: 0;\n',
+        '}\n',
+        '.signin-container{\n',
+        '    margin-right: 10px;\n',
         '}\n',
         '.ideal-aspect .html5-player-chrome{\n',
         '    background: rgba(27,27,27,0.9) !important;\n',
@@ -1174,7 +1177,7 @@
         '    background-position: center;\n',
         '    background-size: cover;\n',
         '    pointer-events: none;\n',
-        '    z-index: 900;\n',
+        '    z-index: 800;\n',
         '}\n',
         '.ended-mode #podcast-container{\n',
         '    opacity: 0;\n',
@@ -1224,7 +1227,6 @@
         '    width: 70%;\n',
         '}\n',
         '#podcast-info > div:not(:first-child){\n',
-        '    font-size: 15px;\n',
         '    font-weight: initial;\n',
         '}\n',
         '#podcast-info div:last-child{\n',
@@ -1288,25 +1290,43 @@
         return lang[placeHolder].en;
     }
     function handleEvents(type, target, event, call, capture) {
-        var name = call.name,
-            i = eventStock.length;
+        var name = call.name;
         capture = !!capture;
-        while (i) {
-            i -= 1;
-            if (eventStock[i].target === target && eventStock[i].event === event && eventStock[i].name === name && eventStock[i].capture === capture) {
-                target.removeEventListener(event, call, capture);
-                eventStock.splice(i, 1);
-            }
+        if (target.eventStock && target.eventStock[event] && target.eventStock[event][name]) {
+            target.removeEventListener(event, target.eventStock[event][name].call, capture);
         }
         if (type === 'add') {
             target.addEventListener(event, call, capture);
-            eventStock.push({
-                capture: capture,
-                target: target,
-                event: event,
+            target.eventStock = target.eventStock || {};
+            target.eventStock[event] = target.eventStock[event] || {};
+            target.eventStock[event][name] = {
+                call: call,
                 name: name,
-                call: call
-            });
+                event: event,
+                target: target,
+                capture: capture
+            };
+            if ((target + '').split('HTML').length > 1) {
+                eventStock.push(target.eventStock[event][name]);
+            }
+        }
+        console.info(eventStock);
+    }
+    function clearOrphans() {
+        var i,
+            remove = [];
+        i = eventStock.length;
+        while (i) {
+            i -= 1;
+            if (!document.contains(eventStock[i].target)) {
+                eventStock[i].target.remove();
+                remove.push(i);
+            }
+        }
+        i = remove.length;
+        while (i) {
+            i -= 1;
+            eventStock.splice(remove[i], 1);
         }
     }
     function timeConv(time) {
@@ -1802,21 +1822,20 @@
         }
         if (get('VID_PLR_DYN_SIZE')) {
             styleSheet.textContent +=
-                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-content{\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-content{\n' +
                 '    width: 640px !important;\n' +
                 '}\n' +
                 'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #content.content-alignment, html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #player.watch-small{\n' +
                 '    max-width: 1066px !important;\n' +
                 '}\n' +
-                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-preview{\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-preview{\n' +
                 '    margin-top: -750px !important;\n' +
                 '}\n' +
-                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n' +
                 '    margin-left: 650px !important;\n' +
                 '    margin-top: ' + (
-                    (get('VID_PLR_CTRL_VIS') > 1 && '-390px') ||
-                    (get('VID_PLR_CTRL_VIS') < 1 &&  '-395px') ||
-                    (get('VID_PLR_CTRL_VIS') === '1' && '-360px')
+                    (get('VID_PLR_CTRL_VIS') > 0 && '-360px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 &&  '-390px')
                 ) + ';\n' +
                 '    top: 0;\n' +
                 '}\n' +
@@ -1826,45 +1845,40 @@
                 'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n' +
                 '    height: 390px !important;\n' +
                 '}\n' +
-                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .watch-playlist{\n' +
+                'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist{\n' +
                 '    height: ' + (
-                    (get('VID_PLR_CTRL_VIS') > 1 && '390px') ||
-                    (get('VID_PLR_CTRL_VIS') < 1 && '395px') ||
-                    (get('VID_PLR_CTRL_VIS') === '1' && '360px')
+                    (get('VID_PLR_CTRL_VIS') > 0 && '360px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '390px')
                 ) + ' !important;\n' +
                 '}\n';
         }
         if (!get('VID_PLR_DYN_SIZE')) {
             styleSheet.textContent +=
-                'html:not(.content-snap-width-skinny-mode) #watch7-sidebar{\n' +
+                'html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch7-sidebar{\n' +
                 '    margin-top: ' + (
-                    (get('VID_PLR_CTRL_VIS') > 1 && '-390px') ||
-                    (get('VID_PLR_CTRL_VIS') < 1 && '-395px') ||
-                    (get('VID_PLR_CTRL_VIS') === '1' && '-360px')
+                    (get('VID_PLR_CTRL_VIS') > 0 && '-360px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '-390px')
                 ) + ';\n' +
                 '}\n' +
-                'html:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n' +
+                'html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
                 '    height: ' + (
-                    (get('VID_PLR_CTRL_VIS') > 1 && '390px') ||
-                    (get('VID_PLR_CTRL_VIS') < 1 && '395px') ||
-                    (get('VID_PLR_CTRL_VIS') === '1' && '360px')
+                    (get('VID_PLR_CTRL_VIS') > 0 && '360px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '390px')
                 ) + ';\n' +
                 '}\n' +
                 '@media screen and (min-width:1294px) and (min-height:630px){\n' +
-                '    html:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n' +
+                '    html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
                 '        height: ' + (
-                    (get('VID_PLR_CTRL_VIS') > 1 && '510px') ||
-                    (get('VID_PLR_CTRL_VIS') < 1 && '515px') ||
-                    (get('VID_PLR_CTRL_VIS') === '1' && '480px')
+                    (get('VID_PLR_CTRL_VIS') > 0 && '480px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '510px')
                 ) + ';\n' +
                 '    }\n' +
                 '}\n' +
                 '@media screen and (min-width:1720px) and (min-height:980px){\n' +
-                '    html:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n' +
+                '    html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
                 '    height: ' + (
-                    (get('VID_PLR_CTRL_VIS') > 1 && '750px') ||
-                    (get('VID_PLR_CTRL_VIS') < 1 && '755px') ||
-                    (get('VID_PLR_CTRL_VIS') === '1' && '720px')
+                    (get('VID_PLR_CTRL_VIS') > 0 && '720px') ||
+                    (get('VID_PLR_CTRL_VIS') < 1 && '750px')
                 ) + ';\n' +
                 '    }\n' +
                 '}\n';
@@ -1998,7 +2012,8 @@
         }
     }
     function argsCleaner(config) {
-        var base = (config.args.iurl_webp) ? '_webp' : '',
+        var audioMode = document.getElementById('autoplay-button'),
+            base = (config.args.iurl_webp) ? '_webp' : '',
             hdThumb,
             maxRes;
         function checkThumbnail() {
@@ -2028,7 +2043,7 @@
             config.args[prefix + base] = config.args['iurlmaxres' + base];
         }
         if (config.args.video_id) {
-            if (get('VID_PLR_ADS') && (!get('VID_SUB_ADS') || (get('VID_SUB_ADS') && !config.args.subscribed))) {
+            if ((get('VID_PLR_ADS') && (!get('VID_SUB_ADS') || (get('VID_SUB_ADS') && !config.args.subscribed))) || (audioMode && audioMode.classList.contains('active'))) {
                 delete config.args.ad3_module;
             }
             if (get('VID_PLR_SIZE_MEM') && get('theaterMode')) {
@@ -2557,7 +2572,7 @@
         }
     }
     function advancedOptions() {
-        var page = document.getElementsByTagName('html')[0],
+        var page = document.documentElement,
             header = document.getElementById('watch-header'),
             consoleButton = document.getElementById('console-button'),
             controls = document.getElementById('player-console'),
@@ -2595,7 +2610,7 @@
                         ending = document.getElementsByClassName('ytp-time-duration')[0],
                         progress = document.getElementsByClassName('ytp-time-current')[0];
                     if (!total) {
-                        handleEvents('remove', document.getElementsByTagName('video')[0], 'timeupdate', timeProgress);
+                        handleEvents('remove', videoPlayer, 'timeupdate', timeProgress);
                         return;
                     }
                     if (elapsed && progress && elapsed.textContent !== progress.textContent) {
@@ -2630,8 +2645,8 @@
                         '</div>\n'
                     ].join('');
                     container = string2HTML(container).querySelector('#podcast-container');
-                    document.getElementById('movie_player').appendChild(container);
-                    handleEvents('add', document.getElementsByTagName('video')[0], 'timeupdate', timeProgress);
+                    document.getElementsByClassName('html5-video-container')[0].insertBefore(container, videoPlayer);
+                    handleEvents('add', videoPlayer, 'timeupdate', timeProgress);
                     document.getElementById('audio-only').classList.add('active');
                 }
                 function cipherAlgorithm(event) {
@@ -2643,7 +2658,7 @@
                         var replace,
                             splice,
                             reverse,
-                            firstMatch = string.match(/var [\w]{2}\=\{[\w]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
+                            firstMatch = string.match(/var [\w\W]{2}\=\{[\w\W]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
                             secondMatch = string.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0];
                         function iterateFirstMatch(string) {
                             if (string.match('.length')) {
@@ -2656,9 +2671,9 @@
                         }
                         function iterateSecondMatch(string) {
                             if (string.match('.' + replace)) {
-                                algo[html5ID].push(Number(string.match(/,([0-9]{2})\)/)[1]));
+                                algo[html5ID].push(Number(string.split(',')[1].replace(')', '')));
                             } else if (string.match('.' + splice)) {
-                                algo[html5ID].push(-Number(string.match(/,([0-9]{2})\)/)[1]));
+                                algo[html5ID].push(-Number(string.split(',')[1].replace(')', '')));
                             } else if (string.match('.' + reverse)) {
                                 algo[html5ID].push(0);
                             }
@@ -2678,7 +2693,7 @@
                                 sig[0] = sig[value % sig.length];
                                 sig[value] = temp;
                             } else if (value < 0) {
-                                sig.splice(0, value);
+                                sig.splice(0, -value);
                             } else {
                                 sig.reverse();
                             }
@@ -2988,6 +3003,7 @@
         enhancedDetails();
         commentsButton();
         generalChanges();
+        clearOrphans();
     }
     function request(event) {
         var url = event.detail.url,
