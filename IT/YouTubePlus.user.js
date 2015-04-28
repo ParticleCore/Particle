@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.0
+// @version     1.8.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2028,6 +2028,30 @@
                 function prefixIterator(prefix) {
                     config.args[prefix + base] = config.args['iurlmaxres' + base];
                 }
+                function clearRVS(rvs) {
+                    var i,
+                        rvsList = [],
+                        rvsReturn = [];
+                    rvs = rvs.split(',');
+                    function blacklistMatch(names) {
+                        i = rvs.length;
+                        while (i) {
+                            i -= 1;
+                            if (rvs[i].replace(/\+/g, ' ').split(parSets.blacklist[names]).length > 1) {
+                                rvsList.push(i);
+                            }
+                        }
+                    }
+                    Object.keys(parSets.blacklist).forEach(blacklistMatch);
+                    i = rvs.length;
+                    while (i) {
+                        i -= 1;
+                        if (rvsList.indexOf(i) < 0) {
+                            rvsReturn.push(rvs[i]);
+                        }
+                    }
+                    return rvsReturn.join(',');
+                }
                 if (config.args.video_id) {
                     if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed))) || (audioMode && audioMode.classList.contains('active'))) {
                         delete config.args.ad3_module;
@@ -2063,6 +2087,10 @@
                         } else if (config.args['iurlmaxres' + base]) {
                             ['iurl', 'iurlsd', 'iurlmq', 'iurlhq'].forEach(prefixIterator);
                         }
+                    }
+                    if (parSets.BLK_ON && !config.args.list && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
+                        window.yt.config_.RELATED_PLAYER_ARGS.rvs = clearRVS(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
+                        config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs;
                     }
                     if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
                         window.ytplayer.config = config;
@@ -3075,7 +3103,7 @@
             document.documentElement.appendChild(injectScript);
             if (!userscript) {
                 if (window.chrome) {
-                    chrome.storage.onChanged.addListener(filterChromeStorage);
+                    window.chrome.storage.onChanged.addListener(filterChromeStorage);
                 } else if (!window.chrome) {
                     self.port.on('particleSettings', updateSettings);
                 }
@@ -3106,7 +3134,7 @@
         function chromeSettings(item) {
             var object = item && item.particleSettings;
             if (!item) {
-                chrome.storage.sync.get('particleSettings', chromeSettings);
+                window.chrome.storage.sync.get('particleSettings', chromeSettings);
                 return;
             }
             function updateChromeSettings(keys) {
@@ -3114,9 +3142,9 @@
             }
             if (details.set) {
                 Object.keys(details.set).forEach(updateChromeSettings);
-                chrome.storage.sync.set({'particleSettings': object});
+                window.chrome.storage.sync.set({'particleSettings': object});
             } else if (details.replace) {
-                chrome.storage.sync.set({'particleSettings': details.replace});
+                window.chrome.storage.sync.set({'particleSettings': details.replace});
             }
         }
         if (typeof details === 'object') {
@@ -3146,7 +3174,7 @@
     }
     if (!userscript) {
         if (window.chrome) {
-            chrome.storage.sync.get('particleSettings', initParticle);
+            window.chrome.storage.sync.get('particleSettings', initParticle);
         } else if (!window.chrome) {
             self.port.once('particleSettings', initParticle);
             self.port.emit('particleSettings', {get: {}});
