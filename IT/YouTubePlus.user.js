@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.1
+// @version     1.8.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -747,7 +747,7 @@
                     VID_PLR_FIT_WDTH: '1280px',
                     VID_PROG_BAR_CLR: 'red',
                     VID_CTRL_BAR_CLR: 'light',
-                    VID_HIDE_COMS: true,
+                    VID_HIDE_COMS: '1',
                     VID_POST_TIME: true,
                     VID_VID_CNT: true,
                     VID_DESC_SHRT: true,
@@ -1043,8 +1043,20 @@
                         'pt-PT': 'Esconder detalhes do vídeo'
                     },
                     VID_HIDE_COMS: {
-                        en: 'Hide comment section',
-                        'pt-PT': 'Esconder secção de comentários'
+                        en: 'Comment section',
+                        'pt-PT': 'Secção de comentários'
+                    },
+                    VID_HIDE_COMS_SHOW: {
+                        en: 'Show',
+                        'pt-PT': 'Mostrar'
+                    },
+                    VID_HIDE_COMS_HIDE: {
+                        en: 'Hide',
+                        'pt-PT': 'Esconder'
+                    },
+                    VID_HIDE_COMS_REM: {
+                        en: 'Remove',
+                        'pt-PT': 'Remover'
                     },
                     VID_END_SHRE: {
                         en: 'Disable share panel when video ends',
@@ -1458,6 +1470,12 @@
                                 htEl.input('VID_PLST_ATPL', 'checkbox'),
                                 htEl.input('VID_PLST_RVRS', 'checkbox'),
                                 htEl.title('VID_LAYT', 'h3'),
+                                htEl.select('VID_HIDE_COMS', {
+                                    'VID_HIDE_COMS_SHOW': '0',
+                                    'VID_HIDE_COMS_HIDE': '1',
+                                    'VID_HIDE_COMS_REM': '2'
+                                }),
+                                '    <br>',
                                 htEl.select('VID_SDBR_ALGN', {
                                     'VID_SDBR_ALGN_NONE': '0',
                                     'VID_SDBR_ALGN_LEFT': '1',
@@ -1469,7 +1487,6 @@
                                 htEl.input('VID_VID_CNT', 'checkbox'),
                                 htEl.input('VID_POST_TIME', 'checkbox'),
                                 htEl.input('VID_HIDE_DETLS', 'checkbox'),
-                                htEl.input('VID_HIDE_COMS', 'checkbox'),
                                 '</div>\n'
                             ].join(''),
                             BLK: [
@@ -1640,13 +1657,16 @@
                 }
             }
             function customStyles() {
-                var href = window.location.href,
+                var commentSection = document.getElementById('watch-discussion'),
                     sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0];
-                if (sidebar && ((parSets.GEN_HDE_RECM_SDBR && href.split('/feed/').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && href.split('/results').length > 1) || (parSets.GEN_HDE_CHN_SDBR && href.split(/\/(channel|user|c)\//).length > 1))) {
+                if (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.split('/feed/').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1))) {
                     sidebar.remove();
                 }
-                if (href.split('/results?').length > 1 && sidebar && sidebar.querySelectorAll('*').length < 10) {
+                if (window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) {
                     sidebar.remove();
+                }
+                if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commentSection) {
+                    commentSection.remove();
                 }
                 if (document.readyState !== 'interactive') {
                     return;
@@ -1787,7 +1807,7 @@
                         '    display: none;\n' +
                         '}\n';
                 }
-                if (parSets.VID_HIDE_COMS) {
+                if (parSets.VID_HIDE_COMS === '1') {
                     styleSheet.textContent +=
                         '#watch-discussion:not(.show){\n' +
                         '    height: 0;\n' +
@@ -1963,7 +1983,7 @@
                     comments.classList.toggle('show');
                     wrapper.querySelector('button').textContent = userLang((comments.classList.contains('show')) ? 'HIDE_CMTS' : 'SHOW_CMTS');
                 }
-                if (comments && !document.getElementById('P-show-comments') && parSets.VID_HIDE_COMS) {
+                if (comments && !document.getElementById('P-show-comments') && parSets.VID_HIDE_COMS === '1') {
                     wrapper =
                         '<div id="P-show-comments" class="yt-card">\n' +
                         '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n' +
