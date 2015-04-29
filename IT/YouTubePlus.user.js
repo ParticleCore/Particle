@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.2
+// @version     1.8.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -78,6 +78,13 @@
             '}\n',
             '#watch7-sidebar{\n',
             '    transition: none !important;\n',
+            '}\n',
+            '.watch-stage-mode #player-api{\n',
+            '    left: initial !important;\n',
+            '    margin: 0 auto !important;\n',
+            '}\n',
+            '#placeholder-player{\n',
+            '    display: none;\n',
             '}\n',
             '#P-settings{\n',
             '    background: #f1f1f1;\n',
