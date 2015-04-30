@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.6
+// @version     1.8.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -66,6 +66,7 @@
             '}\n',
             '.content-snap-width-skinny-mode #player{\n',
             '    margin-top: 0;\n',
+            '    top: 0;\n',
             '}\n',
             '#footer-container{\n',
             '    max-width: initial;\n',
@@ -405,6 +406,9 @@
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat;\n',
             '    height: 24px;\n',
             '    width: 24px;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode) #player{\n',
+            '    margin-bottom: 10px;\n',
             '}\n',
             '#player{\n',
             '    position: relative;\n',
@@ -756,6 +760,7 @@
                     VID_PROG_BAR_CLR: 'red',
                     VID_CTRL_BAR_CLR: 'light',
                     VID_HIDE_COMS: '1',
+                    VID_POST_TIME: true,
                     VID_VID_CNT: true,
                     VID_DESC_SHRT: true,
                     VID_SDBR_ALGN: '1',
@@ -1041,6 +1046,10 @@
                         en: 'Show link with number of uploaded videos',
                         'pt-PT': 'Mostrar link com número de vídeos carregados'
                     },
+                    VID_POST_TIME: {
+                        en: 'Show how long the video has been published',
+                        'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
+                    },
                     VID_HIDE_DETLS: {
                         en: 'Hide video details',
                         'pt-PT': 'Esconder detalhes do vídeo'
@@ -1291,6 +1300,13 @@
                     eventStock.splice(remove[i], 1);
                 }
             }
+            function localXHR(details) {
+                var request;
+                request = new XMLHttpRequest();
+                request.onload = details.call;
+                request.open(details.method, details.url, true);
+                request.send();
+            }
             function timeConv(time) {
                 var days = time / 86400,
                     hours = (time % 86400) / 3600,
@@ -1488,6 +1504,7 @@
                                 htEl.input('VID_TTL_CMPT', 'checkbox'),
                                 htEl.input('VID_DESC_SHRT', 'checkbox'),
                                 htEl.input('VID_VID_CNT', 'checkbox'),
+                                htEl.input('VID_POST_TIME', 'checkbox'),
                                 htEl.input('VID_HIDE_DETLS', 'checkbox'),
                                 '</div>\n'
                             ].join(''),
@@ -1842,8 +1859,8 @@
                         'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n' +
                         '    margin-left: 650px !important;\n' +
                         '    margin-top: ' + (
-                            (parSets.VID_PLR_CTRL_VIS > 0 && '-360px') ||
-                            (parSets.VID_PLR_CTRL_VIS < 1 &&  '-390px')
+                            (parSets.VID_PLR_CTRL_VIS > 0 && '-370px') ||
+                            (parSets.VID_PLR_CTRL_VIS < 1 &&  '-400px')
                         ) + ';\n' +
                         '    top: 0;\n' +
                         '}\n' +
@@ -1851,7 +1868,7 @@
                         '    width: 640px !important;\n' +
                         '}\n' +
                         'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n' +
-                        '    height: 390px !important;\n' +
+                        '    height: 400px !important;\n' +
                         '}\n' +
                         'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist{\n' +
                         '    height: ' + (
@@ -1864,8 +1881,8 @@
                     styleSheet.textContent +=
                         'html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch7-sidebar{\n' +
                         '    margin-top: ' + (
-                            (parSets.VID_PLR_CTRL_VIS > 0 && '-360px') ||
-                            (parSets.VID_PLR_CTRL_VIS < 1 && '-390px')
+                            (parSets.VID_PLR_CTRL_VIS > 0 && '-370px') ||
+                            (parSets.VID_PLR_CTRL_VIS < 1 && '-400px')
                         ) + ';\n' +
                         '}\n' +
                         'html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
@@ -1914,10 +1931,9 @@
                         }
                     }
                     function getPLInfo(details) {
-                        details = details.data;
-                        if (details.getPLInfo) {
-                            handleEvents('remove', window, 'message', getPLInfo);
-                            details = JSON.parse(details.getPLInfo);
+                        details = details.target.responseText;
+                        if (details) {
+                            details = JSON.parse(details);
                             details = details.body && details.body.content && details.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
                             details = details && details.match(/<li>([\w\W]*?)<\/li>/g)[1];
                             if (details) {
@@ -1936,17 +1952,43 @@
                             link.textContent = channelId[user.getAttribute('data-ytid')];
                             videoCounter();
                         } else {
-                            window.postMessage({
+                            localXHR({
                                 method: 'GET',
-                                url: window.location.origin + '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
-                                id: 'getPLInfo'
-                            }, '*');
-                            handleEvents('add', window, 'message', getPLInfo);
+                                url: '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
+                                call: getPLInfo
+                            })
                         }
                     }
                 }
-                if (window.location.pathname === '/watch' && parSets.VID_VID_CNT) {
-                    username();
+                function publishedTime() {
+                    var watchTime = document.getElementsByClassName('watch-time-text')[0];
+                    function getCHInfo(details) {
+                        details = details.target.responseText;
+                        if (details) {
+                            if (watchTime.textContent.split('·').length < 2) {
+                                details = JSON.parse(details);
+                                details = details.body && details.body.content && details.body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
+                                if (details) {
+                                    watchTime.textContent += ' · ' + details[1].split('</li><li>')[0];
+                                }
+                            }
+                        }
+                    }
+                    if (watchTime && window.ytplayer.config) {
+                        localXHR({
+                            method: 'GET',
+                            url: '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
+                            call: getCHInfo
+                        })
+                    }
+                }
+                if (window.location.pathname === '/watch') {
+                    if (parSets.VID_VID_CNT) {
+                        username();
+                    }
+                    if (parSets.VID_POST_TIME) {
+                        publishedTime();
+                    }
                 }
             }
             function commentsButton() {
@@ -2155,10 +2197,9 @@
                     }
                 }
                 function initSubPlaylist(event) {
-                    event = event.data;
-                    if (event && event.initSubPlaylist) {
-                        handleEvents('remove', window, 'message', initSubPlaylist);
-                        button.href = '/watch?v=' + videoList[0].getAttribute('data-video-ids') + '&list=' + JSON.parse(event.initSubPlaylist)[1].data.swfcfg.args.list;
+                    event = event.target.responseText;
+                    if (event) {
+                        button.href = '/watch?v=' + videoList[0].getAttribute('data-video-ids') + '&list=' + JSON.parse(event)[1].data.swfcfg.args.list;
                     }
                 }
                 if (window.location.pathname === '/feed/subscriptions' && !button && listTitle && videoList) {
@@ -2174,12 +2215,11 @@
                     listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent;
                     button = document.getElementById('subscription-playlist');
                     button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
-                    window.postMessage({
+                    localXHR({
                         method: 'GET',
-                        url: window.location.origin + '/watch_videos?title=' + listTitle + '&spf=navigate&video_ids=' + list,
-                        id: 'initSubPlaylist'
-                    }, '*');
-                    handleEvents('add', window, 'message', initSubPlaylist);
+                        url: '/watch_videos?title=' + listTitle + '&spf=navigate&video_ids=' + list,
+                        call: initSubPlaylist
+                    })
                 }
             }
             function playerReady(playerApi) {
@@ -3091,8 +3131,12 @@
                 updateSettings(keys.particleSettings.newValue);
             }
         }
-        if (!event && userscript) {
-            event = JSON.parse(GM_getValue('particleSettings', '{}'));
+        if (!event) {
+            if (userscript) {
+                event = JSON.parse(GM_getValue('particleSettings', '{}'));
+            } else if (!userscript) {
+                event = JSON.parse(self.options.particleSettings);
+            }
         }
         if (event) {
             event = event.particleSettings || event;
@@ -3176,15 +3220,10 @@
             }
         }
     }
-    if (!userscript) {
-        if (window.chrome) {
-            window.chrome.storage.sync.get('particleSettings', initParticle);
-        } else if (!window.chrome) {
-            self.port.once('particleSettings', initParticle);
-            self.port.emit('particleSettings', {get: {}});
-        }
-    } else if (userscript) {
+    if (!window.chrome) {
         initParticle();
+    } else if (window.chrome) {
+        window.chrome.storage.sync.get('particleSettings', initParticle);
     }
     window.addEventListener('message', xhr);
 }());
