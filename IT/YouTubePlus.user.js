@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.3
+// @version     1.8.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -79,7 +79,7 @@
             '#watch7-sidebar{\n',
             '    transition: none !important;\n',
             '}\n',
-            '.watch-stage-mode #player-api{\n',
+            '.watch-stage-mode #player-api, .content-snap-width-skinny-mode #player-api{\n',
             '    left: initial !important;\n',
             '    margin: 0 auto !important;\n',
             '}\n',
@@ -755,7 +755,6 @@
                     VID_PROG_BAR_CLR: 'red',
                     VID_CTRL_BAR_CLR: 'light',
                     VID_HIDE_COMS: '1',
-                    VID_POST_TIME: true,
                     VID_VID_CNT: true,
                     VID_DESC_SHRT: true,
                     VID_SDBR_ALGN: '1',
@@ -1040,10 +1039,6 @@
                     VID_VID_CNT: {
                         en: 'Show link with number of uploaded videos',
                         'pt-PT': 'Mostrar link com número de vídeos carregados'
-                    },
-                    VID_POST_TIME: {
-                        en: 'Show how long the video has been published',
-                        'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
                     },
                     VID_HIDE_DETLS: {
                         en: 'Hide video details',
@@ -1492,7 +1487,6 @@
                                 htEl.input('VID_TTL_CMPT', 'checkbox'),
                                 htEl.input('VID_DESC_SHRT', 'checkbox'),
                                 htEl.input('VID_VID_CNT', 'checkbox'),
-                                htEl.input('VID_POST_TIME', 'checkbox'),
                                 htEl.input('VID_HIDE_DETLS', 'checkbox'),
                                 '</div>\n'
                             ].join(''),
@@ -1950,37 +1944,8 @@
                         }
                     }
                 }
-                function publishedTime() {
-                    var watchTime = document.getElementsByClassName('watch-time-text')[0];
-                    function getCHInfo(details) {
-                        details = details.data;
-                        if (details.getCHInfo) {
-                            handleEvents('remove', window, 'message', getCHInfo);
-                            if (watchTime.textContent.split('·').length < 2) {
-                                details = JSON.parse(details.getCHInfo);
-                                details = details.body && details.body.content && details.body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
-                                if (details) {
-                                    watchTime.textContent += ' · ' + details[1].split('</li><li>')[0];
-                                }
-                            }
-                        }
-                    }
-                    if (watchTime && window.ytplayer.config) {
-                        window.postMessage({
-                            method: 'GET',
-                            url: window.location.origin + '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
-                            id: 'getCHInfo'
-                        }, '*');
-                        handleEvents('add', window, 'message', getCHInfo);
-                    }
-                }
-                if (window.location.pathname === '/watch') {
-                    if (parSets.VID_VID_CNT) {
-                        username();
-                    }
-                    if (parSets.VID_POST_TIME) {
-                        publishedTime();
-                    }
+                if (window.location.pathname === '/watch' && parSets.VID_VID_CNT) {
+                    username();
                 }
             }
             function commentsButton() {
@@ -2413,7 +2378,7 @@
                     window.yt.setConfig = baseDetour(window.yt.setConfig);
                     Object.keys(window._yt_www).some(ytIterator);
                 }
-                if (!window.html5Patched && (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
+                if ((event && event.target && event.target.getAttribute('name') === 'html5player/html5player') || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
                     window.html5Patched = true;
                     window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
                 }
