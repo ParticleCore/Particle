@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.7
+// @version     1.8.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -3220,9 +3220,9 @@
             }
         }
     }
-    if (!window.chrome) {
+    if (!window.chrome || userscript) {
         initParticle();
-    } else if (window.chrome) {
+    } else if (window.chrome && !userscript) {
         window.chrome.storage.sync.get('particleSettings', initParticle);
     }
     window.addEventListener('message', xhr);
