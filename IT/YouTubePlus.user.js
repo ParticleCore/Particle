@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.4
+// @version     1.8.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -425,6 +425,7 @@
             '    top: 0 !important;\n',
             '}\n',
             '#movie_player video{\n',
+            '    left: initial !important;\n'
             '    max-height: 100%;\n',
             '    max-width: 100%;\n',
             '    min-height: 100%;\n',
@@ -2495,7 +2496,18 @@
                     }
                 }
                 function cleanList(trash) {
+                    var i,
+                        emptyShelves = document.getElementsByClassName('feed-item-container');
                     trashList[trash].remove();
+                    if (emptyShelves.length > 0) {
+                        i = emptyShelves.length;
+                        while (i) {
+                            i -= 1;
+                            if (emptyShelves[i].getElementsByTagName('li').length < 2) {
+                                emptyShelves[i].remove();
+                            }
+                        }
+                    }
                 }
                 function getList(list) {
                     list = document.getElementsByClassName(list);
