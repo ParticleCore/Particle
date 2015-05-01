@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.8.9
+// @version     1.9.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1591,6 +1591,9 @@
                         savedSets = parSets,
                         userSets = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
                         length = userSets.length;
+                    function hideNotif() {
+                        document.body.classList.remove('show-guide-button-notification');
+                    }
                     while (length) {
                         length -= 1;
                         value = (userSets[length].checked && (userSets[length].value === 'on' || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute('type') === 'text' && userSets[length].value);
@@ -1620,9 +1623,7 @@
                         }
                         document.getElementsByClassName('appbar-guide-notification-text-content')[0].textContent = 'Settings saved';
                         document.body.classList.add('show-guide-button-notification');
-                        window.setTimeout(function () {
-                            document.body.classList.remove('show-guide-button-notification');
-                        }, 2000);
+                        window.setTimeout(hideNotif, 2000);
                     }
                 }
                 if (event.target.classList.contains('P-save')) {
@@ -2768,9 +2769,7 @@
                         function deCipher(sig) {
                             var temp,
                                 cipher = JSON.parse(storedCipher)[html5ID];
-                            console.info(cipher);
-                            sig = sig.split('');
-                            cipher.forEach(function (value) {
+                            function cipherFilter(value) {
                                 if (value > 0) {
                                     temp = sig[0];
                                     sig[0] = sig[value % sig.length];
@@ -2780,7 +2779,10 @@
                                 } else {
                                     sig.reverse();
                                 }
-                            });
+                            }
+                            console.info(cipher);
+                            sig = sig.split('');
+                            cipher.forEach(cipherFilter);
                             return sig.join('');
                         }
                         if (event && event.data.cipherAlgorithm) {
@@ -3127,8 +3129,7 @@
         window.postMessage(event, '*');
     }
     function initParticle(event) {
-        var injectScript,
-            injectstyle;
+        var inject;
         function filterChromeStorage(keys) {
             if (keys.particleSettings && keys.particleSettings.newValue) {
                 updateSettings(keys.particleSettings.newValue);
@@ -3140,14 +3141,14 @@
         if (event) {
             event = event.particleSettings || event;
             event = JSON.stringify(event);
-            injectScript = document.createElement('script');
-            injectScript.textContent = '(' + particle + '())';
-            injectScript.textContent = injectScript.textContent.replace('parSets,', 'parSets = ' + event + ',');
-            injectstyle = document.createElement('style');
-            injectstyle.id = 'P-style';
-            injectstyle.textContent = particleStyle;
-            document.documentElement.appendChild(injectstyle);
-            document.documentElement.appendChild(injectScript);
+            inject = document.createElement('style');
+            inject.id = 'P-style';
+            inject.textContent = particleStyle;
+            document.documentElement.appendChild(inject);
+            inject = document.createElement('script');
+            inject.textContent = '(' + particle + '())';
+            inject.textContent = inject.textContent.replace('parSets,', 'parSets = ' + event + ',');
+            document.documentElement.appendChild(inject);
             if (!userscript) {
                 if (window.chrome) {
                     window.chrome.storage.onChanged.addListener(filterChromeStorage);
@@ -3155,7 +3156,7 @@
                     self.port.on('particleSettings', updateSettings);
                 }
             }
-            injectScript = injectstyle = particleStyle = null;
+            inject = null;
         }
     }
     function xhr(details) {
@@ -3181,10 +3182,6 @@
         }
         function chromeSettings(item) {
             var object = item && item.particleSettings;
-            if (!item) {
-                window.chrome.storage.sync.get('particleSettings', chromeSettings);
-                return;
-            }
             function updateChromeSettings(keys) {
                 object[keys] = details.set[keys];
             }
@@ -3203,7 +3200,7 @@
                         method: details.method,
                         url: details.url
                     });
-                } else {
+                } else if (!userscript) {
                     request = new XMLHttpRequest();
                     request.onload = process;
                     request.open(details.method, details.url, true);
@@ -3213,7 +3210,7 @@
                 if (userscript) {
                     gmSettings();
                 } else if (window.chrome) {
-                    chromeSettings();
+                    window.chrome.storage.sync.get('particleSettings', chromeSettings);
                 } else {
                     self.port.emit('particleSettings', details);
                 }
