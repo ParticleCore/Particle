@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.0
+// @version     1.9.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -16,21 +16,454 @@
     'use strict';
     var userscript = typeof GM_info === 'object',
         particleStyle = [
-            'input[type="checkbox"], input[type="radio"]{\n',
+        // start| Playlist spacer
+            '.part_playlist_spacer #watch-appbar-playlist{\n',
+            '    margin-left: 0px !important;\n',
+            '}\n',
+        //   end| Playlist spacer
+        // start| Ads visibility
+            '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
+            '    display: none;\n',
+            '}\n',
+        //   end| Ads visibility
+        // start| Hide video details
+            '.part_hide_details #action-panel-details{\n',
+            '    display: none;\n',
+            '}\n',
+        //   end| Hide video details
+        // start| Disable hovercards
+            '.part_dsbl_hovercards iframe[src*="hovercard"]{\n',
+            '    display: none !important;\n',
+            '}\n',
+        //   end| Disable hovercards
+        // start| Disable blue glow
+            '.part_dsbl_glow .yt-uix-button:focus, .yt-uix-button:focus:hover{\n',
+            '    box-shadow: initial !important;\n',
+            '}\n',
+        //   end| Disable blue glow
+        // start| Hide footer
+            '.part_hide_footer #footer-container{\n',
+            '    visibility: hidden;\n',
+            '}\n',
+            '.part_hide_footer #body-container{\n',
+            '    padding-bottom: initial;\n',
+            '}\n',
+        //   end| Hide footer
+        // start| Compact video title
+            '.part_compact_title #watch7-headline #eow-title{\n',
+            '    display: block;\n',
+            '    overflow: hidden;\n',
+            '    text-overflow: ellipsis;\n',
+            '    white-space: nowrap;\n',
+            '}\n',
+        //   end| Compact video title
+        // start| Compact thumbnail titles
+            '.part_compact_titles .feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{\n',
+            '    white-space: nowrap !important;\n',
+            '    display: inherit !important;\n',
+            '}\n',
+        //   end| Compact thumbnail titles
+        // start| Floater player
+            'html:not([data-player-size="fullscreen"]).floater #player #player-api{\n',
+            '    left: initial !important;\n',
+            '    margin: 0 auto !important;\n',
+            '    transform: none;\n',
+            '}\n',
+            'html:not([data-player-size="fullscreen"]).floater #player #movie_player{\n',
+            '    position: fixed !important;\n',
+            '    top: 50% !important;\n',
+            '    transform: translateY(-50%);\n',
+            '    z-index: 10;\n',
+            '}\n',
+            'html:not([data-player-size="fullscreen"]).content-snap-width-skinny-mode.floater #player #movie_player{\n',
+            '    position: fixed !important;\n',
+            '    top: 50px !important;\n',
+            '    transform: none;\n',
+            '}\n',
+        //   end| Floater player
+        // start| Labelless video buttons
+            '.part_labelless_buttons #watch8-secondary-actions{\n',
+            '    left: 0 !important;\n',
+            '}\n',
+            '.part_labelless_buttons #watch8-secondary-actions .yt-uix-button-content{\n',
+            '    display: none;\n',
+            '}\n',
+            '.part_labelless_buttons #watch8-secondary-actions button{\n',
+            '    padding: 0;\n',
+            '}\n',
+        //   end| Labelless video buttons
+        // start| Hide comments
+            '.part_hide_comments #watch-discussion:not(.show){\n',
+            '    height: 0;\n',
+            '    margin-bottom: 0;\n',
+            '    margin-top: 0;\n',
+            '    opacity: 0;\n',
+            '    overflow: hidden;\n',
+            '    padding-bottom: 0;\n',
+            '    padding-top: 0;\n',
+            '}\n',
+            '.content-snap-width-skinny-mode.part_hide_comments #P-show-comments{\n',
+            '    display: none;\n',
+            '}\n',
+            '.part_hide_comments #P-show-comments button{\n',
+            '    border-top: none;\n',
+            '    padding-top: 2px;\n',
+            '}\n',
+        //   end| Hide comments
+        // start| Custom styles
+            '#body #uploaded-videos{\n',
+            '    color: #666;\n',
+            '    display: initial;\n',
+            '    font-size: 11px;\n',
+            '    font-weight: initial;\n',
+            '    overflow: initial;\n',
+            '    vertical-align: initial;\n',
+            '}\n',
+            '.yt-user-info > span{\n',
+            '    color: #666;\n',
+            '    font-size: 11px;\n',
+            '}\n',
+            '.ytp-button-stop{\n',
+            '    margin: 0 -10px;\n',
+            '    position: relative;\n',
+            '    width: 45px !important;\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '.invisible{\n',
+            '    display: none;\n',
+            '}\n',
+            '#subscription-playlist-icon{\n',
+            '    margin-right: -20px;\n',
+            '}\n',
+            '#subscription-playlist:hover span{\n',
+            '    opacity: 1;\n',
+            '}\n',
+            '#subscription-playlist span{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAZlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwbJTWAAAAIXRSTlMAAnkBEP3p7/mGCwUHWwOoURVpQ5hCTvVZZARvBgmIDJcLZgxgAAAAVUlEQVR4Xl3ORRLAIBBE0YFAQtxd+/6XDEuav3xVI9L2wgGTYfDlBYNPVxHADiUD4OqGAcg6xQCkYxLBTJAtNLJuKlzq9iM8a8+LHtM3vf68EvYZoX5HKg99MDC3NAAAAABJRU5ErkJggg==") no-repeat scroll center;\n',
+            '    display: block;\n',
+            '    height: 100%;\n',
+            '    opacity: 0.4;\n',
+            '    width: 20px;\n',
+            '}\n',
+            '#blacklist-import, #blacklist-export{\n',
+            '    margin-top: 10px;\n',
+            '}\n',
+        //   end| Custom styles
+        // start| Player console
+            '#watch-header{\n',
+            '    position: relative;\n',
+            '}\n',
+            '#console-button{\n',
+            '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKAQMAAABVIEaHAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABBJREFUeF5j+P8DhMAAkw0AsQkLy6q+yNQAAAAASUVORK5CYII=) no-repeat center;\n',
+            '    cursor: pointer;\n',
+            '    height: 20px;\n',
+            '    opacity: 0.5;\n',
+            '    position: absolute;\n',
+            '    top: 0;\n',
+            '    right: 0;\n',
+            '    width: 25px;\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '#console-button:hover{\n',
+            '    opacity: 0.8;\n',
+            '}\n',
+            '.player-console #console-button{\n',
+            '    opacity: 1;\n',
+            '}\n',
+            '#player-console{\n',
+            '    display: none;\n',
+            '    font-size: 0;\n',
+            '    height: 40px;\n',
+            '    position: absolute;\n',
+            '    right: 20px;\n',
+            '    top: 10px;\n',
+            '    text-align: center;\n',
+            '    border-left: 20px solid;\n',
+            '    border-image: linear-gradient(to left, #FFF 20%, transparent 100%) 1 100%;\n',
+            '}\n',
+            '.player-console #player-console{\n',
+            '    display: initial;\n',
+            '}\n',
+            '#player-console > div{\n',
+            '    cursor: pointer;\n',
+            '    display: inline-block;\n',
+            '    height: 30px;\n',
+            '    opacity: 0.4;\n',
+            '    padding: 0 7px;\n',
+            '    position: relative;\n',
+            '    top: 50%;\n',
+            '    transform: translateY(-50%);\n',
+            '}\n',
+            '#player-console:before{\n',
+            '    background: #FFF;\n',
+            '    border-right: 20px solid white;\n',
+            '    content: "";\n',
+            '    height: 100%;\n',
+            '    position: absolute;\n',
+            '    width: 100%;\n',
+            '}\n',
+            '#player-console > div.active{\n',
+            '    opacity: 0.8 !important;\n',
+            '}\n',
+            '#player-console > div:hover{\n',
+            '    opacity: 0.6;\n',
+            '}\n',
+            '#autoplay-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAZlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwbJTWAAAAIXRSTlMAAnkBEP3p7/mGCwUHWwOoURVpQ5hCTvVZZARvBgmIDJcLZgxgAAAAVUlEQVR4Xl3ORRLAIBBE0YFAQtxd+/6XDEuav3xVI9L2wgGTYfDlBYNPVxHADiUD4OqGAcg6xQCkYxLBTJAtNLJuKlzq9iM8a8+LHtM3vf68EvYZoX5HKg99MDC3NAAAAABJRU5ErkJggg==") no-repeat center;\n',
+            '    width: 16px;\n',
+            '}\n',
+            '#save-thumbnail-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAMAAAB2Mu6sAAAAXVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACDURIJAAAAHnRSTlMAAN5AsgMB/dECiK1jzAireHcS5GIZ1RUk9eLK6wls6Nm2AAAAbUlEQVR4Xn3QWQ6AIAxFUZRBxXme3/6XKSr9MCDnq8lN2qQMP0KBfUQPCpILwaUncBjcEwQMEQxD4V2lNKCVe1zWMHJJgVQ7HuVJIWvajLGuh5XaME5mnpcVZHuDwi1JQHBQcNgQO6LgE70C4QJ/fB23OA62kwAAAABJRU5ErkJggg==") no-repeat center;\n',
+            '    width: 24px;\n',
+            '}\n',
+            '#seek-map{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASBAMAAACk4JNkAAAAFVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAACWttmcAAAABnRSTlMAABXMz9EsYubbAAAAK0lEQVQIW2NQSUtzYgATbmlpKRAiDQiIIYCKUyGEalqaEYSAAUEkFpXtAABuQC6raZ2ufgAAAABJRU5ErkJggg==") no-repeat center;\n',
+            '    width: 18px;\n',
+            '}\n',
+            '#screenshot-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASCAMAAABo+94fAAAAQlBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4warDAAAAFXRSTlMAAAJAHGj94JnP3j8VzZUi6wvcytGH5aKYAAAAcUlEQVR4XoXPSQ6AIAxAUSwzAjLI/a/qQIOSJvoXNHkLoKy3OedKOY9tueuaU8NSfhhqG1UYHNureLO3jWQ9Q1VSAAip0Bnqyo3Whq/oyJKHawQuJxamTyMmBt1ZwzfTS/6fpB8k6wymXcvTLPM71d0f5EgYnuxfALoAAAAASUVORK5CYII=") no-repeat center;\n',
+            '    width: 22px;\n',
+            '}\n',
+            '#sidebar-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASAQMAAABl67xuAAAABlBMVEUAAAD///+l2Z/dAAAADklEQVR4XmNgbGCgBgYARvEJE30TDdMAAAAASUVORK5CYII=") no-repeat center;\n',
+            '    width: 22px;\n',
+            '}\n',
+            '#loop-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAMAAABsDg4iAAAAY1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcL/mXAAAAIHRSTlMAAKVZHRNz5BQCyFAYsgEfmk71I4KrKdfMBEcGVwWGf0tiNMIAAACRSURBVHhebdBXDsIwEADRxSVu6fQ+9z8lhgRLCbwfSyNZXq/MjFbOKW1kk03JVswq+43tnqLppniTgZh8CD5FaOw7Hti2u1o+6h6qHNsjp/YsszqCERmAixQJtFxHYLyX6EHJA4BniQFcPhwEWUcFXpbXRTSk1UMiBmK9HCmroF8On9mG9TezrvlZyO/q/i75BYzRD2BnJL4kAAAAAElFTkSuQmCC") no-repeat center;\n',
+            '    width: 20px;\n',
+            '}\n',
+            '#audio-only{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAVFBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkwc6KAAAAG3RSTlMAABOb4hrc6AROTQIXOHnZaHdEzu9A9dfz6/cz7bX/AAAAiUlEQVR4Xm3QVw6DQAxF0alMo6aWu/99ZhiHRES8L+tILrJqMck6Z5OppdYrxBxoCTkKxZlv5tgoA0tfSr8AeSUTYJCRAwRTKcGoPhkhVbJgNjJgKzkoGxVwQpMX8ZOQBTqhjtZ4egEIATyu6saeuCj+iQM6ajw99xSusvp3RNc+4e/ndqpUWr8Ba0MPBQ06LVcAAAAASUVORK5CYII=") no-repeat center;\n',
+            '    width: 18px;\n',
+            '}\n',
+        //   end| Player console
+        // start| Seek thumbs
+            '#seek-thumb-map{\n',
+            '    font-size: 0;\n',
+            '    overflow: auto;\n',
+            '    position: absolute;\n',
+            '    bottom: 0;\n',
+            '    width: 100%;\n',
+            '    white-space: nowrap;\n',
+            '    z-index: 940;\n',
+            '}\n',
+            '#seek-controls{\n',
+            '    background: rgba(0, 0, 0, 0.8);\n',
+            '    border-top-left-radius: 5px;\n',
+            '    border-top-right-radius: 5px;\n',
+            '    bottom: 100%;\n',
+            '    display: inline-block;\n',
+            '    left: 50%;\n',
+            '    padding: 5px 5px 0;\n',
+            '    position: relative;\n',
+            '    transform: translateX(-50%);\n',
+            '}\n',
+            '#seek-controls > div{\n',
+            '    color: rgba(255,255,255, 0.4);\n',
+            '    cursor: pointer;\n',
+            '    font-size: 10px;\n',
+            '    display: inline;\n',
+            '    font-size: 10px;\n',
+            '    margin: 5px;\n',
+            '}\n',
+            '.quality-1 .quality-1, .quality-2 .quality-2, .quality-3 .quality-3{\n',
+            '    color: rgba(255,255,255, 0.7) !important;\n',
+            '}\n',
+            '#seek-controls > div:hover{\n',
+            '    color: #F1F1F1 !important;\n',
+            '}\n',
+            '#seek-thumbs{\n',
+            '    background: rgba(0, 0, 0, 0.8);\n',
+            '    overflow: auto;\n',
+            '}\n',
+            '#seek-thumbs span{\n',
+            '    display: inline-block;\n',
+            '    margin: 10px 5px 20px;\n',
+            '    position: relative;\n',
+            '}\n',
+            '#seek-thumbs .timer{\n',
+            '    font-size: 11px;\n',
+            '    line-height: 20px;\n',
+            '    position: absolute;\n',
+            '    text-align: center;\n',
+            '    top: 100%;\n',
+            '    width: 100%;\n',
+            '}\n',
+        //   end| Seek thumbs
+        // start| Screenshot window
+            '#screenshot-result{\n',
+            '    bottom: 15px;\n',
+            '    box-shadow: 0 0 15px #000000;\n',
+            '    font-size: 0;\n',
+            '    margin: 5px;\n',
+            '    max-width: 420px;\n',
+            '    overflow: hidden;\n',
+            '    position: fixed;\n',
+            '    right: 15px;\n',
+            '    width: 30%;\n',
+            '    z-index: 1000;\n',
+            '}\n',
+            '#screenshot-result > canvas{\n',
+            '    width: 100%;\n',
+            '}\n',
+            '#close-screenshot{\n',
+            '    background: rgba(0, 0, 0, 0.5);\n',
+            '    border-bottom-left-radius: 5px;\n',
+            '    color: #F1F1F1;\n',
+            '    cursor: pointer;\n',
+            '    font-size: 10px;\n',
+            '    padding: 5px;\n',
+            '    position: absolute;\n',
+            '    right: 0;\n',
+            '    text-transform: uppercase;\n',
+            '    top: 0;\n',
+            '}\n',
+            '#close-screenshot:hover{\n',
+            '    background: rgba(0, 0, 0, 0.8);\n',
+            '}\n',
+        //   end| Screenshot window
+        // start| Sidebar mode
+            '.yt-pl-thumb .sidebarmode, .thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAIAQMAAAD6NPz1AAAABlBMVEX///9mZmaO7mygAAAAAXRSTlMAQObYZgAAAA1JREFUeF5jeH8AKwIAonQNedxnO+oAAAAASUVORK5CYII=") #FFF no-repeat center;\n',
+            '    bottom: 0;\n',
+            '    color: #666;\n',
+            '    cursor: pointer;\n',
+            '    display: none;\n',
+            '    font-size: 12px;\n',
+            '    height: 17px;\n',
+            '    left: 0;\n',
+            '    line-height: 1;\n',
+            '    position: absolute;\n',
+            '    width: 17px;\n',
+            '}\n',
+        //   end| Sidebar mode
+        // start| Thumb buttons
+            '.yt-pl-thumb .blacklist, .thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAARBAMAAADNtor0AAAAJ1BMVEVmZmZzc3N/f3+Kioqqqqqzs7PFxcXOzs7X19fn5+fv7+/39/f///+6PEy9AAAAXElEQVR4XnXO0QnAMAgE0EszhV0lPxmhozhQRhEoEJIWHKpW288IB48DReg/55JXUx3iZFKtJZhaR3CCahanMqwMTlgZ7EjtY91AQVu3I84jy8Tu5PLGeYtn8dkDuUZuK/X5jU8AAAAASUVORK5CYII=") #FFF no-repeat center / contain;\n',
+            '    color: #666;\n',
+            '    cursor: pointer;\n',
+            '    display: none;\n',
+            '    font-size: 12px;\n',
+            '    height: 17px;\n',
+            '    line-height: 1;\n',
+            '    position: absolute;\n',
+            '    right: 0;\n',
+            '    top: 0;\n',
+            '    width: 17px;\n',
+            '}\n',
+            '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist, .yt-pl-thumb:hover .blacklist, .yt-pl-thumb:hover .sidebarmode, .thumb-wrapper:hover .sidebarmode, .yt-lockup-thumbnail:hover .sidebarmode{\n',
+            '    display: initial;\n',
+            '}\n',
+        //   end| Thumb buttons
+        // start| Podcast mode
+            '#podcast-container, #podcast-container:before, #podcast-container:after{\n',
+            '    content: "";\n',
+            '    height: 100%;\n',
+            '    position: absolute;\n',
+            '    width: 100%;\n',
+            '}\n',
+            '#podcast-container{\n',
+            '    background-position: center;\n',
+            '    background-size: cover;\n',
+            '    z-index: 800;\n',
+            '}\n',
+            '.ended-mode #podcast-container{\n',
             '    opacity: 0;\n',
             '}\n',
-            '#movie_player:not(.ended-mode):not(.ideal-aspect) video, #movie_player:not(.ended-mode):not(.ideal-aspect) .html5-main-video, #movie_player:not(.ended-mode):not(.ideal-aspect) .html5-video-content{\n',
-            '   top: 50% !important;\n',
-            '   transform: translateY(-50%) !important;\n',
+            '#podcast-container:before{\n',
+            '    background: #000;\n',
             '}\n',
+            '#podcast-container:after{\n',
+            '    background: inherit;\n',
+            '    filter: blur(10px) brightness(50%);\n',
+            '    -webkit-filter: blur(10px) brightness(50%);\n',
+            '}\n',
+            '#podcast-elements{\n',
+            '    left: 50%;\n',
+            '    position: absolute;\n',
+            '    top: 50%;\n',
+            '    transform: translate(-50%, -50%);\n',
+            '    width: 70%;\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '#podcast-poster{\n',
+            '    background: rgba(0, 0, 0, 0.3);\n',
+            '    box-sizing: border-box;\n',
+            '    float: left;\n',
+            '    padding: 5px;\n',
+            '    position: relative;\n',
+            '    width: 30%;\n',
+            '    margin-right: 10px;\n',
+            '}\n',
+            '#podcast-poster #poster{\n',
+            '    background: #000 no-repeat center / cover content-box;\n',
+            '    width: 100%;\n',
+            '}\n',
+            '#podcast-poster #poster:before{\n',
+            '    content: "";\n',
+            '    display: block;\n',
+            '    padding-top: 100%\n',
+            '}\n',
+            '#podcast-info{\n',
+            '    font-weight: bold;\n',
+            '    left: 30%;\n',
+            '    margin-left: 2%;\n',
+            '    text-shadow: 1px 1px 2px #000;\n',
+            '    top: 50%;\n',
+            '    transform: translateY(-50%);\n',
+            '    position: absolute;\n',
+            '    width: 70%;\n',
+            '}\n',
+            '#podcast-info > div:not(:first-child){\n',
+            '    font-weight: initial;\n',
+            '}\n',
+            '#podcast-info div:last-child{\n',
+            '    margin-top: 2%;\n',
+            '}\n',
+            '#podcast-progress{\n',
+            '    background: rgba(0, 0, 0, 0.8);\n',
+            '    bottom: 10px;\n',
+            '    font-size: 10px;\n',
+            '    padding: 5px;\n',
+            '    position: absolute;\n',
+            '    right: 5px;\n',
+            '}\n',
+            '#podcast-progress div{\n',
+            '    display: inline;\n',
+            '}\n',
+            '#podcast-total{\n',
+            '    color: rgba(255, 255, 255, 0.8);\n',
+            '}\n',
+            '#podcast-current{\n',
+            '    color: rgba(255, 255, 255, 0.6);\n',
+            '}\n',
+        //   end| Podcast mode
+        // start| Enhancements
             ':focus{\n',
             '    outline: none;\n',
             '}\n',
-            '::-moz-focus-inner{\n',
+            ':-moz-focus-inner{\n',
             '    border: 0;\n',
+            '}\n',
+            'input[type="checkbox"], input[type="radio"]{\n',
+            '    opacity: 0;\n',
             '}\n',
             '.signin-container{\n',
             '    margin-right: 10px;\n',
+            '}\n',
+            '.branded-page-related-channels-item .yt-close{\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '.show-guide #appbar-guide-menu{\n',
+            '    border-bottom: 1px solid #E8E8E8;\n',
+            '    border-right: 1px solid #E8E8E8;\n',
+            '    box-shadow: none;\n',
+            '}\n',
+            '.html5-progress-bar, video{\n',
+            '    max-width: 100%;\n',
+            '    max-height: 100%;\n',
+            '    min-width: 100%;\n',
+            '    min-height: 100%;\n',
             '}\n',
             '.ideal-aspect .html5-player-chrome{\n',
             '    background: rgba(27,27,27,0.9) !important;\n',
@@ -38,55 +471,146 @@
             '.ideal-aspect.light-theme .html5-player-chrome{\n',
             '    background: rgba(204,204,204,0.9) !important;\n',
             '}\n',
-            '.branded-page-related-channels-item .yt-close{\n',
-            '    z-index: 1;\n',
-            '}\n',
-            '.watch #content.content-alignment, #footer-container, #player.watch-small{\n',
-            '    min-width: initial !important;\n',
-            '    width: auto;\n',
-            '}\n',
-            '.content-alignment{\n',
-            '    max-width: 1262px;\n',
-            '    min-width: initial;\n',
-            '    width: auto;\n',
-            '}\n',
-            '.show-guide #appbar-guide-menu{\n',
-            '    border-bottom: 1px solid #E8E8E8;\n',
-            '    border-right: 1px solid #E8E8E8;\n',
-            '    box-shadow: none;\n',
-            '}\n',
-            '.not-yt-legacy-css .watch-sidebar{\n',
-            '    width: initial;\n',
-            '}\n',
-            '.content-snap-width-skinny-mode #footer-container{\n',
-            '    display: none;\n',
-            '}\n',
-            '.content-snap-width-skinny-mode #player-api{\n',
-            '    width: 100%;\n',
-            '}\n',
-            '.content-snap-width-skinny-mode #player{\n',
-            '    margin-top: 0;\n',
-            '    top: 0;\n',
+            '#theater-background, #watch7-sidebar{\n',
+            '    transition: none !important;\n',
             '}\n',
             '#footer-container{\n',
             '    max-width: initial;\n',
             '}\n',
-            '#body-container{\n',
-            '    position: relative;\n',
-            '}\n',
-            '#footer-container{\n',
-            '    position: relative;\n',
-            '}\n',
-            '#watch7-sidebar{\n',
-            '    transition: none !important;\n',
-            '}\n',
-            '.watch-stage-mode #player-api, .content-snap-width-skinny-mode #player-api{\n',
-            '    left: initial !important;\n',
-            '    margin: 0 auto !important;\n',
-            '}\n',
-            '#placeholder-player{\n',
+            '.content-snap-width-skinny-mode #footer-container{\n',
             '    display: none;\n',
             '}\n',
+            '.watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter{\n',
+            '   min-width: 0;\n',
+            '}\n',
+        //   end| Enhancements
+        // start| Improved notification button
+            '.part_notif_button #appbar-main-guide-notification-container{\n',
+            '    box-shadow: 0 1px 2px #eee inset;\n',
+            '    display: inline-block;\n',
+            '    top: 1px !important;\n',
+            '    left: auto !important;\n',
+            '    margin-left: 79px !important;\n',
+            '    opacity: 0;\n',
+            '    overflow: hidden !important;\n',
+            '    position: absolute !important;\n',
+            '    visibility: hidden;\n',
+            '    width: auto;\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '.part_notif_button #appbar-main-guide-notification-container .appbar-guide-notification{\n',
+            '    height: 27px !important;\n',
+            '}\n',
+            '.part_notif_button .show-guide-button-notification #appbar-main-guide-notification-container{\n',
+            '    visibility: visible;\n',
+            '    opacity: 1;\n',
+            '}\n',
+            '.part_notif_button #appbar-main-guide-notification-container{\n',
+            '    transition: visibility .3s linear .1s, opacity .3s linear .1s;\n',
+            '}\n',
+            '.part_notif_button #appbar-guide-button-notification-check{\n',
+            '    display: none !important;\n',
+            '}\n',
+            '.part_notif_button .show-guide-button-notification #appbar-guide-button{\n',
+            '    opacity: 1 !important;\n',
+            '}\n',
+        //   end| Improved notification button
+        // start| Static normal mode
+            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-content, html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode .player-width{\n',
+            '    width: 640px !important;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist, html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode .player-height{\n',
+            '    height: 390px !important;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #content.content-alignment, html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #player.watch-small{\n',
+            '    max-width: 1066px !important;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-preview{\n',
+            '    margin-top: -750px !important;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n',
+            '    margin-left: 650px !important;\n',
+            '    margin-top: -400px;\n',
+            '    top: 0;\n',
+            '}\n',
+        //   end| Static normal mode
+        // start| Fit player in theater mode
+            '.part_fit_theater .watch-stage-mode #player{\n',
+            '    margin-bottom: 10px;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #player-api, .part_fit_theater.content-snap-width-skinny-mode #player-api{\n',
+            '    height: auto !important;\n',
+            '    left: 50% !important;\n',
+            '    margin: initial !important;\n',
+            '    max-width: 1280px;\n',
+            '    position: relative !important;\n',
+            '    transform: translateX(-50%);\n',
+            '    width: 100%;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #player-api:before, .part_fit_theater.content-snap-width-skinny-mode #player-api:before{\n',
+            '    content: "";\n',
+            '    display: block;\n',
+            '    padding-top: calc(56.25% + 30px);\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #movie_player, .part_fit_theater.content-snap-width-skinny-mode #movie_player{\n',
+            '    bottom: 0px;\n',
+            '    left: 0px;\n',
+            '    right: 0px;\n',
+            '    top: 0px;\n',
+            '    position: absolute;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #theater-background, .part_fit_theater.content-snap-width-skinny-mode #theater-background{\n',
+            '    height: 100%;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #placeholder-player, .part_fit_theater.content-snap-width-skinny-mode #placeholder-player{\n',
+            '    display: none;\n',
+            '}\n',
+            '.part_fit_theater #player.watch-tiny{\n',
+            '    top: 0;\n',
+            '}\n',
+        //   end| Fit player in theater mode
+        // start| Hide player controls
+            'html:not(.content-snap-width-skinny-mode).part_hide_controls.part_static_size .watch-non-stage-mode .player-height{\n',
+            '    height: 360px !important;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_hide_controls.part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist{\n',
+            '    height: 360px !important;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_hide_controls.part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n',
+            '    margin-top: -370px;\n',
+            '}\n',
+            '.part_fit_theater.part_hide_controls .watch-stage-mode #player-api:before, .part_fit_theater.part_hide_controls.content-snap-width-skinny-mode #player-api:before{\n',
+            '    padding-top: calc(56.25%);\n',
+            '}\n',
+            '.part_hide_controls .watch-stage-mode .player-height{\n',
+            '    height: 480px;\n',
+            '}\n',
+            '.part_hide_controls .watch-tiny .player-height, .part_hide_controls .watch-tiny .watch-stage-mode .player-height{\n',
+            '    height: 240px;\n',
+            '}\n',
+            '@media screen and (min-width:1320px) and (min-height:870px){\n',
+            '    .part_hide_controls .watch-stage-mode .player-height{\n',
+            '        height: 720px;\n',
+            '    }\n',
+            '}\n',
+            '.part_hide_controls .player-height{\n',
+            '    height: 360px;\n',
+            '}\n',
+            'html:not(.content-snap-width-skinny-mode).part_hide_controls .watch-non-stage-mode #watch7-sidebar{\n',
+            '    margin-top: -370px;\n',
+            '}\n',
+            '@media screen and (min-width:1294px) and (min-height:630px){\n',
+            '    .part_hide_controls .player-height{\n',
+            '        height: 480px;\n',
+            '    }\n',
+            '}\n',
+            '@media screen and (min-width:1720px) and (min-height:980px){\n',
+            '    .part_hide_controls .player-height{\n',
+            '        height: 720px;\n',
+            '    }\n',
+            '}\n',
+        //   end| Hide player controls
+        // start| Particle settings
             '#P-settings{\n',
             '    background: #f1f1f1;\n',
             '    height: 100%;\n',
@@ -350,386 +874,8 @@
             '.P-hide{\n',
             '    display: none;\n',
             '}\n',
-            '#body #uploaded-videos{\n',
-            '    color: #666;\n',
-            '    display: initial;\n',
-            '    font-size: 11px;\n',
-            '    font-weight: initial;\n',
-            '    overflow: initial;\n',
-            '    vertical-align: initial;\n',
-            '}\n',
-            '.yt-user-info > span{\n',
-            '    color: #666;\n',
-            '    font-size: 11px;\n',
-            '}\n',
-            '.yt-pl-thumb .blacklist, .thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAARBAMAAADNtor0AAAAJ1BMVEVmZmZzc3N/f3+Kioqqqqqzs7PFxcXOzs7X19fn5+fv7+/39/f///+6PEy9AAAAXElEQVR4XnXO0QnAMAgE0EszhV0lPxmhozhQRhEoEJIWHKpW288IB48DReg/55JXUx3iZFKtJZhaR3CCahanMqwMTlgZ7EjtY91AQVu3I84jy8Tu5PLGeYtn8dkDuUZuK/X5jU8AAAAASUVORK5CYII=") #FFF no-repeat center / contain;\n',
-            '    color: #666;\n',
-            '    cursor: pointer;\n',
-            '    display: none;\n',
-            '    font-size: 12px;\n',
-            '    height: 17px;\n',
-            '    line-height: 1;\n',
-            '    position: absolute;\n',
-            '    right: 0;\n',
-            '    top: 0;\n',
-            '    width: 17px;\n',
-            '}\n',
-            '.yt-pl-thumb .sidebarmode, .thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAIAQMAAAD6NPz1AAAABlBMVEX///9mZmaO7mygAAAAAXRSTlMAQObYZgAAAA1JREFUeF5jeH8AKwIAonQNedxnO+oAAAAASUVORK5CYII=") #FFF no-repeat center;\n',
-            '    bottom: 0;\n',
-            '    color: #666;\n',
-            '    cursor: pointer;\n',
-            '    display: none;\n',
-            '    font-size: 12px;\n',
-            '    height: 17px;\n',
-            '    left: 0;\n',
-            '    line-height: 1;\n',
-            '    position: absolute;\n',
-            '    width: 17px;\n',
-            '}\n',
-            '.thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist, .yt-pl-thumb:hover .blacklist, .yt-pl-thumb:hover .sidebarmode, .thumb-wrapper:hover .sidebarmode, .yt-lockup-thumbnail:hover .sidebarmode{\n',
-            '    display: initial;\n',
-            '}\n',
-            '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
-            '    display: none;\n',
-            '}\n',
-            '#masthead-appbar{\n',
-            '    display: block !important;\n',
-            '}\n',
-            '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMA8KS9FQYBt8gPhw6JigvJyoYcNuUAAABRSURBVHhevdE5DsAgDERRs8ZAtrn/ZaMIiSKD5AbllX8qg/wubnHam0JPYSkACIl69nj5LB8VXRXm4EbggdvKYbCHHd1hHc3PxMqFuxhfsdwDNLwDxD27Q0MAAAAASUVORK5CYII=") no-repeat;\n',
-            '    height: 24px;\n',
-            '    width: 24px;\n',
-            '}\n',
-            '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat;\n',
-            '    height: 24px;\n',
-            '    width: 24px;\n',
-            '}\n',
-            'html:not(.content-snap-width-skinny-mode) #player{\n',
-            '    margin-bottom: 10px;\n',
-            '}\n',
-            '#player{\n',
-            '    position: relative;\n',
-            '    width: 100% !important;\n',
-            '}\n',
-            '.html5-progress-bar{\n',
-            '    width: 100% !important;\n',
-            '}\n',
-            '#theater-background{\n',
-            '    height: 100% !important;\n',
-            '}\n',
-            '#player #player-api, #player #player-unavailable{\n',
-            '    height: auto !important;\n',
-            '    position: relative !important;\n',
-            '}\n',
-            '#player #movie_player{\n',
-            '    bottom: 0 !important;\n',
-            '    left: 0 !important;\n',
-            '    position: absolute !important;\n',
-            '    right: 0 !important;\n',
-            '    top: 0 !important;\n',
-            '}\n',
-            '#movie_player video{\n',
-            '    left: initial !important;\n',
-            '    max-height: 100%;\n',
-            '    max-width: 100%;\n',
-            '    min-height: 100%;\n',
-            '    min-width: 100%;\n',
-            '}\n',
-            '#player-unavailable:not(.hid) + #player-api{\n',
-            '    display: none;\n',
-            '}\n',
-            '.watch-stage-mode #player-unavailable{\n',
-            '    float: none;\n',
-            '    margin: 0 auto;\n',
-            '}\n',
-            '.ytp-button-stop{\n',
-            '    margin: 0 -10px;\n',
-            '    position: relative;\n',
-            '    width: 45px !important;\n',
-            '    z-index: 1;\n',
-            '}\n',
-            '.invisible{\n',
-            '    display: none;\n',
-            '}\n',
-            // player console section
-            '#watch-header{\n',
-            '    position: relative;\n',
-            '}\n',
-            '#console-button{\n',
-            '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKAQMAAABVIEaHAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABBJREFUeF5j+P8DhMAAkw0AsQkLy6q+yNQAAAAASUVORK5CYII=) no-repeat center;\n',
-            '    cursor: pointer;\n',
-            '    height: 20px;\n',
-            '    opacity: 0.5;\n',
-            '    position: absolute;\n',
-            '    top: 0;\n',
-            '    right: 0;\n',
-            '    width: 25px;\n',
-            '    z-index: 1;\n',
-            '}\n',
-            '#console-button:hover{\n',
-            '    opacity: 0.8;\n',
-            '}\n',
-            '.player-console #console-button{\n',
-            '    opacity: 1;\n',
-            '}\n',
-            '#player-console{\n',
-            '    display: none;\n',
-            '    font-size: 0;\n',
-            '    height: 40px;\n',
-            '    position: absolute;\n',
-            '    right: 20px;\n',
-            '    top: 10px;\n',
-            '    text-align: center;\n',
-            '    border-left: 20px solid;\n',
-            '    border-image: linear-gradient(to left, #FFF 20%, transparent 100%) 1 100%;\n',
-            '}\n',
-            '.player-console #player-console{\n',
-            '    display: initial;\n',
-            '}\n',
-            '#player-console > div{\n',
-            '    cursor: pointer;\n',
-            '    display: inline-block;\n',
-            '    height: 30px;\n',
-            '    opacity: 0.4;\n',
-            '    padding: 0 7px;\n',
-            '    position: relative;\n',
-            '    top: 50%;\n',
-            '    transform: translateY(-50%);\n',
-            '}\n',
-            '#player-console:before{\n',
-            '    background: #FFF;\n',
-            '    border-right: 20px solid white;\n',
-            '    content: "";\n',
-            '    height: 100%;\n',
-            '    position: absolute;\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#player-console > div.active{\n',
-            '    opacity: 0.8 !important;\n',
-            '}\n',
-            '#player-console > div:hover{\n',
-            '    opacity: 0.6;\n',
-            '}\n',
-            '#autoplay-button{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAZlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwbJTWAAAAIXRSTlMAAnkBEP3p7/mGCwUHWwOoURVpQ5hCTvVZZARvBgmIDJcLZgxgAAAAVUlEQVR4Xl3ORRLAIBBE0YFAQtxd+/6XDEuav3xVI9L2wgGTYfDlBYNPVxHADiUD4OqGAcg6xQCkYxLBTJAtNLJuKlzq9iM8a8+LHtM3vf68EvYZoX5HKg99MDC3NAAAAABJRU5ErkJggg==") no-repeat center;\n',
-            '    width: 16px;\n',
-            '}\n',
-            '#save-thumbnail-button{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAMAAAB2Mu6sAAAAXVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACDURIJAAAAHnRSTlMAAN5AsgMB/dECiK1jzAireHcS5GIZ1RUk9eLK6wls6Nm2AAAAbUlEQVR4Xn3QWQ6AIAxFUZRBxXme3/6XKSr9MCDnq8lN2qQMP0KBfUQPCpILwaUncBjcEwQMEQxD4V2lNKCVe1zWMHJJgVQ7HuVJIWvajLGuh5XaME5mnpcVZHuDwi1JQHBQcNgQO6LgE70C4QJ/fB23OA62kwAAAABJRU5ErkJggg==") no-repeat center;\n',
-            '    width: 24px;\n',
-            '}\n',
-            '#seek-map{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASBAMAAACk4JNkAAAAFVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAACWttmcAAAABnRSTlMAABXMz9EsYubbAAAAK0lEQVQIW2NQSUtzYgATbmlpKRAiDQiIIYCKUyGEalqaEYSAAUEkFpXtAABuQC6raZ2ufgAAAABJRU5ErkJggg==") no-repeat center;\n',
-            '    width: 18px;\n',
-            '}\n',
-            '#screenshot-button{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASCAMAAABo+94fAAAAQlBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4warDAAAAFXRSTlMAAAJAHGj94JnP3j8VzZUi6wvcytGH5aKYAAAAcUlEQVR4XoXPSQ6AIAxAUSwzAjLI/a/qQIOSJvoXNHkLoKy3OedKOY9tueuaU8NSfhhqG1UYHNureLO3jWQ9Q1VSAAip0Bnqyo3Whq/oyJKHawQuJxamTyMmBt1ZwzfTS/6fpB8k6wymXcvTLPM71d0f5EgYnuxfALoAAAAASUVORK5CYII=") no-repeat center;\n',
-            '    width: 22px;\n',
-            '}\n',
-            '#sidebar-button{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASAQMAAABl67xuAAAABlBMVEUAAAD///+l2Z/dAAAADklEQVR4XmNgbGCgBgYARvEJE30TDdMAAAAASUVORK5CYII=") no-repeat center;\n',
-            '    width: 22px;\n',
-            '}\n',
-            '#loop-button{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAMAAABsDg4iAAAAY1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcL/mXAAAAIHRSTlMAAKVZHRNz5BQCyFAYsgEfmk71I4KrKdfMBEcGVwWGf0tiNMIAAACRSURBVHhebdBXDsIwEADRxSVu6fQ+9z8lhgRLCbwfSyNZXq/MjFbOKW1kk03JVswq+43tnqLppniTgZh8CD5FaOw7Hti2u1o+6h6qHNsjp/YsszqCERmAixQJtFxHYLyX6EHJA4BniQFcPhwEWUcFXpbXRTSk1UMiBmK9HCmroF8On9mG9TezrvlZyO/q/i75BYzRD2BnJL4kAAAAAElFTkSuQmCC") no-repeat center;\n',
-            '    width: 20px;\n',
-            '}\n',
-            '#audio-only{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAVFBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkwc6KAAAAG3RSTlMAABOb4hrc6AROTQIXOHnZaHdEzu9A9dfz6/cz7bX/AAAAiUlEQVR4Xm3QVw6DQAxF0alMo6aWu/99ZhiHRES8L+tILrJqMck6Z5OppdYrxBxoCTkKxZlv5tgoA0tfSr8AeSUTYJCRAwRTKcGoPhkhVbJgNjJgKzkoGxVwQpMX8ZOQBTqhjtZ4egEIATyu6saeuCj+iQM6ajw99xSusvp3RNc+4e/ndqpUWr8Ba0MPBQ06LVcAAAAASUVORK5CYII=") no-repeat center;\n',
-            '    width: 18px;\n',
-            '}\n',
-            '#screenshot-result{\n',
-            '    bottom: 15px;\n',
-            '    box-shadow: 0 0 15px #000000;\n',
-            '    font-size: 0;\n',
-            '    margin: 5px;\n',
-            '    max-width: 420px;\n',
-            '    overflow: hidden;\n',
-            '    position: fixed;\n',
-            '    right: 15px;\n',
-            '    width: 30%;\n',
-            '    z-index: 1000;\n',
-            '}\n',
-            '#screenshot-result > canvas{\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#close-screenshot{\n',
-            '    background: rgba(0, 0, 0, 0.5);\n',
-            '    border-bottom-left-radius: 5px;\n',
-            '    color: #F1F1F1;\n',
-            '    cursor: pointer;\n',
-            '    font-size: 10px;\n',
-            '    padding: 5px;\n',
-            '    position: absolute;\n',
-            '    right: 0;\n',
-            '    text-transform: uppercase;\n',
-            '    top: 0;\n',
-            '}\n',
-            '#close-screenshot:hover{\n',
-            '    background: rgba(0, 0, 0, 0.8);\n',
-            '}\n',
-            '#seek-thumb-map{\n',
-            '    font-size: 0;\n',
-            '    overflow: auto;\n',
-            '    position: absolute;\n',
-            '    bottom: 0;\n',
-            '    width: 100%;\n',
-            '    white-space: nowrap;\n',
-            '    z-index: 940;\n',
-            '}\n',
-            '#seek-controls{\n',
-            '    background: rgba(0, 0, 0, 0.8);\n',
-            '    border-top-left-radius: 5px;\n',
-            '    border-top-right-radius: 5px;\n',
-            '    bottom: 100%;\n',
-            '    display: inline-block;\n',
-            '    left: 50%;\n',
-            '    padding: 5px 5px 0;\n',
-            '    position: relative;\n',
-            '    transform: translateX(-50%);\n',
-            '}\n',
-            '#seek-controls > div{\n',
-            '    color: rgba(255,255,255, 0.4);\n',
-            '    cursor: pointer;\n',
-            '    font-size: 10px;\n',
-            '    display: inline;\n',
-            '    font-size: 10px;\n',
-            '    margin: 5px;\n',
-            '}\n',
-            '.quality-1 .quality-1, .quality-2 .quality-2, .quality-3 .quality-3{\n',
-            '    color: rgba(255,255,255, 0.7) !important;\n',
-            '}\n',
-            '#seek-controls > div:hover{\n',
-            '    color: #F1F1F1 !important;\n',
-            '}\n',
-            '#seek-thumbs{\n',
-            '    background: rgba(0, 0, 0, 0.8);\n',
-            '    overflow: auto;\n',
-            '}\n',
-            '#seek-thumbs span{\n',
-            '    display: inline-block;\n',
-            '    margin: 10px 5px 20px;\n',
-            '    position: relative;\n',
-            '}\n',
-            '#seek-thumbs .timer{\n',
-            '    font-size: 11px;\n',
-            '    line-height: 20px;\n',
-            '    position: absolute;\n',
-            '    text-align: center;\n',
-            '    top: 100%;\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#podcast-container, #podcast-container:before, #podcast-container:after{\n',
-            '    content: "";\n',
-            '    height: 100%;\n',
-            '    position: absolute;\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#podcast-container{\n',
-            '    background-position: center;\n',
-            '    background-size: cover;\n',
-            '    z-index: 800;\n',
-            '}\n',
-            '.ended-mode #podcast-container{\n',
-            '    opacity: 0;\n',
-            '}\n',
-            '#podcast-container:before{\n',
-            '    background: #000;\n',
-            '}\n',
-            '#podcast-container:after{\n',
-            '    background: inherit;\n',
-            '    filter: blur(10px) brightness(50%);\n',
-            '    -webkit-filter: blur(10px) brightness(50%);\n',
-            '}\n',
-            '#podcast-elements{\n',
-            '    left: 50%;\n',
-            '    position: absolute;\n',
-            '    top: 50%;\n',
-            '    transform: translate(-50%, -50%);\n',
-            '    width: 70%;\n',
-            '    z-index: 1;\n',
-            '}\n',
-            '#podcast-poster{\n',
-            '    background: rgba(0, 0, 0, 0.3);\n',
-            '    box-sizing: border-box;\n',
-            '    float: left;\n',
-            '    padding: 5px;\n',
-            '    position: relative;\n',
-            '    width: 30%;\n',
-            '    margin-right: 10px;\n',
-            '}\n',
-            '#podcast-poster #poster{\n',
-            '    background: #000 no-repeat center / cover content-box;\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#podcast-poster #poster:before{\n',
-            '    content: "";\n',
-            '    display: block;\n',
-            '    padding-top: 100%\n',
-            '}\n',
-            '#podcast-info{\n',
-            '    font-weight: bold;\n',
-            '    left: 30%;\n',
-            '    margin-left: 2%;\n',
-            '    text-shadow: 1px 1px 2px #000;\n',
-            '    top: 50%;\n',
-            '    transform: translateY(-50%);\n',
-            '    position: absolute;\n',
-            '    width: 70%;\n',
-            '}\n',
-            '#podcast-info > div:not(:first-child){\n',
-            '    font-weight: initial;\n',
-            '}\n',
-            '#podcast-info div:last-child{\n',
-            '    margin-top: 2%;\n',
-            '}\n',
-            '#podcast-progress{\n',
-            '    background: rgba(0, 0, 0, 0.8);\n',
-            '    bottom: 10px;\n',
-            '    font-size: 10px;\n',
-            '    padding: 5px;\n',
-            '    position: absolute;\n',
-            '    right: 5px;\n',
-            '}\n',
-            '#podcast-progress div{\n',
-            '    display: inline;\n',
-            '}\n',
-            '#podcast-total{\n',
-            '    color: rgba(255, 255, 255, 0.8);\n',
-            '}\n',
-            '#podcast-current{\n',
-            '    color: rgba(255, 255, 255, 0.6);\n',
-            '}\n',
-            'html:not([data-player-size="fullscreen"]) #player #movie_player.floater{\n',
-            '    position: fixed !important;\n',
-            '    top: 50% !important;\n',
-            '    transform: translateY(-50%);\n',
-            '    z-index: 10;\n',
-            '}\n',
-            'html:not([data-player-size="fullscreen"]).content-snap-width-skinny-mode #player #movie_player.floater{\n',
-            '    position: fixed !important;\n',
-            '    top: 50px !important;\n',
-            '    transform: none;\n',
-            '}\n',
-            '#subscription-playlist-icon{\n',
-            '    margin-right: -20px;\n',
-            '}\n',
-            '#subscription-playlist span{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAZlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwbJTWAAAAIXRSTlMAAnkBEP3p7/mGCwUHWwOoURVpQ5hCTvVZZARvBgmIDJcLZgxgAAAAVUlEQVR4Xl3ORRLAIBBE0YFAQtxd+/6XDEuav3xVI9L2wgGTYfDlBYNPVxHADiUD4OqGAcg6xQCkYxLBTJAtNLJuKlzq9iM8a8+LHtM3vf68EvYZoX5HKg99MDC3NAAAAABJRU5ErkJggg==") no-repeat scroll center;\n',
-            '    display: block;\n',
-            '    height: 100%;\n',
-            '    opacity: 0.4;\n',
-            '    width: 20px;\n',
-            '}\n',
-            '#blacklist-import, #blacklist-export{\n',
-            '    margin-top: 10px;\n',
-            '}\n',
-            '#subscription-playlist:hover span{\n',
-            '    opacity: 1;\n',
-            '}\n'
+        //   end| Particle settings
+            ''
         ].join('');
     function particle() {
         var api,
@@ -739,7 +885,6 @@
             channelId = {},
             eventStock = [],
             usingChrome = typeof window.chrome === 'object',
-            styleSheet = document.getElementById('P-style'),
             defaultSettings = {
                 GEN_BTTR_NTF: true,
                 GEN_YT_LOGO_LINK: true,
@@ -1680,7 +1825,8 @@
             }
         }
         function customStyles() {
-            var commentSection = document.getElementById('watch-discussion'),
+            var classList = '',
+                commentSection = document.getElementById('watch-discussion'),
                 sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0];
             if (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.split('/feed/').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1))) {
                 sidebar.remove();
@@ -1694,224 +1840,46 @@
             if (document.readyState !== 'interactive') {
                 return;
             }
-            if (parSets.VID_PLR_CTRL_VIS) {
-                styleSheet.textContent +=
-                    '#watch7-sidebar{\n' +
-                    '    margin-top: ' + (
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '-390px') ||
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '-360px')
-                    ) + ';\n' +
-                    '}\n' +
-                    '#watch-appbar-playlist{\n' +
-                    '    height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '390px') ||
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '360px')
-                    ) + ';\n' +
-                    '}\n' +
-                    '@media screen and (min-width:1294px) and (min-height:630px){\n' +
-                    '    #watch-appbar-playlist{\n' +
-                    '        height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '510px') ||
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '480px')
-                    ) + ';\n' +
-                    '    }\n' +
-                    '}\n' +
-                    '@media screen and (min-width:1720px) and (min-height:980px){\n' +
-                    '    #watch-appbar-playlist{\n' +
-                    '    height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '750px') ||
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '720px')
-                    ) + ';\n' +
-                    '    }\n' +
-                    '}\n' +
-                    '#player #player-api:before, #player #player-unavailable:before{\n' +
-                    '    content: "";\n' +
-                    '    display: block;\n' +
-                    '    padding-top: calc(56.25% + ' + ((parSets.VID_PLR_CTRL_VIS > 0) ? 0 : 30) + 'px);\n' +
-                    '}\n';
+            if (parSets.VID_PLR_CTRL_VIS > 0) {
+                classList += ' part_hide_controls';
             }
             if (parSets.VID_DESC_SHRT) {
-                styleSheet.textContent +=
-                    '#watch8-secondary-actions{\n' +
-                    '    left: 0 !important;\n' +
-                    '}\n' +
-                    '#watch8-secondary-actions .yt-uix-button-content{\n' +
-                    '    display: none;\n' +
-                    '}\n' +
-                    '#watch8-secondary-actions button{\n' +
-                    '    padding: 0;\n' +
-                    '}\n';
+                classList += ' part_labelless_buttons';
             }
             if (parSets.VID_TTL_CMPT) {
-                styleSheet.textContent +=
-                    '#watch7-headline #eow-title{\n' +
-                    '    display: block;\n' +
-                    '    overflow: hidden;\n' +
-                    '    text-overflow: ellipsis;\n' +
-                    '    white-space: nowrap;\n' +
-                    '}\n';
+                classList += ' part_compact_title';
             }
             if (parSets.GEN_CMPT_TTLS) {
-                styleSheet.textContent +=
-                    '.feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{\n' +
-                    '    white-space: nowrap !important;\n' +
-                    '    display: inherit !important;\n' +
-                    '}\n';
+                classList += ' part_compact_titles';
             }
             if (parSets.GEN_BLUE_GLOW) {
-                styleSheet.textContent +=
-                    '.yt-uix-button:focus, .yt-uix-button:focus:hover{\n' +
-                    '    box-shadow: initial !important;\n' +
-                    '}\n';
+                classList += ' part_dsbl_glow';
             }
             if (parSets.GEN_BTTR_NTF) {
-                styleSheet.textContent +=
-                    '#appbar-main-guide-notification-container{\n' +
-                    '    box-shadow: 0 1px 2px #eee inset;\n' +
-                    '    display: inline-block;\n' +
-                    '    top: 1px !important;\n' +
-                    '    left: auto !important;\n' +
-                    '    margin-left: 79px !important;\n' +
-                    '    opacity: 0;\n' +
-                    '    overflow: hidden !important;\n' +
-                    '    position: absolute !important;\n' +
-                    '    visibility: hidden;\n' +
-                    '    width: auto;\n' +
-                    '    z-index: 1;\n' +
-                    '}\n' +
-                    '#appbar-main-guide-notification-container .appbar-guide-notification{\n' +
-                    '    height: 27px !important;\n' +
-                    '}\n' +
-                    '.show-guide-button-notification #appbar-main-guide-notification-container{\n' +
-                    '    visibility: visible;\n' +
-                    '    opacity: 1;\n' +
-                    '}\n' +
-                    '#appbar-main-guide-notification-container{\n' +
-                    '    transition: visibility .3s linear .1s, opacity .3s linear .1s;\n' +
-                    '}\n' +
-                    '#appbar-guide-button-notification-check{\n' +
-                    '    display: none !important;\n' +
-                    '}\n' +
-                    '.show-guide-button-notification #appbar-guide-button{\n' +
-                    '    opacity: 1 !important;\n' +
-                    '}\n';
+                classList += ' part_notif_button';
             }
             if (parSets.GEN_HIDE_FTR) {
-                styleSheet.textContent +=
-                    '#footer-container{\n' +
-                    '    visibility: hidden;\n' +
-                    '}\n' +
-                    '#body-container{\n' +
-                    '    padding-bottom: initial;\n' +
-                    '}\n';
+                classList += ' part_hide_footer';
             }
             if (parSets.VID_PLST_SEP) {
-                styleSheet.textContent +=
-                    '#watch-appbar-playlist{\n' +
-                    '    margin-left: 0 !important;\n' +
-                    '}\n';
+                classList += ' part_playlist_spacer';
             }
             if (parSets.VID_PLR_FIT) {
-                styleSheet.textContent +=
-                    '#player:not(.watch-small):not(.watch-tiny) #player-api, #player:not(.watch-small):not(.watch-tiny) #player-unavailable{\n' +
-                    '    max-width: ' + parSets.VID_PLR_FIT_WDTH + ' !important;\n' +
-                    '    width: 100% !important;\n' +
-                    '}\n';
+                classList += ' part_fit_theater';
             }
             if (parSets.GEN_DSB_HVRC) {
-                styleSheet.textContent +=
-                    'iframe[src*="hovercard"]{\n' +
-                    '    display: none !important;\n' +
-                    '}\n';
+                classList += ' part_dsbl_hovercards';
             }
             if (parSets.VID_HIDE_DETLS) {
-                styleSheet.textContent +=
-                    '#action-panel-details{\n' +
-                    '    display: none;\n' +
-                    '}\n';
+                classList += ' part_hide_details';
             }
             if (parSets.VID_HIDE_COMS === '1') {
-                styleSheet.textContent +=
-                    '#watch-discussion:not(.show){\n' +
-                    '    height: 0;\n' +
-                    '    margin-bottom: 0;\n' +
-                    '    margin-top: 0;\n' +
-                    '    opacity: 0;\n' +
-                    '    overflow: hidden;\n' +
-                    '    padding-bottom: 0;\n' +
-                    '    padding-top: 0;\n' +
-                    '}\n' +
-                    '.content-snap-width-skinny-mode #P-show-comments{\n' +
-                    '    display: none;\n' +
-                    '}\n' +
-                    '#P-show-comments button{\n' +
-                    '    border-top: none;\n' +
-                    '    padding-top: 2px;\n' +
-                    '}\n';
+                classList += ' part_hide_comments';
             }
             if (parSets.VID_PLR_DYN_SIZE) {
-                styleSheet.textContent +=
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-content{\n' +
-                    '    width: 640px !important;\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #content.content-alignment, html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #player.watch-small{\n' +
-                    '    max-width: 1066px !important;\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-preview{\n' +
-                    '    margin-top: -750px !important;\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n' +
-                    '    margin-left: 650px !important;\n' +
-                    '    margin-top: ' + (
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '-370px') ||
-                        (parSets.VID_PLR_CTRL_VIS < 1 &&  '-400px')
-                    ) + ';\n' +
-                    '    top: 0;\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-width{\n' +
-                    '    width: 640px !important;\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n' +
-                    '    height: 400px !important;\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist{\n' +
-                    '    height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '360px') ||
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '390px')
-                    ) + ' !important;\n' +
-                    '}\n';
+                classList += ' part_static_size';
             }
-            if (!parSets.VID_PLR_DYN_SIZE) {
-                styleSheet.textContent +=
-                    'html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch7-sidebar{\n' +
-                    '    margin-top: ' + (
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '-370px') ||
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '-400px')
-                    ) + ';\n' +
-                    '}\n' +
-                    'html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
-                    '    height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '360px') ||
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '390px')
-                    ) + ';\n' +
-                    '}\n' +
-                    '@media screen and (min-width:1294px) and (min-height:630px){\n' +
-                    '    html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
-                    '        height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '480px') ||
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '510px')
-                    ) + ';\n' +
-                    '    }\n' +
-                    '}\n' +
-                    '@media screen and (min-width:1720px) and (min-height:980px){\n' +
-                    '    html:not(.content-snap-width-skinny-mode) #watch7-container:not(.watch-wide) #watch-appbar-playlist{\n' +
-                    '    height: ' + (
-                        (parSets.VID_PLR_CTRL_VIS > 0 && '720px') ||
-                        (parSets.VID_PLR_CTRL_VIS < 1 && '750px')
-                    ) + ';\n' +
-                    '    }\n' +
-                    '}\n';
-            }
+            document.documentElement.className += classList;
         }
         function enhancedDetails() {
             function username() {
@@ -1960,7 +1928,7 @@
                             method: 'GET',
                             url: '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
                             call: getPLInfo
-                        })
+                        });
                     }
                 }
             }
@@ -1983,7 +1951,7 @@
                         method: 'GET',
                         url: '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
                         call: getCHInfo
-                    })
+                    });
                 }
             }
             if (window.location.pathname === '/watch') {
@@ -2154,7 +2122,7 @@
                 sidebar = document.getElementById('watch7-sidebar');
                 sidebarSize = sidebar && sidebar.getBoundingClientRect();
                 function updatePos() {
-                    if (!videoPlayer.classList.contains('floater')) {
+                    if (!document.documentElement.classList.contains('floater')) {
                         handleEvents('remove', window, 'resize', updatePos);
                         return;
                     }
@@ -2167,15 +2135,15 @@
                     handleEvents('remove', window, 'scroll', initFloater);
                     return;
                 }
-                if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !videoPlayer.classList.contains('floater')) {
+                if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
                     aspectRatio = 16 / 9;
                     width = (skinny && containerSize.width) || sidebarSize.width;
                     height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio;
-                    videoPlayer.classList.toggle('floater');
+                    document.documentElement.classList.toggle('floater');
                     videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                     handleEvents('add', window, 'resize', updatePos);
-                } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && videoPlayer.classList.contains('floater')) {
-                    videoPlayer.classList.toggle('floater');
+                } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && document.documentElement.classList.contains('floater')) {
+                    document.documentElement.classList.toggle('floater');
                     videoPlayer.removeAttribute('style');
                     handleEvents('remove', window, 'resize', updatePos);
                 }
@@ -2223,7 +2191,7 @@
                     method: 'GET',
                     url: '/watch_videos?title=' + listTitle + '&spf=navigate&video_ids=' + list,
                     call: initSubPlaylist
-                })
+                });
             }
         }
         function playerReady(playerApi) {
@@ -3153,7 +3121,7 @@
                 if (window.chrome) {
                     window.chrome.storage.onChanged.addListener(filterChromeStorage);
                 } else if (!window.chrome) {
-                    self.port.on('particleSettings', updateSettings);
+                    window.self.port.on('particleSettings', updateSettings);
                 }
             }
             inject = null;
@@ -3212,7 +3180,7 @@
                 } else if (window.chrome) {
                     window.chrome.storage.sync.get('particleSettings', chromeSettings);
                 } else {
-                    self.port.emit('particleSettings', details);
+                    window.self.port.emit('particleSettings', details);
                 }
             }
         }
@@ -3221,7 +3189,7 @@
         if (window.chrome) {
             window.chrome.storage.sync.get('particleSettings', initParticle);
         } else if (!window.chrome) {
-            self.port.once('particleSettings', initParticle);
+            window.self.port.once('particleSettings', initParticle);
         }
     } else if (userscript) {
         initParticle();
