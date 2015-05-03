@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.1
+// @version     1.9.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2241,9 +2241,14 @@
                     api.seekTo(currentTime);
                 }
                 function stopVideo() {
+                    var podcast = document.getElementById('podcast-container');
                     api.stopVideo();
                     playBtn = document.getElementsByClassName('ytp-button-pause')[0] || document.getElementsByClassName('ytp-button-play')[0];
                     handleEvents('add', playBtn, 'click', resumeVideo);
+                    if (podcast) {
+                        podcast.remove();
+                        document.getElementById('audio-only').classList.remove('active');
+                    }
                 }
                 if (!document.getElementsByClassName('ytp-button-stop')[0] && playerBar) {
                     prev = document.getElementsByClassName('ytp-button-prev')[0];
@@ -2804,7 +2809,7 @@
                     }
                     if (audioOnly.classList.contains('active')) {
                         handleEvents('remove', window, 'spfdone', startAudioMode);
-                        container = document.getElementById('podcast-container').remove();
+                        document.getElementById('podcast-container').remove();
                         audioOnly.classList.remove('active');
                         currentQuality = api.getPlaybackQuality();
                         currentTime = api.getCurrentTime();
