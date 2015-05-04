@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.3
+// @version     1.9.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -147,6 +147,16 @@
             '}\n',
             '#blacklist-import, #blacklist-export{\n',
             '    margin-top: 10px;\n',
+            '}\n',
+            '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMA8KS9FQYBt8gPhw6JigvJyoYcNuUAAABRSURBVHhevdE5DsAgDERRs8ZAtrn/ZaMIiSKD5AbllX8qg/wubnHam0JPYSkACIl69nj5LB8VXRXm4EbggdvKYbCHHd1hHc3PxMqFuxhfsdwDNLwDxD27Q0MAAAAASUVORK5CYII=") no-repeat;\n',
+            '    height: 24px;\n',
+            '    width: 24px;\n',
+            '}\n',
+            '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEX///8AAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+hBK93AAAAJHRSTlMAAPT+sPxAEPcUSbmkAcWYHTWQK8+DJIKN+pcZoB+oJzC6OMQ+rrabAAAAY0lEQVQokbXQNw6AQBADwIMj55wz/v8b6RBI3g7cjrTBSn2c2HjnhioQAEgcAYAwFwCwSgGgo4YDYKcZB8ArfA6AWbsCtBS8jo7qh5Ett6eZnauXlT5obbSS/aAlnq9uH/BvLpzPEZ02MKzwAAAAAElFTkSuQmCC") no-repeat;\n',
+            '    height: 24px;\n',
+            '    width: 24px;\n',
             '}\n',
         //   end| Custom styles
         // start| Player console
@@ -356,27 +366,10 @@
             '}\n',
         //   end| Thumb buttons
         // start| Podcast mode
-            '#podcast-container, #podcast-container:before, #podcast-container:after{\n',
-            '    content: "";\n',
+            '#podcast-container{\n',
             '    height: 100%;\n',
             '    position: absolute;\n',
             '    width: 100%;\n',
-            '}\n',
-            '#podcast-container{\n',
-            '    background-position: center;\n',
-            '    background-size: cover;\n',
-            '    z-index: 800;\n',
-            '}\n',
-            '.ended-mode #podcast-container{\n',
-            '    opacity: 0;\n',
-            '}\n',
-            '#podcast-container:before{\n',
-            '    background: #000;\n',
-            '}\n',
-            '#podcast-container:after{\n',
-            '    background: inherit;\n',
-            '    filter: blur(10px) brightness(50%);\n',
-            '    -webkit-filter: blur(10px) brightness(50%);\n',
             '}\n',
             '#podcast-elements{\n',
             '    left: 50%;\n',
@@ -385,6 +378,13 @@
             '    transform: translate(-50%, -50%);\n',
             '    width: 70%;\n',
             '    z-index: 1;\n',
+            '}\n',
+            '#podcast-background{\n',
+            '    background: #000 no-repeat center center / cover;\n',
+            '    height: 100%;\n',
+            '    width: 100%;\n',
+            '    filter: blur(10px) brightness(50%);\n',
+            '    -webkit-filter: blur(10px) brightness(50%);\n',
             '}\n',
             '#podcast-poster{\n',
             '    background: rgba(0, 0, 0, 0.3);\n',
@@ -876,9 +876,8 @@
             '}\n',
             '.P-hide{\n',
             '    display: none;\n',
-            '}\n',
+            '}\n'
         //   end| Particle settings
-            ''
         ].join('');
     function particle() {
         var api,
@@ -1635,7 +1634,7 @@
                                 'VID_CTRL_BAR_CLR_LGHT': 'light'
                             }),
                             '    <br>',
-                            htEl.select('VID_PLR_CTRL_VIS', {
+                            htEl.radio('VID_PLR_CTRL_VIS', {
                                 'VID_PLR_CTRL_VIS_HIDE_PROG': '0',
                                 'VID_PLR_CTRL_VIS_HIDE_ALL': '1'
                             }),
@@ -1833,7 +1832,7 @@
             }
         }
         function customStyles() {
-            var classList = '',
+            var classList,
                 commentSection = document.getElementById('watch-discussion'),
                 sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
                 ads = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)'));
@@ -1855,49 +1854,24 @@
             if (document.readyState !== 'interactive') {
                 return;
             }
-            if (parSets.GEN_DSBL_ADS) {
-                classList += ' part_no_ads';
-            }
-            if (parSets.VID_PLR_CTRL_VIS > 0) {
-                classList += ' part_hide_controls';
-            }
-            if (parSets.VID_DESC_SHRT) {
-                classList += ' part_labelless_buttons';
-            }
-            if (parSets.VID_TTL_CMPT) {
-                classList += ' part_compact_title';
-            }
-            if (parSets.GEN_CMPT_TTLS) {
-                classList += ' part_compact_titles';
-            }
-            if (parSets.GEN_BLUE_GLOW) {
-                classList += ' part_dsbl_glow';
-            }
-            if (parSets.GEN_BTTR_NTF) {
-                classList += ' part_notif_button';
-            }
-            if (parSets.GEN_HIDE_FTR) {
-                classList += ' part_hide_footer';
-            }
-            if (parSets.VID_PLST_SEP) {
-                classList += ' part_playlist_spacer';
-            }
-            if (parSets.VID_PLR_FIT) {
-                classList += ' part_fit_theater';
-            }
-            if (parSets.GEN_DSB_HVRC) {
-                classList += ' part_dsbl_hovercards';
-            }
-            if (parSets.VID_HIDE_DETLS) {
-                classList += ' part_hide_details';
-            }
-            if (parSets.VID_HIDE_COMS === '1') {
-                classList += ' part_hide_comments';
-            }
-            if (parSets.VID_PLR_DYN_SIZE) {
-                classList += ' part_static_size';
-            }
+            classList = [
+                (parSets.GEN_DSBL_ADS ? ' part_no_ads' : ''),
+                ((parSets.VID_PLR_CTRL_VIS > 0) ? ' part_hide_controls' : ''),
+                (parSets.VID_DESC_SHRT ? ' part_labelless_buttons' : ''),
+                (parSets.VID_TTL_CMPT ? ' part_compact_title' : ''),
+                (parSets.GEN_CMPT_TTLS ? ' part_compact_titles' : ''),
+                (parSets.GEN_BLUE_GLOW ? ' part_dsbl_glow' : ''),
+                (parSets.GEN_BTTR_NTF ? ' part_notif_button' : ''),
+                (parSets.GEN_HIDE_FTR ? ' part_hide_footer' : ''),
+                (parSets.VID_PLST_SEP ? ' part_playlist_spacer' : ''),
+                (parSets.VID_PLR_FIT ? ' part_fit_theater' : ''),
+                (parSets.GEN_DSB_HVRC ? ' part_dsbl_hovercards' : ''),
+                (parSets.VID_HIDE_DETLS ? ' part_hide_details' : ''),
+                ((parSets.VID_HIDE_COMS === '1') ? ' part_hide_comments' : ''),
+                (parSets.VID_PLR_DYN_SIZE ? ' part_static_size' : '')
+            ].join('');
             document.documentElement.className += classList;
+            classList = commentSection = sidebar = ads = null;
         }
         function enhancedDetails() {
             function username() {
@@ -1919,6 +1893,7 @@
                         user.style.color = '#167ac6';
                         verified.remove();
                     }
+                    link = span = user = verified = name = null;
                 }
                 function getPLInfo(details) {
                     details = details.target.responseText;
@@ -1932,6 +1907,7 @@
                             videoCounter();
                         }
                     }
+                    details = null;
                 }
                 if (!document.getElementById('uploaded-videos') && name) {
                     link = document.createElement('a');
@@ -1963,6 +1939,7 @@
                             }
                         }
                     }
+                    details = watchTime = null;
                 }
                 if (watchTime && window.ytplayer.config) {
                     localXHR({
@@ -2021,6 +1998,7 @@
                     document.getElementById('watch7-container').removeAttribute('class');
                 }
             }
+            cookie = pageElement = playerElement = null;
         }
         function argsCleaner(config) {
             var audioMode = document.getElementById('autoplay-button'),
@@ -2045,6 +2023,7 @@
                             api.setVolume(parSets.volLev || 50);
                         }
                     }
+                    img = video = hdURL = state = null;
                 }
                 img = new Image();
                 handleEvents('add', img, 'load', widthReport);
@@ -2176,16 +2155,12 @@
             }
         }
         function subPlaylist() {
-            var list = '',
+            var i,
+                list = [],
                 button = document.getElementById('subscription-playlist'),
                 navMenu = document.getElementById('channel-navigation-menu'),
                 listTitle = document.getElementsByClassName('appbar-nav-menu')[0],
                 videoList = document.getElementsByClassName('addto-watch-later-button');
-            function listIterator(i) {
-                if (i > -1) {
-                    list += videoList[i].getAttribute('data-video-ids') + '%2C';
-                }
-            }
             function initSubPlaylist(event) {
                 event = event.target.responseText;
                 if (event) {
@@ -2201,7 +2176,14 @@
                     '</li>';
                 button = string2HTML(button).querySelector('li');
                 navMenu.insertBefore(button, navMenu.firstChild);
-                Object.keys(videoList).forEach(listIterator);
+                i = videoList.length;
+                while (i) {
+                    i -= 1;
+                    if (i > -1) {
+                        list.push(videoList[i].getAttribute('data-video-ids'));
+                    }
+                }
+                list.reverse().join('%2C');
                 listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent;
                 button = document.getElementById('subscription-playlist');
                 button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
@@ -2302,31 +2284,6 @@
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev || 50);
                 }
-            }
-        }
-        function scriptEntry(event) {
-            var ytConfig;
-            if (event.target.textContent.split('var ytplayer = ytplayer').length > 1) {
-                event.preventDefault();
-                event.stopPropagation();
-                if (window.location.pathname === '/watch') {
-                    ytConfig = event.target.textContent.match(/ytplayer\.config = \{([\w\W]*?)\};/)[1];
-                    window.ytplayer = window.ytplayer || {};
-                    window.ytplayer.config = JSON.parse('{' + ytConfig + '}');
-                    argsCleaner(window.ytplayer.config);
-                }
-            } else if (event.target.textContent.split('ytspf.enabled = false').length > 1) {
-                event.preventDefault();
-                event.stopPropagation();
-                window.ytspf = {
-                    enabled: true,
-                    config: {
-                        'cache-max': 50,
-                        'navigate-limit': 20,
-                        'navigate-lifetime': 64800000,
-                        'reload-identifier': 'spfreload'
-                    }
-                };
             }
         }
         function scriptExit(event) {
@@ -2573,6 +2530,7 @@
             } else if (titleStatus && titleElement.textContent.split('▶').length > 1 && !(state && state > -1 && state < 5)) {
                 titleElement.textContent = titleElement.textContent.replace('▶ ', '');
             }
+            observer = config = titleElement = titleStatus = state = null;
         }
         function volumeWheel(event) {
             var direction = event && (event.deltaY || event.wheelDeltaY),
@@ -2588,6 +2546,7 @@
             if (!event && parSets.VID_VOL_WHEEL) {
                 handleEvents('add', window, 'wheel', volumeWheel);
             }
+            direction = playerApi = null;
         }
         function playlistControls() {
             var href = window.location.href,
@@ -2610,6 +2569,7 @@
                 if (api) {
                     api.updatePlaylist();
                 }
+                temp = prev = next = list = videos = length = null;
             }
             function reverseButton(event) {
                 event = usingChrome ? event.target.parentNode : event.target;
@@ -2633,6 +2593,7 @@
                 button = string2HTML(button).querySelector('button');
                 handleEvents('add', button, 'click', call);
                 navControls.appendChild(button);
+                navControls = button = null;
             }
             if (playlistBar) {
                 if (document.readyState === 'complete' && href.split(parSets.plRev).length > 1) {
@@ -2703,7 +2664,7 @@
                             container.remove();
                         }
                         container = [
-                            '<div id="podcast-container" style="background-image:url(\'' + poster + '\')">\n',
+                            '<div id="podcast-container">\n',
                             '    <div id="podcast-elements">\n',
                             '        <div id="podcast-poster">\n',
                             '            <div id="poster" style="background-image:url(\'' + poster + '\')"></div>\n',
@@ -2717,6 +2678,7 @@
                             '            <div id="podcast-channel">' + user + '</div>\n',
                             '        </div>\n',
                             '    </div>\n',
+                            '    <div id="podcast-background" style="background-image:url(\'' + poster + '\')"></div>\n',
                             '</div>\n'
                         ].join('');
                         container = string2HTML(container).querySelector('#podcast-container');
@@ -3067,6 +3029,7 @@
             if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
                 document.documentElement.scrollTop = document.body.scrollTop = 0;
             }
+            logo = channelLink = autoplaybar = null;
         }
         function initFunctions() {
             requesting = false;
@@ -3101,12 +3064,12 @@
                 }
                 player.remove();
             }
+            url = previous = videoBefore = videoAfter = listBefore = listAfter = player = loaded = null;
         }
         window.onYouTubePlayerReady = playerReady;
         handleEvents('add', window, 'spfdone', initFunctions);
         handleEvents('add', window, 'spfrequest', request);
         handleEvents('add', window, 'readystatechange', initFunctions, true);
-        handleEvents('add', window, 'beforescriptexecute', scriptEntry);
         if (usingChrome) {
             handleEvents('add', document.documentElement, 'load', scriptExit, true);
         } else {
