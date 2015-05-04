@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.2
+// @version     1.9.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -22,7 +22,7 @@
             '}\n',
         //   end| Playlist spacer
         // start| Ads visibility
-            '#header, #feed-pyv-container, .video-list-item:not(.related-list-item), .pyv-afc-ads-container, .ad-div{\n',
+            '.part_no_ads #header, .part_no_ads #feed-pyv-container, .part_no_ads .video-list-item:not(.related-list-item), .part_no_ads .pyv-afc-ads-container, .part_no_ads .ad-div{\n',
             '    display: none;\n',
             '}\n',
         //   end| Ads visibility
@@ -451,6 +451,9 @@
             '.signin-container{\n',
             '    margin-right: 10px;\n',
             '}\n',
+            '#body-container{\n',
+            '    position: relative;\n',
+            '}\n',
             '.branded-page-related-channels-item .yt-close{\n',
             '    z-index: 1;\n',
             '}\n',
@@ -460,6 +463,7 @@
             '    box-shadow: none;\n',
             '}\n',
             '.html5-progress-bar, video{\n',
+            '    left: initial !important;\n',
             '    max-width: 100%;\n',
             '    max-height: 100%;\n',
             '    min-width: 100%;\n',
@@ -540,11 +544,10 @@
             '}\n',
             '.part_fit_theater .watch-stage-mode #player-api, .part_fit_theater.content-snap-width-skinny-mode #player-api{\n',
             '    height: auto !important;\n',
-            '    left: 50% !important;\n',
-            '    margin: initial !important;\n',
+            '    left: initial !important;\n',
+            '    margin: 0 auto !important;\n',
             '    max-width: 1280px;\n',
             '    position: relative !important;\n',
-            '    transform: translateX(-50%);\n',
             '    width: 100%;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #player-api:before, .part_fit_theater.content-snap-width-skinny-mode #player-api:before{\n',
@@ -1062,6 +1065,10 @@
                     en: 'Layout',
                     'pt-PT': 'Aparência'
                 },
+                GEN_DSBL_ADS: {
+                    en: 'Disable advertisements',
+                    'pt-PT': 'Desactivar publicidades'
+                },
                 GEN_YT_LOGO_LINK: {
                     en: 'YouTube logo redirects to subscriptions',
                     'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
@@ -1556,6 +1563,7 @@
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
                             htEl.title('GEN_GEN', 'h3'),
+                            htEl.input('GEN_DSBL_ADS', 'checkbox'),
                             htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
                             htEl.input('GEN_SDBR_ON', 'checkbox'),
                             htEl.input('GEN_REM_APUN', 'checkbox'),
@@ -1827,7 +1835,8 @@
         function customStyles() {
             var classList = '',
                 commentSection = document.getElementById('watch-discussion'),
-                sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0];
+                sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
+                ads = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)'));
             if (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.split('/feed/').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1))) {
                 sidebar.remove();
             }
@@ -1837,8 +1846,17 @@
             if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commentSection) {
                 commentSection.remove();
             }
+            if (ads) {
+                while (ads) {
+                    ads.remove();
+                    ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
+                }
+            }
             if (document.readyState !== 'interactive') {
                 return;
+            }
+            if (parSets.GEN_DSBL_ADS) {
+                classList += ' part_no_ads';
             }
             if (parSets.VID_PLR_CTRL_VIS > 0) {
                 classList += ' part_hide_controls';
@@ -2127,7 +2145,7 @@
                         return;
                     }
                     sidebarSize = sidebar.getBoundingClientRect();
-                    videoPlayer.style.marginLeft = ((skinny && '0') || sidebarSize.left) + 'px';
+                    videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
                     videoPlayer.style.height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio + 'px';
                 }
@@ -2140,7 +2158,7 @@
                     width = (skinny && containerSize.width) || sidebarSize.width;
                     height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio;
                     document.documentElement.classList.toggle('floater');
-                    videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; margin-left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
+                    videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                     handleEvents('add', window, 'resize', updatePos);
                 } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && document.documentElement.classList.contains('floater')) {
                     document.documentElement.classList.toggle('floater');
@@ -3115,12 +3133,10 @@
             event = event.particleSettings || event;
             event = JSON.stringify(event);
             inject = document.createElement('style');
-            inject.id = 'P-style';
             inject.textContent = particleStyle;
             document.documentElement.appendChild(inject);
             inject = document.createElement('script');
-            inject.textContent = '(' + particle + '())';
-            inject.textContent = inject.textContent.replace('parSets,', 'parSets = ' + event + ',');
+            inject.textContent = '(' + String(particle).replace('parSets,', 'parSets = ' + event + ',') + '())';
             document.documentElement.appendChild(inject);
             if (!userscript) {
                 if (window.chrome) {
