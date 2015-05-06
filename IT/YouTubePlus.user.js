@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.4
+// @version     1.9.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -370,6 +370,7 @@
             '    height: 100%;\n',
             '    position: absolute;\n',
             '    width: 100%;\n',
+            '    z-index: 800;\n',
             '}\n',
             '#podcast-elements{\n',
             '    left: 50%;\n',
@@ -468,6 +469,7 @@
             '    max-height: 100%;\n',
             '    min-width: 100%;\n',
             '    min-height: 100%;\n',
+            '    top: initial !important;\n',
             '}\n',
             '.ideal-aspect .html5-player-chrome{\n',
             '    background: rgba(27,27,27,0.9) !important;\n',
@@ -484,7 +486,7 @@
             '.content-snap-width-skinny-mode #footer-container{\n',
             '    display: none;\n',
             '}\n',
-            '.watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter{\n',
+            '.watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{\n',
             '   min-width: 0;\n',
             '}\n',
         //   end| Enhancements
@@ -570,6 +572,21 @@
             '}\n',
             '.part_fit_theater #player.watch-tiny{\n',
             '    top: 0;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode .watch-medium #watch-appbar-playlist, .part_fit_theater .watch-stage-mode .watch-large #watch-appbar-playlist{\n',
+            '    top: 0;\n',
+            '}\n',
+            '.part_fit_theater .watch-wide #watch-appbar-playlist{\n',
+            '    transform: none;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #placeholder-playlist, .part_fit_theater .watch-stage-mode #player-playlist{\n',
+            '    margin-top: 10px;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #placeholder-playlist{\n',
+            '    max-height: 480px;\n',
+            '}\n',
+            '.part_fit_theater .watch-non-stage-mode #watch-appbar-playlist{\n',
+            '    left: 650px;\n',
             '}\n',
         //   end| Fit player in theater mode
         // start| Hide player controls
@@ -971,6 +988,10 @@
                 CNSL_AUDI: {
                     en: 'Audio only',
                     'pt-PT': 'Só áudio'
+                },
+                CNSL_AUDI_OFF: {
+                    en: 'Not available yet',
+                    'pt-PT': 'Ainda não está disponível'
                 },
                 CNSL_SKMP: {
                     en: 'Seek map',
@@ -1845,11 +1866,9 @@
             if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commentSection) {
                 commentSection.remove();
             }
-            if (ads) {
-                while (ads) {
-                    ads.remove();
-                    ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
-                }
+            while (ads) {
+                ads.remove();
+                ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
             if (document.readyState !== 'interactive') {
                 return;
@@ -2523,12 +2542,14 @@
                 titleElement = document.getElementsByTagName('title')[0],
                 titleStatus = titleElement.id === 'observing',
                 state = api && api.getPlayerState && api.getPlayerState();
-            if (!titleStatus) {
-                titleElement.id = 'observing';
-                observer = new window.MutationObserver(title);
-                observer.observe(titleElement, config);
-            } else if (titleStatus && titleElement.textContent.split('▶').length > 1 && !(state && state > -1 && state < 5)) {
-                titleElement.textContent = titleElement.textContent.replace('▶ ', '');
+            if (titleElement) {
+                if (!titleStatus) {
+                    titleElement.id = 'observing';
+                    observer = new window.MutationObserver(title);
+                    observer.observe(titleElement, config);
+                } else if (titleStatus && titleElement.textContent.split('▶').length > 1 && !(state && state > -1 && state < 5)) {
+                    titleElement.textContent = titleElement.textContent.replace('▶ ', '');
+                }
             }
             observer = config = titleElement = titleStatus = state = null;
         }
@@ -2613,6 +2634,7 @@
                 consoleButton = document.getElementById('console-button'),
                 controls = document.getElementById('player-console'),
                 storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
+                hasWebmAudio = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length > 1,
                 videoPlayer = document.getElementsByTagName('video')[0];
             function hookButtons() {
                 var autoPlay = controls.querySelector('#autoplay-button'),
@@ -2777,7 +2799,7 @@
                             stream.split('&').forEach(streamIterator);
                         }
                         window.ytplayer.config.args.adaptive_fmts.split(',').forEach(adaptiveIterator);
-                        loadStream = streams['171'] || streams['140'];
+                        loadStream = streams['171'];
                         console.info(streams);
                         if (loadStream) {
                             if (!loadStream.s) {
@@ -2787,19 +2809,21 @@
                             }
                         }
                     }
-                    if (audioOnly.classList.contains('active')) {
-                        handleEvents('remove', window, 'spfdone', startAudioMode);
-                        document.getElementById('podcast-container').remove();
-                        audioOnly.classList.remove('active');
-                        currentQuality = api.getPlaybackQuality();
-                        currentTime = api.getCurrentTime();
-                        window.ytplayer.config.loaded = false;
-                        api.loadNewVideoConfig(window.ytplayer.config, 'html5');
-                        api.setPlaybackQuality(currentQuality);
-                        api.seekTo(currentTime);
-                    } else {
-                        handleEvents('add', window, 'spfdone', startAudioMode);
-                        startAudioMode();
+                    if (hasWebmAudio) {
+                        if (audioOnly.classList.contains('active')) {
+                            handleEvents('remove', window, 'spfdone', startAudioMode);
+                            document.getElementById('podcast-container').remove();
+                            audioOnly.classList.remove('active');
+                            currentQuality = api.getPlaybackQuality();
+                            currentTime = api.getCurrentTime();
+                            window.ytplayer.config.loaded = false;
+                            api.loadNewVideoConfig(window.ytplayer.config, 'html5');
+                            api.setPlaybackQuality(currentQuality);
+                            api.seekTo(currentTime);
+                        } else {
+                            handleEvents('add', window, 'spfdone', startAudioMode);
+                            startAudioMode();
+                        }
                     }
                 }
                 function toggleMap() {
@@ -2983,7 +3007,7 @@
                     '<div id="player-console">\n',
                     '    <div id="autoplay-button" class="yt-uix-tooltip' + ((parSets.VID_PLR_ATPL) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_AP') + '"></div>\n',
                     '    <div id="loop-button" class="yt-uix-tooltip' + ((videoPlayer && videoPlayer.loop) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_RPT') + '"></div>\n',
-                    '    <div id="audio-only" class="yt-uix-tooltip' + ((document.getElementById('podcast-container')) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_AUDI') + '"></div>\n',
+                    '    <div id="audio-only" class="yt-uix-tooltip' + ((document.getElementById('podcast-container')) ? ' active' : '') + '" data-tooltip-text="' + (hasWebmAudio ? userLang('CNSL_AUDI') : userLang('CNSL_AUDI_OFF')) + '"' + ((!hasWebmAudio) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
