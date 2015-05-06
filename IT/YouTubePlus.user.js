@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.5
+// @version     1.9.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -570,14 +570,12 @@
             '.part_fit_theater .watch-stage-mode #placeholder-player, .part_fit_theater.content-snap-width-skinny-mode #placeholder-player{\n',
             '    display: none;\n',
             '}\n',
-            '.part_fit_theater #player.watch-tiny{\n',
-            '    top: 0;\n',
-            '}\n',
-            '.part_fit_theater .watch-stage-mode .watch-medium #watch-appbar-playlist, .part_fit_theater .watch-stage-mode .watch-large #watch-appbar-playlist{\n',
+            '.part_fit_theater #player.watch-tiny, .part_fit_theater .watch-stage-mode .watch-medium #watch-appbar-playlist, .part_fit_theater .watch-stage-mode .watch-large #watch-appbar-playlist{\n',
             '    top: 0;\n',
             '}\n',
             '.part_fit_theater .watch-wide #watch-appbar-playlist{\n',
             '    transform: none;\n',
+            '    transition: none;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #placeholder-playlist, .part_fit_theater .watch-stage-mode #player-playlist{\n',
             '    margin-top: 10px;\n',
@@ -585,8 +583,14 @@
             '.part_fit_theater .watch-stage-mode #placeholder-playlist{\n',
             '    max-height: 480px;\n',
             '}\n',
-            '.part_fit_theater .watch-non-stage-mode #watch-appbar-playlist{\n',
+            '.part_fit_theater:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch-appbar-playlist{\n',
             '    left: 650px;\n',
+            '}\n',
+            '.part_fit_theater.content-snap-width-skinny-mode #watch-appbar-playlist{\n',
+            '    top: 10px;\n',
+            '}\n',
+            '.part_fit_theater.content-snap-width-skinny-mode #player-playlist{\n',
+            '    margin-bottom: initial;\n',
             '}\n',
         //   end| Fit player in theater mode
         // start| Hide player controls
@@ -923,7 +927,6 @@
                 VID_PLR_SIZE_MEM: true,
                 VID_PLR_CTRL_VIS: '1',
                 VID_PLR_DYN_SIZE: true,
-                VID_PLR_FIT_WDTH: '1280px',
                 VID_PROG_BAR_CLR: 'red',
                 VID_CTRL_BAR_CLR: 'light',
                 VID_HIDE_COMS: '1',
@@ -1313,10 +1316,6 @@
                     en: 'Fit to page in theater mode',
                     'pt-PT': 'Ajustar na página no modo cinema'
                 },
-                VID_PLR_FIT_WDTH: {
-                    en: 'Fit to page maximum width:',
-                    'pt-PT': 'Largura máxima do ajuste na página:'
-                },
                 VID_PLR_DYN_SIZE: {
                     en: 'Disable dynamic player size in default view',
                     'pt-PT': 'Desactivar tamanho dinâmico do reproductor na vista predefinida'
@@ -1388,6 +1387,22 @@
                 ABT_TTL: {
                     en: 'Information and useful links',
                     'pt-PT': 'Informação e ligações úteis'
+                },
+                ABT_THKS: {
+                    en: 'Thanks to:',
+                    'pt-PT': 'Agradecimentos a:'
+                },
+                ABT_THKS_YEPPHA: {
+                    en: ', who\'s work inspired the creation of this project, without whom none of this would exist today.',
+                    'pt-PT': ', cujo trabalho inspirou a criação deste projecto, sem ele nada disto existiria hoje.'
+                },
+                ABT_THKS_USERSCRIPT_MANAGERS: {
+                    en: ' for making the task of developing and shipping third party software incredibly easier.',
+                    'pt-PT': ' por tornarem o processo de produção e publicação de software bastante fácil.'
+                },
+                ABT_THKS_STACKOV: {
+                    en: ' for all of its priceless information which greatly contributes for software development.',
+                    'pt-PT': ' por toda a informação valiosa que contém e que contribui bastante para a criação de software.'
                 },
                 ABT_INFO: {
                     en: 'Official pages',
@@ -1643,8 +1658,6 @@
                             htEl.input('VID_STP_BTN', 'checkbox'),
                             htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
                             htEl.input('VID_PLR_FIT', 'checkbox'),
-                            htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
-                            '    <br>',
                             htEl.radio('VID_PROG_BAR_CLR', {
                                 'VID_PROG_BAR_CLR_RED': 'red',
                                 'VID_PROG_BAR_CLR_WHT': 'white'
@@ -1718,6 +1731,16 @@
                             htEl.title('ABT_TTL', 'h2'),
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
+                            htEl.title('ABT_THKS', 'h3'),
+                            '    <div>\n',
+                            '        <a href="https://github.com/YePpHa">Jeppe Rune Mortensen</a>' + userLang('ABT_THKS_YEPPHA') + '\n',
+                            '    </div>\n',
+                            '    <div>\n',
+                            '        <a href="http://www.greasespot.net/">Greasemonkey</a> + <a href="http://tampermonkey.net/">Tampermonkey</a>' + userLang('ABT_THKS_USERSCRIPT_MANAGERS') + '\n',
+                            '    </div>\n',
+                            '    <div>\n',
+                            '        <a href="http://stackoverflow.com/">Stack Overflow</a>' + userLang('ABT_THKS_STACKOV') + '\n',
+                            '    </div>\n',
                             htEl.title('ABT_INFO', 'h3'),
                             '    <div>\n',
                             '        <a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
@@ -1730,7 +1753,7 @@
                             '    </div>\n',
                             htEl.title('ABT_PRBL', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/ParticleCore/Particle/issues">Click here for instructions</a>\n',
+                            '        <a href="https://github.com/ParticleCore/Particle/issues">' + userLang('ABT_LNK_PRBL') + '</a>\n',
                             '    </div>\n',
                             '</div>\n'
                         ].join('')
