@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.7
+// @version     1.9.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -480,7 +480,7 @@
             '#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n',
             '    transition: none !important;\n',
             '}\n',
-            '#theater-background{\n',
+            '.part_fit_theater #theater-background, .part_hide_controls #theater-background{\n',
             '    bottom: 0;\n',
             '    height: initial;\n',
             '    top: 0;\n',
@@ -592,22 +592,30 @@
             '}\n',
         //   end| Fit player in theater mode
         // start| Hide player controls
-            '.part_hide_controls.part_fit_theater .watch-stage-mode #player-api:before, .part_hide_controls.part_fit_theater.content-snap-width-skinny-mode #player-api:before{\n',
+            '.part_hide_controls.part_fit_theater .watch-stage-mode #player-api:before, .part_hide_controls.content-snap-width-skinny-mode #player-api:before{\n',
             '    padding-top: calc(56.25%);\n',
             '}\n',
             '.part_hide_controls:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
             '    margin-top: -370px;\n',
             '}\n',
-            '.part_hide_controls .watch-non-stage-mode .player-height{\n',
+            'html.part_hide_controls #page.watch-non-stage-mode .player-height{\n',
             '    height: 360px;\n',
             '}\n',
             '@media screen and (min-width:1294px) and (min-height:630px){\n',
-            '    .part_hide_controls .watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls #page.watch-non-stage-mode .player-height{\n',
             '        height: 480px;\n',
             '    }\n',
             '}\n',
             '@media screen and (min-width:1720px) and (min-height:980px){\n',
-            '    .part_hide_controls .watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls #page.watch-non-stage-mode .player-height{\n',
+            '        height: 720px;\n',
+            '    }\n',
+            '}\n',
+            'html.part_hide_controls #page.watch-stage-mode .player-height{\n',
+            '    height: 480px;\n',
+            '}\n',
+            '@media screen and (min-width:1320px) and (min-height:870px){\n',
+            '    html.part_hide_controls #page.watch-stage-mode .player-height{\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
