@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.8
+// @version     1.9.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -602,12 +602,12 @@
             '    height: 360px;\n',
             '}\n',
             '@media screen and (min-width:1294px) and (min-height:630px){\n',
-            '    html.part_hide_controls #page.watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls:not(.part_static_size) #page.watch-non-stage-mode .player-height{\n',
             '        height: 480px;\n',
             '    }\n',
             '}\n',
             '@media screen and (min-width:1720px) and (min-height:980px){\n',
-            '    html.part_hide_controls #page.watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls:not(.part_static_size) #page.watch-non-stage-mode .player-height{\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
