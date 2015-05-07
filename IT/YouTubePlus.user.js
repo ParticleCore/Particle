@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.6
+// @version     1.9.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -17,7 +17,7 @@
     var userscript = typeof GM_info === 'object',
         particleStyle = [
         // start| Playlist spacer
-            '.part_playlist_spacer #watch-appbar-playlist{\n',
+            '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
             '    margin-left: 0px !important;\n',
             '}\n',
         //   end| Playlist spacer
@@ -64,18 +64,18 @@
             '}\n',
         //   end| Compact thumbnail titles
         // start| Floater player
-            'html:not([data-player-size="fullscreen"]).floater #player #player-api{\n',
+            'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #player-api{\n',
             '    left: initial !important;\n',
             '    margin: 0 auto !important;\n',
             '    transform: none;\n',
             '}\n',
-            'html:not([data-player-size="fullscreen"]).floater #player #movie_player{\n',
+            'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
             '    position: fixed !important;\n',
             '    top: 50% !important;\n',
             '    transform: translateY(-50%);\n',
             '    z-index: 10;\n',
             '}\n',
-            'html:not([data-player-size="fullscreen"]).content-snap-width-skinny-mode.floater #player #movie_player{\n',
+            'html.content-snap-width-skinny-mode.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
             '    position: fixed !important;\n',
             '    top: 50px !important;\n',
             '    transform: none;\n',
@@ -477,17 +477,34 @@
             '.ideal-aspect.light-theme .html5-player-chrome{\n',
             '    background: rgba(204,204,204,0.9) !important;\n',
             '}\n',
-            '#theater-background, #watch7-sidebar{\n',
+            '#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n',
             '    transition: none !important;\n',
+            '}\n',
+            '#theater-background{\n',
+            '    bottom: 0;\n',
+            '    height: initial;\n',
+            '    top: 0;\n',
             '}\n',
             '#footer-container{\n',
             '    max-width: initial;\n',
             '}\n',
+            '.content-snap-width-skinny-mode #player-playlist{\n',
+            '    margin-top: 10px;\n',
+            '}\n',
             '.content-snap-width-skinny-mode #footer-container{\n',
-            '    display: none;\n',
+            '    opacity: 0;\n',
+            '}\n',
+            '.content-snap-width-skinny-mode #player, .content-snap-width-skinny-mode #content, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
+            '    top: 0;\n',
+            '}\n',
+            '.content-snap-width-skinny-mode #player-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
+            '    margin-bottom: 0;\n',
             '}\n',
             '.watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{\n',
             '   min-width: 0;\n',
+            '}\n',
+            '.content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n',
+            '   display: none !important;\n',
             '}\n',
         //   end| Enhancements
         // start| Improved notification button
@@ -522,114 +539,75 @@
             '}\n',
         //   end| Improved notification button
         // start| Static normal mode
-            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-content, html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode .player-width{\n',
-            '    width: 640px !important;\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-width, .part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-content{\n',
+            '    width: 640px;\n',
             '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist, html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode .player-height{\n',
-            '    height: 390px !important;\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n',
+            '    height: 390px;\n',
             '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #content.content-alignment, html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #player.watch-small{\n',
-            '    max-width: 1066px !important;\n',
-            '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-preview{\n',
-            '    margin-top: -750px !important;\n',
-            '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n',
-            '    margin-left: 650px !important;\n',
-            '    margin-top: -400px;\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
+            '    margin-left: 650px;\n',
             '    top: 0;\n',
+            '}\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode) .watch.watch-non-stage-mode #content.content-alignment, .part_static_size:not(.content-snap-width-skinny-mode) .watch.watch-non-stage-mode #player.content-alignment{\n',
+            '    max-width: 1066px;\n',
+            '}\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch-appbar-playlist{\n',
+            '    left: 650px;\n',
             '}\n',
         //   end| Static normal mode
         // start| Fit player in theater mode
-            '.part_fit_theater .watch-stage-mode #player{\n',
-            '    margin-bottom: 10px;\n',
-            '}\n',
-            '.part_fit_theater .watch-stage-mode #player-api, .part_fit_theater.content-snap-width-skinny-mode #player-api{\n',
+            '.part_fit_theater .watch-stage-mode #player-api, .content-snap-width-skinny-mode #player-api{\n',
             '    height: auto !important;\n',
-            '    left: initial !important;\n',
+            '    left: 0 !important;\n',
             '    margin: 0 auto !important;\n',
             '    max-width: 1280px;\n',
-            '    position: relative !important;\n',
+            '    position: relative;\n',
+            '    right: 0;\n',
             '    width: 100%;\n',
             '}\n',
-            '.part_fit_theater .watch-stage-mode #player-api:before, .part_fit_theater.content-snap-width-skinny-mode #player-api:before{\n',
+            '.part_fit_theater .watch-stage-mode #player-api:before, .content-snap-width-skinny-mode #player-api:before{\n',
             '    content: "";\n',
             '    display: block;\n',
             '    padding-top: calc(56.25% + 30px);\n',
             '}\n',
-            '.part_fit_theater .watch-stage-mode #movie_player, .part_fit_theater.content-snap-width-skinny-mode #movie_player{\n',
+            '.part_fit_theater .watch-stage-mode #movie_player, .content-snap-width-skinny-mode #movie_player{\n',
             '    bottom: 0px;\n',
             '    left: 0px;\n',
+            '    position: absolute;\n',
             '    right: 0px;\n',
             '    top: 0px;\n',
-            '    position: absolute;\n',
             '}\n',
-            '.part_fit_theater .watch-stage-mode #theater-background, .part_fit_theater.content-snap-width-skinny-mode #theater-background{\n',
-            '    height: 100%;\n',
-            '}\n',
-            '.part_fit_theater .watch-stage-mode #placeholder-player, .part_fit_theater.content-snap-width-skinny-mode #placeholder-player{\n',
+            '.part_fit_theater .watch-stage-mode #placeholder-player, .content-snap-width-skinny-mode #placeholder-player{\n',
             '    display: none;\n',
             '}\n',
-            '.part_fit_theater #player.watch-tiny, .part_fit_theater .watch-stage-mode .watch-medium #watch-appbar-playlist, .part_fit_theater .watch-stage-mode .watch-large #watch-appbar-playlist{\n',
-            '    top: 0;\n',
-            '}\n',
-            '.part_fit_theater .watch-wide #watch-appbar-playlist{\n',
-            '    transform: none;\n',
-            '    transition: none;\n',
-            '}\n',
-            '.part_fit_theater .watch-stage-mode #placeholder-playlist, .part_fit_theater .watch-stage-mode #player-playlist{\n',
-            '    margin-top: 10px;\n',
-            '}\n',
-            '.part_fit_theater .watch-stage-mode #placeholder-playlist{\n',
-            '    max-height: 480px;\n',
-            '}\n',
-            '.part_fit_theater:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch-appbar-playlist{\n',
-            '    left: 650px;\n',
-            '}\n',
-            '.part_fit_theater.content-snap-width-skinny-mode #watch-appbar-playlist{\n',
+            '.part_fit_theater .watch-stage-mode #watch-appbar-playlist{\n',
             '    top: 10px;\n',
             '}\n',
-            '.part_fit_theater.content-snap-width-skinny-mode #player-playlist{\n',
-            '    margin-bottom: initial;\n',
+            '.part_fit_theater .watch-stage-mode #watch-appbar-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
+            '    transform: none;\n',
+            '}\n',
+            '.part_fit_theater .watch-stage-mode #content, .content-snap-width-skinny-mode #content{\n',
+            '    margin-top: 10px;\n',
             '}\n',
         //   end| Fit player in theater mode
         // start| Hide player controls
-            'html:not(.content-snap-width-skinny-mode).part_hide_controls.part_static_size .watch-non-stage-mode .player-height{\n',
-            '    height: 360px !important;\n',
-            '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_hide_controls.part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) .watch-playlist{\n',
-            '    height: 360px !important;\n',
-            '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_hide_controls.part_static_size .watch-non-stage-mode #watch7-container:not(.watch-wide) #watch7-sidebar{\n',
-            '    margin-top: -370px;\n',
-            '}\n',
-            '.part_fit_theater.part_hide_controls .watch-stage-mode #player-api:before, .part_fit_theater.part_hide_controls.content-snap-width-skinny-mode #player-api:before{\n',
+            '.part_hide_controls.part_fit_theater .watch-stage-mode #player-api:before, .part_hide_controls.part_fit_theater.content-snap-width-skinny-mode #player-api:before{\n',
             '    padding-top: calc(56.25%);\n',
             '}\n',
-            '.part_hide_controls .watch-stage-mode .player-height{\n',
-            '    height: 480px;\n',
-            '}\n',
-            '.part_hide_controls .watch-tiny .player-height, .part_hide_controls .watch-tiny .watch-stage-mode .player-height{\n',
-            '    height: 240px;\n',
-            '}\n',
-            '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    .part_hide_controls .watch-stage-mode .player-height{\n',
-            '        height: 720px;\n',
-            '    }\n',
-            '}\n',
-            '.part_hide_controls .player-height{\n',
-            '    height: 360px;\n',
-            '}\n',
-            'html:not(.content-snap-width-skinny-mode).part_hide_controls .watch-non-stage-mode #watch7-sidebar{\n',
+            '.part_hide_controls:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
             '    margin-top: -370px;\n',
             '}\n',
+            '.part_hide_controls .watch-non-stage-mode .player-height{\n',
+            '    height: 360px;\n',
+            '}\n',
             '@media screen and (min-width:1294px) and (min-height:630px){\n',
-            '    .part_hide_controls .player-height{\n',
+            '    .part_hide_controls .watch-non-stage-mode .player-height{\n',
             '        height: 480px;\n',
             '    }\n',
             '}\n',
             '@media screen and (min-width:1720px) and (min-height:980px){\n',
-            '    .part_hide_controls .player-height{\n',
+            '    .part_hide_controls .watch-non-stage-mode .player-height{\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
@@ -832,6 +810,20 @@
             '    color: transparent !important;\n',
             '    text-shadow: 0 0 0 #333;\n',
             '}\n',
+            '#P-settings .P-select{\n',
+            '    display: inline;\n',
+            '    position: relative;\n',
+            '}\n',
+            '#P-settings .P-select:after{\n',
+            '    content: "";\n',
+            '    border: 1px solid transparent;\n',
+            '    border-width: 4px 4px 0;\n',
+            '    border-top-color: #666;\n',
+            '    pointer-events: none;\n',
+            '    position: absolute;\n',
+            '    right: 10px;\n',
+            '    top: 50%;\n',
+            '}\n',
             '#P-settings option{\n',
             '    color: #000;\n',
             '    text-shadow: none;\n',
@@ -1017,8 +1009,8 @@
                     'pt-PT': 'GRANDE'
                 },
                 CNSL_SVTH: {
-                    en: 'Save thumbnail',
-                    'pt-PT': 'Guardar fundo'
+                    en: 'Open thumbnail',
+                    'pt-PT': 'Abrir imagem de fundo'
                 },
                 CNSL_SS: {
                     en: 'Take screenshot',
@@ -1536,7 +1528,7 @@
                         },
                         select: function (id, list) {
                             var select = '<label for="' + id + '">' + userLang(id) + '</label>\n' +
-                                '<select id="' + id + '">\n';
+                                '<div class="P-select"><select id="' + id + '">\n';
                             function keysIterator(keys) {
                                 select += '<option';
                                 if (parSets[id] === list[keys]) {
@@ -1545,7 +1537,7 @@
                                 select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
                             }
                             Object.keys(list).forEach(keysIterator);
-                            select += '</select>\n';
+                            select += '</select></div>\n';
                             return select;
                         },
                         radio: function (name, list) {
@@ -1779,6 +1771,7 @@
                     delete newKey[event.target.parentNode.getAttribute('data-ytid')];
                     event.target.parentNode.remove();
                     set('blacklist', newKey);
+                    newKey = null;
                 }
                 function saveSettings(salt) {
                     var value,
@@ -1821,6 +1814,7 @@
                         document.body.classList.add('show-guide-button-notification');
                         window.setTimeout(hideNotif, 2000);
                     }
+                    value = notification = navId = savedSets = userSets = length = null;
                 }
                 if (event.target.classList.contains('P-save')) {
                     saveSettings();
@@ -1860,6 +1854,7 @@
                     handleEvents('add', pWrapper, 'click', navigateSettings);
                 }
                 document[usingChrome ? 'body' : 'documentElement'].scrollTop = 0;
+                bodyContainer = pageContainer = pWrapper = null;
             }
             buttonNotif = document.getElementsByClassName('notifications-container')[0];
             buttonsSection = document.getElementById('yt-masthead-user') || document.getElementById('yt-masthead-signin');
@@ -1983,7 +1978,7 @@
                     }
                     details = watchTime = null;
                 }
-                if (watchTime && window.ytplayer.config) {
+                if (watchTime && window.ytplayer && window.ytplayer.config) {
                     localXHR({
                         method: 'GET',
                         url: '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
@@ -2028,7 +2023,7 @@
                 if (playerElement && window.location.pathname === '/watch') {
                     pageElement.className = pageElement.className.replace('non-', '');
                     playerElement.className = playerElement.className.replace('small', 'large');
-                    document.getElementById('watch7-container').className = 'watch-wide';
+                    document.getElementById('page').classList.add('watch-wide');
                 }
             } else if (parSets.VID_PLR_SIZE_MEM && !parSets.theaterMode) {
                 if (window.navigator.cookieEnabled && (cookie.split('wide=1').length > 1 || cookie.split('wide=0').length < 2)) {
@@ -2037,7 +2032,7 @@
                 if (playerElement && window.location.pathname === '/watch') {
                     pageElement.className = pageElement.className.replace('watch-stage', 'watch-non-stage');
                     playerElement.className = playerElement.className.replace('large', 'small').replace('medium', 'small');
-                    document.getElementById('watch7-container').removeAttribute('class');
+                    document.getElementById('page').classList.remove('watch-wide');
                 }
             }
             cookie = pageElement = playerElement = null;
@@ -2168,7 +2163,7 @@
                     sidebarSize = sidebar.getBoundingClientRect();
                     videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio + 'px';
+                    videoPlayer.style.height = Math.round(((parSets.VID_PLR_CTRL_VIS < 1) ? 30 : 0) + ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio) + 'px';
                 }
                 if (!sidebar) {
                     handleEvents('remove', window, 'scroll', initFloater);
@@ -2177,7 +2172,7 @@
                 if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
                     aspectRatio = 16 / 9;
                     width = (skinny && containerSize.width) || sidebarSize.width;
-                    height = ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio;
+                    height = Math.round(((parSets.VID_PLR_CTRL_VIS < 1) ? 30 : 0) + ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio);
                     document.documentElement.classList.toggle('floater');
                     videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                     handleEvents('add', window, 'resize', updatePos);
@@ -2191,7 +2186,7 @@
                 if (window.location.pathname === '/watch') {
                     handleEvents('add', window, 'scroll', initFloater);
                     initFloater();
-                } else if (window.location.pathname === '/watch') {
+                } else if (window.location.pathname !== '/watch') {
                     handleEvents('remove', window, 'scroll', initFloater);
                 }
             }
@@ -2208,6 +2203,7 @@
                 if (event) {
                     button.href = '/watch?v=' + videoList[0].getAttribute('data-video-ids') + '&list=' + JSON.parse(event)[1].data.swfcfg.args.list;
                 }
+                i = list = button = navMenu = listTitle = videoList = null;
             }
             if (window.location.pathname === '/feed/subscriptions' && !button && listTitle && videoList) {
                 button =
@@ -2244,6 +2240,7 @@
                     window.beacon = beacon;
                     window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
                 }
+                vidData = beacon = null;
             }
             function fsControl(event) {
                 return function () {
