@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     1.9.9
+// @version     2.0.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -43,7 +43,7 @@
         //   end| Disable blue glow
         // start| Hide footer
             '.part_hide_footer #footer-container{\n',
-            '    visibility: hidden;\n',
+            '    display: none;\n',
             '}\n',
             '.part_hide_footer #body-container{\n',
             '    padding-bottom: initial;\n',
@@ -79,6 +79,7 @@
             '    position: fixed !important;\n',
             '    top: 50px !important;\n',
             '    transform: none;\n',
+            '    box-shadow: 0 0 10px rgb(0, 0, 0);\n',
             '}\n',
         //   end| Floater player
         // start| Labelless video buttons
@@ -463,7 +464,7 @@
             '    border-right: 1px solid #E8E8E8;\n',
             '    box-shadow: none;\n',
             '}\n',
-            '.html5-progress-bar, video{\n',
+            '.playing-mode .html5-progress-bar, .playing-mode video{\n',
             '    left: initial !important;\n',
             '    max-width: 100%;\n',
             '    max-height: 100%;\n',
@@ -500,7 +501,7 @@
             '.content-snap-width-skinny-mode #player-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
             '    margin-bottom: 0;\n',
             '}\n',
-            '.watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{\n',
+            '#page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{\n',
             '   min-width: 0;\n',
             '}\n',
             '.content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n',
@@ -611,11 +612,11 @@
             '        height: 720px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls #page.watch-stage-mode .player-height{\n',
+            'html.part_hide_controls #page.watch-stage-mode .player-height:not(.watch-playlist):not(#theater-background){\n',
             '    height: 480px;\n',
             '}\n',
             '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    html.part_hide_controls #page.watch-stage-mode .player-height{\n',
+            '    html.part_hide_controls #page.watch-stage-mode .player-height:not(.watch-playlist):not(#theater-background){\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
@@ -1474,26 +1475,20 @@
             return lang[placeHolder].en;
         }
         function clearOrphans() {
-            var i,
-                remove = [];
-            i = eventStock.length;
+            var i = eventStock.length;
             while (i) {
                 i -= 1;
                 if (!document.contains(eventStock[i])) {
                     eventStock[i].remove();
-                    remove.push(i);
+                    eventStock.splice(i, 1);
+                    i += 1;
                 }
-            }
-            i = remove.length;
-            while (i) {
-                i -= 1;
-                eventStock.splice(remove[i], 1);
             }
         }
         function localXHR(details) {
             var request;
             request = new XMLHttpRequest();
-            request.onload = details.call;
+            request.addEventListener('load', details.call);
             request.open(details.method, details.url, true);
             request.send();
         }
@@ -1883,6 +1878,10 @@
                 commentSection = document.getElementById('watch-discussion'),
                 sidebar = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
                 ads = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)'));
+            while (ads) {
+                ads.remove();
+                ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
+            }
             if (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.split('/feed/').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1))) {
                 sidebar.remove();
             }
@@ -1891,10 +1890,6 @@
             }
             if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commentSection) {
                 commentSection.remove();
-            }
-            while (ads) {
-                ads.remove();
-                ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
             if (document.readyState !== 'interactive') {
                 return;
@@ -2193,7 +2188,6 @@
             if (parSets.VID_PLR_ALVIS) {
                 if (window.location.pathname === '/watch') {
                     handleEvents('add', window, 'scroll', initFloater);
-                    initFloater();
                 } else if (window.location.pathname !== '/watch') {
                     handleEvents('remove', window, 'scroll', initFloater);
                 }
@@ -2261,6 +2255,9 @@
             function playerFullscreen(event) {
                 window.beacon = api.getVideoData().video_id + api.getVideoData().list;
                 fullscreen = event.fullscreen;
+                if (parSets.VID_PLR_CTRL_VIS > 0) {
+                    document.getElementById('movie_player').classList.add('ideal-aspect');
+                }
                 if (parSets.GEN_SPF_OFF && event.fullscreen) {
                     window.spf.init();
                 } else if (parSets.GEN_SPF_OFF && !event.fullscreen) {
@@ -2811,6 +2808,11 @@
                     function startAudioMode() {
                         if (!window.ytplayer.config) {
                             return;
+                        }
+                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length < 2) {
+                            handleEvents('remove', window, 'spfdone', startAudioMode);
+                            document.getElementById('podcast-container').remove();
+                            document.getElementById('audio-only').classList.remove('active');
                         }
                         streams = {};
                         videoPlayer = document.getElementsByTagName('video')[0];
