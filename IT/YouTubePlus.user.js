@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     2.0.2
+// @version     2.0.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -493,7 +493,7 @@
             '    margin-top: 10px;\n',
             '}\n',
             '.content-snap-width-skinny-mode #footer-container{\n',
-            '    opacity: 0;\n',
+            '    display: none;\n',
             '}\n',
             '.content-snap-width-skinny-mode #player, .content-snap-width-skinny-mode #content, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
             '    top: 0;\n',
@@ -607,7 +607,7 @@
             '        top: 330px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls #page.watch-non-stage-mode .player-height{\n',
+            'html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-non-stage-mode .player-height{\n',
             '    height: 360px;\n',
             '}\n',
             '@media screen and (min-width:1294px) and (min-height:630px){\n',
@@ -620,11 +620,11 @@
             '        height: 720px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
+            'html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
             '    height: 480px;\n',
             '}\n',
             '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    html.part_hide_controls #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
+            '    html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
