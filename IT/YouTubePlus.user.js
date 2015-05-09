@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     2.0.3
+// @version     2.0.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -72,11 +72,11 @@
             'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
             '    position: fixed !important;\n',
             '    top: 50% !important;\n',
-            '    transform: translateY(-50%);\n',
             '    z-index: 10;\n',
             '}\n',
             'html.content-snap-width-skinny-mode.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
             '    position: fixed !important;\n',
+            '    margin-top: 0 !important;\n',
             '    top: 50px !important;\n',
             '    transform: none;\n',
             '    box-shadow: 0 0 10px rgb(0, 0, 0);\n',
@@ -177,9 +177,6 @@
             '}\n',
             '#console-button:hover{\n',
             '    opacity: 0.8;\n',
-            '}\n',
-            '.player-console #console-button{\n',
-            '    opacity: 1;\n',
             '}\n',
             '#player-console{\n',
             '    display: none;\n',
@@ -367,6 +364,9 @@
             '}\n',
         //   end| Thumb buttons
         // start| Podcast mode
+            '#movie_player.ended-mode #podcast-container{\n',
+            '    display: none;\n',
+            '}\n',
             '#podcast-container{\n',
             '    height: 100%;\n',
             '    position: absolute;\n',
@@ -489,6 +489,9 @@
             '#footer-container{\n',
             '    max-width: initial;\n',
             '}\n',
+            '.content-snap-width-skinny-mode #theater-background{\n',
+            '    display: none;\n',
+            '}\n',
             '.content-snap-width-skinny-mode #player-playlist{\n',
             '    margin-top: 10px;\n',
             '}\n',
@@ -496,7 +499,7 @@
             '    display: none;\n',
             '}\n',
             '.content-snap-width-skinny-mode #player, .content-snap-width-skinny-mode #content, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
-            '    top: 0;\n',
+            '    top: 0 !important;\n',
             '}\n',
             '.content-snap-width-skinny-mode #player-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
             '    margin-bottom: 0;\n',
@@ -914,10 +917,10 @@
             parSets,
             fullscreen,
             requesting,
-            channelId   = {},
-            eventStock  = [],
-            usingChrome = typeof window.chrome === 'object',
-            defSets     = {
+            channelId = {},
+            events    = [],
+            isChrome  = typeof window.chrome === 'object',
+            defSets   = {
                 GEN_BTTR_NTF     : true,
                 GEN_YT_LOGO_LINK : true,
                 GEN_CMPT_TTLS    : true,
@@ -952,221 +955,221 @@
                 advOpts          : true,
                 blacklist        : {}
             },
-            lang        = {
+            lang      = {
                 ADV_OPTS              : {
-                    en: 'Advanced options',
+                    en     : 'Advanced options',
                     'pt-PT': 'Opções avançadas'
                 },
                 SUB_PLST              : {
-                    en: 'Play recent uploads',
+                    en     : 'Play recent uploads',
                     'pt-PT': 'Reproduzir vídeos recentes'
                 },
                 GEN_SDBR_ON           : {
-                    en: 'Enable sidebar mode',
+                    en     : 'Enable sidebar mode',
                     'pt-PT': 'Activar modo barra lateral'
                 },
                 SDBR_OPEN             : {
-                    en: 'Open in sidebar',
+                    en     : 'Open in sidebar',
                     'pt-PT': 'Abrir barra lateral'
                 },
                 BLCK_ADD              : {
-                    en: 'Add to blacklist',
+                    en     : 'Add to blacklist',
                     'pt-PT': 'Adicionar à lista negra'
                 },
                 BLCK_EDIT             : {
-                    en: 'Edit',
+                    en     : 'Edit',
                     'pt-PT': 'Editar'
                 },
                 BLCK_SAVE             : {
-                    en: 'Save',
+                    en     : 'Save',
                     'pt-PT': 'Guardar'
                 },
                 BLCK_CLSE             : {
-                    en: 'Close',
+                    en     : 'Close',
                     'pt-PT': 'Fechar'
                 },
                 CNSL_CNSL             : {
-                    en: 'Console',
+                    en     : 'Console',
                     'pt-PT': 'Consola'
                 },
                 CNSL_AP               : {
-                    en: 'Autoplay',
+                    en     : 'Autoplay',
                     'pt-PT': 'Início automático'
                 },
                 CNSL_RPT              : {
-                    en: 'Repeat video',
+                    en     : 'Repeat video',
                     'pt-PT': 'Repetir vídeo'
                 },
                 CNSL_AUDI             : {
-                    en: 'Audio only',
+                    en     : 'Audio only',
                     'pt-PT': 'Só áudio'
                 },
                 CNSL_AUDI_OFF         : {
-                    en: 'Not available yet',
+                    en     : 'Not available yet',
                     'pt-PT': 'Ainda não está disponível'
                 },
                 CNSL_SKMP             : {
-                    en: 'Seek map',
+                    en     : 'Seek map',
                     'pt-PT': 'Mapa de procura'
                 },
                 CNSL_SKMP_OFF         : {
-                    en: 'No thumbs found',
+                    en     : 'No thumbs found',
                     'pt-PT': 'Não existem imagens'
                 },
                 CNSL_SKMP_SMAL        : {
-                    en: 'SMALL',
+                    en     : 'SMALL',
                     'pt-PT': 'PEQUENO'
                 },
                 CNSL_SKMP_MED         : {
-                    en: 'MEDIUM',
+                    en     : 'MEDIUM',
                     'pt-PT': 'MÉDIO'
                 },
                 CNSL_SKMP_LRGE        : {
-                    en: 'LARGE',
+                    en     : 'LARGE',
                     'pt-PT': 'GRANDE'
                 },
                 CNSL_SVTH             : {
-                    en: 'Open thumbnail',
+                    en     : 'Open thumbnail',
                     'pt-PT': 'Abrir imagem de fundo'
                 },
                 CNSL_SS               : {
-                    en: 'Take screenshot',
+                    en     : 'Take screenshot',
                     'pt-PT': 'Capturar imagem'
                 },
                 CNSL_SS_CLS           : {
-                    en: 'CLOSE',
+                    en     : 'CLOSE',
                     'pt-PT': 'FECHAR'
                 },
                 CNSL_SDBR             : {
-                    en: 'Sidebar mode',
+                    en     : 'Sidebar mode',
                     'pt-PT': 'Modo barra lateral'
                 },
                 PLST_AP               : {
-                    en: 'Autoplay',
+                    en     : 'Autoplay',
                     'pt-PT': 'Início automático'
                 },
                 PLST_RVRS             : {
-                    en: 'Reverse',
+                    en     : 'Reverse',
                     'pt-PT': 'Inverter'
                 },
                 SHOW_CMTS             : {
-                    en: 'Show comments',
+                    en     : 'Show comments',
                     'pt-PT': 'Mostrar comentários'
                 },
                 HIDE_CMTS             : {
-                    en: 'Hide comments',
+                    en     : 'Hide comments',
                     'pt-PT': 'Esconder comentários'
                 },
                 GLB_RSET              : {
-                    en: 'Reset',
+                    en     : 'Reset',
                     'pt-PT': 'Repor'
                 },
                 GLB_SVE               : {
-                    en: 'Save',
+                    en     : 'Save',
                     'pt-PT': 'Guardar'
                 },
                 GEN                   : {
-                    en: 'General',
+                    en     : 'General',
                     'pt-PT': 'Geral'
                 },
                 VID                   : {
-                    en: 'Video',
+                    en     : 'Video',
                     'pt-PT': 'Video'
                 },
                 CHN                   : {
-                    en: 'Channels',
+                    en     : 'Channels',
                     'pt-PT': 'Canais'
                 },
                 BLK                   : {
-                    en: 'Blacklist',
+                    en     : 'Blacklist',
                     'pt-PT': 'Lista negra'
                 },
                 ABT                   : {
-                    en: 'About',
+                    en     : 'About',
                     'pt-PT': 'Sobre'
                 },
                 GEN_TTL               : {
-                    en: 'General settings',
+                    en     : 'General settings',
                     'pt-PT': 'Definições gerais'
                 },
                 GEN_GEN               : {
-                    en: 'General',
+                    en     : 'General',
                     'pt-PT': 'Geral'
                 },
                 GEN_LYT               : {
-                    en: 'Layout',
+                    en     : 'Layout',
                     'pt-PT': 'Aparência'
                 },
                 GEN_DSBL_ADS          : {
-                    en: 'Disable advertisements',
-                    'pt-PT': 'Desactivar publicidades'
+                    en     : 'Disable advertisements outside the video page',
+                    'pt-PT': 'Desactivar publicidades fora da página de vídeo'
                 },
                 GEN_YT_LOGO_LINK      : {
-                    en: 'YouTube logo redirects to subscriptions',
+                    en     : 'YouTube logo redirects to subscriptions',
                     'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
                 },
                 GEN_REM_APUN          : {
-                    en: 'Remove autoplay up next',
+                    en     : 'Remove autoplay up next',
                     'pt-PT': 'Remover reprodução automática do vídeo a seguir'
                 },
                 GEN_SPF_OFF           : {
-                    en: 'Disable SPF',
+                    en     : 'Disable SPF',
                     'pt-PT': 'Desactivar SPF'
                 },
                 GEN_HIDE_FTR          : {
-                    en: 'Hide footer',
+                    en     : 'Hide footer',
                     'pt-PT': 'Esconder rodapé'
                 },
                 GEN_BLUE_GLOW         : {
-                    en: 'Remove blue glow around clicked buttons',
+                    en     : 'Remove blue glow around clicked buttons',
                     'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
                 },
                 GEN_HDE_RECM_SDBR     : {
-                    en: 'Hide recommended channels sidebar',
+                    en     : 'Hide recommended channels sidebar',
                     'pt-PT': 'Esconder barra lateral de canais recomendados'
                 },
                 GEN_HDE_SRCH_SDBR     : {
-                    en: 'Hide search results sidebar',
+                    en     : 'Hide search results sidebar',
                     'pt-PT': 'Esconder barra lateral nos resultados de pesquisa'
                 },
                 GEN_HDE_CHN_SDBR      : {
-                    en: 'Hide channel sidebar',
+                    en     : 'Hide channel sidebar',
                     'pt-PT': 'Esconder barra lateral dos canais'
                 },
                 GEN_CMPT_TTLS         : {
-                    en: 'Compact titles in feeds',
+                    en     : 'Compact titles in feeds',
                     'pt-PT': 'Títulos compactos nas listas'
                 },
                 GEN_DSB_HVRC          : {
-                    en: 'Disable hovercards',
+                    en     : 'Disable hovercards',
                     'pt-PT': 'Desactivar hovercards'
                 },
                 GEN_BTTR_NTF          : {
-                    en: 'Improved blue notification box',
+                    en     : 'Improved blue notification box',
                     'pt-PT': 'Caixa de notificação azul melhorada'
                 },
                 VID_TTL               : {
-                    en: 'Video settings',
+                    en     : 'Video settings',
                     'pt-PT': 'Definições de vídeo'
                 },
                 VID_PLR               : {
-                    en: 'Player settings',
+                    en     : 'Player settings',
                     'pt-PT': 'Definições do reproductor'
                 },
                 VID_PLR_LYT           : {
-                    en: 'Player layout',
+                    en     : 'Player layout',
                     'pt-PT': 'Aspecto do reproductor'
                 },
                 VID_STP_BTN           : {
-                    en: 'Add stop button to the player',
+                    en     : 'Add stop button to the player',
                     'pt-PT': 'Adicionar botão de parar ao reproductor'
                 },
                 VID_DFLT_QLTY         : {
-                    en: 'Default video quality:',
+                    en     : 'Default video quality:',
                     'pt-PT': 'Qualidade de vídeo padrão:'
                 },
                 VID_DFLT_QLTY_AUTO    : {
-                    en: 'Auto',
+                    en     : 'Auto',
                     'pt-PT': 'Auto'
                 },
                 VID_DFLT_QLTY_TNY     : {
@@ -1194,219 +1197,219 @@
                     en: '2160p'
                 },
                 VID_PLR_ALVIS         : {
-                    en: 'Always visible',
+                    en     : 'Always visible',
                     'pt-PT': 'Sempre visível'
                 },
                 VID_PLR_ATPL          : {
-                    en: 'Autoplay videos',
+                    en     : 'Autoplay videos',
                     'pt-PT': 'Iniciar vídeos automáticamente'
                 },
                 VID_PROG_BAR_CLR      : {
-                    en: 'Progress bar color:',
+                    en     : 'Progress bar color:',
                     'pt-PT': 'Cor da barra de progresso:'
                 },
                 VID_PROG_BAR_CLR_RED  : {
-                    en: 'Red',
+                    en     : 'Red',
                     'pt-PT': 'Vermelha'
                 },
                 VID_PROG_BAR_CLR_WHT  : {
-                    en: 'White',
+                    en     : 'White',
                     'pt-PT': 'Branca'
                 },
                 VID_CTRL_BAR_CLR      : {
-                    en: 'Control bar color:',
+                    en     : 'Control bar color:',
                     'pt-PT': 'Cor da barra de controlos:'
                 },
                 VID_CTRL_BAR_CLR_DARK : {
-                    en: 'Dark',
+                    en     : 'Dark',
                     'pt-PT': 'Escura'
                 },
                 VID_CTRL_BAR_CLR_LGHT : {
-                    en: 'Light',
+                    en     : 'Light',
                     'pt-PT': 'Clara'
                 },
                 VID_LAYT              : {
-                    en: 'Layout',
+                    en     : 'Layout',
                     'pt-PT': 'Aparência'
                 },
                 VID_VID_CNT           : {
-                    en: 'Show link with number of uploaded videos',
+                    en     : 'Show link with number of uploaded videos',
                     'pt-PT': 'Mostrar link com número de vídeos carregados'
                 },
                 VID_POST_TIME         : {
-                    en: 'Show how long the video has been published',
+                    en     : 'Show how long the video has been published',
                     'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
                 },
                 VID_HIDE_DETLS        : {
-                    en: 'Hide video details',
+                    en     : 'Hide video details',
                     'pt-PT': 'Esconder detalhes do vídeo'
                 },
                 VID_HIDE_COMS         : {
-                    en: 'Comment section',
+                    en     : 'Comment section',
                     'pt-PT': 'Secção de comentários'
                 },
                 VID_HIDE_COMS_SHOW    : {
-                    en: 'Show',
+                    en     : 'Show',
                     'pt-PT': 'Mostrar'
                 },
                 VID_HIDE_COMS_HIDE    : {
-                    en: 'Hide',
+                    en     : 'Hide',
                     'pt-PT': 'Esconder'
                 },
                 VID_HIDE_COMS_REM     : {
-                    en: 'Remove',
+                    en     : 'Remove',
                     'pt-PT': 'Remover'
                 },
                 VID_END_SHRE          : {
-                    en: 'Disable share panel when video ends',
+                    en     : 'Disable share panel when video ends',
                     'pt-PT': 'Desactivar painel de partilha quando o video acaba'
                 },
                 VID_PLST              : {
-                    en: 'Playlists',
+                    en     : 'Playlists',
                     'pt-PT': 'Listas'
                 },
                 VID_PLST_SEP          : {
-                    en: 'Separate playlist from player',
+                    en     : 'Separate playlist from player',
                     'pt-PT': 'Separar lista de reprodução do reproductor'
                 },
                 VID_PLST_ATPL         : {
-                    en: 'Enable playlist autoplay control',
+                    en     : 'Enable playlist autoplay control',
                     'pt-PT': 'Activar controlo de início automático das listas'
                 },
                 VID_PLST_RVRS         : {
-                    en: 'Enable reverse playlist control',
+                    en     : 'Enable reverse playlist control',
                     'pt-PT': 'Activar controlo de inversão das listas'
                 },
                 VID_PLR_SIZE_MEM      : {
-                    en: 'Memorize player mode',
+                    en     : 'Memorize player mode',
                     'pt-PT': 'Memorizar tamanho do reproductor'
                 },
                 VID_VOL_WHEEL         : {
-                    en: 'Change volume with mouse wheel',
+                    en     : 'Change volume with mouse wheel',
                     'pt-PT': 'Alterar nível de som com a roda do rato'
                 },
                 VID_PLR_VOL_MEM       : {
-                    en: 'Memorize audio volume',
+                    en     : 'Memorize audio volume',
                     'pt-PT': 'Memorizar volume de audio'
                 },
                 VID_PLR_ADS           : {
-                    en: 'Disable advertisements',
+                    en     : 'Disable advertisements',
                     'pt-PT': 'Desactivar publicidades'
                 },
                 VID_SUB_ADS           : {
-                    en: 'Enable advertisements only in videos from subscribed channels',
+                    en     : 'Enable advertisements only in videos from subscribed channels',
                     'pt-PT': 'Activar publicidades só para vídeos de canais subscritos'
                 },
                 VID_PLR_ANTS          : {
-                    en: 'Disable annotations',
+                    en     : 'Disable annotations',
                     'pt-PT': 'Desactivar notas'
                 },
                 VID_PLR_DASH          : {
-                    en: 'Disable DASH playback',
+                    en     : 'Disable DASH playback',
                     'pt-PT': 'Desactivar reprodução DASH'
                 },
                 VID_PLR_CC            : {
-                    en: 'Disable subtitles',
+                    en     : 'Disable subtitles',
                     'pt-PT': 'Desactivar legendas'
                 },
                 VID_PLR_CTRL_VIS      : {
-                    en: 'Hide player controls',
+                    en     : 'Hide player controls',
                     'pt-PT': 'Esconder controlos do reproductor'
                 },
                 VID_PLR_FIT           : {
-                    en: 'Fit to page in theater mode',
+                    en     : 'Fit to page in theater mode',
                     'pt-PT': 'Ajustar na página no modo cinema'
                 },
                 VID_PLR_DYN_SIZE      : {
-                    en: 'Disable dynamic player size in default view',
+                    en     : 'Disable dynamic player size in default view',
                     'pt-PT': 'Desactivar tamanho dinâmico do reproductor na vista predefinida'
                 },
                 VID_DESC_SHRT         : {
-                    en: 'Short video description buttons',
+                    en     : 'Short video description buttons',
                     'pt-PT': 'Botões curtos na descrição do vídeo'
                 },
                 VID_TTL_CMPT          : {
-                    en: 'Compact title in video description',
+                    en     : 'Compact title in video description',
                     'pt-PT': 'Título compacto na descrição do vídeo'
                 },
                 VID_SDBR_ALGN         : {
-                    en: 'Sidebar mode alignment',
+                    en     : 'Sidebar mode alignment',
                     'pt-PT': 'Alinhar modo barra lateral'
                 },
                 VID_SDBR_ALGN_NONE    : {
-                    en: 'None',
+                    en     : 'None',
                     'pt-PT': 'Nenhum'
                 },
                 VID_SDBR_ALGN_LEFT    : {
-                    en: 'Left',
+                    en     : 'Left',
                     'pt-PT': 'Esquerda'
                 },
                 VID_SDBR_ALGN_RIGHT   : {
-                    en: 'Right',
+                    en     : 'Right',
                     'pt-PT': 'Direita'
                 },
                 GEN_CHN_DFLT_PAGE     : {
-                    en: 'Default channel page:',
+                    en     : 'Default channel page:',
                     'pt-PT': 'Página de canal predefinida:'
                 },
                 GEN_CHN_DFLT_PAGE_DFLT: {
-                    en: 'Default',
+                    en     : 'Default',
                     'pt-PT': 'Padrão'
                 },
                 GEN_CHN_DFLT_PAGE_VID : {
-                    en: 'Videos',
+                    en     : 'Videos',
                     'pt-PT': 'Vídeos'
                 },
                 GEN_CHN_DFLT_PAGE_PL  : {
-                    en: 'Playlists',
+                    en     : 'Playlists',
                     'pt-PT': 'Listas de reprodução'
                 },
                 GEN_CHN_DFLT_PAGE_CHN : {
-                    en: 'Channels',
+                    en     : 'Channels',
                     'pt-PT': 'Canais'
                 },
                 GEN_CHN_DFLT_PAGE_DISC: {
-                    en: 'Discussion',
+                    en     : 'Discussion',
                     'pt-PT': 'Discussão'
                 },
                 GEN_CHN_DFLT_PAGE_ABT : {
-                    en: 'About',
+                    en     : 'About',
                     'pt-PT': 'Acerca de'
                 },
                 BLK_TTL               : {
-                    en: 'Blacklist settings',
+                    en     : 'Blacklist settings',
                     'pt-PT': 'Definições da lista negra'
                 },
                 BLK_BLK               : {
-                    en: 'Blacklist',
+                    en     : 'Blacklist',
                     'pt-PT': 'Lista negra'
                 },
                 BLK_ON                : {
-                    en: 'Enable blacklist',
+                    en     : 'Enable blacklist',
                     'pt-PT': 'Activar lista negra'
                 },
                 ABT_TTL               : {
-                    en: 'Information and useful links',
+                    en     : 'Information and useful links',
                     'pt-PT': 'Informação e ligações úteis'
                 },
                 ABT_THKS              : {
-                    en: 'Thanks to:',
+                    en     : 'Thanks to:',
                     'pt-PT': 'Agradecimentos a:'
                 },
                 ABT_THKS_YEPPHA       : {
-                    en: ', who\'s work inspired the creation of this project, without whom none of this would exist today.',
+                    en     : ', who\'s work inspired the creation of this project, without whom none of this would exist today.',
                     'pt-PT': ', cujo trabalho inspirou a criação deste projecto, sem ele nada disto existiria hoje.'
                 },
                 ABT_THKS_USERSCRIPT   : {
-                    en: ' for making the task of developing and shipping third party software incredibly easier.',
+                    en     : ' for making the task of developing and shipping third party software incredibly easier.',
                     'pt-PT': ' por tornarem o processo de produção e publicação de software bastante fácil.'
                 },
                 ABT_THKS_STACKOV      : {
-                    en: ' for all of its priceless information which greatly contributes for software development.',
+                    en     : ' for all of its priceless information which greatly contributes for software development.',
                     'pt-PT': ' por toda a informação valiosa que contém e que contribui bastante para a criação de software.'
                 },
                 ABT_INFO              : {
-                    en: 'Official pages',
+                    en     : 'Official pages',
                     'pt-PT': 'Páginas oficiais'
                 },
                 ABT_LNK_GHB           : {
@@ -1419,11 +1422,11 @@
                     en: 'OpenUserJS'
                 },
                 ABT_PRBL              : {
-                    en: 'Report a problem',
+                    en     : 'Report a problem',
                     'pt-PT': 'Reportar problema'
                 },
                 ABT_LNK_PRBL          : {
-                    en: 'Click here for instructions',
+                    en     : 'Click here for instructions',
                     'pt-PT': 'Clique aqui para instruções'
                 }
             };
@@ -1448,34 +1451,34 @@
         function handleEvents(type, target, event, call, capture) {
             var name = call.name;
             capture = !!capture;
-            if (target.eventStock && target.eventStock[event] && target.eventStock[event][name]) {
-                target.removeEventListener(event, target.eventStock[event][name], capture);
-                delete target.eventStock[event][name];
+            if (target.events && target.events[event] && target.events[event][name]) {
+                target.removeEventListener(event, target.events[event][name], capture);
+                delete target.events[event][name];
             }
             if (type === 'add') {
                 target.addEventListener(event, call, capture);
-                target.eventStock = target.eventStock || {};
-                target.eventStock[event] = target.eventStock[event] || {};
-                target.eventStock[event][name] = call;
+                target.events = target.events || {};
+                target.events[event] = target.events[event] || {};
+                target.events[event][name] = call;
                 if ((String(target)).split('HTML').length > 1) {
-                    eventStock.push(target);
+                    events.push(target);
                 }
             }
         }
-        function userLang(placeHolder) {
+        function userLang(label) {
             var ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || 'en';
-            if (lang[placeHolder][ytlang]) {
-                return lang[placeHolder][ytlang];
+            if (lang[label][ytlang]) {
+                return lang[label][ytlang];
             }
-            return lang[placeHolder].en;
+            return lang[label].en;
         }
         function clearOrphans() {
-            var i = eventStock.length;
+            var i = events.length;
             while (i) {
                 i -= 1;
-                if (!document.contains(eventStock[i])) {
-                    eventStock[i].remove();
-                    eventStock.splice(i, 1);
+                if (!document.contains(events[i])) {
+                    events[i].remove();
+                    events.splice(i, 1);
                 }
             }
         }
@@ -1893,7 +1896,7 @@
                     bodyContainer.insertBefore(pWrapper, pageContainer);
                     handleEvents('add', pWrapper, 'click', navigateSettings);
                 }
-                document[usingChrome ? 'body' : 'documentElement'].scrollTop = 0;
+                document[isChrome ? 'body' : 'documentElement'].scrollTop = 0;
                 bodyContainer = pageContainer = pWrapper = null;
             }
             buttonNotif = document.getElementsByClassName('notifications-container')[0];
@@ -2117,13 +2120,11 @@
                     }
                 }
                 config.args.autohide = '2';
-                config.args.dash = (parSets.VID_PLR_DASH) ? '0' : '1';
                 config.args.vq = parSets.VID_DFLT_QLTY;
-                config.args.autoplay = (parSets.VID_PLR_ATPL) ? '1' : '0';
                 config.args.theme = parSets.VID_CTRL_BAR_CLR;
                 config.args.color = parSets.VID_PROG_BAR_CLR;
-                config.html5 = true;
-                config.params.wmode = 'gpu';
+                config.args.dash = (parSets.VID_PLR_DASH) ? '0' : '1';
+                config.args.autoplay = (parSets.VID_PLR_ATPL) ? '1' : '0';
                 if (config.args.autoplay === '0') {
                     hdThumb = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]');
                     maxRes = hdThumb && (hdThumb.getAttribute('href') || hdThumb.getAttribute('content'));
@@ -2167,9 +2168,10 @@
                         return;
                     }
                     sidebarSize = sidebar.getBoundingClientRect();
+                    videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
                     videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = Math.round((!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio) + 'px';
+                    videoPlayer.style.height = (!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio)) + 'px';
                 }
                 if (!sidebar) {
                     handleEvents('remove', window, 'scroll', initFloater);
@@ -2178,9 +2180,9 @@
                 if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
                     aspectRatio = 16 / 9;
                     width = (skinny && containerSize.width) || sidebarSize.width;
-                    height = Math.round((!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.width) || sidebarSize.width) / aspectRatio);
+                    height = (!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio));
                     document.documentElement.classList.toggle('floater');
-                    videoPlayer.setAttribute('style', 'width: ' + width + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
+                    videoPlayer.setAttribute('style', 'width: ' + width + 'px; margin-top: -' + (height / 2) + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                     handleEvents('add', window, 'resize', updatePos);
                 } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && document.documentElement.classList.contains('floater')) {
                     document.documentElement.classList.toggle('floater');
@@ -2306,7 +2308,7 @@
                 }
             }
             if (typeof playerApi === 'object' && !document.getElementById('c4-player')) {
-                document[usingChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[usingChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
+                document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
                 api = playerApi;
                 handleEvents('add', api, 'onStateChange', playerState);
                 handleEvents('add', api, 'onFullscreenChange', playerFullscreen);
@@ -2621,20 +2623,20 @@
                 temp = prev = next = list = videos = length = null;
             }
             function reverseButton(event) {
-                event = usingChrome ? event.target.parentNode : event.target;
+                event = isChrome ? event.target.parentNode : event.target;
                 event.classList.toggle('yt-uix-button-toggled');
                 set('plRev', (event.classList.contains('yt-uix-button-toggled')) ? window.yt.config_.LIST_ID : false);
                 reverseControl();
             }
             function autoplayButton(event) {
-                event = usingChrome ? event.target.parentNode : event.target;
+                event = isChrome ? event.target.parentNode : event.target;
                 event.classList.toggle('yt-uix-button-toggled');
                 set('plApl', event.classList.contains('yt-uix-button-toggled'));
             }
-            function createButton(type, placeHolder, boolean, call) {
+            function createButton(type, label, boolean, call) {
                 var navCtrls = document.getElementsByClassName('playlist-nav-controls')[0],
                     button   = [
-                        '<button data-tooltip-text="' + placeHolder + '" class="yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' + (((boolean === true || href.split(boolean).length > 1) && ' yt-uix-button-toggled') || '') + '" type="button" title="' + placeHolder + '" id="' + type + '">\n',
+                        '<button data-tooltip-text="' + label + '" class="yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' + (((boolean === true || href.split(boolean).length > 1) && ' yt-uix-button-toggled') || '') + '" type="button" title="' + label + '" id="' + type + '">\n',
                         '    <span class="yt-uix-button-icon yt-uix-button-icon-watch-appbar-' + type + '-video-list"></span>\n',
                         '</button>\n'
                     ].join('');
@@ -2742,8 +2744,8 @@
                             html5     = window.ytplayer.config.assets.js,
                             html5ID   = html5.match(/html5player-([\w\W]*?)\/html5player/)[1];
                         function buildCipher(string) {
-                            var replace,
-                                splice,
+                            var splice,
+                                replace,
                                 reverse,
                                 firstMatch  = string.match(/var [\w\W]{2}\=\{[\w\W]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
                                 secondMatch = string.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0];
@@ -2912,9 +2914,9 @@
                                 currentBase,
                                 details,
                                 thumbAmount,
+                                frameAmount = 0,
                                 gridX       = 0,
-                                gridY       = 0,
-                                frameAmount = 0;
+                                gridY       = 0;
                             if (qualities.split('storyboard').length < 2 && qualities.split('default').length < 2) {
                                 details = qualities.split('#');
                                 currentBase = base.replace('$L', level - 1).replace('$N', details[6]);
@@ -3127,7 +3129,7 @@
         handleEvents('add', window, 'spfdone', initFunctions);
         handleEvents('add', window, 'spfrequest', request);
         handleEvents('add', window, 'readystatechange', initFunctions, true);
-        if (usingChrome) {
+        if (isChrome) {
             handleEvents('add', document.documentElement, 'load', scriptExit, true);
         } else {
             handleEvents('add', window, 'afterscriptexecute', scriptExit);
