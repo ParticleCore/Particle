@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     2.0.4
+// @version     2.0.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -464,7 +464,7 @@
             '    border-right: 1px solid #E8E8E8;\n',
             '    box-shadow: none;\n',
             '}\n',
-            '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n',
+            '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player.playing-mode.buffering-mode.paused-mode.seeking-mode video{\n',
             '    left: initial !important;\n',
             '    max-width: 100%;\n',
             '    max-height: 100%;\n',
@@ -481,9 +481,9 @@
             '#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n',
             '    transition: none !important;\n',
             '}\n',
-            '.part_fit_theater #theater-background, .part_hide_controls #theater-background{\n',
+            '.part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls .watch-stage-mode #theater-background{\n',
             '    bottom: 0;\n',
-            '    height: initial;\n',
+            '    height: initial !important;\n',
             '    top: 0;\n',
             '}\n',
             '#footer-container{\n',
@@ -766,13 +766,12 @@
             '    font-weight: bold;\n',
             '    height: 26px;\n',
             '    margin-left: 5px;\n',
-            '    padding: 0 1em;\n',
+            '    padding: 0 2em 0 1em;\n',
             '    text-shadow: none;\n',
             '    -moz-appearance: none;\n',
             '    -webkit-appearance: none;\n',
             '}\n',
             '#P-content select option{\n',
-            '    padding: 0;\n',
             '    padding: 0 1em;\n',
             '}\n',
             '.P-header{\n',
@@ -2371,6 +2370,16 @@
                     }
                 };
             }
+            function autoplayDetourFullScreen(originalFunction) {
+                return function () {
+                    if (!parSets.plApl) {
+                        return false;
+                    }
+                    if (parSets.plApl) {
+                        return originalFunction.apply(this, arguments);
+                    }
+                };
+            }
             function html5Detour(originalFunction) {
                 return function () {
                     var playerInstance,
@@ -2389,29 +2398,35 @@
                             return changed;
                         };
                     }
-                    function sizesIterator(keys) {
+                    function playerInstanceIterator(keys) {
                         function keysIterator(sizes) {
                             if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
                                 playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
                             }
                         }
-                        if (typeof playerInstance[keys] === 'object' && playerInstance[keys] && playerInstance[keys].element) {
-                            Object.keys(Object.getPrototypeOf(playerInstance[keys])).forEach(keysIterator);
+                        if (typeof playerInstance[keys] === 'object') {
+                            if (playerInstance[keys] && playerInstance[keys].element) {
+                                Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(keysIterator);
+                            } else if (playerInstance[keys] && playerInstance[keys].hasNext) {
+                                playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
+                            }
                         }
                     }
                     if (args[0].id === 'upsell-video') {
                         originalFunction.apply(this, arguments);
                     } else if (typeof args[0] === 'object') {
                         playerInstance = originalFunction.apply(this, arguments);
-                        Object.keys(playerInstance).forEach(sizesIterator);
+                        Object.keys(playerInstance).some(playerInstanceIterator);
                     }
                 };
             }
             function ytIterator(keys) {
+                var str;
                 if (typeof window._yt_www[keys] === 'function') {
-                    if ((window._yt_www[keys] + String()).split('player-added').length > 1) {
+                    str = String(window._yt_www[keys]);
+                    if (str.split('player-added').length > 1) {
                         window._yt_www[keys] = embedDetour(window._yt_www[keys]);
-                    } else if ((window._yt_www[keys] + String()).split('window.spf.navigate').length > 1) {
+                    } else if (str.split('window.spf.navigate').length > 1) {
                         window._yt_www[keys] = autoplayDetour(window._yt_www[keys]);
                     }
                 }
