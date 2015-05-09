@@ -1,0 +1,24 @@
+{
+    "title": "YouTube Plus",
+    "name": "particle",
+    "id": "particle@particlecore.github.io",
+    "version": "2.0.4",
+    "description": "YouTube with more freedom",
+    "main": "main.js",
+    "author": "Yonez",
+    "license": "Custom",
+    "engines": {
+        "firefox": ">=38"
+    },
+    "permissions": {
+        "cross-domain-content": ["https://s.ytimg.com/", "https://www.youtube.com/"]
+    },
+    "preferences": [{
+        "name": "parSets",
+        "title": "Particle settings",
+        "description": "Particle settings",
+        "type": "string",
+        "value": "{}",
+        "hidden": true
+    }]
+}
