@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.0.7
+// @version     2.0.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -464,7 +464,7 @@
             '    border-right: 1px solid #E8E8E8;\n',
             '    box-shadow: none;\n',
             '}\n',
-            '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player.playing-mode.buffering-mode.paused-mode.seeking-mode video{\n',
+            '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n',
             '    left: initial !important;\n',
             '    max-width: 100%;\n',
             '    max-height: 100%;\n',
@@ -1025,8 +1025,8 @@
                     'pt-PT': 'Só áudio'
                 },
                 CNSL_AUDI_OFF         : {
-                    en     : 'Not available yet',
-                    'pt-PT': 'Ainda não está disponível'
+                    en     : 'Not available',
+                    'pt-PT': 'Não está disponível'
                 },
                 CNSL_SKMP             : {
                     en     : 'Seek map',
@@ -1548,7 +1548,7 @@
                 ads.remove();
                 ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
-            if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.split('/feed/').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
+            if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.pathname === '/feed/subscriptions') || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                 sidebar.remove();
             }
             if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commSect) {
@@ -2398,10 +2398,10 @@
             }
             function autoplayDetourFullScreen(originalFunction) {
                 return function () {
-                    if (!parSets.plApl) {
+                    if (!parSets.plApl && !document.activeElement.classList.contains('ytp-button-next')) {
                         return false;
                     }
-                    if (parSets.plApl) {
+                    if (parSets.plApl || document.activeElement.classList.contains('ytp-button-next')) {
                         return originalFunction.apply(this, arguments);
                     }
                 };
