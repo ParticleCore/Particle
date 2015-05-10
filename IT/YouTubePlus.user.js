@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.0.8
+// @version     2.0.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,7 +14,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript    = typeof GM_info === 'object',
+    var userscript,
         particleStyle = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
@@ -932,6 +932,10 @@
             '}\n'
         //   end| Particle settings
         ].join('');
+    window.GM_getValue = GM_getValue;
+    window.GM_setValue = GM_setValue;
+    window.GM_xmlhttpRequest = GM_xmlhttpRequest;
+    userscript = !!window.GM_xmlhttpRequest;
     function particle() {
         var api,
             parSets,
@@ -3190,7 +3194,7 @@
             }
         }
         if (!event && userscript) {
-            event = JSON.parse(GM_getValue('particleSettings', '{}'));
+            event = JSON.parse(window.GM_getValue('particleSettings', '{}'));
         }
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
@@ -3218,35 +3222,33 @@
             response[details.id] = userscript ? xhrResponse.response : xhrResponse.target.response;
             window.postMessage(response, '*');
         }
-        function gmSettings() {
-            var object = JSON.parse(GM_getValue('particleSettings', '{}'));
-            function updateGMSettings(keys) {
+        function settingsHandler(item) {
+            var object = (item && item.particleSettings) || JSON.parse(window.GM_getValue('particleSettings', '{}'));
+            function buildSettings(keys) {
                 object[keys] = details.set[keys];
             }
             if (details.set) {
-                Object.keys(details.set).forEach(updateGMSettings);
-                GM_setValue('particleSettings', JSON.stringify(object));
+                Object.keys(details.set).forEach(buildSettings);
+                if (item) {
+                    window.chrome.storage.sync.set({'particleSettings': object});
+                } else {
+                    window.GM_setValue('particleSettings', JSON.stringify(object));
+                }
             } else if (details.replace) {
-                GM_setValue('particleSettings', JSON.stringify(details.replace));
+                if (item) {
+                    window.chrome.storage.sync.set({'particleSettings': details.replace});
+                } else {
+                    window.GM_setValue('particleSettings', JSON.stringify(details.replace));
+                }
             }
-            updateSettings(JSON.parse(GM_getValue('particleSettings', '{}')));
-        }
-        function chromeSettings(item) {
-            var object = item && item.particleSettings;
-            function updateChromeSettings(keys) {
-                object[keys] = details.set[keys];
-            }
-            if (details.set) {
-                Object.keys(details.set).forEach(updateChromeSettings);
-                window.chrome.storage.sync.set({'particleSettings': object});
-            } else if (details.replace) {
-                window.chrome.storage.sync.set({'particleSettings': details.replace});
+            if (!item) {
+                updateSettings(JSON.parse(window.GM_getValue('particleSettings', '{}')));
             }
         }
         if (typeof details === 'object') {
             if (details.id) {
                 if (userscript) {
-                    GM_xmlhttpRequest({
+                    window.GM_xmlhttpRequest({
                         onload: process,
                         method: details.method,
                         url   : details.url
@@ -3259,9 +3261,9 @@
                 }
             } else if (details.set || details.get || details.replace) {
                 if (userscript) {
-                    gmSettings();
+                    settingsHandler();
                 } else if (window.chrome) {
-                    window.chrome.storage.sync.get('particleSettings', chromeSettings);
+                    window.chrome.storage.sync.get('particleSettings', settingsHandler);
                 } else {
                     window.self.port.emit('particleSettings', details);
                 }
