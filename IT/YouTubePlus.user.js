@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     2.0.5
+// @version     2.0.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -847,6 +847,27 @@
             '    color: #000;\n',
             '    text-shadow: none;\n',
             '}\n',
+            '#DNT{\n',
+            '    font-weight: bold;\n',
+            '    position: relative;\n',
+            '}\n',
+            '#DNT a{\n',
+            '    color: #FFF;\n',
+            '    display: block;\n',
+            '}\n',
+            '#DNT:hover:after{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAASCAMAAACzQHQ9AAACIlBMVEUBnN4AMIUAMYUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAJH0AVqQAMYYAIXcAMIUAMIUAMYUBMIIBsPEAMIUAMIUAMIUBaq0Bv/wAMIUAMIUAMIQBuPYAMIUAMIUBnd4AMIUAMIUBmNoAMIUAMIUAMIUAMIUBnN4AMIUAMIUBnN4BnN4AMIUBYK4AMIUBnN4BnN4AMIUAHHUBcLoBmdsBm90Bnd8BnN4BnN4AMIUBnd4BnN4BnN4BnN4AL4UBnN4BnN4AMIYANIgAGXMAKn8BoOEBnN4BnN4AMYYAM4cACWUAWqcBnN4BnN4AMYYAJXwAS5sBtfIBpuYBmNoBnN4BnN4AMIUBm90AMYgAMIQAMYYBnd8AMogBpugCHGMBl9oCIGoCIGkAMokAJn0AMocAL4QAGHICElsAM4cAHnYBP5ABpeQBqOgBHGoBoeQBre8Br/ABnt8BmdwBLH8CIGsBXKAAJ3oANIoBu/kBre4Bo+UBJ3UBl9kCGV4CHGQCIWsCIW0AMoYAKoACJ28CL3UBqekBm9wCAEACLnYCIGgCS5ICgcQBJnMCNX0AH3gBg8sBse8CHmUCImwBs/UCKXMCC1QANYgAHHUBj9MBs/ABnN4CDlUBoOAAMYcAOI4BuvsCI24CH2YBr+4CJG4CHWQCADwBa7EBvv8Bp+gBwfwCIGwCJG8AM4oANYsALoMCElwCEFgCE1wCBlECBUxjnIttAAAAWHRSTlMAAADdw7x0I/H4QwGAigB9AdnaFZwAedvV8VYEEbjVDrXuHtLWMe4UlqJH3/1HaP5f9HCH/v7u1tW1TqP6ZSIg4+MZudHBzvrEERMaFFmpAQAAAD/v6upvQTSr7wAAAPRJREFUGBklwE8rBGEcwPHf95mZbf+0KtueNrSyYiZD1m0lLWqzlU2SC+/AXU5egjexlZtVkEpMWBFOW7TJRaXCnEgZjWfWB5IEP11Yb9l38m2B3OuSiCER78uH2MCIgZKOBpAIF4wwqb6DuYvJdWB0SJabpDIfNl4dyJYlbyoGj53W8Dbk0mNm3LbuhSIxtuijZAQVTqV8PgUb9DNbQTuo4tmJTQqMq940pvVL/FpdYbvdaH4G7QhcN0WzykvPU6H9wB3FGrss8thCuxRKTujAzTNwJiJMr9xOAHVOJMIM2uq+z6FEmAfW9oJPGhKhxr8d6fgDKsQ/Heb6AJAAAAAASUVORK5CYII=") no-repeat center / contain;\n',
+            '    content: "";\n',
+            '    height: 18px;\n',
+            '    margin-top: -9px;\n',
+            '    position: absolute;\n',
+            '    right: 10px;\n',
+            '    top: 50%;\n',
+            '    width: 15px;\n',
+            '}\n',
+            '#DNT:hover{\n',
+            '    background: linear-gradient(to right, #167AC6 50%, #F6F6F6) !important;\n',
+            '}\n',
             '#blacklist{\n',
             '    margin: 10px 15px 0 0;\n',
             '}\n',
@@ -1086,6 +1107,10 @@
                 ABT                   : {
                     en     : 'About',
                     'pt-PT': 'Sobre'
+                },
+                DNT                   : {
+                    en     : 'Donate',
+                    'pt-PT': 'Doação'
                 },
                 GEN_TTL               : {
                     en     : 'General settings',
@@ -1620,6 +1645,7 @@
                             '                <li id="VID">' + userLang('VID') + '</li>\n',
                             '                <li id="BLK">' + userLang('BLK') + '</li>\n',
                             '                <li id="ABT">' + userLang('ABT') + '</li>\n',
+                            '                <li id="DNT"><a title="PayPal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW">' + userLang('DNT') + '</a></li>\n',
                             '            </ul>\n',
                             '        </div>\n',
                             '    </div>\n',
@@ -1775,17 +1801,17 @@
                             '    </div>\n',
                             htEl.title('ABT_INFO', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/ParticleCore/Particle/issues">GitHub</a>\n',
+                            '        <a href="https://particlecore.github.io/">GitHub</a>\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="https://greasyfork.org/en/scripts/">Greasy Fork</a>\n',
+                            '        <a href="https://greasyfork.org/en/users/8223-particlecore">Greasy Fork</a>\n',
                             '    </div>\n',
                             '    <div>\n',
                             '        <a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
                             '    </div>\n',
                             htEl.title('ABT_PRBL', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/ParticleCore/Particle/issues">' + userLang('ABT_LNK_PRBL') + '</a>\n',
+                            '        <a href="https://github.com/ParticleCore/Particle/wiki/Report-a-problem">' + userLang('ABT_LNK_PRBL') + '</a>\n',
                             '    </div>\n',
                             '</div>\n'
                         ].join('')
@@ -1871,7 +1897,7 @@
                 } else if (event.target.id === 'P-container' || event.target.id === 'P-settings') {
                     event = (event.target.id === 'P-settings') ? event.target : event.target.parentNode;
                     event.remove();
-                } else if (event.target.parentNode.id === 'P-sidebar-list') {
+                } else if (event.target.id !== 'DNT' && event.target.tagName !== 'A' && event.target.parentNode.id === 'P-sidebar-list') {
                     saveSettings('no-notification');
                     document.getElementById('P-content').remove();
                     pContainer = document.getElementById('P-container');
