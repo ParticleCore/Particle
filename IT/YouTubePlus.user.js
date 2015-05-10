@@ -1,5 +1,5 @@
-// ==UserScript==
-// @version     2.0.6
+﻿// ==UserScript==
+// @version     2.0.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1645,7 +1645,7 @@
                             '                <li id="VID">' + userLang('VID') + '</li>\n',
                             '                <li id="BLK">' + userLang('BLK') + '</li>\n',
                             '                <li id="ABT">' + userLang('ABT') + '</li>\n',
-                            '                <li id="DNT"><a title="PayPal" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW">' + userLang('DNT') + '</a></li>\n',
+                            '                <li id="DNT"><a title="PayPal" target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW">' + userLang('DNT') + '</a></li>\n',
                             '            </ul>\n',
                             '        </div>\n',
                             '    </div>\n',
