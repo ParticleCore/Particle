@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.0.9
+// @version     2.1.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,7 +14,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript,
+    var userscript = typeof GM_info === 'object',
         particleStyle = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
@@ -932,10 +932,11 @@
             '}\n'
         //   end| Particle settings
         ].join('');
-    window.GM_getValue = GM_getValue;
-    window.GM_setValue = GM_setValue;
-    window.GM_xmlhttpRequest = GM_xmlhttpRequest;
-    userscript = !!window.GM_xmlhttpRequest;
+    if (userscript) {
+        window.GM_getValue = GM_getValue;
+        window.GM_setValue = GM_setValue;
+        window.GM_xmlhttpRequest = GM_xmlhttpRequest;
+    }
     function particle() {
         var api,
             parSets,
