@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.1
+// @version     2.1.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -31,11 +31,6 @@
             '    display: none;\n',
             '}\n',
         //   end| Hide video details
-        // start| Disable hovercards
-            '.part_dsbl_hovercards iframe[src*="hovercard"]{\n',
-            '    display: none !important;\n',
-            '}\n',
-        //   end| Disable hovercards
         // start| Disable blue glow
             '.part_dsbl_glow .yt-uix-button:focus, .yt-uix-button:focus:hover{\n',
             '    box-shadow: initial !important;\n',
@@ -481,7 +476,7 @@
             '#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n',
             '    transition: none !important;\n',
             '}\n',
-            '.part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls .watch-stage-mode #theater-background{\n',
+            '.part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{\n',
             '    bottom: 0;\n',
             '    height: initial !important;\n',
             '    top: 0;\n',
@@ -941,6 +936,7 @@
         var api,
             parSets,
             fullscreen,
+            requesting,
             channelId = {},
             events    = [],
             isChrome  = typeof window.chrome === 'object',
@@ -1539,7 +1535,6 @@
                     'GEN_HIDE_FTR'    : 'part_hide_footer',
                     'GEN_BTTR_NTF'    : 'part_notif_button',
                     'GEN_CMPT_TTLS'   : 'part_compact_titles',
-                    'GEN_DSB_HVRC'    : 'part_dsbl_hovercards',
                     'VID_PLR_FIT'     : 'part_fit_theater',
                     'VID_PLR_DYN_SIZE': 'part_static_size',
                     'VID_HIDE_DETLS'  : 'part_hide_details',
@@ -2269,6 +2264,23 @@
             }
         }
         function playerReady(playerApi) {
+            function playerState() {
+                var vidData = api.getVideoData(),
+                    beacon  = vidData.video_id + vidData.list;
+                if (document.getElementById('movie_player') && fullscreen && window.beacon !== beacon) {
+                    window.beacon = beacon;
+                    window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
+                }
+                vidData = beacon = null;
+            }
+            function fsControl(event) {
+                return function () {
+                    if (!requesting && fullscreen) {
+                        event.apply(this, arguments);
+                    }
+                    return true;
+                };
+            }
             function playerFullscreen(event) {
                 window.beacon = api.getVideoData().video_id + api.getVideoData().list;
                 fullscreen = event.fullscreen;
@@ -2320,7 +2332,9 @@
                 }
             }
             if (typeof playerApi === 'object' && !document.getElementById('c4-player')) {
+                document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
                 api = playerApi;
+                handleEvents('add', api, 'onStateChange', playerState);
                 handleEvents('add', api, 'onFullscreenChange', playerFullscreen);
                 if (parSets.VID_PLR_VOL_MEM) {
                     handleEvents('add', api, 'onVolumeChange', volumeChanged);
@@ -2349,9 +2363,8 @@
             function baseDetour(originalFunction) {
                 return function () {
                     originalFunction.apply(this, arguments);
-                    if (parSets.VID_END_SHRE) {
-                        window.yt.config_.SHARE_ON_VIDEO_END = false;
-                    }
+                    window.yt.config_.SHARE_ON_VIDEO_END = (parSets.VID_END_SHRE) ? false : true;
+                    window.yt.config_.UNIVERSAL_HOVERCARDS = (parSets.GEN_DSB_HVRC) ? false : true;
                 };
             }
             function embedDetour(originalFunction) {
@@ -2391,50 +2404,6 @@
                     }
                 };
             }
-            function fullscreenVideoChange(originalFunction) {
-                return function () {
-                    var key,
-                        patch  = [{}],
-                        config = {args: {}},
-                        args   = arguments;
-                    function buildConfig(conf) {
-                        config.args[conf.split('=')[0]] = decodeURIComponent(conf.split('=')[1]).replace(/\+/g, ' ');
-                    }
-                    function revertConfig(conf) {
-                        patch[0].response.push(conf + '=' + encodeURIComponent(config.args[conf]).replace(/\%20/g, '+'));
-                    }
-                    for (key in args[0]) {
-                        if (args[0][key] !== undefined) {
-                            patch[0][key] = args[0][key];
-                        }
-                    }
-                    patch[0].response.split('&').forEach(buildConfig);
-                    config = argsCleaner(config);
-                    patch[0].response = [];
-                    Object.keys(config.args).forEach(revertConfig);
-                    patch[0].response = patch[0].response.join('&');
-                    patch[0].responseText = patch[0].response;
-                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                    return originalFunction.apply(this, patch);
-                };
-            }
-            function fsPointerDetour(originalFunction) {
-                return function () {
-                    var self = this;
-                    function firstLevel(fl) {
-                        function secondLevel(sl) {
-                            if (typeof self[fl][sl] === 'function' && String(self[fl][sl]).split('onStatusFail').length > 1) {
-                                self[fl][sl] = fullscreenVideoChange(self[fl][sl]);
-                            }
-                        }
-                        if (typeof self[fl] === 'object' && self[fl]) {
-                            Object.keys(Object.getPrototypeOf(self[fl])).forEach(secondLevel);
-                        }
-                    }
-                    Object.keys(self).some(firstLevel);
-                    return originalFunction.apply(this, arguments);
-                };
-            }
             function html5Detour(originalFunction) {
                 return function () {
                     var playerInstance,
@@ -2454,11 +2423,6 @@
                         };
                     }
                     function playerInstanceIterator(keys) {
-                        function firstLevel(fl) {
-                            if (typeof playerInstance[keys][fl] === 'function' && String(playerInstance[keys][fl]).split('get_video_info').length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
-                                playerInstance[keys][fl] = fsPointerDetour(playerInstance[keys][fl]);
-                            }
-                        }
                         function keysIterator(sizes) {
                             if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
                                 playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
@@ -2469,8 +2433,6 @@
                                 Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(keysIterator);
                             } else if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
-                            } else if (playerInstance[keys]) {
-                                Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(firstLevel);
                             }
                         }
                     }
@@ -2661,9 +2623,10 @@
             observer = config = titleEl = titleSt = state = null;
         }
         function volumeWheel(event) {
-            var direction = event && (event.deltaY || event.wheelDeltaY),
-                playerApi = document.getElementById('player-api');
-            if (event && api && playerApi && (event.target.id === 'player-api' || playerApi.contains(event.target))) {
+            var direction  = event && (event.deltaY || event.wheelDeltaY),
+                playerApi  = document.getElementById('player-api'),
+                playlistFS = document.getElementsByClassName('ytp-playlist-tray-tray')[0];
+            if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === 'player-api' || playerApi.contains(event.target))) {
                 event.preventDefault();
                 if (direction > 0) {
                     api.setVolume(api.getVolume() - 10);
@@ -3138,6 +3101,7 @@
             var logo,
                 channelLink,
                 autoplaybar = document.getElementsByClassName('autoplay-bar')[0];
+            requesting = false;
             function linkIterator(link) {
                 if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
                     channelLink[link].href += '/' + parSets.GEN_CHN_DFLT_PAGE;
@@ -3192,6 +3156,7 @@
                 listAfter   = url.split('list=').length > 1,
                 player      = document.getElementById('movie_player'),
                 loaded      = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded;
+            requesting = true;
             if (player && videoAfter && (listAfter !== listBefore || videoBefore)) {
                 if (loaded) {
                     delete window.ytplayer.config.loaded;
