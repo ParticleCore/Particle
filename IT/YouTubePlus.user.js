@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.2
+// @version     2.1.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1317,8 +1317,8 @@
                     'pt-PT': 'Memorizar volume de audio'
                 },
                 VID_PLR_ADS           : {
-                    en     : 'Disable advertisements',
-                    'pt-PT': 'Desactivar publicidades'
+                    en     : 'Disable advertisements in the video page',
+                    'pt-PT': 'Desactivar publicidades na página de vídeo'
                 },
                 VID_SUB_ADS           : {
                     en     : 'Enable advertisements only in videos from subscribed channels',
@@ -2510,6 +2510,7 @@
                     });
                 }
                 if (event) {
+                    event.preventDefault();
                     event = event.target;
                     if (event.className === 'sidebarmode yt-uix-tooltip') {
                         initSidebarMode();
