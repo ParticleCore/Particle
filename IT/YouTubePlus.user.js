@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.4
+// @version     2.1.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -948,7 +948,6 @@
         var api,
             parSets,
             fullscreen,
-            requesting,
             channelId = {},
             events    = [],
             isChrome  = typeof window.chrome === 'object',
@@ -2189,6 +2188,7 @@
                 if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
                     window.ytplayer.config = config;
                 }
+                window.ytplayer.config.args = config.args;
                 return config;
             }
         }
@@ -2288,18 +2288,14 @@
         }
         function playerReady(playerApi) {
             function playerState(state) {
-                var vidData   = api.getVideoData(),
-                    beacon    = vidData.video_id + vidData.list,
-                    newPlayer = window.ytplayer.config.assets.js.split('-new').length > 1,
-                    cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
-                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0];
-                if (document.getElementById('movie_player') && fullscreen && window.beacon !== beacon) {
-                    window.beacon = beacon;
-                    window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
-                }
+                var cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
+                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0],
+                    newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 if (newPlayer) {
-                    document.documentElement.classList.add('new_player');
-                    window.matchMedia = false;
+                    if (window.matchMedia) {
+                        window.matchMedia = false;
+                        document.documentElement.classList.add('new_player');
+                    }
                     if (state === 5) {
                         cueThumb.removeAttribute('aria-hidden');
                         cueThumb.style.display = 'initial';
@@ -2312,26 +2308,12 @@
                         cueButton.style.display = 'none';
                     }
                 }
-                vidData = beacon = cueThumb = cueButton = null;
-            }
-            function fsControl(event) {
-                return function () {
-                    if (!requesting && fullscreen) {
-                        event.apply(this, arguments);
-                    }
-                    return true;
-                };
+                cueThumb = cueButton = null;
             }
             function playerFullscreen(event) {
-                window.beacon = api.getVideoData().video_id + api.getVideoData().list;
                 fullscreen = event.fullscreen;
                 if (parSets.VID_PLR_CTRL_VIS) {
                     document.getElementById('movie_player').classList.add('ideal-aspect');
-                }
-                if (parSets.GEN_SPF_OFF && event.fullscreen) {
-                    window.spf.init();
-                } else if (parSets.GEN_SPF_OFF && !event.fullscreen) {
-                    window.spf.dispose();
                 }
             }
             function volumeChanged(event) {
@@ -2373,7 +2355,6 @@
                 }
             }
             if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
-                document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
                 api = playerApi;
                 handleEvents('add', api, 'onStateChange', playerState);
                 handleEvents('add', api, 'onFullscreenChange', playerFullscreen);
@@ -2445,6 +2426,54 @@
                     }
                 };
             }
+            function fullscreenVideoChange(originalFunction) {
+                return function () {
+                    var key,
+                        patch   = [{}],
+                        config  = {args: {}},
+                        args    = arguments,
+                        audioOn = document.getElementById('audio-only');
+                    function buildConfig(conf) {
+                        config.args[conf.split('=')[0]] = decodeURIComponent(conf.split('=')[1]).replace(/\+/g, ' ');
+                    }
+                    function revertConfig(conf) {
+                        patch[0].response.push(conf + '=' + encodeURIComponent(config.args[conf]).replace(/\%20/g, '+'));
+                    }
+                    for (key in args[0]) {
+                        if (args[0][key] !== undefined) {
+                            patch[0][key] = args[0][key];
+                        }
+                    }
+                    patch[0].response.split('&').forEach(buildConfig);
+                    config = argsCleaner(config);
+                    patch[0].response = [];
+                    Object.keys(config.args).forEach(revertConfig);
+                    patch[0].response = patch[0].response.join('&');
+                    patch[0].responseText = patch[0].response;
+                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                    originalFunction.apply(this, patch);
+                    if (audioOn.classList.contains('active')) {
+                        audioOn.click();
+                    }
+                };
+            }
+            function fsPointerDetour(originalFunction) {
+                return function () {
+                    var self = this;
+                    function firstLevel(fl) {
+                        function secondLevel(sl) {
+                            if (typeof self[fl][sl] === 'function' && String(self[fl][sl]).split('onStatusFail').length > 1) {
+                                self[fl][sl] = fullscreenVideoChange(self[fl][sl]);
+                            }
+                        }
+                        if (typeof self[fl] === 'object' && self[fl]) {
+                            Object.keys(Object.getPrototypeOf(self[fl])).forEach(secondLevel);
+                        }
+                    }
+                    Object.keys(self).some(firstLevel);
+                    return originalFunction.apply(this, arguments);
+                };
+            }
             function html5Detour(originalFunction) {
                 return function () {
                     var playerInstance,
@@ -2464,6 +2493,11 @@
                         };
                     }
                     function playerInstanceIterator(keys) {
+                        function firstLevel(fl) {
+                            if (typeof playerInstance[keys][fl] === 'function' && String(playerInstance[keys][fl]).split('get_video_info').length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
+                                playerInstance[keys][fl] = fsPointerDetour(playerInstance[keys][fl]);
+                            }
+                        }
                         function keysIterator(sizes) {
                             if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
                                 playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
@@ -2474,6 +2508,8 @@
                                 Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(keysIterator);
                             } else if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
+                            } else if (playerInstance[keys]) {
+                                Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(firstLevel);
                             }
                         }
                     }
@@ -2903,6 +2939,7 @@
                             handleEvents('remove', window, 'spfdone', startAudioMode);
                             document.getElementById('podcast-container').remove();
                             document.getElementById('audio-only').classList.remove('active');
+                            return;
                         }
                         streams = {};
                         videoPlayer = document.getElementsByTagName('video')[0];
@@ -2930,7 +2967,7 @@
                         }
                     }
                     if (hasWebmAudio) {
-                        if (audioOnly.classList.contains('active')) {
+                        if (audioOnly.classList.contains('active') && !fullscreen) {
                             handleEvents('remove', window, 'spfdone', startAudioMode);
                             document.getElementById('podcast-container').remove();
                             audioOnly.classList.remove('active');
@@ -3146,7 +3183,6 @@
             var logo,
                 channelLink,
                 autoplaybar = document.getElementsByClassName('autoplay-bar')[0];
-            requesting = false;
             function linkIterator(link) {
                 if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
                     channelLink[link].href += '/' + parSets.GEN_CHN_DFLT_PAGE;
@@ -3201,7 +3237,6 @@
                 listAfter   = url.split('list=').length > 1,
                 player      = document.getElementById('movie_player'),
                 loaded      = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded;
-            requesting = true;
             if (player && videoAfter && (listAfter !== listBefore || videoBefore)) {
                 if (loaded) {
                     delete window.ytplayer.config.loaded;
