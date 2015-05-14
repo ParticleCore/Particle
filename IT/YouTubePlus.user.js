@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.3
+// @version     2.1.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,11 +14,11 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript = typeof GM_info === 'object',
+    var userscript    = typeof GM_info === 'object',
         particleStyle = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
-            '    margin-left: 0px !important;\n',
+            '    margin-left: 0 !important;\n',
             '}\n',
         //   end| Playlist spacer
         // start| Ads visibility
@@ -64,17 +64,18 @@
             '    margin: 0 auto !important;\n',
             '    transform: none;\n',
             '}\n',
-            'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
+            'html.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
+            '    box-shadow: 0 0 10px rgb(0, 0, 0);\n',
             '    position: fixed !important;\n',
+            '}\n',
+            'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
             '    top: 50% !important;\n',
             '    z-index: 10;\n',
             '}\n',
             'html.content-snap-width-skinny-mode.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
-            '    position: fixed !important;\n',
             '    margin-top: 0 !important;\n',
             '    top: 50px !important;\n',
             '    transform: none;\n',
-            '    box-shadow: 0 0 10px rgb(0, 0, 0);\n',
             '}\n',
         //   end| Floater player
         // start| Labelless video buttons
@@ -459,7 +460,7 @@
             '    border-right: 1px solid #E8E8E8;\n',
             '    box-shadow: none;\n',
             '}\n',
-            '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n',
+            'html:not(.new_player) #movie_player:not(.ended-mode) .html5-progress-bar, html:not(.new_player) #movie_player:not(.ended-mode) video{\n',
             '    left: initial !important;\n',
             '    max-width: 100%;\n',
             '    max-height: 100%;\n',
@@ -476,7 +477,7 @@
             '#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n',
             '    transition: none !important;\n',
             '}\n',
-            '.part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{\n',
+            '.part_fit_theater:not(.new_player) .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater:not(.new_player) .watch-stage-mode #theater-background{\n',
             '    bottom: 0;\n',
             '    height: initial !important;\n',
             '    top: 0;\n',
@@ -504,6 +505,15 @@
             '}\n',
             '.content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n',
             '   display: none !important;\n',
+            '}\n',
+            '.new_player .ytp-large-play-button{\n',
+            '   text-align: center;\n',
+            '}\n',
+            '.new_player .ytp-large-play-button svg{\n',
+            '   max-width: 85px;\n',
+            '}\n',
+            '.new_player .html5-video-container{\n',
+            '   height: 100%;\n',
             '}\n',
         //   end| Enhancements
         // start| Improved notification button
@@ -571,11 +581,11 @@
             '    padding-top: calc(56.25% + 30px);\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #movie_player, .content-snap-width-skinny-mode #movie_player{\n',
-            '    bottom: 0px;\n',
-            '    left: 0px;\n',
+            '    bottom: 0;\n',
+            '    left: 0;\n',
             '    position: absolute;\n',
-            '    right: 0px;\n',
-            '    top: 0px;\n',
+            '    right: 0;\n',
+            '    top: 0;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #placeholder-player, .content-snap-width-skinny-mode #placeholder-player{\n',
             '    display: none;\n',
@@ -843,12 +853,14 @@
             '    text-shadow: none;\n',
             '}\n',
             '#DNT{\n',
-            '    font-weight: bold;\n',
             '    position: relative;\n',
             '}\n',
             '#DNT a{\n',
-            '    color: #FFF;\n',
+            '    color: #808080;\n',
             '    display: block;\n',
+            '}\n',
+            '#DNT:hover a{\n',
+            '    color: #F1F1F1;\n',
             '}\n',
             '#DNT:hover:after{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAASCAMAAACzQHQ9AAACIlBMVEUBnN4AMIUAMYUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAJH0AVqQAMYYAIXcAMIUAMIUAMYUBMIIBsPEAMIUAMIUAMIUBaq0Bv/wAMIUAMIUAMIQBuPYAMIUAMIUBnd4AMIUAMIUBmNoAMIUAMIUAMIUAMIUBnN4AMIUAMIUBnN4BnN4AMIUBYK4AMIUBnN4BnN4AMIUAHHUBcLoBmdsBm90Bnd8BnN4BnN4AMIUBnd4BnN4BnN4BnN4AL4UBnN4BnN4AMIYANIgAGXMAKn8BoOEBnN4BnN4AMYYAM4cACWUAWqcBnN4BnN4AMYYAJXwAS5sBtfIBpuYBmNoBnN4BnN4AMIUBm90AMYgAMIQAMYYBnd8AMogBpugCHGMBl9oCIGoCIGkAMokAJn0AMocAL4QAGHICElsAM4cAHnYBP5ABpeQBqOgBHGoBoeQBre8Br/ABnt8BmdwBLH8CIGsBXKAAJ3oANIoBu/kBre4Bo+UBJ3UBl9kCGV4CHGQCIWsCIW0AMoYAKoACJ28CL3UBqekBm9wCAEACLnYCIGgCS5ICgcQBJnMCNX0AH3gBg8sBse8CHmUCImwBs/UCKXMCC1QANYgAHHUBj9MBs/ABnN4CDlUBoOAAMYcAOI4BuvsCI24CH2YBr+4CJG4CHWQCADwBa7EBvv8Bp+gBwfwCIGwCJG8AM4oANYsALoMCElwCEFgCE1wCBlECBUxjnIttAAAAWHRSTlMAAADdw7x0I/H4QwGAigB9AdnaFZwAedvV8VYEEbjVDrXuHtLWMe4UlqJH3/1HaP5f9HCH/v7u1tW1TqP6ZSIg4+MZudHBzvrEERMaFFmpAQAAAD/v6upvQTSr7wAAAPRJREFUGBklwE8rBGEcwPHf95mZbf+0KtueNrSyYiZD1m0lLWqzlU2SC+/AXU5egjexlZtVkEpMWBFOW7TJRaXCnEgZjWfWB5IEP11Yb9l38m2B3OuSiCER78uH2MCIgZKOBpAIF4wwqb6DuYvJdWB0SJabpDIfNl4dyJYlbyoGj53W8Dbk0mNm3LbuhSIxtuijZAQVTqV8PgUb9DNbQTuo4tmJTQqMq940pvVL/FpdYbvdaH4G7QhcN0WzykvPU6H9wB3FGrss8thCuxRKTujAzTNwJiJMr9xOAHVOJMIM2uq+z6FEmAfW9oJPGhKhxr8d6fgDKsQ/Heb6AJAAAAAASUVORK5CYII=") no-repeat center / contain;\n',
@@ -959,6 +971,7 @@
                 VID_PLR_SIZE_MEM : true,
                 VID_PLR_CTRL_VIS : true,
                 VID_PLR_DYN_SIZE : true,
+                VID_PLR_FIT_WDTH : '1280px',
                 VID_PROG_BAR_CLR : 'red',
                 VID_CTRL_BAR_CLR : 'light',
                 VID_HIDE_COMS    : '1',
@@ -1344,6 +1357,10 @@
                     en     : 'Fit to page in theater mode',
                     'pt-PT': 'Ajustar na página no modo cinema'
                 },
+                VID_PLR_FIT_WDTH      : {
+                    en     : 'Fit to page max width:',
+                    'pt-PT': 'Largura máxima do ajuste na página:'
+                },
                 VID_PLR_DYN_SIZE      : {
                     en     : 'Disable dynamic player size in default view',
                     'pt-PT': 'Desactivar tamanho dinâmico do reproductor na vista predefinida'
@@ -1526,9 +1543,10 @@
         }
         function customStyles() {
             var classes,
+                plrApi   = document.getElementById('player-api'),
                 commSect = document.getElementById('watch-discussion'),
                 sidebar  = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
-                ads      = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
+                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
                 setsList = {
                     'GEN_DSBL_ADS'    : 'part_no_ads',
                     'GEN_BLUE_GLOW'   : 'part_dsbl_glow',
@@ -1543,9 +1561,9 @@
                     'VID_PLST_SEP'    : 'part_playlist_spacer',
                     'VID_DESC_SHRT'   : 'part_labelless_buttons'
                 };
-            while (ads) {
-                ads.remove();
-                ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
+            while (adverts) {
+                adverts.remove();
+                adverts = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
             if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.pathname === '/feed/subscriptions') || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                 sidebar.remove();
@@ -1558,6 +1576,9 @@
             } else if (parSets.VID_HIDE_COMS !== '1') {
                 document.documentElement.classList.remove('part_hide_comments');
             }
+            if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
+                plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || '1280px';
+            }
             for (classes in setsList) {
                 if (setsList.hasOwnProperty(classes)) {
                     if (parSets[classes]) {
@@ -1567,7 +1588,7 @@
                     }
                 }
             }
-            classes = setsList = commSect = sidebar = ads = null;
+            classes = setsList = commSect = sidebar = adverts = null;
         }
         function settingsMenu() {
             var pContent,
@@ -1720,6 +1741,8 @@
                             htEl.input('VID_PLR_CTRL_VIS', 'checkbox'),
                             htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
                             htEl.input('VID_PLR_FIT', 'checkbox'),
+                            htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
+                            '    <br>',
                             htEl.radio('VID_PROG_BAR_CLR', {
                                 'VID_PROG_BAR_CLR_RED': 'red',
                                 'VID_PROG_BAR_CLR_WHT': 'white'
@@ -1790,27 +1813,27 @@
                             '    <hr class="P-horz">\n',
                             htEl.title('ABT_THKS', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/YePpHa">Jeppe Rune Mortensen</a>' + userLang('ABT_THKS_YEPPHA') + '\n',
+                            '        <a target="_blank" href="https://github.com/YePpHa">Jeppe Rune Mortensen</a>' + userLang('ABT_THKS_YEPPHA') + '\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="http://www.greasespot.net/">Greasemonkey</a> + <a href="http://tampermonkey.net/">Tampermonkey</a>' + userLang('ABT_THKS_USERSCRIPT') + '\n',
+                            '        <a target="_blank" href="http://www.greasespot.net/">Greasemonkey</a> + <a href="http://tampermonkey.net/">Tampermonkey</a>' + userLang('ABT_THKS_USERSCRIPT') + '\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="http://stackoverflow.com/">Stack Overflow</a>' + userLang('ABT_THKS_STACKOV') + '\n',
+                            '        <a target="_blank" href="http://stackoverflow.com/">Stack Overflow</a>' + userLang('ABT_THKS_STACKOV') + '\n',
                             '    </div>\n',
                             htEl.title('ABT_INFO', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://particlecore.github.io/">GitHub</a>\n',
+                            '        <a target="_blank" href="https://github.com/ParticleCore/Particle/">GitHub</a>\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="https://greasyfork.org/en/users/8223-particlecore">Greasy Fork</a>\n',
+                            '        <a target="_blank" href="https://greasyfork.org/en/users/8223-particlecore">Greasy Fork</a>\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
+                            '        <a target="_blank" href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
                             '    </div>\n',
                             htEl.title('ABT_PRBL', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/ParticleCore/Particle/wiki/Report-a-problem">' + userLang('ABT_LNK_PRBL') + '</a>\n',
+                            '        <a target="_blank" href="https://github.com/ParticleCore/Particle/wiki/Report-a-problem">' + userLang('ABT_LNK_PRBL') + '</a>\n',
                             '    </div>\n',
                             '</div>\n'
                         ].join('')
@@ -2264,14 +2287,32 @@
             }
         }
         function playerReady(playerApi) {
-            function playerState() {
-                var vidData = api.getVideoData(),
-                    beacon  = vidData.video_id + vidData.list;
+            function playerState(state) {
+                var vidData   = api.getVideoData(),
+                    beacon    = vidData.video_id + vidData.list,
+                    newPlayer = window.ytplayer.config.assets.js.split('-new').length > 1,
+                    cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
+                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0];
                 if (document.getElementById('movie_player') && fullscreen && window.beacon !== beacon) {
                     window.beacon = beacon;
                     window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
                 }
-                vidData = beacon = null;
+                if (newPlayer) {
+                    document.documentElement.classList.add('new_player');
+                    window.matchMedia = false;
+                    if (state === 5) {
+                        cueThumb.removeAttribute('aria-hidden');
+                        cueThumb.style.display = 'initial';
+                        cueButton.removeAttribute('aria-hidden');
+                        cueButton.style.display = 'initial';
+                    } else {
+                        cueThumb.setAttribute('aria-hidden', 'true');
+                        cueThumb.style.display = 'none';
+                        cueButton.setAttribute('aria-hidden', 'true');
+                        cueButton.style.display = 'none';
+                    }
+                }
+                vidData = beacon = cueThumb = cueButton = null;
             }
             function fsControl(event) {
                 return function () {
@@ -2331,7 +2372,7 @@
                     playerBar.insertBefore(button, prev);
                 }
             }
-            if (typeof playerApi === 'object' && !document.getElementById('c4-player')) {
+            if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
                 document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
                 api = playerApi;
                 handleEvents('add', api, 'onStateChange', playerState);
@@ -2429,7 +2470,7 @@
                             }
                         }
                         if (typeof playerInstance[keys] === 'object') {
-                            if (playerInstance[keys] && playerInstance[keys].element) {
+                            if (playerInstance[keys] && playerInstance[keys].element && window.ytplayer.config.assets.js.split('-new').length < 2) {
                                 Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(keysIterator);
                             } else if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
@@ -2438,9 +2479,12 @@
                     }
                     if (args[0].id === 'upsell-video') {
                         originalFunction.apply(this, arguments);
-                    } else if (typeof args[0] === 'object') {
+                    } else if (typeof args[0] === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) {
                         playerInstance = originalFunction.apply(this, arguments);
                         Object.keys(playerInstance).some(playerInstanceIterator);
+                        if (!parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
+                            document.getElementById('movie_player').cueVideoByPlayerVars(window.ytplayer.config.args);
+                        }
                     }
                 };
             }
