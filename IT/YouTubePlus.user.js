@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.7
+// @version     2.1.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -454,10 +454,14 @@
             '    border-right: 1px solid #E8E8E8;\n',
             '    box-shadow: none;\n',
             '}\n',
-            'html:not(.new_player) #movie_player:not(.ended-mode) .html5-progress-bar, html:not(.new_player) #movie_player:not(.ended-mode) video{\n',
-            '    left: initial !important;\n',
+            '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n',
+            '    max-width: 100%;\n',
+            '    max-height: 100%;\n',
             '    min-width: 100%;\n',
             '    min-height: 100%;\n',
+            '}\n',
+            'html:not(.new_player) #movie_player:not(.ended-mode) .html5-progress-bar, html:not(.new_player) #movie_player:not(.ended-mode) video{\n',
+            '    left: initial !important;\n',
             '    top: initial !important;\n',
             '}\n',
             '.ideal-aspect .html5-player-chrome{\n',
@@ -469,7 +473,7 @@
             '#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n',
             '    transition: none !important;\n',
             '}\n',
-            '.part_fit_theater:not(.new_player) .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater:not(.new_player) .watch-stage-mode #theater-background{\n',
+            '.part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{\n',
             '    bottom: 0;\n',
             '    height: initial !important;\n',
             '    top: 0;\n',
