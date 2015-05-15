@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.8
+// @version     2.1.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -596,7 +596,7 @@
             '    top: 10px;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #watch-appbar-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
-            '    transform: none;\n',
+            '    transform: none !important;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #content, .content-snap-width-skinny-mode #content{\n',
             '    margin-top: 10px;\n',
