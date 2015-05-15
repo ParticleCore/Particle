@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.6
+// @version     2.1.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -119,12 +119,6 @@
             '.yt-user-info > span{\n',
             '    color: #666;\n',
             '    font-size: 11px;\n',
-            '}\n',
-            '.ytp-button-stop{\n',
-            '    margin: 0 -10px;\n',
-            '    position: relative;\n',
-            '    width: 45px !important;\n',
-            '    z-index: 1;\n',
             '}\n',
             '.invisible{\n',
             '    display: none;\n',
@@ -462,8 +456,6 @@
             '}\n',
             'html:not(.new_player) #movie_player:not(.ended-mode) .html5-progress-bar, html:not(.new_player) #movie_player:not(.ended-mode) video{\n',
             '    left: initial !important;\n',
-            '    max-width: 100%;\n',
-            '    max-height: 100%;\n',
             '    min-width: 100%;\n',
             '    min-height: 100%;\n',
             '    top: initial !important;\n',
@@ -985,7 +977,6 @@
                 VID_DESC_SHRT    : true,
                 VID_SDBR_ALGN    : '1',
                 VID_TTL_CMPT     : true,
-                VID_STP_BTN      : true,
                 BLK_ON           : true,
                 volLev           : 50,
                 plApl            : false,
@@ -1201,10 +1192,6 @@
                 VID_PLR_LYT           : {
                     en     : 'Player layout',
                     'pt-PT': 'Aspecto do reproductor'
-                },
-                VID_STP_BTN           : {
-                    en     : 'Add stop button to the player',
-                    'pt-PT': 'Adicionar botão de parar ao reproductor'
                 },
                 VID_DFLT_QLTY         : {
                     en     : 'Default video quality:',
@@ -1742,7 +1729,6 @@
                             }),
                             '    <br>',
                             htEl.title('VID_PLR_LYT', 'h3'),
-                            htEl.input('VID_STP_BTN', 'checkbox'),
                             htEl.input('VID_PLR_CTRL_VIS', 'checkbox'),
                             htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
                             htEl.input('VID_PLR_FIT', 'checkbox'),
@@ -2296,25 +2282,31 @@
         }
         function playerReady(playerApi) {
             function playerState(state) {
-                var cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
-                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0],
-                    newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
+                var moviePlayer = document.getElementById('movie_player'),
+                    cueThumb    = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
+                    cueButton   = document.getElementsByClassName('ytp-large-play-button')[0],
+                    newPlayer   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 if (newPlayer) {
                     if (window.matchMedia) {
                         window.matchMedia = false;
                         document.documentElement.classList.add('new_player');
                     }
-                    if (state === 5) {
-                        cueThumb.removeAttribute('aria-hidden');
-                        cueThumb.style.display = 'initial';
-                        cueButton.removeAttribute('aria-hidden');
-                        cueButton.style.display = 'initial';
-                    } else {
-                        cueThumb.setAttribute('aria-hidden', 'true');
-                        cueThumb.style.display = 'none';
-                        cueButton.setAttribute('aria-hidden', 'true');
-                        cueButton.style.display = 'none';
+                    if (cueThumb && cueButton) {
+                        if (state === 5) {
+                            cueThumb.removeAttribute('aria-hidden');
+                            cueThumb.style.display = 'initial';
+                            cueButton.removeAttribute('aria-hidden');
+                            cueButton.style.display = 'initial';
+                        } else {
+                            cueThumb.setAttribute('aria-hidden', 'true');
+                            cueThumb.style.display = 'none';
+                            cueButton.setAttribute('aria-hidden', 'true');
+                            cueButton.style.display = 'none';
+                        }
                     }
+                }
+                if (parSets.VID_PLR_CTRL_VIS && moviePlayer) {
+                    moviePlayer.classList.add('ideal-aspect');
                 }
                 cueThumb = cueButton = null;
             }
@@ -2330,38 +2322,6 @@
             function sizeChanged(event) {
                 set('theaterMode', event);
             }
-            function stopButton() {
-                var prev,
-                    button,
-                    playBtn,
-                    playerBar = document.getElementsByClassName('html5-player-chrome')[0];
-                function resumeVideo() {
-                    var currentQuality = api.getPlaybackQuality(),
-                        currentTime    = api.getCurrentTime();
-                    handleEvents('remove', playBtn, 'click', resumeVideo);
-                    window.ytplayer.config.loaded = false;
-                    api.loadNewVideoConfig(window.ytplayer.config, 'html5');
-                    api.setPlaybackQuality(currentQuality);
-                    api.seekTo(currentTime);
-                }
-                function stopVideo() {
-                    var podcast = document.getElementById('podcast-container');
-                    api.stopVideo();
-                    playBtn = document.getElementsByClassName('ytp-button-pause')[0] || document.getElementsByClassName('ytp-button-play')[0];
-                    handleEvents('add', playBtn, 'click', resumeVideo);
-                    if (podcast) {
-                        podcast.remove();
-                        document.getElementById('audio-only').classList.remove('active');
-                    }
-                }
-                if (!document.getElementsByClassName('ytp-button-stop')[0] && playerBar) {
-                    prev = document.getElementsByClassName('ytp-button-prev')[0];
-                    button = '<div role="button" class="ytp-button ytp-button-stop"></div>';
-                    button = string2HTML(button).querySelector('div');
-                    handleEvents('add', button, 'click', stopVideo);
-                    playerBar.insertBefore(button, prev);
-                }
-            }
             if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
                 api = playerApi;
                 handleEvents('add', api, 'onStateChange', playerState);
@@ -2371,9 +2331,6 @@
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
                     handleEvents('add', api, 'SIZE_CLICKED', sizeChanged);
-                }
-                if (parSets.VID_STP_BTN) {
-                    stopButton();
                 }
                 if (!parSets.VID_PLR_ATPL) {
                     argsCleaner(window.ytplayer.config);
@@ -2476,7 +2433,8 @@
             }
             function html5Detour(originalFunction) {
                 return function () {
-                    var playerInstance,
+                    var moviePlayer,
+                        playerInstance,
                         args = arguments;
                     function html5Pointers(originalPointer) {
                         return function () {
@@ -2513,14 +2471,17 @@
                             }
                         }
                     }
+                    args[1] = argsCleaner(args[1]);
                     if (args[0].id === 'upsell-video') {
-                        originalFunction.apply(this, arguments);
+                        originalFunction.apply(this, args);
                     } else if (typeof args[0] === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) {
-                        playerInstance = originalFunction.apply(this, arguments);
+                        playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
+                        moviePlayer = document.getElementById('movie_player');
                         if (!parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
-                            document.getElementById('movie_player').cueVideoByPlayerVars(window.ytplayer.config.args);
+                            moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
+                        moviePlayer.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
                 };
             }
