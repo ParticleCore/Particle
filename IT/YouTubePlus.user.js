@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.5
+// @version     2.1.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -554,6 +554,9 @@
             '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n',
             '    height: 390px;\n',
             '}\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode).new_player .watch-non-stage-mode .player-height{\n',
+            '    height: 360px;\n',
+            '}\n',
             '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
             '    margin-left: 650px;\n',
             '    top: 0;\n',
@@ -580,6 +583,9 @@
             '    display: block;\n',
             '    padding-top: calc(56.25% + 30px);\n',
             '}\n',
+            '.part_fit_theater.new_player .watch-stage-mode #player-api:before, .content-snap-width-skinny-mode.new_player #player-api:before{\n',
+            '    padding-top: calc(56.25%);\n',
+            '}\n',
             '.part_fit_theater .watch-stage-mode #movie_player, .content-snap-width-skinny-mode #movie_player{\n',
             '    bottom: 0;\n',
             '    left: 0;\n',
@@ -601,38 +607,38 @@
             '}\n',
         //   end| Fit player in theater mode
         // start| Hide player controls
-            '.part_hide_controls.part_fit_theater .watch-stage-mode #player-api:before, .part_hide_controls.content-snap-width-skinny-mode #player-api:before{\n',
+            '.part_hide_controls.part_fit_theater:not(.new_player) .watch-stage-mode #player-api:before, .part_hide_controls.content-snap-width-skinny-mode:not(.new_player) #player-api:before{\n',
             '    padding-top: calc(56.25%);\n',
             '}\n',
-            '.part_hide_controls:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
+            '.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) .watch-non-stage-mode #watch7-sidebar{\n',
             '    margin-top: -370px;\n',
             '}\n',
-            '.part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater) .watch-stage-mode #watch-appbar-playlist{\n',
+            '.part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater):not(.new_player) .watch-stage-mode #watch-appbar-playlist{\n',
             '    top: 90px;\n',
             '}\n',
             '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    .part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater) .watch-stage-mode #watch-appbar-playlist{\n',
+            '    .part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater):not(.new_player) .watch-stage-mode #watch-appbar-playlist{\n',
             '        top: 330px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-non-stage-mode .player-height{\n',
+            'html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-non-stage-mode .player-height{\n',
             '    height: 360px;\n',
             '}\n',
             '@media screen and (min-width:1294px) and (min-height:630px){\n',
-            '    html.part_hide_controls:not(.part_static_size) #page.watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls:not(.part_static_size):not(.new_player) #page.watch-non-stage-mode .player-height{\n',
             '        height: 480px;\n',
             '    }\n',
             '}\n',
             '@media screen and (min-width:1720px) and (min-height:980px){\n',
-            '    html.part_hide_controls:not(.part_static_size) #page.watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls:not(.part_static_size):not(.new_player) #page.watch-non-stage-mode .player-height{\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
+            'html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
             '    height: 480px;\n',
             '}\n',
             '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
+            '    html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
@@ -2197,12 +2203,14 @@
                 height,
                 skinny,
                 sidebar,
+                newPlayer,
                 sidebarSize,
                 aspectRatio,
                 containerSize,
                 playerContainer,
                 videoPlayer = document.getElementById('movie_player');
             function initFloater() {
+                newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 skinny = document.documentElement.classList.contains('content-snap-width-skinny-mode');
                 videoPlayer = document.getElementById('movie_player');
                 playerContainer = document.getElementById('player-api');
@@ -2218,7 +2226,7 @@
                     videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
                     videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = (!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio)) + 'px';
+                    videoPlayer.style.height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio)) + 'px';
                 }
                 if (!sidebar) {
                     handleEvents('remove', window, 'scroll', initFloater);
@@ -2227,7 +2235,7 @@
                 if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
                     aspectRatio = 16 / 9;
                     width = (skinny && containerSize.width) || sidebarSize.width;
-                    height = (!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio));
+                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio));
                     document.documentElement.classList.toggle('floater');
                     videoPlayer.setAttribute('style', 'width: ' + width + 'px; margin-top: -' + (height / 2) + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                     handleEvents('add', window, 'resize', updatePos);
@@ -2397,15 +2405,7 @@
                         return originalFunction.apply(this, args);
                     }
                     originalFunction.apply(this, args);
-                    if (api) {
-                        if (parSets.VID_PLR_ATPL) {
-                            api.pauseVideo();
-                            api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                            api.playVideo();
-                        } else {
-                            api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                        }
-                    }
+                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                 };
             }
             function autoplayDetour(originalFunction) {
@@ -2784,9 +2784,9 @@
                 header       = document.getElementById('watch-header'),
                 cnslBtn      = document.getElementById('console-button'),
                 controls     = document.getElementById('player-console'),
+                videoPlayer  = document.getElementsByTagName('video')[0],
                 storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
-                hasWebmAudio = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length > 1,
-                videoPlayer  = document.getElementsByTagName('video')[0];
+                hasWebmAudio = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length > 1;
             function hookButtons() {
                 var autoPlay    = controls.querySelector('#autoplay-button'),
                     loopButton  = controls.querySelector('#loop-button'),
@@ -2871,26 +2871,27 @@
                                 firstMatch  = string.match(/var [\w\W]{2}\=\{[\w\W]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
                                 secondMatch = string.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0];
                             function iterateFirstMatch(string) {
+                                string = string.split(':')[0];
                                 if (string.match('.length')) {
-                                    replace = string.split(':')[0];
+                                    replace = string;
                                 } else if (string.match('.splice')) {
-                                    splice = string.split(':')[0];
+                                    splice = string;
                                 } else if (string.match('.reverse')) {
-                                    reverse = string.split(':')[0];
+                                    reverse = string;
                                 }
                             }
                             function iterateSecondMatch(string) {
+                                string = Number(string.split(',')[1].replace(')', ''));
                                 if (string.match('.' + replace)) {
-                                    algo[html5ID].push(Number(string.split(',')[1].replace(')', '')));
+                                    algo[html5ID].push(string);
                                 } else if (string.match('.' + splice)) {
-                                    algo[html5ID].push(-Number(string.split(',')[1].replace(')', '')));
+                                    algo[html5ID].push(-string);
                                 } else if (string.match('.' + reverse)) {
                                     algo[html5ID].push(0);
                                 }
                             }
                             firstMatch.replace(/var ([\w\W]*?)=\{/, '').split('},').forEach(iterateFirstMatch);
                             secondMatch.split(';').forEach(iterateSecondMatch);
-                            console.info(algo, replace, splice, reverse);
                         }
                         function deCipher(sig) {
                             var temp,
@@ -2906,7 +2907,6 @@
                                     sig.reverse();
                                 }
                             }
-                            console.info(cipher);
                             sig = sig.split('');
                             cipher.forEach(cipherFilter);
                             return sig.join('');
@@ -2957,7 +2957,6 @@
                         }
                         window.ytplayer.config.args.adaptive_fmts.split(',').forEach(adaptiveIterator);
                         loadStream = streams['171'];
-                        console.info(streams);
                         if (loadStream) {
                             if (!loadStream.s) {
                                 initAudioMode();
