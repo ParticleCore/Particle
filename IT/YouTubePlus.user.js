@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.9
+// @version     2.2.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -230,10 +230,6 @@
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAMAAABsDg4iAAAAY1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcL/mXAAAAIHRSTlMAAKVZHRNz5BQCyFAYsgEfmk71I4KrKdfMBEcGVwWGf0tiNMIAAACRSURBVHhebdBXDsIwEADRxSVu6fQ+9z8lhgRLCbwfSyNZXq/MjFbOKW1kk03JVswq+43tnqLppniTgZh8CD5FaOw7Hti2u1o+6h6qHNsjp/YsszqCERmAixQJtFxHYLyX6EHJA4BniQFcPhwEWUcFXpbXRTSk1UMiBmK9HCmroF8On9mG9TezrvlZyO/q/i75BYzRD2BnJL4kAAAAAElFTkSuQmCC") no-repeat center;\n',
             '    width: 20px;\n',
             '}\n',
-            '#audio-only{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAVFBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkwc6KAAAAG3RSTlMAABOb4hrc6AROTQIXOHnZaHdEzu9A9dfz6/cz7bX/AAAAiUlEQVR4Xm3QVw6DQAxF0alMo6aWu/99ZhiHRES8L+tILrJqMck6Z5OppdYrxBxoCTkKxZlv5tgoA0tfSr8AeSUTYJCRAwRTKcGoPhkhVbJgNjJgKzkoGxVwQpMX8ZOQBTqhjtZ4egEIATyu6saeuCj+iQM6ajw99xSusvp3RNc+4e/ndqpUWr8Ba0MPBQ06LVcAAAAASUVORK5CYII=") no-repeat center;\n',
-            '    width: 18px;\n',
-            '}\n',
         //   end| Player console
         // start| Seek thumbs
             '#seek-thumb-map{\n',
@@ -353,83 +349,6 @@
             '    display: initial;\n',
             '}\n',
         //   end| Thumb buttons
-        // start| Podcast mode
-            '#movie_player.ended-mode #podcast-container{\n',
-            '    display: none;\n',
-            '}\n',
-            '#podcast-container{\n',
-            '    height: 100%;\n',
-            '    position: absolute;\n',
-            '    width: 100%;\n',
-            '    z-index: 800;\n',
-            '}\n',
-            '#podcast-elements{\n',
-            '    left: 50%;\n',
-            '    position: absolute;\n',
-            '    top: 50%;\n',
-            '    transform: translate(-50%, -50%);\n',
-            '    width: 70%;\n',
-            '    z-index: 1;\n',
-            '}\n',
-            '#podcast-background{\n',
-            '    background: #000 no-repeat center center / cover;\n',
-            '    height: 100%;\n',
-            '    width: 100%;\n',
-            '    filter: blur(10px) brightness(50%);\n',
-            '    -webkit-filter: blur(10px) brightness(50%);\n',
-            '}\n',
-            '#podcast-poster{\n',
-            '    background: rgba(0, 0, 0, 0.3);\n',
-            '    box-sizing: border-box;\n',
-            '    float: left;\n',
-            '    padding: 5px;\n',
-            '    position: relative;\n',
-            '    width: 30%;\n',
-            '    margin-right: 10px;\n',
-            '}\n',
-            '#podcast-poster #poster{\n',
-            '    background: #000 no-repeat center / cover content-box;\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#podcast-poster #poster:before{\n',
-            '    content: "";\n',
-            '    display: block;\n',
-            '    padding-top: 100%\n',
-            '}\n',
-            '#podcast-info{\n',
-            '    font-weight: bold;\n',
-            '    left: 30%;\n',
-            '    margin-left: 2%;\n',
-            '    text-shadow: 1px 1px 2px #000;\n',
-            '    top: 50%;\n',
-            '    transform: translateY(-50%);\n',
-            '    position: absolute;\n',
-            '    width: 70%;\n',
-            '}\n',
-            '#podcast-info > div:not(:first-child){\n',
-            '    font-weight: initial;\n',
-            '}\n',
-            '#podcast-info div:last-child{\n',
-            '    margin-top: 2%;\n',
-            '}\n',
-            '#podcast-progress{\n',
-            '    background: rgba(0, 0, 0, 0.8);\n',
-            '    bottom: 10px;\n',
-            '    font-size: 10px;\n',
-            '    padding: 5px;\n',
-            '    position: absolute;\n',
-            '    right: 5px;\n',
-            '}\n',
-            '#podcast-progress div{\n',
-            '    display: inline;\n',
-            '}\n',
-            '#podcast-total{\n',
-            '    color: rgba(255, 255, 255, 0.8);\n',
-            '}\n',
-            '#podcast-current{\n',
-            '    color: rgba(255, 255, 255, 0.6);\n',
-            '}\n',
-        //   end| Podcast mode
         // start| Enhancements
             ':focus{\n',
             '    outline: none;\n',
@@ -1032,14 +951,6 @@
                 CNSL_RPT              : {
                     en     : 'Repeat video',
                     'pt-PT': 'Repetir vídeo'
-                },
-                CNSL_AUDI             : {
-                    en     : 'Audio only',
-                    'pt-PT': 'Só áudio'
-                },
-                CNSL_AUDI_OFF         : {
-                    en     : 'Not available',
-                    'pt-PT': 'Não está disponível'
                 },
                 CNSL_SKMP             : {
                     en     : 'Seek map',
@@ -2089,8 +2000,7 @@
             cookie = pageElement = playerElement = null;
         }
         function argsCleaner(config) {
-            var audioMode = document.getElementById('autoplay-button'),
-                base      = (config.args.iurl_webp) ? '_webp' : '',
+            var base = (config.args.iurl_webp) ? '_webp' : '',
                 hdThumb,
                 maxRes;
             function checkThumbnail() {
@@ -2145,7 +2055,7 @@
                 return rvsReturn.join(',');
             }
             if (config.args.video_id) {
-                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed))) || (audioMode && audioMode.classList.contains('active'))) {
+                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
                     delete config.args.ad3_module;
                 }
                 if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
@@ -2392,8 +2302,7 @@
                     var key,
                         patch   = [{}],
                         config  = {args: {}},
-                        args    = arguments,
-                        audioOn = document.getElementById('audio-only');
+                        args    = arguments;
                     function buildConfig(conf) {
                         config.args[conf.split('=')[0]] = decodeURIComponent(conf.split('=')[1]).replace(/\+/g, ' ');
                     }
@@ -2413,9 +2322,6 @@
                     patch[0].responseText = patch[0].response;
                     api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     originalFunction.apply(this, patch);
-                    if (audioOn.classList.contains('active')) {
-                        audioOn.click();
-                    }
                 };
             }
             function fsPointerDetour(originalFunction) {
@@ -2750,12 +2656,10 @@
                 cnslBtn      = document.getElementById('console-button'),
                 controls     = document.getElementById('player-console'),
                 videoPlayer  = document.getElementsByTagName('video')[0],
-                storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
-                hasWebmAudio = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length > 1;
+                storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
             function hookButtons() {
                 var autoPlay    = controls.querySelector('#autoplay-button'),
                     loopButton  = controls.querySelector('#loop-button'),
-                    audioOnly   = controls.querySelector('#audio-only'),
                     seekMap     = controls.querySelector('#seek-map'),
                     saveThumb   = controls.querySelector('#save-thumbnail-button'),
                     screenShot  = controls.querySelector('#screenshot-button'),
@@ -2768,184 +2672,6 @@
                     videoPlayer = document.getElementsByTagName('video')[0];
                     videoPlayer.loop = !videoPlayer.loop;
                     loopButton.classList[(videoPlayer.loop) ? 'add' : 'remove']('active');
-                }
-                function toggleAudio() {
-                    var user,
-                        base,
-                        poster,
-                        streams,
-                        container,
-                        loadStream,
-                        currentTime,
-                        currentQuality;
-                    function timeProgress() {
-                        var total    = document.getElementById('podcast-total'),
-                            elapsed  = document.getElementById('podcast-current'),
-                            ending   = document.getElementsByClassName('ytp-time-duration')[0],
-                            progress = document.getElementsByClassName('ytp-time-current')[0];
-                        if (!total) {
-                            handleEvents('remove', videoPlayer, 'timeupdate', timeProgress);
-                            return;
-                        }
-                        if (elapsed && progress && elapsed.textContent !== progress.textContent) {
-                            elapsed.textContent = progress.textContent;
-                        }
-                        if (total && ending && total.textContent !== '/ ' + ending.textContent) {
-                            total.textContent = '/ ' + ending.textContent;
-                        }
-                    }
-                    function initAudioMode() {
-                        api.playVideo();
-                        videoPlayer.src = loadStream.url;
-                        videoPlayer.play();
-                        if (container) {
-                            container.remove();
-                        }
-                        container = [
-                            '<div id="podcast-container">\n',
-                            '    <div id="podcast-elements">\n',
-                            '        <div id="podcast-poster">\n',
-                            '            <div id="poster" style="background-image:url(\'' + poster + '\')"></div>\n',
-                            '            <div id="podcast-progress">\n',
-                            '                <div id="podcast-current">0:00</div>\n',
-                            '                <div id="podcast-total">/ ' + document.getElementsByClassName('ytp-time-duration')[0].textContent + '</div>\n',
-                            '            </div>\n',
-                            '        </div>\n',
-                            '        <div id="podcast-info">\n',
-                            '            <div id="podcast-title">' + document.title.replace(' - YouTube', '').replace('▶ ', '') + '</div>\n',
-                            '            <div id="podcast-channel">' + user + '</div>\n',
-                            '        </div>\n',
-                            '    </div>\n',
-                            '    <div id="podcast-background" style="background-image:url(\'' + poster + '\')"></div>\n',
-                            '</div>\n'
-                        ].join('');
-                        container = string2HTML(container).querySelector('#podcast-container');
-                        document.getElementsByClassName('html5-video-container')[0].insertBefore(container, videoPlayer);
-                        handleEvents('add', videoPlayer, 'timeupdate', timeProgress);
-                        document.getElementById('audio-only').classList.add('active');
-                    }
-                    function cipherAlgorithm(event) {
-                        var algo      = {},
-                            svdCipher = parSets.cipherAlgorithm,
-                            html5     = window.ytplayer.config.assets.js,
-                            html5ID   = html5.match(/html5player-([\w\W]*?)\/html5player/)[1];
-                        function buildCipher(string) {
-                            var splice,
-                                replace,
-                                reverse,
-                                firstMatch  = string.match(/var [\w\W]{2}\=\{[\w\W]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
-                                secondMatch = string.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0];
-                            function iterateFirstMatch(string) {
-                                string = string.split(':')[0];
-                                if (string.match('.length')) {
-                                    replace = string;
-                                } else if (string.match('.splice')) {
-                                    splice = string;
-                                } else if (string.match('.reverse')) {
-                                    reverse = string;
-                                }
-                            }
-                            function iterateSecondMatch(string) {
-                                string = Number(string.split(',')[1].replace(')', ''));
-                                if (string.match('.' + replace)) {
-                                    algo[html5ID].push(string);
-                                } else if (string.match('.' + splice)) {
-                                    algo[html5ID].push(-string);
-                                } else if (string.match('.' + reverse)) {
-                                    algo[html5ID].push(0);
-                                }
-                            }
-                            firstMatch.replace(/var ([\w\W]*?)=\{/, '').split('},').forEach(iterateFirstMatch);
-                            secondMatch.split(';').forEach(iterateSecondMatch);
-                        }
-                        function deCipher(sig) {
-                            var temp,
-                                cipher = JSON.parse(svdCipher)[html5ID];
-                            function cipherFilter(value) {
-                                if (value > 0) {
-                                    temp = sig[0];
-                                    sig[0] = sig[value % sig.length];
-                                    sig[value] = temp;
-                                } else if (value < 0) {
-                                    sig.splice(0, -value);
-                                } else {
-                                    sig.reverse();
-                                }
-                            }
-                            sig = sig.split('');
-                            cipher.forEach(cipherFilter);
-                            return sig.join('');
-                        }
-                        if (event && event.data.cipherAlgorithm) {
-                            handleEvents('remove', window, 'message', cipherAlgorithm);
-                            event = event.data.cipherAlgorithm;
-                            algo[html5ID] = [];
-                            buildCipher(event);
-                            svdCipher = parSets.cipherAlgorithm = JSON.stringify(algo);
-                        } else if (!event && (!svdCipher || svdCipher.split(html5ID).length < 2)) {
-                            window.postMessage({
-                                method: 'GET',
-                                url: window.location.protocol + html5,
-                                id: 'cipherAlgorithm'
-                            }, '*');
-                            handleEvents('add', window, 'message', cipherAlgorithm);
-                            return;
-                        }
-                        if (svdCipher && svdCipher.split(html5ID).length > 1) {
-                            loadStream.url += '&signature=' + deCipher(loadStream.s);
-                            initAudioMode();
-                        }
-                    }
-                    function startAudioMode() {
-                        if (!window.ytplayer.config) {
-                            return;
-                        }
-                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length < 2) {
-                            handleEvents('remove', window, 'spfdone', startAudioMode);
-                            document.getElementById('podcast-container').remove();
-                            document.getElementById('audio-only').classList.remove('active');
-                            return;
-                        }
-                        streams = {};
-                        videoPlayer = document.getElementsByTagName('video')[0];
-                        container = document.getElementById('podcast-container');
-                        user = window.ytplayer.config.args.author || document.querySelector('.yt-user-info > a').textContent;
-                        base = window.ytplayer.config.args.iurl_webp ? '_webp' : '';
-                        poster = window.ytplayer.config.args['iurlmaxres' + base] || window.ytplayer.config.args['iurl' + base];
-                        function adaptiveIterator(stream) {
-                            var itag = stream.match(/itag\=([0-9]{3})/)[1];
-                            streams[itag] = {};
-                            function streamIterator(details) {
-                                streams[itag][details.split('=')[0]] = decodeURIComponent(details.split('=')[1]).replace(/\+/g, ' ');
-                            }
-                            stream.split('&').forEach(streamIterator);
-                        }
-                        window.ytplayer.config.args.adaptive_fmts.split(',').forEach(adaptiveIterator);
-                        loadStream = streams['171'];
-                        if (loadStream) {
-                            if (!loadStream.s) {
-                                initAudioMode();
-                            } else if (loadStream.s) {
-                                cipherAlgorithm();
-                            }
-                        }
-                    }
-                    if (hasWebmAudio) {
-                        if (audioOnly.classList.contains('active') && !fullscreen) {
-                            handleEvents('remove', window, 'spfdone', startAudioMode);
-                            document.getElementById('podcast-container').remove();
-                            audioOnly.classList.remove('active');
-                            currentQuality = api.getPlaybackQuality();
-                            currentTime = api.getCurrentTime();
-                            window.ytplayer.config.loaded = false;
-                            api.loadNewVideoConfig(window.ytplayer.config, 'html5');
-                            api.setPlaybackQuality(currentQuality);
-                            api.seekTo(currentTime);
-                        } else {
-                            handleEvents('add', window, 'spfdone', startAudioMode);
-                            startAudioMode();
-                        }
-                    }
                 }
                 function toggleMap() {
                     var container = document.getElementById('seek-thumb-map') || false,
@@ -3106,7 +2832,6 @@
                 }
                 handleEvents('add', autoPlay, 'click', togglePlay);
                 handleEvents('add', loopButton, 'click', toggleLoop);
-                handleEvents('add', audioOnly, 'click', toggleAudio);
                 handleEvents('add', seekMap, 'click', toggleMap);
                 handleEvents('add', saveThumb, 'click', dlThumb);
                 handleEvents('add', screenShot, 'click', saveSS);
@@ -3128,7 +2853,6 @@
                     '<div id="player-console">\n',
                     '    <div id="autoplay-button" class="yt-uix-tooltip' + ((parSets.VID_PLR_ATPL) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_AP') + '"></div>\n',
                     '    <div id="loop-button" class="yt-uix-tooltip' + ((videoPlayer && videoPlayer.loop) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_RPT') + '"></div>\n',
-                    '    <div id="audio-only" class="yt-uix-tooltip' + ((document.getElementById('podcast-container')) ? ' active' : '') + '" data-tooltip-text="' + (hasWebmAudio ? userLang('CNSL_AUDI') : userLang('CNSL_AUDI_OFF')) + '"' + ((!hasWebmAudio) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
