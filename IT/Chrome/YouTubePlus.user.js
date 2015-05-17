@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     2.1.2
+// @version     2.2.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,11 +14,11 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript = typeof GM_info === 'object',
+    var userscript    = typeof GM_info === 'object',
         particleStyle = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
-            '    margin-left: 0px !important;\n',
+            '    margin-left: 0 !important;\n',
             '}\n',
         //   end| Playlist spacer
         // start| Ads visibility
@@ -64,17 +64,18 @@
             '    margin: 0 auto !important;\n',
             '    transform: none;\n',
             '}\n',
-            'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
+            'html.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
+            '    box-shadow: 0 0 10px rgb(0, 0, 0);\n',
             '    position: fixed !important;\n',
+            '}\n',
+            'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
             '    top: 50% !important;\n',
             '    z-index: 10;\n',
             '}\n',
             'html.content-snap-width-skinny-mode.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
-            '    position: fixed !important;\n',
             '    margin-top: 0 !important;\n',
             '    top: 50px !important;\n',
             '    transform: none;\n',
-            '    box-shadow: 0 0 10px rgb(0, 0, 0);\n',
             '}\n',
         //   end| Floater player
         // start| Labelless video buttons
@@ -118,12 +119,6 @@
             '.yt-user-info > span{\n',
             '    color: #666;\n',
             '    font-size: 11px;\n',
-            '}\n',
-            '.ytp-button-stop{\n',
-            '    margin: 0 -10px;\n',
-            '    position: relative;\n',
-            '    width: 45px !important;\n',
-            '    z-index: 1;\n',
             '}\n',
             '.invisible{\n',
             '    display: none;\n',
@@ -234,10 +229,6 @@
             '#loop-button{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAMAAABsDg4iAAAAY1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcL/mXAAAAIHRSTlMAAKVZHRNz5BQCyFAYsgEfmk71I4KrKdfMBEcGVwWGf0tiNMIAAACRSURBVHhebdBXDsIwEADRxSVu6fQ+9z8lhgRLCbwfSyNZXq/MjFbOKW1kk03JVswq+43tnqLppniTgZh8CD5FaOw7Hti2u1o+6h6qHNsjp/YsszqCERmAixQJtFxHYLyX6EHJA4BniQFcPhwEWUcFXpbXRTSk1UMiBmK9HCmroF8On9mG9TezrvlZyO/q/i75BYzRD2BnJL4kAAAAAElFTkSuQmCC") no-repeat center;\n',
             '    width: 20px;\n',
-            '}\n',
-            '#audio-only{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAVFBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkwc6KAAAAG3RSTlMAABOb4hrc6AROTQIXOHnZaHdEzu9A9dfz6/cz7bX/AAAAiUlEQVR4Xm3QVw6DQAxF0alMo6aWu/99ZhiHRES8L+tILrJqMck6Z5OppdYrxBxoCTkKxZlv5tgoA0tfSr8AeSUTYJCRAwRTKcGoPhkhVbJgNjJgKzkoGxVwQpMX8ZOQBTqhjtZ4egEIATyu6saeuCj+iQM6ajw99xSusvp3RNc+4e/ndqpUWr8Ba0MPBQ06LVcAAAAASUVORK5CYII=") no-repeat center;\n',
-            '    width: 18px;\n',
             '}\n',
         //   end| Player console
         // start| Seek thumbs
@@ -358,83 +349,6 @@
             '    display: initial;\n',
             '}\n',
         //   end| Thumb buttons
-        // start| Podcast mode
-            '#movie_player.ended-mode #podcast-container{\n',
-            '    display: none;\n',
-            '}\n',
-            '#podcast-container{\n',
-            '    height: 100%;\n',
-            '    position: absolute;\n',
-            '    width: 100%;\n',
-            '    z-index: 800;\n',
-            '}\n',
-            '#podcast-elements{\n',
-            '    left: 50%;\n',
-            '    position: absolute;\n',
-            '    top: 50%;\n',
-            '    transform: translate(-50%, -50%);\n',
-            '    width: 70%;\n',
-            '    z-index: 1;\n',
-            '}\n',
-            '#podcast-background{\n',
-            '    background: #000 no-repeat center center / cover;\n',
-            '    height: 100%;\n',
-            '    width: 100%;\n',
-            '    filter: blur(10px) brightness(50%);\n',
-            '    -webkit-filter: blur(10px) brightness(50%);\n',
-            '}\n',
-            '#podcast-poster{\n',
-            '    background: rgba(0, 0, 0, 0.3);\n',
-            '    box-sizing: border-box;\n',
-            '    float: left;\n',
-            '    padding: 5px;\n',
-            '    position: relative;\n',
-            '    width: 30%;\n',
-            '    margin-right: 10px;\n',
-            '}\n',
-            '#podcast-poster #poster{\n',
-            '    background: #000 no-repeat center / cover content-box;\n',
-            '    width: 100%;\n',
-            '}\n',
-            '#podcast-poster #poster:before{\n',
-            '    content: "";\n',
-            '    display: block;\n',
-            '    padding-top: 100%\n',
-            '}\n',
-            '#podcast-info{\n',
-            '    font-weight: bold;\n',
-            '    left: 30%;\n',
-            '    margin-left: 2%;\n',
-            '    text-shadow: 1px 1px 2px #000;\n',
-            '    top: 50%;\n',
-            '    transform: translateY(-50%);\n',
-            '    position: absolute;\n',
-            '    width: 70%;\n',
-            '}\n',
-            '#podcast-info > div:not(:first-child){\n',
-            '    font-weight: initial;\n',
-            '}\n',
-            '#podcast-info div:last-child{\n',
-            '    margin-top: 2%;\n',
-            '}\n',
-            '#podcast-progress{\n',
-            '    background: rgba(0, 0, 0, 0.8);\n',
-            '    bottom: 10px;\n',
-            '    font-size: 10px;\n',
-            '    padding: 5px;\n',
-            '    position: absolute;\n',
-            '    right: 5px;\n',
-            '}\n',
-            '#podcast-progress div{\n',
-            '    display: inline;\n',
-            '}\n',
-            '#podcast-total{\n',
-            '    color: rgba(255, 255, 255, 0.8);\n',
-            '}\n',
-            '#podcast-current{\n',
-            '    color: rgba(255, 255, 255, 0.6);\n',
-            '}\n',
-        //   end| Podcast mode
         // start| Enhancements
             ':focus{\n',
             '    outline: none;\n',
@@ -460,11 +374,11 @@
             '    box-shadow: none;\n',
             '}\n',
             '#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n',
-            '    left: initial !important;\n',
             '    max-width: 100%;\n',
             '    max-height: 100%;\n',
             '    min-width: 100%;\n',
             '    min-height: 100%;\n',
+            '    left: initial !important;\n',
             '    top: initial !important;\n',
             '}\n',
             '.ideal-aspect .html5-player-chrome{\n',
@@ -505,6 +419,15 @@
             '.content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n',
             '   display: none !important;\n',
             '}\n',
+            '.new_player .ytp-large-play-button{\n',
+            '   text-align: center;\n',
+            '}\n',
+            '.new_player .ytp-large-play-button svg{\n',
+            '   max-width: 85px;\n',
+            '}\n',
+            '.new_player .html5-video-container{\n',
+            '   height: 100%;\n',
+            '}\n',
         //   end| Enhancements
         // start| Improved notification button
             '.part_notif_button #appbar-main-guide-notification-container{\n',
@@ -544,6 +467,9 @@
             '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n',
             '    height: 390px;\n',
             '}\n',
+            '.part_static_size:not(.content-snap-width-skinny-mode).new_player .watch-non-stage-mode .player-height{\n',
+            '    height: 360px;\n',
+            '}\n',
             '.part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
             '    margin-left: 650px;\n',
             '    top: 0;\n',
@@ -570,12 +496,15 @@
             '    display: block;\n',
             '    padding-top: calc(56.25% + 30px);\n',
             '}\n',
+            '.part_fit_theater.new_player .watch-stage-mode #player-api:before, .content-snap-width-skinny-mode.new_player #player-api:before{\n',
+            '    padding-top: calc(56.25%);\n',
+            '}\n',
             '.part_fit_theater .watch-stage-mode #movie_player, .content-snap-width-skinny-mode #movie_player{\n',
-            '    bottom: 0px;\n',
-            '    left: 0px;\n',
+            '    bottom: 0;\n',
+            '    left: 0;\n',
             '    position: absolute;\n',
-            '    right: 0px;\n',
-            '    top: 0px;\n',
+            '    right: 0;\n',
+            '    top: 0;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #placeholder-player, .content-snap-width-skinny-mode #placeholder-player{\n',
             '    display: none;\n',
@@ -584,45 +513,45 @@
             '    top: 10px;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #watch-appbar-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n',
-            '    transform: none;\n',
+            '    transform: none !important;\n',
             '}\n',
             '.part_fit_theater .watch-stage-mode #content, .content-snap-width-skinny-mode #content{\n',
             '    margin-top: 10px;\n',
             '}\n',
         //   end| Fit player in theater mode
         // start| Hide player controls
-            '.part_hide_controls.part_fit_theater .watch-stage-mode #player-api:before, .part_hide_controls.content-snap-width-skinny-mode #player-api:before{\n',
+            '.part_hide_controls.part_fit_theater:not(.new_player) .watch-stage-mode #player-api:before, .part_hide_controls.content-snap-width-skinny-mode:not(.new_player) #player-api:before{\n',
             '    padding-top: calc(56.25%);\n',
             '}\n',
-            '.part_hide_controls:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n',
+            '.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) .watch-non-stage-mode #watch7-sidebar{\n',
             '    margin-top: -370px;\n',
             '}\n',
-            '.part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater) .watch-stage-mode #watch-appbar-playlist{\n',
+            '.part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater):not(.new_player) .watch-stage-mode #watch-appbar-playlist{\n',
             '    top: 90px;\n',
             '}\n',
             '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    .part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater) .watch-stage-mode #watch-appbar-playlist{\n',
+            '    .part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater):not(.new_player) .watch-stage-mode #watch-appbar-playlist{\n',
             '        top: 330px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-non-stage-mode .player-height{\n',
+            'html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-non-stage-mode .player-height{\n',
             '    height: 360px;\n',
             '}\n',
             '@media screen and (min-width:1294px) and (min-height:630px){\n',
-            '    html.part_hide_controls:not(.part_static_size) #page.watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls:not(.part_static_size):not(.new_player) #page.watch-non-stage-mode .player-height{\n',
             '        height: 480px;\n',
             '    }\n',
             '}\n',
             '@media screen and (min-width:1720px) and (min-height:980px){\n',
-            '    html.part_hide_controls:not(.part_static_size) #page.watch-non-stage-mode .player-height{\n',
+            '    html.part_hide_controls:not(.part_static_size):not(.new_player) #page.watch-non-stage-mode .player-height{\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
-            'html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
+            'html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
             '    height: 480px;\n',
             '}\n',
             '@media screen and (min-width:1320px) and (min-height:870px){\n',
-            '    html.part_hide_controls:not(.content-snap-width-skinny-mode) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
+            '    html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-stage-mode .player-height:not(.watch-playlist){\n',
             '        height: 720px;\n',
             '    }\n',
             '}\n',
@@ -843,12 +772,14 @@
             '    text-shadow: none;\n',
             '}\n',
             '#DNT{\n',
-            '    font-weight: bold;\n',
             '    position: relative;\n',
             '}\n',
             '#DNT a{\n',
-            '    color: #FFF;\n',
+            '    color: #808080;\n',
             '    display: block;\n',
+            '}\n',
+            '#DNT:hover a{\n',
+            '    color: #F1F1F1;\n',
             '}\n',
             '#DNT:hover:after{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAASCAMAAACzQHQ9AAACIlBMVEUBnN4AMIUAMYUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAMIUAJH0AVqQAMYYAIXcAMIUAMIUAMYUBMIIBsPEAMIUAMIUAMIUBaq0Bv/wAMIUAMIUAMIQBuPYAMIUAMIUBnd4AMIUAMIUBmNoAMIUAMIUAMIUAMIUBnN4AMIUAMIUBnN4BnN4AMIUBYK4AMIUBnN4BnN4AMIUAHHUBcLoBmdsBm90Bnd8BnN4BnN4AMIUBnd4BnN4BnN4BnN4AL4UBnN4BnN4AMIYANIgAGXMAKn8BoOEBnN4BnN4AMYYAM4cACWUAWqcBnN4BnN4AMYYAJXwAS5sBtfIBpuYBmNoBnN4BnN4AMIUBm90AMYgAMIQAMYYBnd8AMogBpugCHGMBl9oCIGoCIGkAMokAJn0AMocAL4QAGHICElsAM4cAHnYBP5ABpeQBqOgBHGoBoeQBre8Br/ABnt8BmdwBLH8CIGsBXKAAJ3oANIoBu/kBre4Bo+UBJ3UBl9kCGV4CHGQCIWsCIW0AMoYAKoACJ28CL3UBqekBm9wCAEACLnYCIGgCS5ICgcQBJnMCNX0AH3gBg8sBse8CHmUCImwBs/UCKXMCC1QANYgAHHUBj9MBs/ABnN4CDlUBoOAAMYcAOI4BuvsCI24CH2YBr+4CJG4CHWQCADwBa7EBvv8Bp+gBwfwCIGwCJG8AM4oANYsALoMCElwCEFgCE1wCBlECBUxjnIttAAAAWHRSTlMAAADdw7x0I/H4QwGAigB9AdnaFZwAedvV8VYEEbjVDrXuHtLWMe4UlqJH3/1HaP5f9HCH/v7u1tW1TqP6ZSIg4+MZudHBzvrEERMaFFmpAQAAAD/v6upvQTSr7wAAAPRJREFUGBklwE8rBGEcwPHf95mZbf+0KtueNrSyYiZD1m0lLWqzlU2SC+/AXU5egjexlZtVkEpMWBFOW7TJRaXCnEgZjWfWB5IEP11Yb9l38m2B3OuSiCER78uH2MCIgZKOBpAIF4wwqb6DuYvJdWB0SJabpDIfNl4dyJYlbyoGj53W8Dbk0mNm3LbuhSIxtuijZAQVTqV8PgUb9DNbQTuo4tmJTQqMq940pvVL/FpdYbvdaH4G7QhcN0WzykvPU6H9wB3FGrss8thCuxRKTujAzTNwJiJMr9xOAHVOJMIM2uq+z6FEmAfW9oJPGhKhxr8d6fgDKsQ/Heb6AJAAAAAASUVORK5CYII=") no-repeat center / contain;\n',
@@ -936,7 +867,6 @@
         var api,
             parSets,
             fullscreen,
-            requesting,
             channelId = {},
             events    = [],
             isChrome  = typeof window.chrome === 'object',
@@ -959,6 +889,7 @@
                 VID_PLR_SIZE_MEM : true,
                 VID_PLR_CTRL_VIS : true,
                 VID_PLR_DYN_SIZE : true,
+                VID_PLR_FIT_WDTH : '1280px',
                 VID_PROG_BAR_CLR : 'red',
                 VID_CTRL_BAR_CLR : 'light',
                 VID_HIDE_COMS    : '1',
@@ -967,7 +898,6 @@
                 VID_DESC_SHRT    : true,
                 VID_SDBR_ALGN    : '1',
                 VID_TTL_CMPT     : true,
-                VID_STP_BTN      : true,
                 BLK_ON           : true,
                 volLev           : 50,
                 plApl            : false,
@@ -1019,14 +949,6 @@
                 CNSL_RPT              : {
                     en     : 'Repeat video',
                     'pt-PT': 'Repetir vídeo'
-                },
-                CNSL_AUDI             : {
-                    en     : 'Audio only',
-                    'pt-PT': 'Só áudio'
-                },
-                CNSL_AUDI_OFF         : {
-                    en     : 'Not available',
-                    'pt-PT': 'Não está disponível'
                 },
                 CNSL_SKMP             : {
                     en     : 'Seek map',
@@ -1184,10 +1106,6 @@
                     en     : 'Player layout',
                     'pt-PT': 'Aspecto do reproductor'
                 },
-                VID_STP_BTN           : {
-                    en     : 'Add stop button to the player',
-                    'pt-PT': 'Adicionar botão de parar ao reproductor'
-                },
                 VID_DFLT_QLTY         : {
                     en     : 'Default video quality:',
                     'pt-PT': 'Qualidade de vídeo padrão:'
@@ -1317,8 +1235,8 @@
                     'pt-PT': 'Memorizar volume de audio'
                 },
                 VID_PLR_ADS           : {
-                    en     : 'Disable advertisements',
-                    'pt-PT': 'Desactivar publicidades'
+                    en     : 'Disable advertisements in the video page',
+                    'pt-PT': 'Desactivar publicidades na página de vídeo'
                 },
                 VID_SUB_ADS           : {
                     en     : 'Enable advertisements only in videos from subscribed channels',
@@ -1343,6 +1261,10 @@
                 VID_PLR_FIT           : {
                     en     : 'Fit to page in theater mode',
                     'pt-PT': 'Ajustar na página no modo cinema'
+                },
+                VID_PLR_FIT_WDTH      : {
+                    en     : 'Fit to page max width:',
+                    'pt-PT': 'Largura máxima do ajuste na página:'
                 },
                 VID_PLR_DYN_SIZE      : {
                     en     : 'Disable dynamic player size in default view',
@@ -1472,14 +1394,14 @@
                 window.postMessage({replace: parSets}, '*');
             }
         }
-        function handleEvents(type, target, event, call, capture) {
+        function handleEvents(target, event, call, capture, type) {
             var name = call.name;
             capture = !!capture;
             if (target.events && target.events[event] && target.events[event][name]) {
                 target.removeEventListener(event, target.events[event][name], capture);
                 delete target.events[event][name];
             }
-            if (type === 'add') {
+            if (!type) {
                 target.addEventListener(event, call, capture);
                 target.events = target.events || {};
                 target.events[event] = target.events[event] || {};
@@ -1526,9 +1448,10 @@
         }
         function customStyles() {
             var classes,
+                plrApi   = document.getElementById('player-api'),
                 commSect = document.getElementById('watch-discussion'),
                 sidebar  = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
-                ads      = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
+                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
                 setsList = {
                     'GEN_DSBL_ADS'    : 'part_no_ads',
                     'GEN_BLUE_GLOW'   : 'part_dsbl_glow',
@@ -1543,9 +1466,9 @@
                     'VID_PLST_SEP'    : 'part_playlist_spacer',
                     'VID_DESC_SHRT'   : 'part_labelless_buttons'
                 };
-            while (ads) {
-                ads.remove();
-                ads = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
+            while (adverts) {
+                adverts.remove();
+                adverts = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
             if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.pathname === '/feed/subscriptions') || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                 sidebar.remove();
@@ -1558,6 +1481,9 @@
             } else if (parSets.VID_HIDE_COMS !== '1') {
                 document.documentElement.classList.remove('part_hide_comments');
             }
+            if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
+                plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || '1280px';
+            }
             for (classes in setsList) {
                 if (setsList.hasOwnProperty(classes)) {
                     if (parSets[classes]) {
@@ -1567,7 +1493,7 @@
                     }
                 }
             }
-            classes = setsList = commSect = sidebar = ads = null;
+            classes = setsList = commSect = sidebar = adverts = null;
         }
         function settingsMenu() {
             var pContent,
@@ -1716,10 +1642,11 @@
                             }),
                             '    <br>',
                             htEl.title('VID_PLR_LYT', 'h3'),
-                            htEl.input('VID_STP_BTN', 'checkbox'),
                             htEl.input('VID_PLR_CTRL_VIS', 'checkbox'),
                             htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
                             htEl.input('VID_PLR_FIT', 'checkbox'),
+                            htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
+                            '    <br>',
                             htEl.radio('VID_PROG_BAR_CLR', {
                                 'VID_PROG_BAR_CLR_RED': 'red',
                                 'VID_PROG_BAR_CLR_WHT': 'white'
@@ -1790,27 +1717,27 @@
                             '    <hr class="P-horz">\n',
                             htEl.title('ABT_THKS', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/YePpHa">Jeppe Rune Mortensen</a>' + userLang('ABT_THKS_YEPPHA') + '\n',
+                            '        <a target="_blank" href="https://github.com/YePpHa">Jeppe Rune Mortensen</a>' + userLang('ABT_THKS_YEPPHA') + '\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="http://www.greasespot.net/">Greasemonkey</a> + <a href="http://tampermonkey.net/">Tampermonkey</a>' + userLang('ABT_THKS_USERSCRIPT') + '\n',
+                            '        <a target="_blank" href="http://www.greasespot.net/">Greasemonkey</a> + <a href="http://tampermonkey.net/">Tampermonkey</a>' + userLang('ABT_THKS_USERSCRIPT') + '\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="http://stackoverflow.com/">Stack Overflow</a>' + userLang('ABT_THKS_STACKOV') + '\n',
+                            '        <a target="_blank" href="http://stackoverflow.com/">Stack Overflow</a>' + userLang('ABT_THKS_STACKOV') + '\n',
                             '    </div>\n',
                             htEl.title('ABT_INFO', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://particlecore.github.io/">GitHub</a>\n',
+                            '        <a target="_blank" href="https://github.com/ParticleCore/Particle/">GitHub</a>\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="https://greasyfork.org/en/users/8223-particlecore">Greasy Fork</a>\n',
+                            '        <a target="_blank" href="https://greasyfork.org/en/users/8223-particlecore">Greasy Fork</a>\n',
                             '    </div>\n',
                             '    <div>\n',
-                            '        <a href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
+                            '        <a target="_blank" href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
                             '    </div>\n',
                             htEl.title('ABT_PRBL', 'h3'),
                             '    <div>\n',
-                            '        <a href="https://github.com/ParticleCore/Particle/wiki/Report-a-problem">' + userLang('ABT_LNK_PRBL') + '</a>\n',
+                            '        <a target="_blank" href="https://github.com/ParticleCore/Particle/wiki/Report-a-problem">' + userLang('ABT_LNK_PRBL') + '</a>\n',
                             '    </div>\n',
                             '</div>\n'
                         ].join('')
@@ -1918,7 +1845,7 @@
                     pWrapper = string2HTML(template().setMenu).querySelector('#P-settings');
                     pWrapper.querySelector('#P-container').appendChild(string2HTML(template().GEN).querySelector('#P-content'));
                     bodyContainer.insertBefore(pWrapper, pageContainer);
-                    handleEvents('add', pWrapper, 'click', navigateSettings);
+                    handleEvents(pWrapper, 'click', navigateSettings);
                 }
                 document[isChrome ? 'body' : 'documentElement'].scrollTop = 0;
                 bodyContainer = pageContainer = pWrapper = null;
@@ -1929,7 +1856,7 @@
                 settingsButton = document.createElement('button');
                 settingsButton.id = 'P';
                 settingsButton.title = 'YouTube+ settings';
-                handleEvents('add', settingsButton, 'click', settingsTemplate);
+                handleEvents(settingsButton, 'click', settingsTemplate);
                 if (buttonNotif) {
                     buttonsSection.insertBefore(settingsButton, buttonNotif);
                 } else {
@@ -2035,7 +1962,7 @@
                     '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n' +
                     '</div>\n';
                 wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
-                handleEvents('add', wrapper, 'click', showComments);
+                handleEvents(wrapper, 'click', showComments);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
         }
@@ -2071,8 +1998,7 @@
             cookie = pageElement = playerElement = null;
         }
         function argsCleaner(config) {
-            var audioMode = document.getElementById('autoplay-button'),
-                base      = (config.args.iurl_webp) ? '_webp' : '',
+            var base = (config.args.iurl_webp) ? '_webp' : '',
                 hdThumb,
                 maxRes;
             function checkThumbnail() {
@@ -2081,7 +2007,7 @@
                     hdURL = config.args['iurl' + base].replace('hqdefault', 'maxresdefault'),
                     state = api && api.getPlayerState && api.getPlayerState();
                 function widthReport() {
-                    handleEvents('remove', img, 'load', widthReport);
+                    handleEvents(img, 'load', widthReport, 'remove');
                     function prefixIterator(prefix) {
                         config.args[prefix + base] = hdURL;
                     }
@@ -2096,7 +2022,7 @@
                     img = video = hdURL = state = null;
                 }
                 img = new Image();
-                handleEvents('add', img, 'load', widthReport);
+                handleEvents(img, 'load', widthReport);
                 img.src = hdURL;
             }
             function prefixIterator(prefix) {
@@ -2127,7 +2053,7 @@
                 return rvsReturn.join(',');
             }
             if (config.args.video_id) {
-                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed))) || (audioMode && audioMode.classList.contains('active'))) {
+                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
                     delete config.args.ad3_module;
                 }
                 if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
@@ -2166,6 +2092,7 @@
                 if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
                     window.ytplayer.config = config;
                 }
+                window.ytplayer.config.args = config.args;
                 return config;
             }
         }
@@ -2174,12 +2101,14 @@
                 height,
                 skinny,
                 sidebar,
+                newPlayer,
                 sidebarSize,
                 aspectRatio,
                 containerSize,
                 playerContainer,
                 videoPlayer = document.getElementById('movie_player');
             function initFloater() {
+                newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 skinny = document.documentElement.classList.contains('content-snap-width-skinny-mode');
                 videoPlayer = document.getElementById('movie_player');
                 playerContainer = document.getElementById('player-api');
@@ -2188,37 +2117,37 @@
                 sidebarSize = sidebar && sidebar.getBoundingClientRect();
                 function updatePos() {
                     if (!document.documentElement.classList.contains('floater')) {
-                        handleEvents('remove', window, 'resize', updatePos);
+                        handleEvents(window, 'resize', updatePos, 'remove');
                         return;
                     }
                     sidebarSize = sidebar.getBoundingClientRect();
                     videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
                     videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = (!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio)) + 'px';
+                    videoPlayer.style.height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio)) + 'px';
                 }
                 if (!sidebar) {
-                    handleEvents('remove', window, 'scroll', initFloater);
+                    handleEvents(window, 'scroll', initFloater, 'remove');
                     return;
                 }
                 if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
                     aspectRatio = 16 / 9;
                     width = (skinny && containerSize.width) || sidebarSize.width;
-                    height = (!parSets.VID_PLR_CTRL_VIS ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio));
+                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio));
                     document.documentElement.classList.toggle('floater');
                     videoPlayer.setAttribute('style', 'width: ' + width + 'px; margin-top: -' + (height / 2) + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
-                    handleEvents('add', window, 'resize', updatePos);
+                    handleEvents(window, 'resize', updatePos);
                 } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && document.documentElement.classList.contains('floater')) {
                     document.documentElement.classList.toggle('floater');
                     videoPlayer.removeAttribute('style');
-                    handleEvents('remove', window, 'resize', updatePos);
+                    handleEvents(window, 'resize', updatePos, 'remove');
                 }
             }
             if (parSets.VID_PLR_ALVIS) {
                 if (window.location.pathname === '/watch') {
-                    handleEvents('add', window, 'scroll', initFloater);
+                    handleEvents(window, 'scroll', initFloater);
                 } else if (window.location.pathname !== '/watch') {
-                    handleEvents('remove', window, 'scroll', initFloater);
+                    handleEvents(window, 'scroll', initFloater, 'remove');
                 }
             }
         }
@@ -2264,33 +2193,39 @@
             }
         }
         function playerReady(playerApi) {
-            function playerState() {
-                var vidData = api.getVideoData(),
-                    beacon  = vidData.video_id + vidData.list;
-                if (document.getElementById('movie_player') && fullscreen && window.beacon !== beacon) {
-                    window.beacon = beacon;
-                    window.spf.navigate(window.location.origin + '/watch?v=' + vidData.video_id + ((vidData.list && ('&list=' + vidData.list + '&index=' + api.getPlaylistIndex())) || ''));
-                }
-                vidData = beacon = null;
-            }
-            function fsControl(event) {
-                return function () {
-                    if (!requesting && fullscreen) {
-                        event.apply(this, arguments);
+            function playerState(state) {
+                var moviePlayer = document.getElementById('movie_player'),
+                    cueThumb    = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
+                    cueButton   = document.getElementsByClassName('ytp-large-play-button')[0],
+                    newPlayer   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
+                if (newPlayer) {
+                    if (window.matchMedia) {
+                        window.matchMedia = false;
+                        document.documentElement.classList.add('new_player');
                     }
-                    return true;
-                };
+                    if (cueThumb && cueButton) {
+                        if (state === 5) {
+                            cueThumb.removeAttribute('aria-hidden');
+                            cueThumb.style.display = 'initial';
+                            cueButton.removeAttribute('aria-hidden');
+                            cueButton.style.display = 'initial';
+                        } else {
+                            cueThumb.setAttribute('aria-hidden', 'true');
+                            cueThumb.style.display = 'none';
+                            cueButton.setAttribute('aria-hidden', 'true');
+                            cueButton.style.display = 'none';
+                        }
+                    }
+                }
+                if (parSets.VID_PLR_CTRL_VIS && moviePlayer) {
+                    moviePlayer.classList.add('ideal-aspect');
+                }
+                cueThumb = cueButton = null;
             }
             function playerFullscreen(event) {
-                window.beacon = api.getVideoData().video_id + api.getVideoData().list;
                 fullscreen = event.fullscreen;
                 if (parSets.VID_PLR_CTRL_VIS) {
                     document.getElementById('movie_player').classList.add('ideal-aspect');
-                }
-                if (parSets.GEN_SPF_OFF && event.fullscreen) {
-                    window.spf.init();
-                } else if (parSets.GEN_SPF_OFF && !event.fullscreen) {
-                    window.spf.dispose();
                 }
             }
             function volumeChanged(event) {
@@ -2299,51 +2234,15 @@
             function sizeChanged(event) {
                 set('theaterMode', event);
             }
-            function stopButton() {
-                var prev,
-                    button,
-                    playBtn,
-                    playerBar = document.getElementsByClassName('html5-player-chrome')[0];
-                function resumeVideo() {
-                    var currentQuality = api.getPlaybackQuality(),
-                        currentTime    = api.getCurrentTime();
-                    handleEvents('remove', playBtn, 'click', resumeVideo);
-                    window.ytplayer.config.loaded = false;
-                    api.loadNewVideoConfig(window.ytplayer.config, 'html5');
-                    api.setPlaybackQuality(currentQuality);
-                    api.seekTo(currentTime);
-                }
-                function stopVideo() {
-                    var podcast = document.getElementById('podcast-container');
-                    api.stopVideo();
-                    playBtn = document.getElementsByClassName('ytp-button-pause')[0] || document.getElementsByClassName('ytp-button-play')[0];
-                    handleEvents('add', playBtn, 'click', resumeVideo);
-                    if (podcast) {
-                        podcast.remove();
-                        document.getElementById('audio-only').classList.remove('active');
-                    }
-                }
-                if (!document.getElementsByClassName('ytp-button-stop')[0] && playerBar) {
-                    prev = document.getElementsByClassName('ytp-button-prev')[0];
-                    button = '<div role="button" class="ytp-button ytp-button-stop"></div>';
-                    button = string2HTML(button).querySelector('div');
-                    handleEvents('add', button, 'click', stopVideo);
-                    playerBar.insertBefore(button, prev);
-                }
-            }
-            if (typeof playerApi === 'object' && !document.getElementById('c4-player')) {
-                document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen'] = fsControl(document[isChrome ? 'webkitExitFullscreen' : 'mozCancelFullScreen']);
+            if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
                 api = playerApi;
-                handleEvents('add', api, 'onStateChange', playerState);
-                handleEvents('add', api, 'onFullscreenChange', playerFullscreen);
+                handleEvents(api, 'onStateChange', playerState);
+                handleEvents(api, 'onFullscreenChange', playerFullscreen);
                 if (parSets.VID_PLR_VOL_MEM) {
-                    handleEvents('add', api, 'onVolumeChange', volumeChanged);
+                    handleEvents(api, 'onVolumeChange', volumeChanged);
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
-                    handleEvents('add', api, 'SIZE_CLICKED', sizeChanged);
-                }
-                if (parSets.VID_STP_BTN) {
-                    stopButton();
+                    handleEvents(api, 'SIZE_CLICKED', sizeChanged);
                 }
                 if (!parSets.VID_PLR_ATPL) {
                     argsCleaner(window.ytplayer.config);
@@ -2375,15 +2274,7 @@
                         return originalFunction.apply(this, args);
                     }
                     originalFunction.apply(this, args);
-                    if (api) {
-                        if (parSets.VID_PLR_ATPL) {
-                            api.pauseVideo();
-                            api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                            api.playVideo();
-                        } else {
-                            api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                        }
-                    }
+                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                 };
             }
             function autoplayDetour(originalFunction) {
@@ -2396,17 +2287,72 @@
             }
             function autoplayDetourFullScreen(originalFunction) {
                 return function () {
-                    if (!parSets.plApl && !document.activeElement.classList.contains('ytp-button-next')) {
+                    var nextButton,
+                        nextClicked = document.activeElement.classList.contains('ytp-button-next') || document.activeElement.classList.contains('ytp-next-button'),
+                        currentTime = document.getElementsByClassName('ytp-time-current')[0].textContent,
+                        totalTime   = document.getElementsByClassName('ytp-time-duration')[0].textContent;
+                    if (!parSets.plApl && !nextClicked && currentTime !== '0:00' && currentTime === totalTime) {
+                        nextButton = document.getElementsByClassName('ytp-next-button')[0];
+                        if (nextButton && nextButton.getAttribute('aria-disabled') === 'true') {
+                            nextButton.onclick = api.nextVideo;
+                            handleEvents(nextButton, 'click', api.nextVideo);
+                            nextButton.setAttribute('aria-disabled', 'false');
+                        }
                         return false;
                     }
-                    if (parSets.plApl || document.activeElement.classList.contains('ytp-button-next')) {
+                    if (parSets.plApl || nextClicked || currentTime !== totalTime) {
                         return originalFunction.apply(this, arguments);
                     }
                 };
             }
+            function fullscreenVideoChange(originalFunction) {
+                return function () {
+                    var key,
+                        patch   = [{}],
+                        config  = {args: {}},
+                        args    = arguments;
+                    function buildConfig(conf) {
+                        config.args[conf.split('=')[0]] = decodeURIComponent(conf.split('=')[1]).replace(/\+/g, ' ');
+                    }
+                    function revertConfig(conf) {
+                        patch[0].response.push(conf + '=' + encodeURIComponent(config.args[conf]).replace(/\%20/g, '+'));
+                    }
+                    for (key in args[0]) {
+                        if (args[0][key] !== undefined) {
+                            patch[0][key] = args[0][key];
+                        }
+                    }
+                    patch[0].response.split('&').forEach(buildConfig);
+                    config = argsCleaner(config);
+                    patch[0].response = [];
+                    Object.keys(config.args).forEach(revertConfig);
+                    patch[0].response = patch[0].response.join('&');
+                    patch[0].responseText = patch[0].response;
+                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                    originalFunction.apply(this, patch);
+                };
+            }
+            function fsPointerDetour(originalFunction) {
+                return function () {
+                    var self = this;
+                    function firstLevel(fl) {
+                        function secondLevel(sl) {
+                            if (typeof self[fl][sl] === 'function' && String(self[fl][sl]).split('onStatusFail').length > 1) {
+                                self[fl][sl] = fullscreenVideoChange(self[fl][sl]);
+                            }
+                        }
+                        if (typeof self[fl] === 'object' && self[fl]) {
+                            Object.keys(Object.getPrototypeOf(self[fl])).forEach(secondLevel);
+                        }
+                    }
+                    Object.keys(self).some(firstLevel);
+                    return originalFunction.apply(this, arguments);
+                };
+            }
             function html5Detour(originalFunction) {
                 return function () {
-                    var playerInstance,
+                    var moviePlayer,
+                        playerInstance,
                         args = arguments;
                     function html5Pointers(originalPointer) {
                         return function () {
@@ -2423,24 +2369,37 @@
                         };
                     }
                     function playerInstanceIterator(keys) {
+                        function firstLevel(fl) {
+                            if (typeof playerInstance[keys][fl] === 'function' && String(playerInstance[keys][fl]).split('get_video_info').length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
+                                playerInstance[keys][fl] = fsPointerDetour(playerInstance[keys][fl]);
+                            }
+                        }
                         function keysIterator(sizes) {
                             if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
                                 playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
                             }
                         }
                         if (typeof playerInstance[keys] === 'object') {
-                            if (playerInstance[keys] && playerInstance[keys].element) {
+                            if (playerInstance[keys] && playerInstance[keys].element && window.ytplayer.config.assets.js.split('-new').length < 2) {
                                 Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(keysIterator);
                             } else if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
+                            } else if (playerInstance[keys]) {
+                                Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(firstLevel);
                             }
                         }
                     }
+                    args[1] = argsCleaner(args[1]);
                     if (args[0].id === 'upsell-video') {
-                        originalFunction.apply(this, arguments);
-                    } else if (typeof args[0] === 'object') {
-                        playerInstance = originalFunction.apply(this, arguments);
+                        originalFunction.apply(this, args);
+                    } else if (typeof args[0] === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) {
+                        playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
+                        moviePlayer = document.getElementById('movie_player');
+                        if (!parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
+                            moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
+                        }
+                        moviePlayer.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
                 };
             }
@@ -2510,6 +2469,7 @@
                     });
                 }
                 if (event) {
+                    event.preventDefault();
                     event = event.target;
                     if (event.className === 'sidebarmode yt-uix-tooltip') {
                         initSidebarMode();
@@ -2531,12 +2491,12 @@
                 if (detailList[i]) {
                     if (parSets.GEN_SDBR_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
                         button = createButton('sidebarmode', detailList[i]);
-                        handleEvents('add', button, 'click', initThumbMod);
+                        handleEvents(button, 'click', initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
                     if (parSets.BLK_ON && window.location.pathname !== '/feed/subscriptions' && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
                         button = createButton('blacklist', detailList[i]);
-                        handleEvents('add', button, 'click', initThumbMod);
+                        handleEvents(button, 'click', initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
                 }
@@ -2605,37 +2565,20 @@
                 }
             }
         }
-        function title() {
-            var observer,
-                config  = {childList: true},
-                titleEl = document.getElementsByTagName('title')[0],
-                titleSt = titleEl.id === 'observing',
-                state   = api && api.getPlayerState && api.getPlayerState();
-            if (titleEl) {
-                if (!titleSt) {
-                    titleEl.id = 'observing';
-                    observer = new window.MutationObserver(title);
-                    observer.observe(titleEl, config);
-                } else if (titleSt && titleEl.textContent.split('▶').length > 1 && !(state && state > -1 && state < 5)) {
-                    titleEl.textContent = titleEl.textContent.replace('▶ ', '');
-                }
-            }
-            observer = config = titleEl = titleSt = state = null;
-        }
         function volumeWheel(event) {
-            var direction  = event && (event.deltaY || event.wheelDeltaY),
-                playerApi  = document.getElementById('player-api'),
-                playlistFS = document.getElementsByClassName('ytp-playlist-tray-tray')[0];
+            var playerApi  = document.getElementById('player-api'),
+                direction  = event && (event.deltaY || event.wheelDeltaY),
+                playlistFS = document.getElementsByClassName('ytp-playlist-tray-tray')[0] || document.getElementsByClassName('ytp-playlist-menu')[0];
             if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === 'player-api' || playerApi.contains(event.target))) {
                 event.preventDefault();
-                if (direction > 0) {
+                if (direction > 0 && api.getVolume() > 0) {
                     api.setVolume(api.getVolume() - 10);
-                } else if (direction < 0) {
+                } else if (direction < 0 && api.getVolume() < 100) {
                     api.setVolume(api.getVolume() + 10);
                 }
             }
             if (!event && parSets.VID_VOL_WHEEL) {
-                handleEvents('add', window, 'wheel', volumeWheel);
+                handleEvents(window, 'wheel', volumeWheel);
             }
             direction = playerApi = null;
         }
@@ -2682,7 +2625,7 @@
                     ].join('');
                 plBar.className = plBar.className.replace('radio-playlist', '');
                 button = string2HTML(button).querySelector('button');
-                handleEvents('add', button, 'click', call);
+                handleEvents(button, 'click', call);
                 navCtrls.appendChild(button);
                 navCtrls = button = null;
             }
@@ -2703,13 +2646,11 @@
                 header       = document.getElementById('watch-header'),
                 cnslBtn      = document.getElementById('console-button'),
                 controls     = document.getElementById('player-console'),
-                storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec,
-                hasWebmAudio = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length > 1,
-                videoPlayer  = document.getElementsByTagName('video')[0];
+                videoPlayer  = document.getElementsByTagName('video')[0],
+                storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
             function hookButtons() {
                 var autoPlay    = controls.querySelector('#autoplay-button'),
                     loopButton  = controls.querySelector('#loop-button'),
-                    audioOnly   = controls.querySelector('#audio-only'),
                     seekMap     = controls.querySelector('#seek-map'),
                     saveThumb   = controls.querySelector('#save-thumbnail-button'),
                     screenShot  = controls.querySelector('#screenshot-button'),
@@ -2722,184 +2663,6 @@
                     videoPlayer = document.getElementsByTagName('video')[0];
                     videoPlayer.loop = !videoPlayer.loop;
                     loopButton.classList[(videoPlayer.loop) ? 'add' : 'remove']('active');
-                }
-                function toggleAudio() {
-                    var user,
-                        base,
-                        poster,
-                        streams,
-                        container,
-                        loadStream,
-                        currentTime,
-                        currentQuality;
-                    function timeProgress() {
-                        var total    = document.getElementById('podcast-total'),
-                            elapsed  = document.getElementById('podcast-current'),
-                            ending   = document.getElementsByClassName('ytp-time-duration')[0],
-                            progress = document.getElementsByClassName('ytp-time-current')[0];
-                        if (!total) {
-                            handleEvents('remove', videoPlayer, 'timeupdate', timeProgress);
-                            return;
-                        }
-                        if (elapsed && progress && elapsed.textContent !== progress.textContent) {
-                            elapsed.textContent = progress.textContent;
-                        }
-                        if (total && ending && total.textContent !== '/ ' + ending.textContent) {
-                            total.textContent = '/ ' + ending.textContent;
-                        }
-                    }
-                    function initAudioMode() {
-                        api.playVideo();
-                        videoPlayer.src = loadStream.url;
-                        videoPlayer.play();
-                        if (container) {
-                            container.remove();
-                        }
-                        container = [
-                            '<div id="podcast-container">\n',
-                            '    <div id="podcast-elements">\n',
-                            '        <div id="podcast-poster">\n',
-                            '            <div id="poster" style="background-image:url(\'' + poster + '\')"></div>\n',
-                            '            <div id="podcast-progress">\n',
-                            '                <div id="podcast-current">0:00</div>\n',
-                            '                <div id="podcast-total">/ ' + document.getElementsByClassName('ytp-time-duration')[0].textContent + '</div>\n',
-                            '            </div>\n',
-                            '        </div>\n',
-                            '        <div id="podcast-info">\n',
-                            '            <div id="podcast-title">' + document.title.replace(' - YouTube', '').replace('▶ ', '') + '</div>\n',
-                            '            <div id="podcast-channel">' + user + '</div>\n',
-                            '        </div>\n',
-                            '    </div>\n',
-                            '    <div id="podcast-background" style="background-image:url(\'' + poster + '\')"></div>\n',
-                            '</div>\n'
-                        ].join('');
-                        container = string2HTML(container).querySelector('#podcast-container');
-                        document.getElementsByClassName('html5-video-container')[0].insertBefore(container, videoPlayer);
-                        handleEvents('add', videoPlayer, 'timeupdate', timeProgress);
-                        document.getElementById('audio-only').classList.add('active');
-                    }
-                    function cipherAlgorithm(event) {
-                        var algo      = {},
-                            svdCipher = parSets.cipherAlgorithm,
-                            html5     = window.ytplayer.config.assets.js,
-                            html5ID   = html5.match(/html5player-([\w\W]*?)\/html5player/)[1];
-                        function buildCipher(string) {
-                            var splice,
-                                replace,
-                                reverse,
-                                firstMatch  = string.match(/var [\w\W]{2}\=\{[\w\W]{2}\:function\(a([\w\W]*?)a\[0\]\=a\[b%a\.length\]([\w\W]*?)\};/)[0],
-                                secondMatch = string.match(/a\=a\.split\(""\);([\w\W]*?)return a\.join\(""\)/)[0];
-                            function iterateFirstMatch(string) {
-                                if (string.match('.length')) {
-                                    replace = string.split(':')[0];
-                                } else if (string.match('.splice')) {
-                                    splice = string.split(':')[0];
-                                } else if (string.match('.reverse')) {
-                                    reverse = string.split(':')[0];
-                                }
-                            }
-                            function iterateSecondMatch(string) {
-                                if (string.match('.' + replace)) {
-                                    algo[html5ID].push(Number(string.split(',')[1].replace(')', '')));
-                                } else if (string.match('.' + splice)) {
-                                    algo[html5ID].push(-Number(string.split(',')[1].replace(')', '')));
-                                } else if (string.match('.' + reverse)) {
-                                    algo[html5ID].push(0);
-                                }
-                            }
-                            firstMatch.replace(/var ([\w\W]*?)=\{/, '').split('},').forEach(iterateFirstMatch);
-                            secondMatch.split(';').forEach(iterateSecondMatch);
-                            console.info(algo, replace, splice, reverse);
-                        }
-                        function deCipher(sig) {
-                            var temp,
-                                cipher = JSON.parse(svdCipher)[html5ID];
-                            function cipherFilter(value) {
-                                if (value > 0) {
-                                    temp = sig[0];
-                                    sig[0] = sig[value % sig.length];
-                                    sig[value] = temp;
-                                } else if (value < 0) {
-                                    sig.splice(0, -value);
-                                } else {
-                                    sig.reverse();
-                                }
-                            }
-                            console.info(cipher);
-                            sig = sig.split('');
-                            cipher.forEach(cipherFilter);
-                            return sig.join('');
-                        }
-                        if (event && event.data.cipherAlgorithm) {
-                            handleEvents('remove', window, 'message', cipherAlgorithm);
-                            event = event.data.cipherAlgorithm;
-                            algo[html5ID] = [];
-                            buildCipher(event);
-                            svdCipher = parSets.cipherAlgorithm = JSON.stringify(algo);
-                        } else if (!event && (!svdCipher || svdCipher.split(html5ID).length < 2)) {
-                            window.postMessage({
-                                method: 'GET',
-                                url: window.location.protocol + html5,
-                                id: 'cipherAlgorithm'
-                            }, '*');
-                            handleEvents('add', window, 'message', cipherAlgorithm);
-                            return;
-                        }
-                        if (svdCipher && svdCipher.split(html5ID).length > 1) {
-                            loadStream.url += '&signature=' + deCipher(loadStream.s);
-                            initAudioMode();
-                        }
-                    }
-                    function startAudioMode() {
-                        if (!window.ytplayer.config) {
-                            return;
-                        }
-                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts && window.ytplayer.config.args.adaptive_fmts.split('itag=171').length < 2) {
-                            handleEvents('remove', window, 'spfdone', startAudioMode);
-                            document.getElementById('podcast-container').remove();
-                            document.getElementById('audio-only').classList.remove('active');
-                        }
-                        streams = {};
-                        videoPlayer = document.getElementsByTagName('video')[0];
-                        container = document.getElementById('podcast-container');
-                        user = window.ytplayer.config.args.author || document.querySelector('.yt-user-info > a').textContent;
-                        base = window.ytplayer.config.args.iurl_webp ? '_webp' : '';
-                        poster = window.ytplayer.config.args['iurlmaxres' + base] || window.ytplayer.config.args['iurl' + base];
-                        function adaptiveIterator(stream) {
-                            var itag = stream.match(/itag\=([0-9]{3})/)[1];
-                            streams[itag] = {};
-                            function streamIterator(details) {
-                                streams[itag][details.split('=')[0]] = decodeURIComponent(details.split('=')[1]).replace(/\+/g, ' ');
-                            }
-                            stream.split('&').forEach(streamIterator);
-                        }
-                        window.ytplayer.config.args.adaptive_fmts.split(',').forEach(adaptiveIterator);
-                        loadStream = streams['171'];
-                        console.info(streams);
-                        if (loadStream) {
-                            if (!loadStream.s) {
-                                initAudioMode();
-                            } else if (loadStream.s) {
-                                cipherAlgorithm();
-                            }
-                        }
-                    }
-                    if (hasWebmAudio) {
-                        if (audioOnly.classList.contains('active')) {
-                            handleEvents('remove', window, 'spfdone', startAudioMode);
-                            document.getElementById('podcast-container').remove();
-                            audioOnly.classList.remove('active');
-                            currentQuality = api.getPlaybackQuality();
-                            currentTime = api.getCurrentTime();
-                            window.ytplayer.config.loaded = false;
-                            api.loadNewVideoConfig(window.ytplayer.config, 'html5');
-                            api.setPlaybackQuality(currentQuality);
-                            api.seekTo(currentTime);
-                        } else {
-                            handleEvents('add', window, 'spfdone', startAudioMode);
-                            startAudioMode();
-                        }
-                    }
                 }
                 function toggleMap() {
                     var container = document.getElementById('seek-thumb-map') || false,
@@ -2944,8 +2707,8 @@
                             container.remove();
                             seekMap.classList.remove('active');
                         }
-                        handleEvents('add', container, 'click', clickManager);
-                        handleEvents('remove', window, 'spfdone', removeOld);
+                        handleEvents(container, 'click', clickManager);
+                        handleEvents(window, 'spfdone', removeOld, 'remove');
                     }
                     function parseThumbs() {
                         thumbControls = '<div id="seek-controls">\n';
@@ -3004,8 +2767,8 @@
                             container = string2HTML(container).querySelector('#seek-thumb-map');
                             document.getElementById('movie_player').appendChild(container);
                             centerThumb();
-                            handleEvents('add', container, 'click', clickManager);
-                            handleEvents('add', window, 'spfdone', removeOld);
+                            handleEvents(container, 'click', clickManager);
+                            handleEvents(window, 'spfdone', removeOld);
                         } else if (container.id) {
                             seekMap.classList.toggle('active');
                             container.classList.toggle('invisible');
@@ -3042,7 +2805,7 @@
                         container.appendChild(canvas);
                         close.id = 'close-screenshot';
                         close.textContent = userLang('CNSL_SS_CLS');
-                        handleEvents('add', close, 'click', hideContainer);
+                        handleEvents(close, 'click', hideContainer);
                         container.appendChild(close);
                         document.body.appendChild(container);
                     } else if (container.id && container.classList.contains('invisible')) {
@@ -3058,13 +2821,12 @@
                     newSidebar.addEventListener('readystatechange', snapFit, true);
                     newSidebar.focus();
                 }
-                handleEvents('add', autoPlay, 'click', togglePlay);
-                handleEvents('add', loopButton, 'click', toggleLoop);
-                handleEvents('add', audioOnly, 'click', toggleAudio);
-                handleEvents('add', seekMap, 'click', toggleMap);
-                handleEvents('add', saveThumb, 'click', dlThumb);
-                handleEvents('add', screenShot, 'click', saveSS);
-                handleEvents('add', sidebarMode, 'click', openSidebar);
+                handleEvents(autoPlay, 'click', togglePlay);
+                handleEvents(loopButton, 'click', toggleLoop);
+                handleEvents(seekMap, 'click', toggleMap);
+                handleEvents(saveThumb, 'click', dlThumb);
+                handleEvents(screenShot, 'click', saveSS);
+                handleEvents(sidebarMode, 'click', openSidebar);
             }
             function toggleConsole() {
                 page.classList.toggle('player-console');
@@ -3073,7 +2835,7 @@
             if (window.location.pathname === '/watch' && header && !cnslBtn) {
                 cnslBtn = '<button id="console-button" title="' + userLang('ADV_OPTS') + '"></button>';
                 cnslBtn = string2HTML(cnslBtn).querySelector('#console-button');
-                handleEvents('add', cnslBtn, 'click', toggleConsole);
+                handleEvents(cnslBtn, 'click', toggleConsole);
                 header.appendChild(cnslBtn);
                 if (controls) {
                     controls.remove();
@@ -3082,7 +2844,6 @@
                     '<div id="player-console">\n',
                     '    <div id="autoplay-button" class="yt-uix-tooltip' + ((parSets.VID_PLR_ATPL) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_AP') + '"></div>\n',
                     '    <div id="loop-button" class="yt-uix-tooltip' + ((videoPlayer && videoPlayer.loop) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_RPT') + '"></div>\n',
-                    '    <div id="audio-only" class="yt-uix-tooltip' + ((document.getElementById('podcast-container')) ? ' active' : '') + '" data-tooltip-text="' + (hasWebmAudio ? userLang('CNSL_AUDI') : userLang('CNSL_AUDI_OFF')) + '"' + ((!hasWebmAudio) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
@@ -3101,7 +2862,6 @@
             var logo,
                 channelLink,
                 autoplaybar = document.getElementsByClassName('autoplay-bar')[0];
-            requesting = false;
             function linkIterator(link) {
                 if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
                     channelLink[link].href += '/' + parSets.GEN_CHN_DFLT_PAGE;
@@ -3137,7 +2897,6 @@
             playlistControls();
             playerMode();
             advancedOptions();
-            title();
             volumeWheel();
             subPlaylist();
             alwaysVisible();
@@ -3156,7 +2915,6 @@
                 listAfter   = url.split('list=').length > 1,
                 player      = document.getElementById('movie_player'),
                 loaded      = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded;
-            requesting = true;
             if (player && videoAfter && (listAfter !== listBefore || videoBefore)) {
                 if (loaded) {
                     delete window.ytplayer.config.loaded;
@@ -3166,15 +2924,15 @@
             url = previous = videoBefore = videoAfter = listBefore = listAfter = player = loaded = null;
         }
         window.onYouTubePlayerReady = playerReady;
-        handleEvents('add', window, 'spfdone', initFunctions);
-        handleEvents('add', window, 'spfrequest', request);
-        handleEvents('add', window, 'readystatechange', initFunctions, true);
+        handleEvents(window, 'spfdone', initFunctions);
+        handleEvents(window, 'spfrequest', request);
+        handleEvents(window, 'readystatechange', initFunctions, true);
         if (isChrome) {
-            handleEvents('add', document.documentElement, 'load', scriptExit, true);
+            handleEvents(document.documentElement, 'load', scriptExit, true);
         } else {
-            handleEvents('add', window, 'afterscriptexecute', scriptExit);
+            handleEvents(window, 'afterscriptexecute', scriptExit);
         }
-        handleEvents('add', window, 'message', updateSettings);
+        handleEvents(window, 'message', updateSettings);
     }
     function updateSettings(event) {
         event = event.particleSettings || event || {};
