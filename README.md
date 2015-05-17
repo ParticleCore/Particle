@@ -1,4 +1,4 @@
-YouTubePlus
+YouTubePlus [![version](https://img.shields.io/github/release/ParticleCore/Particle.svg)](https://github.com/ParticleCore/Particle/releases/latest)
 ===========
 YouTube Plus (codename Particle) is focused on providing an extended YouTube experience for the user.
 
