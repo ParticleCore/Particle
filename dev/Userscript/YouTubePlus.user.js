@@ -2274,7 +2274,9 @@
                         return originalFunction.apply(this, args);
                     }
                     originalFunction.apply(this, args);
-                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                    if (api) {
+                        api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                    }
                 };
             }
             function autoplayDetour(originalFunction) {
