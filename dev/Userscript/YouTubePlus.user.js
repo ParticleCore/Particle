@@ -290,6 +290,7 @@
             '    box-shadow: 0 0 15px #000000;\n',
             '    font-size: 0;\n',
             '    margin: 5px;\n',
+            '    max-height: calc(100% - 90px);\n',
             '    max-width: 420px;\n',
             '    overflow: hidden;\n',
             '    position: fixed;\n',
@@ -302,7 +303,7 @@
             '}\n',
             '#close-screenshot{\n',
             '    background: rgba(0, 0, 0, 0.5);\n',
-            '    border-bottom-left-radius: 5px;\n',
+            '    border-top-left-radius: 5px;\n',
             '    color: #F1F1F1;\n',
             '    cursor: pointer;\n',
             '    font-size: 10px;\n',
@@ -310,7 +311,7 @@
             '    position: absolute;\n',
             '    right: 0;\n',
             '    text-transform: uppercase;\n',
-            '    top: 0;\n',
+            '    bottom: 0;\n',
             '}\n',
             '#close-screenshot:hover{\n',
             '    background: rgba(0, 0, 0, 0.8);\n',
@@ -1294,6 +1295,10 @@
                     en     : 'Right',
                     'pt-PT': 'Direita'
                 },
+                VID_LAYT_AUTO_PNL     : {
+                    en     : 'Auto expand video description',
+                    'pt-PT': 'Automáticamente mostrar mais na descrição do vídeo'
+                },
                 GEN_CHN_DFLT_PAGE     : {
                     en     : 'Default channel page:',
                     'pt-PT': 'Página de canal predefinida:'
@@ -1679,6 +1684,7 @@
                             htEl.input('VID_VID_CNT', 'checkbox'),
                             htEl.input('VID_POST_TIME', 'checkbox'),
                             htEl.input('VID_HIDE_DETLS', 'checkbox'),
+                            htEl.input('VID_LAYT_AUTO_PNL', 'checkbox'),
                             '</div>\n'
                         ].join(''),
                         BLK    : [
@@ -2863,7 +2869,8 @@
         function generalChanges() {
             var logo,
                 channelLink,
-                autoplaybar = document.getElementsByClassName('autoplay-bar')[0];
+                autoplaybar       = document.getElementsByClassName('autoplay-bar')[0],
+                descriptionPanel = document.getElementById('action-panel-details');
             function linkIterator(link) {
                 if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
                     channelLink[link].href += '/' + parSets.GEN_CHN_DFLT_PAGE;
@@ -2878,6 +2885,9 @@
             if (parSets.GEN_REM_APUN && window.location.pathname === '/watch' && autoplaybar) {
                 autoplaybar.removeAttribute('class');
                 document.getElementsByClassName('checkbox-on-off')[0].remove();
+            }
+            if (parSets.VID_LAYT_AUTO_PNL && window.location.pathname === '/watch' && descriptionPanel) {
+                descriptionPanel.classList.remove('yt-uix-expander-collapsed');
             }
             if (parSets.GEN_SPF_OFF && window.spf && window.spf.dispose) {
                 window.spf.dispose();
