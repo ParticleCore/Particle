@@ -570,6 +570,9 @@
             '    margin: 10px auto 0;\n',
             '    max-width: 1262px;\n',
             '}\n',
+            '.guide-pinned.show-guide .guide-pinning-enabled #P-container{\n',
+            '    padding-left: 230px;\n',
+            '}\n',
             '#P-sidebar, #P-content{\n',
             '    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n',
             '    box-sizing: border-box;\n',
@@ -1381,7 +1384,7 @@
                     'pt-PT': 'Clique aqui para instruções'
                 }
             };
-        if (Object.keys(parSets).length < 1) {
+        if (!parSets && Object.keys(parSets).length < 1) {
             parSets = defSets;
         }
         function string2HTML(string) {
@@ -1512,11 +1515,11 @@
             function template() {
                 var custom = function () {
                         var button = '',
-                            list   = parSets.blacklist;
+                            list   = parSets && parSets.blacklist;
                         function buildList(ytid) {
                             button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button>' + list[ytid] + '</div>\n';
                         }
-                        if (Object.keys(list).length > 0) {
+                        if (list && Object.keys(list).length > 0) {
                             Object.keys(list).forEach(buildList);
                         }
                         return button;
@@ -1530,7 +1533,7 @@
                                 '<div class="P-select"><select id="' + id + '">\n';
                             function keysIterator(keys) {
                                 select += '<option';
-                                if (parSets[id] === list[keys]) {
+                                if (parSets && parSets[id] === list[keys]) {
                                     select += ' selected="true"';
                                 }
                                 select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
@@ -1543,7 +1546,7 @@
                             var radio = '<label>' + userLang(name) + '</label>\n';
                             function keysIterator(keys) {
                                 radio += '<input id="' + keys + '" name="' + name + '" value="' + list[keys] + '" type="radio"';
-                                if (parSets[name] === list[keys]) {
+                                if (parSets && parSets[name] === list[keys]) {
                                     radio += ' checked="true"';
                                 }
                                 radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>';
@@ -1555,10 +1558,10 @@
                             var input = '<input id="' + id + '" type="' + type + '"';
                             if (placeholder) {
                                 input += ' placeholder="' + placeholder + '" size="' + size + '"';
-                                if (typeof parSets[id] === 'string') {
-                                    input += ' value="' + parSets[id] + '"';
+                                if (typeof parSets && parSets[id] === 'string') {
+                                    input += ' value="' + parSets && parSets[id] + '"';
                                 }
-                            } else if (parSets[id] === true) {
+                            } else if (parSets && parSets[id] === true) {
                                 input += ' checked="true"';
                             }
                             input += '>\n<label for="' + id + '">' + userLang(id) + '</label>\n';
