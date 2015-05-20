@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.0.2
+// @version     0.0.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -660,7 +660,7 @@
             '    background: #f1f1f1;\n',
             '    height: 100%;\n',
             '    left: 0;\n',
-            '    position: fixed;\n',
+            '    position: absolute;\n',
             '    right: 0;\n',
             '    z-index: 1000;\n',
             '}\n',
@@ -1936,6 +1936,7 @@
                     bodyContainer.insertBefore(pWrapper, pageContainer);
                     handleEvents(pWrapper, 'click', navigateSettings);
                 }
+                document[isChrome ? 'body' : 'documentElement'].scrollTop = 0;
                 bodyContainer = pageContainer = pWrapper = null;
             }
             buttonNotif = document.getElementsByClassName('notifications-container')[0];
