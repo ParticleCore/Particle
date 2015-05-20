@@ -14,7 +14,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript    = typeof GM_info === 'object',
+    var userscript      = typeof GM_info === 'object',
         defaultSettings = {
             GEN_BTTR_NTF     : true,
             GEN_YT_LOGO_LINK : true,
@@ -50,7 +50,7 @@
             advOpts          : true,
             blacklist        : {}
         },
-        particleStyle = [
+        particleStyle   = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
             '    margin-left: 0 !important;\n',
@@ -189,6 +189,19 @@
             '#watch-header{\n',
             '    position: relative;\n',
             '}\n',
+            '.part_fullbrowser #movie_player:not(.unstarted-mode):not(.ended-mode){\n',
+            '    bottom: 0px;\n',
+            '    left: 0px;\n',
+            '    position: fixed;\n',
+            '    right: 0px;\n',
+            '    top: 0px;\n',
+            '}\n',
+            '.part_fullbrowser body{\n',
+            '    overflow: hidden;\n',
+            '}\n',
+            '.part_fullbrowser #masthead-positioner{\n',
+            '    z-index: initial;\n',
+            '}\n',
             '#console-button{\n',
             '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKAQMAAABVIEaHAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABBJREFUeF5j+P8DhMAAkw0AsQkLy6q+yNQAAAAASUVORK5CYII=) no-repeat center;\n',
             '    cursor: pointer;\n',
@@ -263,6 +276,10 @@
             '}\n',
             '#loop-button{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAMAAABsDg4iAAAAY1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcL/mXAAAAIHRSTlMAAKVZHRNz5BQCyFAYsgEfmk71I4KrKdfMBEcGVwWGf0tiNMIAAACRSURBVHhebdBXDsIwEADRxSVu6fQ+9z8lhgRLCbwfSyNZXq/MjFbOKW1kk03JVswq+43tnqLppniTgZh8CD5FaOw7Hti2u1o+6h6qHNsjp/YsszqCERmAixQJtFxHYLyX6EHJA4BniQFcPhwEWUcFXpbXRTSk1UMiBmK9HCmroF8On9mG9TezrvlZyO/q/i75BYzRD2BnJL4kAAAAAElFTkSuQmCC") no-repeat center;\n',
+            '    width: 20px;\n',
+            '}\n',
+            '#fullbrowser-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASAQMAAABhHmxTAAAABlBMVEUAAAAAAAClZ7nPAAAAAXRSTlMAQObYZgAAACVJREFUeF5j+P//Axw3MAgw7GO/AMYbGOAYJA7CyGJQdWA5kF4AfegdTRKgSyUAAAAASUVORK5CYII=") no-repeat center;\n',
             '    width: 20px;\n',
             '}\n',
         //   end| Player console
@@ -908,7 +925,7 @@
             channelId = {},
             events    = [],
             isChrome  = typeof window.chrome === 'object',
-            defSets,
+            defSets   = null,
             parSets,
             lang      = {
                 ADV_OPTS              : {
@@ -990,6 +1007,10 @@
                 CNSL_SDBR             : {
                     en     : 'Sidebar mode',
                     'pt-PT': 'Modo barra lateral'
+                },
+                CNSL_FLBR             : {
+                    en     : 'Fullbrowser mode',
+                    'pt-PT': 'Modo navegador inteiro'
                 },
                 PLST_AP               : {
                     en     : 'Autoplay',
@@ -1385,7 +1406,7 @@
                     'pt-PT': 'Clique aqui para instruções'
                 }
             };
-        if (!parSets && Object.keys(parSets).length < 1) {
+        if (!parSets || Object.keys(parSets).length < 1) {
             parSets = defSets;
         }
         function string2HTML(string) {
@@ -2230,6 +2251,13 @@
                 if (parSets.VID_PLR_CTRL_VIS && moviePlayer) {
                     moviePlayer.classList.add('ideal-aspect');
                 }
+                if (parSets.fullBrs) {
+                    if (state !== 5 && state !== -1 && state !== 0) {
+                        document.documentElement.classList.add('part_fullbrowser');
+                    } else {
+                        document.documentElement.classList.remove('part_fullbrowser');
+                    }
+                }
                 cueThumb = cueButton = null;
             }
             function playerFullscreen(event) {
@@ -2666,7 +2694,8 @@
                     seekMap     = controls.querySelector('#seek-map'),
                     saveThumb   = controls.querySelector('#save-thumbnail-button'),
                     screenShot  = controls.querySelector('#screenshot-button'),
-                    sidebarMode = controls.querySelector('#sidebar-button');
+                    sidebarMode = controls.querySelector('#sidebar-button'),
+                    fullBrowser = controls.querySelector('#fullbrowser-button');
                 function togglePlay() {
                     set('VID_PLR_ATPL', !parSets.VID_PLR_ATPL);
                     autoPlay.classList[(parSets.VID_PLR_ATPL) ? 'add' : 'remove']('active');
@@ -2834,15 +2863,33 @@
                     newSidebar.addEventListener('readystatechange', snapFit, true);
                     newSidebar.focus();
                 }
+                function toggleFullBrowser(event) {
+                    function exitFullBrowser(key) {
+                        if (key.keyCode === 27 || key.key === 'Escape') {
+                            document.documentElement.classList.remove('part_fullbrowser');
+                        }
+                    }
+                    handleEvents(document, 'keydown', exitFullBrowser);
+                    set('fullBrs', event ? !parSets.fullBrs : true);
+                    fullBrowser.classList[(parSets.fullBrs) ? 'add' : 'remove']('active');
+                    if (event) {
+                        document.documentElement.classList[(parSets.fullBrs) ? 'add' : 'remove']('part_fullbrowser');
+                    }
+                }
                 handleEvents(autoPlay, 'click', togglePlay);
                 handleEvents(loopButton, 'click', toggleLoop);
                 handleEvents(seekMap, 'click', toggleMap);
                 handleEvents(saveThumb, 'click', dlThumb);
                 handleEvents(screenShot, 'click', saveSS);
                 handleEvents(sidebarMode, 'click', openSidebar);
-                if (parSets.loopVid && !loopButton.classList.contains('active')){
+                handleEvents(fullBrowser, 'click', toggleFullBrowser);
+                if (parSets.loopVid && !loopButton.classList.contains('active')) {
                     loopButton.classList.add('active');
                     toggleLoop();
+                }
+                if (parSets.fullBrs && !fullBrowser.classList.contains('active')) {
+                    fullBrowser.classList.add('active');
+                    toggleFullBrowser();
                 }
             }
             function toggleConsole() {
@@ -2865,6 +2912,7 @@
                     '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
                     '    <div id="sidebar-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SDBR') + '"' + ((window.opener) ? ' style="display:none"' : '') + '></div>\n',
+                    '    <div id="fullbrowser-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_FLBR') + '"></div>\n',
                     '</div>\n'
                 ].join('');
                 controls = string2HTML(controls).querySelector('div');
@@ -2944,7 +2992,13 @@
             }
             url = previous = videoBefore = videoAfter = listBefore = listAfter = player = loaded = null;
         }
-        window.onYouTubePlayerReady = playerReady;
+        function shareApi(originalFunction) {
+            return function (ytApi) {
+                playerReady(ytApi);
+                return originalFunction.apply(this, arguments);
+            };
+        }
+        window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         handleEvents(window, 'spfdone', initFunctions);
         handleEvents(window, 'spfrequest', request);
         handleEvents(window, 'readystatechange', initFunctions, true);
@@ -2976,7 +3030,7 @@
             inject.textContent = particleStyle;
             document.documentElement.appendChild(inject);
             inject = document.createElement('script');
-            inject.textContent = '(' + String(particle).replace('defSets,', 'defSets   = ' + JSON.stringify(defaultSettings) + ',').replace('parSets,', 'parSets   = ' + event + ',') + '())';
+            inject.textContent = '(' + String(particle).replace('defSets   = null,', 'defSets   = ' + JSON.stringify(defaultSettings) + ',').replace('parSets,', 'parSets   = ' + event + ',') + '())';
             document.documentElement.appendChild(inject);
             if (!userscript) {
                 if (window.chrome) {
