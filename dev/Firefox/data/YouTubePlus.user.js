@@ -15,6 +15,41 @@
 (function () {
     'use strict';
     var userscript    = typeof GM_info === 'object',
+        defaultSettings = {
+            GEN_BTTR_NTF     : true,
+            GEN_YT_LOGO_LINK : true,
+            GEN_CMPT_TTLS    : true,
+            GEN_BLUE_GLOW    : true,
+            GEN_CHN_DFLT_PAGE: 'videos',
+            GEN_SDBR_ON      : true,
+            VID_END_SHRE     : true,
+            VID_DFLT_QLTY    : 'auto',
+            VID_PLST_SEP     : true,
+            VID_PLST_ATPL    : true,
+            VID_PLST_RVRS    : true,
+            VID_PLR_ANTS     : true,
+            VID_PLR_CC       : true,
+            VID_PLR_ALVIS    : true,
+            VID_PLR_ADS      : true,
+            VID_PLR_SIZE_MEM : true,
+            VID_PLR_CTRL_VIS : true,
+            VID_PLR_DYN_SIZE : true,
+            VID_PLR_FIT_WDTH : '1280px',
+            VID_PROG_BAR_CLR : 'red',
+            VID_CTRL_BAR_CLR : 'light',
+            VID_HIDE_COMS    : '1',
+            VID_POST_TIME    : true,
+            VID_VID_CNT      : true,
+            VID_DESC_SHRT    : true,
+            VID_SDBR_ALGN    : '1',
+            VID_TTL_CMPT     : true,
+            BLK_ON           : true,
+            volLev           : 50,
+            plApl            : false,
+            plRev            : false,
+            advOpts          : true,
+            blacklist        : {}
+        },
         particleStyle = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
@@ -869,46 +904,12 @@
     }
     function particle() {
         var api,
-            parSets,
             fullscreen,
             channelId = {},
             events    = [],
             isChrome  = typeof window.chrome === 'object',
-            defSets   = {
-                GEN_BTTR_NTF     : true,
-                GEN_YT_LOGO_LINK : true,
-                GEN_CMPT_TTLS    : true,
-                GEN_BLUE_GLOW    : true,
-                GEN_CHN_DFLT_PAGE: 'videos',
-                GEN_SDBR_ON      : true,
-                VID_END_SHRE     : true,
-                VID_DFLT_QLTY    : 'auto',
-                VID_PLST_SEP     : true,
-                VID_PLST_ATPL    : true,
-                VID_PLST_RVRS    : true,
-                VID_PLR_ANTS     : true,
-                VID_PLR_CC       : true,
-                VID_PLR_ALVIS    : true,
-                VID_PLR_ADS      : true,
-                VID_PLR_SIZE_MEM : true,
-                VID_PLR_CTRL_VIS : true,
-                VID_PLR_DYN_SIZE : true,
-                VID_PLR_FIT_WDTH : '1280px',
-                VID_PROG_BAR_CLR : 'red',
-                VID_CTRL_BAR_CLR : 'light',
-                VID_HIDE_COMS    : '1',
-                VID_POST_TIME    : true,
-                VID_VID_CNT      : true,
-                VID_DESC_SHRT    : true,
-                VID_SDBR_ALGN    : '1',
-                VID_TTL_CMPT     : true,
-                BLK_ON           : true,
-                volLev           : 50,
-                plApl            : false,
-                plRev            : false,
-                advOpts          : true,
-                blacklist        : {}
-            },
+            defSets,
+            parSets,
             lang      = {
                 ADV_OPTS              : {
                     en     : 'Advanced options',
@@ -2670,10 +2671,11 @@
                     set('VID_PLR_ATPL', !parSets.VID_PLR_ATPL);
                     autoPlay.classList[(parSets.VID_PLR_ATPL) ? 'add' : 'remove']('active');
                 }
-                function toggleLoop() {
+                function toggleLoop(event) {
                     videoPlayer = document.getElementsByTagName('video')[0];
-                    videoPlayer.loop = !videoPlayer.loop;
+                    videoPlayer.loop = event ? !videoPlayer.loop : parSets.loopVid;
                     loopButton.classList[(videoPlayer.loop) ? 'add' : 'remove']('active');
+                    set('loopVid', loopButton.classList.contains('active'));
                 }
                 function toggleMap() {
                     var container = document.getElementById('seek-thumb-map') || false,
@@ -2838,6 +2840,10 @@
                 handleEvents(saveThumb, 'click', dlThumb);
                 handleEvents(screenShot, 'click', saveSS);
                 handleEvents(sidebarMode, 'click', openSidebar);
+                if (parSets.loopVid && !loopButton.classList.contains('active')){
+                    loopButton.classList.add('active');
+                    toggleLoop();
+                }
             }
             function toggleConsole() {
                 page.classList.toggle('player-console');
@@ -2854,7 +2860,7 @@
                 controls = [
                     '<div id="player-console">\n',
                     '    <div id="autoplay-button" class="yt-uix-tooltip' + ((parSets.VID_PLR_ATPL) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_AP') + '"></div>\n',
-                    '    <div id="loop-button" class="yt-uix-tooltip' + ((videoPlayer && videoPlayer.loop) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_RPT') + '"></div>\n',
+                    '    <div id="loop-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_RPT') + '"></div>\n',
                     '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
                     '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
@@ -2950,7 +2956,7 @@
         handleEvents(window, 'message', updateSettings);
     }
     function updateSettings(event) {
-        event = event.particleSettings || event || {};
+        event = event.particleSettings || event || defaultSettings;
         event.updateSettings = true;
         window.postMessage(event, '*');
     }
@@ -2962,7 +2968,7 @@
             }
         }
         if (!event && userscript) {
-            event = JSON.parse(window.GM_getValue('particleSettings', '{}'));
+            event = JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)));
         }
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
@@ -2970,7 +2976,7 @@
             inject.textContent = particleStyle;
             document.documentElement.appendChild(inject);
             inject = document.createElement('script');
-            inject.textContent = '(' + String(particle).replace('parSets,', 'parSets = ' + event + ',') + '())';
+            inject.textContent = '(' + String(particle).replace('defSets,', 'defSets   = ' + JSON.stringify(defaultSettings) + ',').replace('parSets,', 'parSets   = ' + event + ',') + '())';
             document.documentElement.appendChild(inject);
             if (!userscript) {
                 if (window.chrome) {
@@ -2991,7 +2997,7 @@
             window.postMessage(response, '*');
         }
         function settingsHandler(item) {
-            var object = (item && item.particleSettings) || JSON.parse(window.GM_getValue('particleSettings', '{}'));
+            var object = (item && item.particleSettings) || JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)));
             function buildSettings(keys) {
                 object[keys] = details.set[keys];
             }
@@ -3010,7 +3016,7 @@
                 }
             }
             if (!item) {
-                updateSettings(JSON.parse(window.GM_getValue('particleSettings', '{}')));
+                updateSettings(JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings))));
             }
         }
         if (typeof details === 'object') {
