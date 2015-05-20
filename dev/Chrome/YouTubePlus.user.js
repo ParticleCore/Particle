@@ -660,7 +660,7 @@
             '    background: #f1f1f1;\n',
             '    height: 100%;\n',
             '    left: 0;\n',
-            '    position: absolute;\n',
+            '    position: fixed;\n',
             '    right: 0;\n',
             '    z-index: 1000;\n',
             '}\n',
@@ -1936,7 +1936,6 @@
                     bodyContainer.insertBefore(pWrapper, pageContainer);
                     handleEvents(pWrapper, 'click', navigateSettings);
                 }
-                document[isChrome ? 'body' : 'documentElement'].scrollTop = 0;
                 bodyContainer = pageContainer = pWrapper = null;
             }
             buttonNotif = document.getElementsByClassName('notifications-container')[0];
