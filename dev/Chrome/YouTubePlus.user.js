@@ -402,6 +402,52 @@
             '    display: initial;\n',
             '}\n',
         //   end| Thumb buttons
+        // start| Grid layout
+            '    .part_grid_subs .feed-item-container .branded-page-module-title, .part_grid_subs .feed-item-container .yt-lockup-description, .part_grid_search #results .yt-lockup-description{\n',
+            '        display: none !important;\n',
+            '        height: 0 !important;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary, .part_grid_search #results {\n',
+            '        font-size: 0;\n',
+            '        margin-right: -15px;\n',
+            '        padding: 15px;\n',
+            '        padding-right: 0;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .section-list > li, .part_grid_search #results .item-section > li{\n',
+            '        display: inline-block;\n',
+            '        margin-bottom: 20px;\n',
+            '        margin-right: 10px;\n',
+            '        width: 196px;\n',
+            '        word-wrap: break-word;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{\n',
+            '        margin-bottom: initial;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container, .part_grid_search #results .item-section > li .yt-lockup{\n',
+            '        border: initial;\n',
+            '        padding: initial;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
+            '        top: 110px;\n',
+            '        right: -5px;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .yt-lockup-thumbnail, .part_grid_search #results .yt-lockup-thumbnail{\n',
+            '        float: initial !important;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .yt-lockup-meta, .part_grid_subs div#browse-items-primary .yt-lockup-byline{\n',
+            '        font-size: 11px;\n',
+            '        max-width: 196px;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal{\n',
+            '        font-size: 13px;\n',
+            '    }\n',
+            '    .part_grid_search #results .yt-lockup-title a{\n',
+            '        white-space: nowrap;\n',
+            '    }\n',
+            '    .part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges{\n',
+            '        display: none;\n',
+            '    }\n',
+        //   end| Grid layout
         // start| Enhancements
             ':focus{\n',
             '    outline: none;\n',
@@ -1120,6 +1166,14 @@
                     en     : 'Improved blue notification box',
                     'pt-PT': 'Caixa de notificação azul melhorada'
                 },
+                GEN_GRID_SUBS         : {
+                    en     : 'Grid layout in subscriptions',
+                    'pt-PT': 'Subscrições em formato grelha'
+                },
+                GEN_GRID_SRCH         : {
+                    en     : 'Grid layout in search results',
+                    'pt-PT': 'Resultados de pesquisa em formato grelha'
+                },
                 VID_TTL               : {
                     en     : 'Video settings',
                     'pt-PT': 'Definições de vídeo'
@@ -1487,6 +1541,8 @@
                     'GEN_BLUE_GLOW'   : 'part_dsbl_glow',
                     'GEN_HIDE_FTR'    : 'part_hide_footer',
                     'GEN_BTTR_NTF'    : 'part_notif_button',
+                    'GEN_GRID_SUBS'   : 'part_grid_subs',
+                    'GEN_GRID_SRCH'   : 'part_grid_search',
                     'GEN_CMPT_TTLS'   : 'part_compact_titles',
                     'VID_PLR_FIT'     : 'part_fit_theater',
                     'VID_PLR_DYN_SIZE': 'part_static_size',
@@ -1629,6 +1685,8 @@
                                 'GEN_CHN_DFLT_PAGE_ABT': 'about'
                             }),
                             htEl.title('GEN_LYT', 'h3'),
+                            htEl.input('GEN_GRID_SUBS', 'checkbox'),
+                            htEl.input('GEN_GRID_SRCH', 'checkbox'),
                             htEl.input('GEN_BTTR_NTF', 'checkbox'),
                             htEl.input('GEN_DSB_HVRC', 'checkbox'),
                             htEl.input('GEN_CMPT_TTLS', 'checkbox'),
@@ -2436,10 +2494,12 @@
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         moviePlayer = document.getElementById('movie_player');
-                        if (!parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
-                            moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
+                        if (moviePlayer) {
+                            if (!parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
+                                moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
+                            }
+                            moviePlayer.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                         }
-                        moviePlayer.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
                 };
             }
@@ -2995,7 +3055,9 @@
         function shareApi(originalFunction) {
             return function (ytApi) {
                 playerReady(ytApi);
-                return originalFunction.apply(this, arguments);
+                if (originalFunction) {
+                    return originalFunction.apply(this, arguments);
+                }
             };
         }
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
