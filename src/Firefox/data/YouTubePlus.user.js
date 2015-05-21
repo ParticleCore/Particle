@@ -2924,6 +2924,7 @@
                     newSidebar.focus();
                 }
                 function toggleFullBrowser(event) {
+                    var plrState = api && api.getPlayerState && api.getPlayerState() !== 5 && api.getPlayerState() !== -1 && api.getPlayerState() !== 0;
                     function exitFullBrowser(key) {
                         if (key.keyCode === 27 || key.key === 'Escape') {
                             document.documentElement.classList.remove('part_fullbrowser');
@@ -2932,7 +2933,7 @@
                     handleEvents(document, 'keydown', exitFullBrowser);
                     set('fullBrs', event ? !parSets.fullBrs : true);
                     fullBrowser.classList[(parSets.fullBrs) ? 'add' : 'remove']('active');
-                    if (event) {
+                    if (event && plrState) {
                         document.documentElement.classList[(parSets.fullBrs) ? 'add' : 'remove']('part_fullbrowser');
                     }
                 }
@@ -3113,25 +3114,25 @@
             window.postMessage(response, '*');
         }
         function settingsHandler(item) {
-            var object = (item && item.particleSettings) || JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)));
+            var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)))) || defaultSettings;
             function buildSettings(keys) {
                 object[keys] = details.set[keys];
             }
             if (details.set) {
                 Object.keys(details.set).forEach(buildSettings);
-                if (item) {
+                if (!userscript) {
                     window.chrome.storage.sync.set({'particleSettings': object});
                 } else {
                     window.GM_setValue('particleSettings', JSON.stringify(object));
                 }
             } else if (details.replace) {
-                if (item) {
+                if (!userscript) {
                     window.chrome.storage.sync.set({'particleSettings': details.replace});
                 } else {
                     window.GM_setValue('particleSettings', JSON.stringify(details.replace));
                 }
             }
-            if (!item) {
+            if (userscript) {
                 updateSettings(JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings))));
             }
         }
