@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.0.5
+// @version     0.0.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -422,30 +422,55 @@
             '    }\n',
             '    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{\n',
             '        margin-bottom: initial;\n',
+            '        margin-right: initial;\n',
             '    }\n',
             '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container, .part_grid_search #results .item-section > li .yt-lockup{\n',
             '        border: initial;\n',
             '        padding: initial;\n',
             '    }\n',
             '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
+            '        opacity: 0;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{\n',
+            '        opacity: 1;\n',
+            '    }\n',
+            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
             '        top: 110px;\n',
-            '        right: -5px;\n',
+            '        right: -8px;\n',
+            '        z-index: 1;\n',
             '    }\n',
             '    .part_grid_subs div#browse-items-primary .yt-lockup-thumbnail, .part_grid_search #results .yt-lockup-thumbnail{\n',
             '        float: initial !important;\n',
             '    }\n',
-            '    .part_grid_subs div#browse-items-primary .yt-lockup-meta, .part_grid_subs div#browse-items-primary .yt-lockup-byline{\n',
+            '    .part_grid_subs div#browse-items-primary .yt-lockup-meta, .part_grid_subs div#browse-items-primary .yt-lockup-byline, .part_grid_search #results .yt-lockup-meta{\n',
             '        font-size: 11px;\n',
             '        max-width: 196px;\n',
             '    }\n',
-            '    .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal{\n',
+            '    .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal, .part_grid_search #results .yt-lockup-title{\n',
             '        font-size: 13px;\n',
+            '        margin-top: 4px;\n',
+            '        margin-bottom: 1px;\n',
+            '        max-width: 176px;\n',
             '    }\n',
             '    .part_grid_search #results .yt-lockup-title a{\n',
             '        white-space: nowrap;\n',
             '    }\n',
             '    .part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges{\n',
             '        display: none;\n',
+            '    }\n',
+            '    .part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n',
+            '        display: inline;\n',
+            '    }\n',
+            '    .part_grid_subs .yt-lockup-meta-info, .part_grid_search .yt-lockup-meta-info{\n',
+            '        overflow: hidden;\n',
+            '        text-overflow: ellipsis;\n',
+            '        white-space: nowrap;\n',
+            '    }\n',
+            '    .part_grid_search .search .branded-page-v2-body{\n',
+            '        overflow: hidden;\n',
+            '    }\n',
+            '    .part_grid_search .webkit #results .yt-ui-ellipsis{\n',
+            '        display: block;\n',
             '    }\n',
         //   end| Grid layout
         // start| Enhancements
@@ -479,6 +504,10 @@
             '    min-height: 100%;\n',
             '    left: initial !important;\n',
             '    top: initial !important;\n',
+            '}\n',
+            '.search #content{\n',
+            '    max-width: 1003px;\n',
+            '    width: initial;\n',
             '}\n',
             '.ideal-aspect .html5-player-chrome{\n',
             '    background: rgba(27,27,27,0.9) !important;\n',
@@ -1219,8 +1248,8 @@
                     en: '2160p'
                 },
                 VID_PLR_ALVIS         : {
-                    en     : 'Always visible',
-                    'pt-PT': 'Sempre visível'
+                    en     : 'Player always visible when reading comments',
+                    'pt-PT': 'Reproductor sempre visível ao ler os comentários'
                 },
                 VID_PLR_ATPL          : {
                     en     : 'Autoplay videos',
