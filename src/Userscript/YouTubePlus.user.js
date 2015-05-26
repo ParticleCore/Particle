@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.0.6
+// @version     0.0.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1665,8 +1665,8 @@
                             var input = '<input id="' + id + '" type="' + type + '"';
                             if (placeholder) {
                                 input += ' placeholder="' + placeholder + '" size="' + size + '"';
-                                if (typeof parSets && parSets[id] === 'string') {
-                                    input += ' value="' + parSets && parSets[id] + '"';
+                                if (parSets && typeof parSets[id] === 'string') {
+                                    input += ' value="' + (parSets && parSets[id]) + '"';
                                 }
                             } else if (parSets && parSets[id] === true) {
                                 input += ' checked="true"';
