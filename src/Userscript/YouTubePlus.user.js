@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.0.8
+// @version     0.0.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -996,7 +996,6 @@
     }
     function particle() {
         var api,
-            fullscreen,
             channelId = {},
             events    = [],
             isChrome  = typeof window.chrome === 'object',
@@ -2315,15 +2314,11 @@
         }
         function playerReady(playerApi) {
             function playerState(state) {
-                var moviePlayer = document.getElementById('movie_player'),
-                    cueThumb    = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
+                var cueThumb    = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
                     cueButton   = document.getElementsByClassName('ytp-large-play-button')[0],
                     newPlayer   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 if (newPlayer) {
-                    if (window.matchMedia) {
-                        window.matchMedia = false;
-                        document.documentElement.classList.add('new_player');
-                    }
+                    document.documentElement.classList.add('new_player');
                     if (cueThumb && cueButton) {
                         if (state === 5) {
                             cueThumb.removeAttribute('aria-hidden');
@@ -2338,9 +2333,6 @@
                         }
                     }
                 }
-                if (parSets.VID_PLR_CTRL_VIS && moviePlayer) {
-                    moviePlayer.classList.add('ideal-aspect');
-                }
                 if (parSets.fullBrs) {
                     if (state !== 5 && state !== -1 && state !== 0) {
                         document.documentElement.classList.add('part_fullbrowser');
@@ -2348,13 +2340,7 @@
                         document.documentElement.classList.remove('part_fullbrowser');
                     }
                 }
-                moviePlayer = cueThumb = cueButton = newPlayer = null;
-            }
-            function playerFullscreen(event) {
-                fullscreen = event.fullscreen;
-                if (parSets.VID_PLR_CTRL_VIS) {
-                    document.getElementById('movie_player').classList.add('ideal-aspect');
-                }
+                cueThumb = cueButton = newPlayer = null;
             }
             function volumeChanged(event) {
                 set('volLev', event.volume);
@@ -2362,10 +2348,22 @@
             function sizeChanged(event) {
                 set('theaterMode', event);
             }
+            function forceIdealAspect(event) {
+                var observer,
+                    moviePlayer = document.getElementById('movie_player');
+                if (moviePlayer && !moviePlayer.classList.contains('ideal-aspect')) {
+                    moviePlayer.classList.add('ideal-aspect');
+                }
+                if (!event) {
+                    observer = new window.MutationObserver(forceIdealAspect);
+                    observer.observe(moviePlayer, {
+                        attributes: true
+                    });
+                }
+            }
             if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
                 api = document.getElementById('movie_player');
                 handleEvents(api, 'onStateChange', playerState);
-                handleEvents(api, 'onFullscreenChange', playerFullscreen);
                 if (parSets.VID_PLR_VOL_MEM) {
                     handleEvents(api, 'onVolumeChange', volumeChanged);
                 }
@@ -2383,6 +2381,9 @@
                 }
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
+                }
+                if (parSets.VID_PLR_CTRL_VIS && window.ytplayer.config.assets.js.split('-new').length < 2) {
+                    forceIdealAspect();
                 }
             }
         }
@@ -2484,35 +2485,14 @@
                     var moviePlayer,
                         playerInstance,
                         args = arguments;
-                    function html5Pointers(originalPointer) {
-                        return function () {
-                            var player,
-                                changed = originalPointer.apply(this, arguments);
-                            if (changed.width && changed.height && !fullscreen) {
-                                player = document.getElementById('movie_player');
-                                if (player) {
-                                    changed.width = player.offsetWidth;
-                                    changed.height = player.offsetHeight;
-                                }
-                            }
-                            return changed;
-                        };
-                    }
                     function playerInstanceIterator(keys) {
                         function firstLevel(fl) {
                             if (typeof playerInstance[keys][fl] === 'function' && String(playerInstance[keys][fl]).split('get_video_info').length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
                                 playerInstance[keys][fl] = fsPointerDetour(playerInstance[keys][fl]);
                             }
                         }
-                        function keysIterator(sizes) {
-                            if (typeof playerInstance[keys][sizes] === 'function' && (playerInstance[keys][sizes] + String()).split('"detailpage"!=').length > 1) {
-                                playerInstance[keys][sizes] = html5Pointers(playerInstance[keys][sizes]);
-                            }
-                        }
                         if (typeof playerInstance[keys] === 'object') {
-                            if (playerInstance[keys] && playerInstance[keys].element && window.ytplayer.config.assets.js.split('-new').length < 2) {
-                                Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(keysIterator);
-                            } else if (playerInstance[keys] && playerInstance[keys].hasNext) {
+                            if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
                             } else if (playerInstance[keys]) {
                                 Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(firstLevel);
@@ -3095,6 +3075,7 @@
                 }
             };
         }
+        window.matchMedia = false;
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         handleEvents(window, 'spfdone', initFunctions);
         handleEvents(window, 'spfrequest', request);
