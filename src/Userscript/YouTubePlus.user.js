@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.0.7
+// @version     0.0.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1608,6 +1608,9 @@
                     }
                 }
             }
+            if (window.location.pathname !== '/feed/subscriptions') {
+                document.documentElement.classList.remove('part_grid_subs');
+            }
             classes = setsList = commSect = sidebar = adverts = null;
         }
         function settingsMenu() {
@@ -2345,7 +2348,7 @@
                         document.documentElement.classList.remove('part_fullbrowser');
                     }
                 }
-                cueThumb = cueButton = null;
+                moviePlayer = cueThumb = cueButton = newPlayer = null;
             }
             function playerFullscreen(event) {
                 fullscreen = event.fullscreen;
@@ -2360,7 +2363,7 @@
                 set('theaterMode', event);
             }
             if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
-                api = playerApi;
+                api = document.getElementById('movie_player');
                 handleEvents(api, 'onStateChange', playerState);
                 handleEvents(api, 'onFullscreenChange', playerFullscreen);
                 if (parSets.VID_PLR_VOL_MEM) {
@@ -2523,11 +2526,8 @@
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         moviePlayer = document.getElementById('movie_player');
-                        if (moviePlayer) {
-                            if (!parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
-                                moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
-                            }
-                            moviePlayer.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                        if (moviePlayer && !parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
+                            moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
                 };
@@ -3073,7 +3073,12 @@
                 listBefore  = previous.split('list=').length > 1,
                 listAfter   = url.split('list=').length > 1,
                 player      = document.getElementById('movie_player'),
-                loaded      = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded;
+                loaded      = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded,
+                floating    = document.documentElement.classList.contains('floater');
+            if (floating) {
+                document.documentElement.classList.remove('floater');
+                player.removeAttribute('style');
+            }
             if (player && videoAfter && (listAfter !== listBefore || videoBefore)) {
                 if (loaded) {
                     delete window.ytplayer.config.loaded;
