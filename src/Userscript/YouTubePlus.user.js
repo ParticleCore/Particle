@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.0.9
+// @version     0.1.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -202,6 +202,15 @@
             '.part_fullbrowser #masthead-positioner{\n',
             '    z-index: initial;\n',
             '}\n',
+            '#advanced-options{\n',
+            '    background: #FFF;\n',
+            '    min-height: 20px;\n',
+            '    min-width: 25px;\n',
+            '    position: absolute;\n',
+            '    right: 0px;\n',
+            '    top: 0px;\n',
+            '    z-index: 5;\n',
+            '}\n',
             '#console-button{\n',
             '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKAQMAAABVIEaHAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABBJREFUeF5j+P8DhMAAkw0AsQkLy6q+yNQAAAAASUVORK5CYII=) no-repeat center;\n',
             '    cursor: pointer;\n',
@@ -219,26 +228,22 @@
             '#player-console{\n',
             '    display: none;\n',
             '    font-size: 0;\n',
-            '    height: 40px;\n',
-            '    position: absolute;\n',
+            '    position: relative;\n',
             '    right: 20px;\n',
-            '    top: 10px;\n',
+            '    top: 15px;\n',
             '    text-align: center;\n',
             '    border-left: 20px solid;\n',
             '    border-image: linear-gradient(to left, #FFF 20%, transparent 100%) 1 100%;\n',
             '}\n',
             '.player-console #player-console{\n',
-            '    display: initial;\n',
+            '    display: block;\n',
             '}\n',
             '#player-console > div{\n',
             '    cursor: pointer;\n',
-            '    display: inline-block;\n',
             '    height: 30px;\n',
             '    opacity: 0.4;\n',
             '    padding: 0 7px;\n',
             '    position: relative;\n',
-            '    top: 50%;\n',
-            '    transform: translateY(-50%);\n',
             '}\n',
             '#player-console:before{\n',
             '    background: #FFF;\n',
@@ -1492,8 +1497,7 @@
             parSets = defSets;
         }
         function string2HTML(string) {
-            var html = new window.DOMParser();
-            return html.parseFromString(string, 'text/html');
+            return new window.DOMParser().parseFromString(string, 'text/html');
         }
         function set(setting, newValue) {
             var object = {};
@@ -2754,6 +2758,7 @@
             var page         = document.documentElement,
                 header       = document.getElementById('watch-header'),
                 cnslBtn      = document.getElementById('console-button'),
+                cnslCont     = document.getElementById('advanced-options'),
                 controls     = document.getElementById('player-console'),
                 videoPlayer  = document.getElementsByTagName('video')[0],
                 storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
@@ -2970,7 +2975,10 @@
                 cnslBtn = '<button id="console-button" title="' + userLang('ADV_OPTS') + '"></button>';
                 cnslBtn = string2HTML(cnslBtn).querySelector('#console-button');
                 handleEvents(cnslBtn, 'click', toggleConsole);
-                header.appendChild(cnslBtn);
+                cnslCont = '<div id="advanced-options"></div>';
+                cnslCont = string2HTML(cnslCont).querySelector('#advanced-options');
+                cnslCont.appendChild(cnslBtn);
+                header.appendChild(cnslCont);
                 if (controls) {
                     controls.remove();
                 }
@@ -2986,7 +2994,7 @@
                     '</div>\n'
                 ].join('');
                 controls = string2HTML(controls).querySelector('div');
-                document.getElementById('watch-header').appendChild(controls);
+                cnslCont.appendChild(controls);
                 hookButtons();
                 if (parSets.advOpts) {
                     page.classList.add('player-console');
