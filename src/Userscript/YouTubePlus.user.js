@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.0
+// @version     0.1.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -210,6 +210,9 @@
             '    right: 0px;\n',
             '    top: 0px;\n',
             '    z-index: 5;\n',
+            '}\n',
+            '.part_fullbrowser #advanced-options{\n',
+            '    z-index: initial;\n',
             '}\n',
             '#console-button{\n',
             '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKAQMAAABVIEaHAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABBJREFUeF5j+P8DhMAAkw0AsQkLy6q+yNQAAAAASUVORK5CYII=) no-repeat center;\n',
