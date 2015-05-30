@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.1
+// @version     0.1.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1591,7 +1591,7 @@
                 adverts.remove();
                 adverts = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
-            if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.pathname === '/feed/subscriptions') || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
+            if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split('/feed/subscriptions').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                 sidebar.remove();
             }
             if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commSect) {
@@ -1614,7 +1614,7 @@
                     }
                 }
             }
-            if (window.location.pathname !== '/feed/subscriptions') {
+            if (window.location.href.split('/feed/subscriptions').length < 2) {
                 document.documentElement.classList.remove('part_grid_subs');
             }
             classes = setsList = commSect = sidebar = adverts = null;
@@ -2292,7 +2292,7 @@
                 }
                 i = list = button = navMenu = listTitle = videoList = null;
             }
-            if (window.location.pathname === '/feed/subscriptions' && !button && listTitle && videoList) {
+            if (window.location.href.split('/feed/subscriptions').length > 1 && !button && listTitle && videoList) {
                 button =
                     '<li id="subscription-playlist-icon">\n' +
                     '    <a id="subscription-playlist" title="' + userLang('SUB_PLST') + '" class="yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default">\n' +
@@ -2610,7 +2610,7 @@
                         handleEvents(button, 'click', initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
-                    if (parSets.BLK_ON && window.location.pathname !== '/feed/subscriptions' && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
+                    if (parSets.BLK_ON && window.location.href.split('/feed/subscriptions').length < 2 && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
                         button = createButton('blacklist', detailList[i]);
                         handleEvents(button, 'click', initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
@@ -2671,7 +2671,7 @@
                     masterList = list;
                 }
             }
-            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === '/' || window.location.pathname === '/results' || window.location.pathname === '/watch' || window.location.pathname === '/feed/music' || window.location.pathname === '/feed/subscriptions')) {
+            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === '/' || window.location.pathname === '/results' || window.location.pathname === '/watch' || window.location.pathname === '/feed/music' || window.location.href.split('/feed/subscriptions').length > 1)) {
                 ['yt-lockup-tile', 'video-list-item', 'yt-shelf-grid-item'].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
