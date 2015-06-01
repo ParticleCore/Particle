@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.2
+// @version     0.1.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -476,6 +476,9 @@
             '    }\n',
             '    .part_grid_search .search .branded-page-v2-body{\n',
             '        overflow: hidden;\n',
+            '    }\n',
+            '    .part_grid_search #results .exploratory-section{\n',
+            '        display: none;\n',
             '    }\n',
             '    .part_grid_search .webkit #results .yt-ui-ellipsis{\n',
             '        display: block;\n',
@@ -1525,17 +1528,10 @@
                 target.events = target.events || {};
                 target.events[event] = target.events[event] || {};
                 target.events[event][name] = call;
-                if ((String(target)).split('HTML').length > 1) {
+                if ((String(target)).split('HTML').length > 1 && events.indexOf(target) < 0) {
                     events.push(target);
                 }
             }
-        }
-        function userLang(label) {
-            var ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || 'en';
-            if (lang[label][ytlang]) {
-                return lang[label][ytlang];
-            }
-            return lang[label].en;
         }
         function clearOrphans() {
             var i = events.length;
@@ -1546,6 +1542,13 @@
                     events.splice(i, 1);
                 }
             }
+        }
+        function userLang(label) {
+            var ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || 'en';
+            if (lang[label][ytlang]) {
+                return lang[label][ytlang];
+            }
+            return lang[label].en;
         }
         function localXHR(details) {
             var request = new XMLHttpRequest();
@@ -1618,6 +1621,13 @@
                 document.documentElement.classList.remove('part_grid_subs');
             }
             classes = setsList = commSect = sidebar = adverts = null;
+        }
+        function updateSettings(event) {
+            if (event.data && event.data.updateSettings) {
+                delete event.data.updateSettings;
+                parSets = event.data;
+                customStyles();
+            }
         }
         function settingsMenu() {
             var pContent,
@@ -2093,12 +2103,6 @@
                 comments.parentNode.insertBefore(wrapper, comments);
             }
         }
-        function updateSettings(event) {
-            if (event.data.updateSettings) {
-                parSets = event.data;
-                customStyles();
-            }
-        }
         function playerMode() {
             var cookie        = document.cookie,
                 pageElement   = document.getElementById('page'),
@@ -2219,7 +2223,9 @@
                 if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
                     window.ytplayer.config = config;
                 }
-                window.ytplayer.config.args = config.args;
+                if (window.ytplayer && window.ytplayer.config) {
+                    window.ytplayer.config.args = config.args;
+                }
                 return config;
             }
         }
@@ -2285,11 +2291,18 @@
                 navMenu   = document.getElementById('channel-navigation-menu'),
                 listTitle = document.getElementsByClassName('appbar-nav-menu')[0],
                 videoList = document.getElementsByClassName('addto-watch-later-button');
-            function initSubPlaylist(event) {
-                event = event.target.responseText;
-                if (event) {
-                    button.href = '/watch?v=' + videoList[0].getAttribute('data-video-ids') + '&list=' + JSON.parse(event)[1].data.swfcfg.args.list;
+            function initSubPlaylist() {
+                i = videoList.length;
+                while (i) {
+                    i -= 1;
+                    if (i > -1) {
+                        list.push(videoList[i].getAttribute('data-video-ids'));
+                    }
                 }
+                list.reverse().join('%2C');
+                listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent.trim();
+                button = document.getElementById('subscription-playlist');
+                button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
                 i = list = button = navMenu = listTitle = videoList = null;
             }
             if (window.location.href.split('/feed/subscriptions').length > 1 && !button && listTitle && videoList) {
@@ -2301,22 +2314,7 @@
                     '</li>';
                 button = string2HTML(button).querySelector('li');
                 navMenu.insertBefore(button, navMenu.firstChild);
-                i = videoList.length;
-                while (i) {
-                    i -= 1;
-                    if (i > -1) {
-                        list.push(videoList[i].getAttribute('data-video-ids'));
-                    }
-                }
-                list.reverse().join('%2C');
-                listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent;
-                button = document.getElementById('subscription-playlist');
-                button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
-                localXHR({
-                    method: 'GET',
-                    url: '/watch_videos?title=' + listTitle + '&spf=navigate&video_ids=' + list,
-                    call: initSubPlaylist
-                });
+                handleEvents(button, 'click', initSubPlaylist);
             }
         }
         function playerReady(playerApi) {
@@ -2627,6 +2625,11 @@
                     userName = infoField && infoField.textContent;
                     videoLink = titleField && titleField.href;
                     detailList[i] = undefined;
+                    if (userId && userId.split('UC').length < 2) {
+                        infoField = masterList[i].getElementsByClassName('g-hovercard')[0];
+                        userId = infoField && infoField.getAttribute('data-ytid');
+                        userName = infoField && infoField.textContent;
+                    }
                     if (blackList[userId]) {
                         upNext = document.getElementsByClassName('watch-sidebar-head')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
                         if (upNext && upNext.contains(thumbField)) {
@@ -2684,19 +2687,20 @@
         function volumeWheel(event) {
             var playerApi  = document.getElementById('player-api'),
                 direction  = event && (event.deltaY || event.wheelDeltaY),
+                currentVol = api && api.getVolume(),
                 playlistFS = document.getElementsByClassName('ytp-playlist-tray-tray')[0] || document.getElementsByClassName('ytp-playlist-menu')[0];
             if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === 'player-api' || playerApi.contains(event.target))) {
                 event.preventDefault();
-                if (direction > 0 && api.getVolume() > 0) {
-                    api.setVolume(api.getVolume() - 10);
-                } else if (direction < 0 && api.getVolume() < 100) {
-                    api.setVolume(api.getVolume() + 10);
+                if (direction > 0 && currentVol > 0) {
+                    api.setVolume(currentVol - 10);
+                } else if (direction < 0 && currentVol < 100) {
+                    api.setVolume(currentVol + 10);
                 }
             }
             if (!event && parSets.VID_VOL_WHEEL) {
                 handleEvents(window, 'wheel', volumeWheel);
             }
-            direction = playerApi = null;
+            direction = playerApi = playlistFS = currentVol =null;
         }
         function playlistControls() {
             var href  = window.location.href,
@@ -3007,7 +3011,7 @@
         function generalChanges() {
             var logo,
                 channelLink,
-                autoplaybar       = document.getElementsByClassName('autoplay-bar')[0],
+                autoplaybar      = document.getElementsByClassName('autoplay-bar')[0],
                 descriptionPanel = document.getElementById('action-panel-details');
             function linkIterator(link) {
                 if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
@@ -3039,7 +3043,7 @@
             if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
                 document.documentElement.scrollTop = document.body.scrollTop = 0;
             }
-            logo = channelLink = autoplaybar = null;
+            logo = channelLink = autoplaybar = descriptionPanel = null;
         }
         function initFunctions() {
             customStyles();
@@ -3099,7 +3103,7 @@
         handleEvents(window, 'message', updateSettings);
     }
     function updateSettings(event) {
-        event = event.particleSettings || event || defaultSettings;
+        event = (event && event.particleSettings) || event || defaultSettings;
         event.updateSettings = true;
         window.postMessage(event, '*');
     }
@@ -3124,73 +3128,48 @@
             if (!userscript) {
                 if (window.chrome) {
                     window.chrome.storage.onChanged.addListener(filterChromeStorage);
-                } else if (!window.chrome) {
+                } else {
                     window.self.port.on('particleSettings', updateSettings);
                 }
             }
-            inject = null;
+            inject = particleStyle = null;
         }
     }
     function xhr(details) {
-        var request;
         details = details.data;
-        function process(xhrResponse) {
-            var response = {};
-            response[details.id] = userscript ? xhrResponse.response : xhrResponse.target.response;
-            window.postMessage(response, '*');
-        }
         function settingsHandler(item) {
             var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)))) || defaultSettings;
             function buildSettings(keys) {
                 object[keys] = details.set[keys];
             }
-            if (details.set) {
-                Object.keys(details.set).forEach(buildSettings);
-                if (!userscript) {
-                    window.chrome.storage.sync.set({'particleSettings': object});
-                } else {
-                    window.GM_setValue('particleSettings', JSON.stringify(object));
+            if (!details.get) {
+                if (details.set) {
+                    Object.keys(details.set).forEach(buildSettings);
                 }
-            } else if (details.replace) {
                 if (!userscript) {
-                    window.chrome.storage.sync.set({'particleSettings': details.replace});
+                    window.chrome.storage.sync.set({'particleSettings': ((details.set && object) || details.replace)});
                 } else {
-                    window.GM_setValue('particleSettings', JSON.stringify(details.replace));
+                    window.GM_setValue('particleSettings', ((details.set && JSON.stringify(object)) || JSON.stringify(details.replace)));
                 }
             }
             if (userscript) {
                 updateSettings(JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings))));
             }
         }
-        if (typeof details === 'object') {
-            if (details.id) {
-                if (userscript) {
-                    window.GM_xmlhttpRequest({
-                        onload: process,
-                        method: details.method,
-                        url   : details.url
-                    });
-                } else if (!userscript) {
-                    request = new XMLHttpRequest();
-                    request.onload = process;
-                    request.open(details.method, details.url, true);
-                    request.send();
-                }
-            } else if (details.set || details.get || details.replace) {
-                if (userscript) {
-                    settingsHandler();
-                } else if (window.chrome) {
-                    window.chrome.storage.sync.get('particleSettings', settingsHandler);
-                } else {
-                    window.self.port.emit('particleSettings', details);
-                }
+        if (typeof details === 'object' && (details.set || details.get || details.replace)) {
+            if (userscript) {
+                settingsHandler();
+            } else if (window.chrome) {
+                window.chrome.storage.sync.get('particleSettings', settingsHandler);
+            } else {
+                window.self.port.emit('particleSettings', details);
             }
         }
     }
     if (!userscript) {
         if (window.chrome) {
             window.chrome.storage.sync.get('particleSettings', initParticle);
-        } else if (!window.chrome) {
+        } else {
             window.self.port.once('particleSettings', initParticle);
         }
     } else if (userscript) {
