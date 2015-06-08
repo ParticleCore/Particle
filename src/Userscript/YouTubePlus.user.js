@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.3
+// @version     0.1.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -300,6 +300,8 @@
             '    width: 100%;\n',
             '    white-space: nowrap;\n',
             '    z-index: 940;\n',
+            '    -moz-user-select: none;\n',
+            '    -webkit-user-select: none;\n',
             '}\n',
             '#seek-controls{\n',
             '    background: rgba(0, 0, 0, 0.8);\n',
@@ -411,78 +413,85 @@
             '}\n',
         //   end| Thumb buttons
         // start| Grid layout
-            '    .part_grid_subs .feed-item-container .branded-page-module-title, .part_grid_subs .feed-item-container .yt-lockup-description, .part_grid_search #results .yt-lockup-description{\n',
-            '        display: none !important;\n',
-            '        height: 0 !important;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary, .part_grid_search #results {\n',
-            '        font-size: 0;\n',
-            '        margin-right: -15px;\n',
-            '        padding: 15px;\n',
-            '        padding-right: 0;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .section-list > li, .part_grid_search #results .item-section > li{\n',
-            '        display: inline-block;\n',
-            '        margin-bottom: 20px;\n',
-            '        margin-right: 10px;\n',
-            '        width: 196px;\n',
-            '        word-wrap: break-word;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{\n',
-            '        margin-bottom: initial;\n',
-            '        margin-right: initial;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container, .part_grid_search #results .item-section > li .yt-lockup{\n',
-            '        border: initial;\n',
-            '        padding: initial;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
-            '        opacity: 0;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{\n',
-            '        opacity: 1;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
-            '        top: 110px;\n',
-            '        right: -8px;\n',
-            '        z-index: 1;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .yt-lockup-thumbnail, .part_grid_search #results .yt-lockup-thumbnail{\n',
-            '        float: initial !important;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .yt-lockup-meta, .part_grid_subs div#browse-items-primary .yt-lockup-byline, .part_grid_search #results .yt-lockup-meta{\n',
-            '        font-size: 11px;\n',
-            '        max-width: 196px;\n',
-            '    }\n',
-            '    .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal, .part_grid_search #results .yt-lockup-title{\n',
-            '        font-size: 13px;\n',
-            '        margin-top: 4px;\n',
-            '        margin-bottom: 1px;\n',
-            '        max-width: 176px;\n',
-            '    }\n',
-            '    .part_grid_search #results .yt-lockup-title a{\n',
-            '        white-space: nowrap;\n',
-            '    }\n',
-            '    .part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges{\n',
-            '        display: none;\n',
-            '    }\n',
-            '    .part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n',
-            '        display: inline;\n',
-            '    }\n',
-            '    .part_grid_subs .yt-lockup-meta-info, .part_grid_search .yt-lockup-meta-info{\n',
-            '        overflow: hidden;\n',
-            '        text-overflow: ellipsis;\n',
-            '        white-space: nowrap;\n',
-            '    }\n',
-            '    .part_grid_search .search .branded-page-v2-body{\n',
-            '        overflow: hidden;\n',
-            '    }\n',
-            '    .part_grid_search #results .exploratory-section{\n',
-            '        display: none;\n',
-            '    }\n',
-            '    .part_grid_search .webkit #results .yt-ui-ellipsis{\n',
-            '        display: block;\n',
-            '    }\n',
+            '.part_grid_subs .feed-item-container .branded-page-module-title, .part_grid_subs .feed-item-container .yt-lockup-description, .part_grid_search #results .yt-lockup-description{\n',
+            '    display: none !important;\n',
+            '    height: 0 !important;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary, .part_grid_search #results {\n',
+            '    font-size: 0;\n',
+            '    margin-right: -15px;\n',
+            '    padding: 15px;\n',
+            '    padding-right: 0;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .section-list > li, .part_grid_search #results .item-section > li{\n',
+            '    display: inline-block;\n',
+            '    margin-bottom: 20px;\n',
+            '    margin-right: 10px;\n',
+            '    width: 196px;\n',
+            '    word-wrap: break-word;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .expanded-shelf-content-item{\n',
+            '    margin-bottom: initial;\n',
+            '    margin-right: initial;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .item-section .feed-item-container, .part_grid_search #results .item-section > li .yt-lockup{\n',
+            '    border: initial;\n',
+            '    padding: initial;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
+            '    opacity: 0;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{\n',
+            '    opacity: 1;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
+            '    top: 110px;\n',
+            '    right: -8px;\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .yt-lockup-thumbnail, .part_grid_search #results .yt-lockup-thumbnail{\n',
+            '    float: initial !important;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .yt-lockup-meta, .part_grid_subs div#browse-items-primary .yt-lockup-byline, .part_grid_search #results .yt-lockup-meta{\n',
+            '    font-size: 11px;\n',
+            '    max-width: 196px;\n',
+            '}\n',
+            '.part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal, .part_grid_search #results .yt-lockup-title{\n',
+            '    font-size: 13px;\n',
+            '    margin-top: 4px;\n',
+            '    margin-bottom: 1px;\n',
+            '    max-width: 176px;\n',
+            '}\n',
+            '.part_grid_search #results .yt-lockup-title a{\n',
+            '    white-space: nowrap;\n',
+            '}\n',
+            '.part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges{\n',
+            '    display: none;\n',
+            '}\n',
+            '.part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n',
+            '    display: inline;\n',
+            '}\n',
+            '.part_grid_subs .yt-lockup-meta-info, .part_grid_search .yt-lockup-meta-info, .part_grid_search .yt-lockup-content div{\n',
+            '    overflow: hidden;\n',
+            '    text-overflow: ellipsis;\n',
+            '    white-space: nowrap;\n',
+            '}\n',
+            '.part_grid_search #results .item-section > li{\n',
+            '    float: left;\n',
+            '    min-height: 164px;\n',
+            '}\n',
+            '.part_grid_search #results .item-section{\n',
+            '    float: left;\n',
+            '}\n',
+            '.part_grid_search .search .branded-page-v2-body{\n',
+            '    overflow: hidden;\n',
+            '}\n',
+            '.part_grid_search #results .exploratory-section{\n',
+            '    display: none;\n',
+            '}\n',
+            '.part_grid_search .webkit #results .yt-ui-ellipsis{\n',
+            '    display: block;\n',
+            '}\n',
         //   end| Grid layout
         // start| Enhancements
             ':focus{\n',
@@ -763,11 +772,20 @@
             '    clear: both;\n',
             '}\n',
             '#P-content div{\n',
+            '    display: block;\n',
             '    line-height: 26px;\n',
             '    overflow: hidden;\n',
+            '    position: relative;\n',
             '}\n',
             '#P-content div:first-child{\n',
             '    overflow: initial;\n',
+            '}\n',
+            '#P-content div a{\n',
+            '    font-weight: bold;\n',
+            '    opacity: 0;\n',
+            '}\n',
+            '#P-content div:hover a{\n',
+            '    opacity: 1;\n',
             '}\n',
             '#P-content label{\n',
             '    line-height: 26px;\n',
@@ -794,7 +812,6 @@
             '    border: 1px solid #36649c;\n',
             '}\n',
             '#P-content input[type="text"]{\n',
-            '    top: 2px;\n',
             '    position: relative;\n',
             '    display: initial;\n',
             '    margin-left: 5px;\n',
@@ -814,7 +831,7 @@
             '    left: -20px;\n',
             '}\n',
             '#P-content input[type="checkbox"] + label{\n',
-            '    display: block;\n',
+            '    display: inline-block;\n',
             '}\n',
             '#P-content input[type="checkbox"]:checked + label:before{\n',
             '    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJXRSTlMAmQmDBYwZUT92AjdnbAtadZRPBBaSfqRBejiODWWJEoJ5Gx0gnoi62QAAAExJREFUCB1NwQUSgDAAA7B2G+7uzv/fCAdDEvyY+HgFXnYV4WHRcXFTPgNo4cJYAUjSDLlkKXCq2bQdZY/LQHKccBMzjRWPzdjxEdAOtVECtAyMKkUAAAAASUVORK5CYII=) no-repeat 2px 1px;\n',
@@ -1120,6 +1137,10 @@
                 GLB_SVE               : {
                     en     : 'Save',
                     'pt-PT': 'Guardar'
+                },
+                FTR_DESC              : {
+                    en     : 'Find out what this does',
+                    'pt-PT': 'Descubra o que isto faz'
                 },
                 GEN                   : {
                     en     : 'General',
@@ -1651,11 +1672,14 @@
                         return button;
                     },
                     htEl   = {
+                        info  : function (anchor) {
+                            return '<a href="https://github.com/ParticleCore/Particle/wiki/Features#' + anchor + '" title="' + userLang('FTR_DESC') + '" target="_blank">?</a>';
+                        },
                         title : function (content, tag) {
                             return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
                         },
-                        select: function (id, list) {
-                            var select = '<label for="' + id + '">' + userLang(id) + '</label>\n' +
+                        select: function (id, list, anchor) {
+                            var select = '<div><label for="' + id + '">' + userLang(id) + '</label>\n' +
                                 '<div class="P-select"><select id="' + id + '">\n';
                             function keysIterator(keys) {
                                 select += '<option';
@@ -1665,11 +1689,10 @@
                                 select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
                             }
                             Object.keys(list).forEach(keysIterator);
-                            select += '</select></div>\n';
-                            return select;
+                            return select + '</select></div>\n' + htEl.info(anchor) + '</div>';
                         },
-                        radio : function (name, list) {
-                            var radio = '<label>' + userLang(name) + '</label>\n';
+                        radio : function (name, list, anchor) {
+                            var radio = '<div><label>' + userLang(name) + '</label>\n';
                             function keysIterator(keys) {
                                 radio += '<input id="' + keys + '" name="' + name + '" value="' + list[keys] + '" type="radio"';
                                 if (parSets && parSets[name] === list[keys]) {
@@ -1678,10 +1701,10 @@
                                 radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>';
                             }
                             Object.keys(list).forEach(keysIterator);
-                            return radio;
+                            return radio + htEl.info(anchor) + '</div>';
                         },
-                        input : function (id, type, placeholder, size) {
-                            var input = '<input id="' + id + '" type="' + type + '"';
+                        input : function (id, type, placeholder, size, anchor) {
+                            var input = '<div><input id="' + id + '" type="' + type + '"';
                             if (placeholder) {
                                 input += ' placeholder="' + placeholder + '" size="' + size + '"';
                                 if (parSets && typeof parSets[id] === 'string') {
@@ -1690,8 +1713,7 @@
                             } else if (parSets && parSets[id] === true) {
                                 input += ' checked="true"';
                             }
-                            input += '>\n<label for="' + id + '">' + userLang(id) + '</label>\n';
-                            return input;
+                            return input + '>\n<label for="' + id + '">' + userLang(id) + '</label>\n' + htEl.info(anchor) + '</div>';
                         }
                     },
                     menus  = {
@@ -1718,31 +1740,31 @@
                             htEl.title('GEN_TTL', 'h2'),
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
-                            htEl.title('GEN_GEN', 'h3'),
-                            htEl.input('GEN_DSBL_ADS', 'checkbox'),
-                            htEl.input('GEN_YT_LOGO_LINK', 'checkbox'),
-                            htEl.input('GEN_SDBR_ON', 'checkbox'),
-                            htEl.input('GEN_REM_APUN', 'checkbox'),
-                            htEl.input('GEN_SPF_OFF', 'checkbox'),
+                            htEl.title('GEN_GEN'           , 'h3'),
+                            htEl.input('GEN_DSBL_ADS'      , 'checkbox', null, null, 'outside_ads'),
+                            htEl.input('GEN_YT_LOGO_LINK'  , 'checkbox', null, null, 'logo_redirect'),
+                            htEl.input('GEN_SDBR_ON'       , 'checkbox', null, null, 'sidebar_on'),
+                            htEl.input('GEN_REM_APUN'      , 'checkbox', null, null, 'remove_autoplay'),
+                            htEl.input('GEN_SPF_OFF'       , 'checkbox', null, null, 'spf_off'),
                             htEl.select('GEN_CHN_DFLT_PAGE', {
                                 'GEN_CHN_DFLT_PAGE_DFLT': 'default',
-                                'GEN_CHN_DFLT_PAGE_VID': 'videos',
-                                'GEN_CHN_DFLT_PAGE_PL': 'playlists',
-                                'GEN_CHN_DFLT_PAGE_CHN': 'channels',
+                                'GEN_CHN_DFLT_PAGE_VID' : 'videos',
+                                'GEN_CHN_DFLT_PAGE_PL'  : 'playlists',
+                                'GEN_CHN_DFLT_PAGE_CHN' : 'channels',
                                 'GEN_CHN_DFLT_PAGE_DISC': 'discussion',
-                                'GEN_CHN_DFLT_PAGE_ABT': 'about'
-                            }),
-                            htEl.title('GEN_LYT', 'h3'),
-                            htEl.input('GEN_GRID_SUBS', 'checkbox'),
-                            htEl.input('GEN_GRID_SRCH', 'checkbox'),
-                            htEl.input('GEN_BTTR_NTF', 'checkbox'),
-                            htEl.input('GEN_DSB_HVRC', 'checkbox'),
-                            htEl.input('GEN_CMPT_TTLS', 'checkbox'),
-                            htEl.input('GEN_BLUE_GLOW', 'checkbox'),
-                            htEl.input('GEN_HIDE_FTR', 'checkbox'),
-                            htEl.input('GEN_HDE_RECM_SDBR', 'checkbox'),
-                            htEl.input('GEN_HDE_SRCH_SDBR', 'checkbox'),
-                            htEl.input('GEN_HDE_CHN_SDBR', 'checkbox'),
+                                'GEN_CHN_DFLT_PAGE_ABT' : 'about'
+                            }, 'channel_page'),
+                            htEl.title('GEN_LYT'           , 'h3'),
+                            htEl.input('GEN_GRID_SUBS'     , 'checkbox', null, null, 'sub_grid'),
+                            htEl.input('GEN_GRID_SRCH'     , 'checkbox', null, null, 'search_grid'),
+                            htEl.input('GEN_BTTR_NTF'      , 'checkbox', null, null, 'blue_box'),
+                            htEl.input('GEN_DSB_HVRC'      , 'checkbox', null, null, 'hovercards_off'),
+                            htEl.input('GEN_CMPT_TTLS'     , 'checkbox', null, null, 'feed_titles'),
+                            htEl.input('GEN_BLUE_GLOW'     , 'checkbox', null, null, 'blue_glow'),
+                            htEl.input('GEN_HIDE_FTR'      , 'checkbox', null, null, 'hide_footer'),
+                            htEl.input('GEN_HDE_RECM_SDBR' , 'checkbox', null, null, 'hide_recom_sidebar'),
+                            htEl.input('GEN_HDE_SRCH_SDBR' , 'checkbox', null, null, 'hide_search_sidebar'),
+                            htEl.input('GEN_HDE_CHN_SDBR'  , 'checkbox', null, null, 'hide_channel_sidebar'),
                             '</div>\n'
                         ].join(''),
                         VID    : [
@@ -1753,69 +1775,64 @@
                             htEl.title('VID_TTL', 'h2'),
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
-                            htEl.title('VID_PLR', 'h3'),
-                            htEl.input('VID_PLR_ADS', 'checkbox'),
-                            htEl.input('VID_SUB_ADS', 'checkbox'),
-                            htEl.input('VID_PLR_ALVIS', 'checkbox'),
-                            htEl.input('VID_PLR_ATPL', 'checkbox'),
-                            htEl.input('VID_PLR_CC', 'checkbox'),
-                            htEl.input('VID_PLR_ANTS', 'checkbox'),
-                            htEl.input('VID_END_SHRE', 'checkbox'),
-                            htEl.input('VID_PLR_VOL_MEM', 'checkbox'),
-                            htEl.input('VID_PLR_SIZE_MEM', 'checkbox'),
-                            htEl.input('VID_VOL_WHEEL', 'checkbox'),
-                            htEl.input('VID_PLR_DASH', 'checkbox'),
-                            htEl.select('VID_DFLT_QLTY', {
+                            htEl.title('VID_PLR'         , 'h3'),
+                            htEl.input('VID_PLR_ADS'     , 'checkbox', null, null, 'video_ads'),
+                            htEl.input('VID_SUB_ADS'     , 'checkbox', null, null, 'subs_ads_on'),
+                            htEl.input('VID_PLR_ALVIS'   , 'checkbox', null, null, 'floating_player'),
+                            htEl.input('VID_PLR_ATPL'    , 'checkbox', null, null, 'video_autoplay'),
+                            htEl.input('VID_PLR_CC'      , 'checkbox', null, null, 'subtitles_off'),
+                            htEl.input('VID_PLR_ANTS'    , 'checkbox', null, null, 'annotations_off'),
+                            htEl.input('VID_END_SHRE'    , 'checkbox', null, null, 'share_panel_off'),
+                            htEl.input('VID_PLR_VOL_MEM' , 'checkbox', null, null, 'remember_volume'),
+                            htEl.input('VID_PLR_SIZE_MEM', 'checkbox', null, null, 'remember_mode'),
+                            htEl.input('VID_VOL_WHEEL'   , 'checkbox', null, null, 'wheel_volume'),
+                            htEl.input('VID_PLR_DASH'    , 'checkbox', null, null, 'dash_off'),
+                            htEl.select('VID_DFLT_QLTY'  , {
                                 'VID_DFLT_QLTY_AUTO': 'auto',
                                 'VID_DFLT_QLTY_ORIG': 'highres',
                                 'VID_DFLT_QLTY_1440': 'hd1440',
                                 'VID_DFLT_QLTY_1080': 'hd1080',
-                                'VID_DFLT_QLTY_720': 'hd720',
-                                'VID_DFLT_QLTY_LRG': 'large',
-                                'VID_DFLT_QLTY_MDM': 'medium',
-                                'VID_DFLT_QLTY_SML': 'small',
-                                'VID_DFLT_QLTY_TNY': 'tiny'
-                            }),
+                                'VID_DFLT_QLTY_720' : 'hd720',
+                                'VID_DFLT_QLTY_LRG' : 'large',
+                                'VID_DFLT_QLTY_MDM' : 'medium',
+                                'VID_DFLT_QLTY_SML' : 'small',
+                                'VID_DFLT_QLTY_TNY' : 'tiny'
+                            }, 'default_quality'),
+                            htEl.title('VID_PLR_LYT'      , 'h3'),
+                            htEl.input('VID_PLR_CTRL_VIS' , 'checkbox', null    , null, 'hide_controls'),
+                            htEl.input('VID_PLR_DYN_SIZE' , 'checkbox', null    , null, 'dynamic_size_off'),
+                            htEl.input('VID_PLR_FIT'      , 'checkbox', null    , null, 'fit_to_page'),
+                            htEl.input('VID_PLR_FIT_WDTH' , 'text'    , '1280px', 6   , 'fit_max_width'),
                             '    <br>',
-                            htEl.title('VID_PLR_LYT', 'h3'),
-                            htEl.input('VID_PLR_CTRL_VIS', 'checkbox'),
-                            htEl.input('VID_PLR_DYN_SIZE', 'checkbox'),
-                            htEl.input('VID_PLR_FIT', 'checkbox'),
-                            htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6),
-                            '    <br>',
-                            htEl.radio('VID_PROG_BAR_CLR', {
+                            htEl.radio('VID_PROG_BAR_CLR' , {
                                 'VID_PROG_BAR_CLR_RED': 'red',
                                 'VID_PROG_BAR_CLR_WHT': 'white'
-                            }),
-                            '    <br>',
-                            htEl.radio('VID_CTRL_BAR_CLR', {
+                            }, 'progress_color'),
+                            htEl.radio('VID_CTRL_BAR_CLR' , {
                                 'VID_CTRL_BAR_CLR_DARK': 'dark',
                                 'VID_CTRL_BAR_CLR_LGHT': 'light'
-                            }),
-                            '    <br>',
-                            htEl.title('VID_PLST', 'h3'),
-                            htEl.input('VID_PLST_SEP', 'checkbox'),
-                            htEl.input('VID_PLST_ATPL', 'checkbox'),
-                            htEl.input('VID_PLST_RVRS', 'checkbox'),
-                            htEl.title('VID_LAYT', 'h3'),
-                            htEl.select('VID_HIDE_COMS', {
+                            }, 'control_color'),
+                            htEl.title('VID_PLST'         , 'h3'),
+                            htEl.input('VID_PLST_SEP'     , 'checkbox', null, null, 'separate_playlist'),
+                            htEl.input('VID_PLST_ATPL'    , 'checkbox', null, null, 'playlist_autoplay'),
+                            htEl.input('VID_PLST_RVRS'    , 'checkbox', null, null, 'playlist_reverse'),
+                            htEl.title('VID_LAYT'         , 'h3'),
+                            htEl.select('VID_HIDE_COMS'   , {
                                 'VID_HIDE_COMS_SHOW': '0',
                                 'VID_HIDE_COMS_HIDE': '1',
-                                'VID_HIDE_COMS_REM': '2'
-                            }),
-                            '    <br>',
-                            htEl.select('VID_SDBR_ALGN', {
-                                'VID_SDBR_ALGN_NONE': '0',
-                                'VID_SDBR_ALGN_LEFT': '1',
+                                'VID_HIDE_COMS_REM' : '2'
+                            }, 'comments'),
+                            htEl.select('VID_SDBR_ALGN'   , {
+                                'VID_SDBR_ALGN_NONE' : '0',
+                                'VID_SDBR_ALGN_LEFT' : '1',
                                 'VID_SDBR_ALGN_RIGHT': '2'
-                            }),
-                            '    <br>',
-                            htEl.input('VID_TTL_CMPT', 'checkbox'),
-                            htEl.input('VID_DESC_SHRT', 'checkbox'),
-                            htEl.input('VID_VID_CNT', 'checkbox'),
-                            htEl.input('VID_POST_TIME', 'checkbox'),
-                            htEl.input('VID_HIDE_DETLS', 'checkbox'),
-                            htEl.input('VID_LAYT_AUTO_PNL', 'checkbox'),
+                            }, 'sidebar_align'),
+                            htEl.input('VID_TTL_CMPT'     , 'checkbox', null, null, 'video_title'),
+                            htEl.input('VID_DESC_SHRT'    , 'checkbox', null, null, 'labelless_buttons'),
+                            htEl.input('VID_VID_CNT'      , 'checkbox', null, null, 'upload_counter'),
+                            htEl.input('VID_POST_TIME'    , 'checkbox', null, null, 'relative_upload_time'),
+                            htEl.input('VID_HIDE_DETLS'   , 'checkbox', null, null, 'hide_video_details'),
+                            htEl.input('VID_LAYT_AUTO_PNL', 'checkbox', null, null, 'expand_description'),
                             '</div>\n'
                         ].join(''),
                         BLK    : [
@@ -1827,7 +1844,7 @@
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
                             htEl.title('BLK_BLK', 'h3'),
-                            htEl.input('BLK_ON', 'checkbox'),
+                            htEl.input('BLK_ON' , 'checkbox', null, null, 'blacklist_on'),
                             '    <div id="blacklist">\n',
                             '        <div id="blacklist-controls">\n',
                             '            <button id="blacklist-edit" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
@@ -2132,30 +2149,6 @@
             var base = (config.args.iurl_webp) ? '_webp' : '',
                 hdThumb,
                 maxRes;
-            function checkThumbnail() {
-                var img,
-                    video = document.getElementsByTagName('video')[0],
-                    hdURL = config.args['iurl' + base].replace('hqdefault', 'maxresdefault'),
-                    state = api && api.getPlayerState && api.getPlayerState();
-                function widthReport() {
-                    handleEvents(img, 'load', widthReport, 'remove');
-                    function prefixIterator(prefix) {
-                        config.args[prefix + base] = hdURL;
-                    }
-                    if (img.width > 120 && !config.args['iurlmaxres' + base] && state && (state === 5 || (state === 3 && video && video.src === ''))) {
-                        ['iurl', 'iurlsd', 'iurlmq', 'iurlhq', 'iurlmaxres'].forEach(prefixIterator);
-                        api.cueVideoByPlayerVars(config.args);
-                        api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                        if (parSets.VID_PLR_VOL_MEM) {
-                            api.setVolume(parSets.volLev);
-                        }
-                    }
-                    img = video = hdURL = state = null;
-                }
-                img = new Image();
-                handleEvents(img, 'load', widthReport);
-                img.src = hdURL;
-            }
             function prefixIterator(prefix) {
                 config.args[prefix + base] = config.args['iurlmaxres' + base];
             }
@@ -2212,7 +2205,6 @@
                     config.args['iurlmaxres' + base] = config.args['iurlmaxres' + base] || maxRes || false;
                     if (config.args['iurlmaxres' + base] === false || (config.args['iurlmaxres' + base] && config.args['iurlmaxres' + base].split(config.args.video_id).length < 2)) {
                         delete config.args['iurlmaxres' + base];
-                        checkThumbnail();
                     } else if (config.args['iurlmaxres' + base]) {
                         ['iurl', 'iurlsd', 'iurlmq', 'iurlhq'].forEach(prefixIterator);
                     }
@@ -2236,7 +2228,6 @@
                 sidebar,
                 newPlayer,
                 sidebarSize,
-                aspectRatio,
                 containerSize,
                 playerContainer,
                 videoPlayer = document.getElementById('movie_player');
@@ -2257,16 +2248,15 @@
                     videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
                     videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio)) + 'px';
+                    videoPlayer.style.height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9))) + 'px';
                 }
                 if (!sidebar) {
                     handleEvents(window, 'scroll', initFloater, 'remove');
                     return;
                 }
                 if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
-                    aspectRatio = 16 / 9;
                     width = (skinny && containerSize.width) || sidebarSize.width;
-                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / aspectRatio));
+                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9)));
                     document.documentElement.classList.toggle('floater');
                     videoPlayer.setAttribute('style', 'width: ' + width + 'px; margin-top: -' + (height / 2) + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
                     handleEvents(window, 'resize', updatePos);
