@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.4
+// @version     0.1.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -784,7 +784,7 @@
             '    font-weight: bold;\n',
             '    opacity: 0;\n',
             '}\n',
-            '#P-content div:hover a{\n',
+            '#P-content div:hover a, #P-content div a:not([title]){\n',
             '    opacity: 1;\n',
             '}\n',
             '#P-content label{\n',
@@ -1698,7 +1698,7 @@
                                 if (parSets && parSets[name] === list[keys]) {
                                     radio += ' checked="true"';
                                 }
-                                radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>';
+                                radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>\n';
                             }
                             Object.keys(list).forEach(keysIterator);
                             return radio + htEl.info(anchor) + '</div>';
