@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.5
+// @version     0.1.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -471,7 +471,7 @@
             '.part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n',
             '    display: inline;\n',
             '}\n',
-            '.part_grid_subs .yt-lockup-meta-info, .part_grid_search .yt-lockup-meta-info, .part_grid_search .yt-lockup-content div{\n',
+            '.part_grid_subs .yt-lockup-meta-info, .part_grid_subs .feed-item-container .yt-ui-ellipsis, .part_grid_search .yt-lockup-meta-info, .part_grid_search .yt-lockup-content div{\n',
             '    overflow: hidden;\n',
             '    text-overflow: ellipsis;\n',
             '    white-space: nowrap;\n',
@@ -1017,6 +1017,9 @@
             '}\n'
         //   end| Particle settings
         ].join('');
+    if (document.body) {
+        window.location.reload();
+    }
     if (userscript) {
         window.GM_getValue = GM_getValue;
         window.GM_setValue = GM_setValue;
@@ -1181,6 +1184,10 @@
                 GEN_DSBL_ADS          : {
                     en     : 'Disable advertisements outside the video page',
                     'pt-PT': 'Desactivar publicidades fora da página de vídeo'
+                },
+                GEN_INF_SCRL          : {
+                    en     : 'Enable infinite scroll in feeds',
+                    'pt-PT': 'Activar scroll infinito em feeds'
                 },
                 GEN_YT_LOGO_LINK      : {
                     en     : 'YouTube logo redirects to subscriptions',
@@ -1743,6 +1750,7 @@
                             htEl.title('GEN_GEN'           , 'h3'),
                             htEl.input('GEN_DSBL_ADS'      , 'checkbox', null, null, 'outside_ads'),
                             htEl.input('GEN_YT_LOGO_LINK'  , 'checkbox', null, null, 'logo_redirect'),
+                            htEl.input('GEN_INF_SCRL'      , 'checkbox', null, null, 'infinite_scroll'),
                             htEl.input('GEN_SDBR_ON'       , 'checkbox', null, null, 'sidebar_on'),
                             htEl.input('GEN_REM_APUN'      , 'checkbox', null, null, 'remove_autoplay'),
                             htEl.input('GEN_SPF_OFF'       , 'checkbox', null, null, 'spf_off'),
@@ -2563,8 +2571,8 @@
                     clickTitle.classList.remove('yt-uix-tile');
                     clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
                 }
-                if (loadMore && !loadMore.classList.contains('hooked')) {
-                    loadMore.classList.add('hooked');
+                if (loadMore && !loadMore.classList.contains('thumbMod')) {
+                    loadMore.classList.add('thumbMod');
                     observer = new window.MutationObserver(thumbMod);
                     observer.observe(loadMore, {
                         childList: true,
@@ -3035,9 +3043,26 @@
             }
             logo = channelLink = autoplaybar = descriptionPanel = null;
         }
+        function infiniteScroll(event) {
+            var observer,
+                loadMore = document.getElementsByClassName('load-more-button')[0];
+            if (loadMore && parSets.GEN_INF_SCRL) {
+                if (!loadMore.classList.contains('infiniteScroll')) {
+                    loadMore.classList.add('infiniteScroll');
+                    observer = new window.MutationObserver(infiniteScroll);
+                    observer.observe(loadMore, {
+                        attributes: true
+                    });
+                } else if (!loadMore.classList.contains('scrolldetect')) {
+                    loadMore.classList.add('scrolldetect');
+                    loadMore.setAttribute('data-scrolldetect-callback', 'load-more-auto');
+                }
+            }
+        }
         function initFunctions() {
             customStyles();
             settingsMenu();
+            infiniteScroll();
             playlistControls();
             playerMode();
             advancedOptions();
