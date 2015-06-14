@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.6
+// @version     0.1.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1017,14 +1017,6 @@
             '}\n'
         //   end| Particle settings
         ].join('');
-    if (document.body) {
-        window.location.reload();
-    }
-    if (userscript) {
-        window.GM_getValue = GM_getValue;
-        window.GM_setValue = GM_setValue;
-        window.GM_xmlhttpRequest = GM_xmlhttpRequest;
-    }
     function particle() {
         var api,
             channelId = {},
@@ -1527,22 +1519,14 @@
                     'pt-PT': 'Clique aqui para instruções'
                 }
             };
-        if (!parSets || Object.keys(parSets).length < 1) {
-            parSets = defSets;
-        }
         function string2HTML(string) {
             return new window.DOMParser().parseFromString(string, 'text/html');
         }
         function set(setting, newValue) {
             var object = {};
-            if (newValue !== undefined) {
-                parSets[setting] = newValue;
-                object[setting] = newValue;
-                window.postMessage({set: object}, '*');
-            } else {
-                delete parSets[setting];
-                window.postMessage({replace: parSets}, '*');
-            }
+            parSets[setting] = newValue;
+            object[setting] = newValue;
+            window.postMessage({set: object}, '*');
         }
         function handleEvents(target, event, call, capture, type) {
             var name = call.name;
@@ -1601,7 +1585,7 @@
                 plrApi   = document.getElementById('player-api'),
                 commSect = document.getElementById('watch-discussion'),
                 sidebar  = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
-                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
+                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById('masthead_child') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
                 setsList = {
                     'GEN_DSBL_ADS'    : 'part_no_ads',
                     'GEN_BLUE_GLOW'   : 'part_dsbl_glow',
@@ -1620,7 +1604,7 @@
                 };
             while (adverts) {
                 adverts.remove();
-                adverts = document.getElementById('header') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
+                adverts = document.getElementById('masthead_child') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
             }
             if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split('/feed/subscriptions').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                 sidebar.remove();
@@ -1747,13 +1731,13 @@
                             htEl.title('GEN_TTL', 'h2'),
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
-                            htEl.title('GEN_GEN'           , 'h3'),
-                            htEl.input('GEN_DSBL_ADS'      , 'checkbox', null, null, 'outside_ads'),
-                            htEl.input('GEN_YT_LOGO_LINK'  , 'checkbox', null, null, 'logo_redirect'),
-                            htEl.input('GEN_INF_SCRL'      , 'checkbox', null, null, 'infinite_scroll'),
-                            htEl.input('GEN_SDBR_ON'       , 'checkbox', null, null, 'sidebar_on'),
-                            htEl.input('GEN_REM_APUN'      , 'checkbox', null, null, 'remove_autoplay'),
-                            htEl.input('GEN_SPF_OFF'       , 'checkbox', null, null, 'spf_off'),
+                            htEl.title('GEN_GEN', 'h3'),
+                            htEl.input('GEN_DSBL_ADS', 'checkbox', null, null, 'outside_ads'),
+                            htEl.input('GEN_YT_LOGO_LINK', 'checkbox', null, null, 'logo_redirect'),
+                            htEl.input('GEN_INF_SCRL', 'checkbox', null, null, 'infinite_scroll'),
+                            htEl.input('GEN_SDBR_ON', 'checkbox', null, null, 'sidebar_on'),
+                            htEl.input('GEN_REM_APUN', 'checkbox', null, null, 'remove_autoplay'),
+                            htEl.input('GEN_SPF_OFF', 'checkbox', null, null, 'spf_off'),
                             htEl.select('GEN_CHN_DFLT_PAGE', {
                                 'GEN_CHN_DFLT_PAGE_DFLT': 'default',
                                 'GEN_CHN_DFLT_PAGE_VID' : 'videos',
@@ -1762,17 +1746,17 @@
                                 'GEN_CHN_DFLT_PAGE_DISC': 'discussion',
                                 'GEN_CHN_DFLT_PAGE_ABT' : 'about'
                             }, 'channel_page'),
-                            htEl.title('GEN_LYT'           , 'h3'),
-                            htEl.input('GEN_GRID_SUBS'     , 'checkbox', null, null, 'sub_grid'),
-                            htEl.input('GEN_GRID_SRCH'     , 'checkbox', null, null, 'search_grid'),
-                            htEl.input('GEN_BTTR_NTF'      , 'checkbox', null, null, 'blue_box'),
-                            htEl.input('GEN_DSB_HVRC'      , 'checkbox', null, null, 'hovercards_off'),
-                            htEl.input('GEN_CMPT_TTLS'     , 'checkbox', null, null, 'feed_titles'),
-                            htEl.input('GEN_BLUE_GLOW'     , 'checkbox', null, null, 'blue_glow'),
-                            htEl.input('GEN_HIDE_FTR'      , 'checkbox', null, null, 'hide_footer'),
-                            htEl.input('GEN_HDE_RECM_SDBR' , 'checkbox', null, null, 'hide_recom_sidebar'),
-                            htEl.input('GEN_HDE_SRCH_SDBR' , 'checkbox', null, null, 'hide_search_sidebar'),
-                            htEl.input('GEN_HDE_CHN_SDBR'  , 'checkbox', null, null, 'hide_channel_sidebar'),
+                            htEl.title('GEN_LYT', 'h3'),
+                            htEl.input('GEN_GRID_SUBS', 'checkbox', null, null, 'sub_grid'),
+                            htEl.input('GEN_GRID_SRCH', 'checkbox', null, null, 'search_grid'),
+                            htEl.input('GEN_BTTR_NTF', 'checkbox', null, null, 'blue_box'),
+                            htEl.input('GEN_DSB_HVRC', 'checkbox', null, null, 'hovercards_off'),
+                            htEl.input('GEN_CMPT_TTLS', 'checkbox', null, null, 'feed_titles'),
+                            htEl.input('GEN_BLUE_GLOW', 'checkbox', null, null, 'blue_glow'),
+                            htEl.input('GEN_HIDE_FTR', 'checkbox', null, null, 'hide_footer'),
+                            htEl.input('GEN_HDE_RECM_SDBR', 'checkbox', null, null, 'hide_recom_sidebar'),
+                            htEl.input('GEN_HDE_SRCH_SDBR', 'checkbox', null, null, 'hide_search_sidebar'),
+                            htEl.input('GEN_HDE_CHN_SDBR', 'checkbox', null, null, 'hide_channel_sidebar'),
                             '</div>\n'
                         ].join(''),
                         VID    : [
@@ -1783,19 +1767,19 @@
                             htEl.title('VID_TTL', 'h2'),
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
-                            htEl.title('VID_PLR'         , 'h3'),
-                            htEl.input('VID_PLR_ADS'     , 'checkbox', null, null, 'video_ads'),
-                            htEl.input('VID_SUB_ADS'     , 'checkbox', null, null, 'subs_ads_on'),
-                            htEl.input('VID_PLR_ALVIS'   , 'checkbox', null, null, 'floating_player'),
-                            htEl.input('VID_PLR_ATPL'    , 'checkbox', null, null, 'video_autoplay'),
-                            htEl.input('VID_PLR_CC'      , 'checkbox', null, null, 'subtitles_off'),
-                            htEl.input('VID_PLR_ANTS'    , 'checkbox', null, null, 'annotations_off'),
-                            htEl.input('VID_END_SHRE'    , 'checkbox', null, null, 'share_panel_off'),
-                            htEl.input('VID_PLR_VOL_MEM' , 'checkbox', null, null, 'remember_volume'),
+                            htEl.title('VID_PLR', 'h3'),
+                            htEl.input('VID_PLR_ADS', 'checkbox', null, null, 'video_ads'),
+                            htEl.input('VID_SUB_ADS', 'checkbox', null, null, 'subs_ads_on'),
+                            htEl.input('VID_PLR_ALVIS', 'checkbox', null, null, 'floating_player'),
+                            htEl.input('VID_PLR_ATPL', 'checkbox', null, null, 'video_autoplay'),
+                            htEl.input('VID_PLR_CC', 'checkbox', null, null, 'subtitles_off'),
+                            htEl.input('VID_PLR_ANTS', 'checkbox', null, null, 'annotations_off'),
+                            htEl.input('VID_END_SHRE', 'checkbox', null, null, 'share_panel_off'),
+                            htEl.input('VID_PLR_VOL_MEM', 'checkbox', null, null, 'remember_volume'),
                             htEl.input('VID_PLR_SIZE_MEM', 'checkbox', null, null, 'remember_mode'),
-                            htEl.input('VID_VOL_WHEEL'   , 'checkbox', null, null, 'wheel_volume'),
-                            htEl.input('VID_PLR_DASH'    , 'checkbox', null, null, 'dash_off'),
-                            htEl.select('VID_DFLT_QLTY'  , {
+                            htEl.input('VID_VOL_WHEEL', 'checkbox', null, null, 'wheel_volume'),
+                            htEl.input('VID_PLR_DASH', 'checkbox', null, null, 'dash_off'),
+                            htEl.select('VID_DFLT_QLTY', {
                                 'VID_DFLT_QLTY_AUTO': 'auto',
                                 'VID_DFLT_QLTY_ORIG': 'highres',
                                 'VID_DFLT_QLTY_1440': 'hd1440',
@@ -1806,40 +1790,40 @@
                                 'VID_DFLT_QLTY_SML' : 'small',
                                 'VID_DFLT_QLTY_TNY' : 'tiny'
                             }, 'default_quality'),
-                            htEl.title('VID_PLR_LYT'      , 'h3'),
-                            htEl.input('VID_PLR_CTRL_VIS' , 'checkbox', null    , null, 'hide_controls'),
-                            htEl.input('VID_PLR_DYN_SIZE' , 'checkbox', null    , null, 'dynamic_size_off'),
-                            htEl.input('VID_PLR_FIT'      , 'checkbox', null    , null, 'fit_to_page'),
-                            htEl.input('VID_PLR_FIT_WDTH' , 'text'    , '1280px', 6   , 'fit_max_width'),
+                            htEl.title('VID_PLR_LYT', 'h3'),
+                            htEl.input('VID_PLR_CTRL_VIS', 'checkbox', null, null, 'hide_controls'),
+                            htEl.input('VID_PLR_DYN_SIZE', 'checkbox', null, null, 'dynamic_size_off'),
+                            htEl.input('VID_PLR_FIT', 'checkbox', null, null, 'fit_to_page'),
+                            htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6, 'fit_max_width'),
                             '    <br>',
-                            htEl.radio('VID_PROG_BAR_CLR' , {
+                            htEl.radio('VID_PROG_BAR_CLR', {
                                 'VID_PROG_BAR_CLR_RED': 'red',
                                 'VID_PROG_BAR_CLR_WHT': 'white'
                             }, 'progress_color'),
-                            htEl.radio('VID_CTRL_BAR_CLR' , {
+                            htEl.radio('VID_CTRL_BAR_CLR', {
                                 'VID_CTRL_BAR_CLR_DARK': 'dark',
                                 'VID_CTRL_BAR_CLR_LGHT': 'light'
                             }, 'control_color'),
-                            htEl.title('VID_PLST'         , 'h3'),
-                            htEl.input('VID_PLST_SEP'     , 'checkbox', null, null, 'separate_playlist'),
-                            htEl.input('VID_PLST_ATPL'    , 'checkbox', null, null, 'playlist_autoplay'),
-                            htEl.input('VID_PLST_RVRS'    , 'checkbox', null, null, 'playlist_reverse'),
-                            htEl.title('VID_LAYT'         , 'h3'),
-                            htEl.select('VID_HIDE_COMS'   , {
+                            htEl.title('VID_PLST', 'h3'),
+                            htEl.input('VID_PLST_SEP', 'checkbox', null, null, 'separate_playlist'),
+                            htEl.input('VID_PLST_ATPL', 'checkbox', null, null, 'playlist_autoplay'),
+                            htEl.input('VID_PLST_RVRS', 'checkbox', null, null, 'playlist_reverse'),
+                            htEl.title('VID_LAYT', 'h3'),
+                            htEl.select('VID_HIDE_COMS', {
                                 'VID_HIDE_COMS_SHOW': '0',
                                 'VID_HIDE_COMS_HIDE': '1',
                                 'VID_HIDE_COMS_REM' : '2'
                             }, 'comments'),
-                            htEl.select('VID_SDBR_ALGN'   , {
+                            htEl.select('VID_SDBR_ALGN', {
                                 'VID_SDBR_ALGN_NONE' : '0',
                                 'VID_SDBR_ALGN_LEFT' : '1',
                                 'VID_SDBR_ALGN_RIGHT': '2'
                             }, 'sidebar_align'),
-                            htEl.input('VID_TTL_CMPT'     , 'checkbox', null, null, 'video_title'),
-                            htEl.input('VID_DESC_SHRT'    , 'checkbox', null, null, 'labelless_buttons'),
-                            htEl.input('VID_VID_CNT'      , 'checkbox', null, null, 'upload_counter'),
-                            htEl.input('VID_POST_TIME'    , 'checkbox', null, null, 'relative_upload_time'),
-                            htEl.input('VID_HIDE_DETLS'   , 'checkbox', null, null, 'hide_video_details'),
+                            htEl.input('VID_TTL_CMPT', 'checkbox', null, null, 'video_title'),
+                            htEl.input('VID_DESC_SHRT', 'checkbox', null, null, 'labelless_buttons'),
+                            htEl.input('VID_VID_CNT', 'checkbox', null, null, 'upload_counter'),
+                            htEl.input('VID_POST_TIME', 'checkbox', null, null, 'relative_upload_time'),
+                            htEl.input('VID_HIDE_DETLS', 'checkbox', null, null, 'hide_video_details'),
                             htEl.input('VID_LAYT_AUTO_PNL', 'checkbox', null, null, 'expand_description'),
                             '</div>\n'
                         ].join(''),
@@ -1852,7 +1836,7 @@
                             '    </div>\n',
                             '    <hr class="P-horz">\n',
                             htEl.title('BLK_BLK', 'h3'),
-                            htEl.input('BLK_ON' , 'checkbox', null, null, 'blacklist_on'),
+                            htEl.input('BLK_ON', 'checkbox', null, null, 'blacklist_on'),
                             '    <div id="blacklist">\n',
                             '        <div id="blacklist-controls">\n',
                             '            <button id="blacklist-edit" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
@@ -1943,7 +1927,7 @@
                         if (value) {
                             savedSets[userSets[length].name || userSets[length].id] = value;
                         } else if (!value && userSets[length].type !== 'radio') {
-                            delete savedSets[userSets[length].id];
+                            savedSets[userSets[length].id] = false;
                         }
                     }
                     parSets = savedSets;
@@ -2422,10 +2406,9 @@
             function autoplayDetourFullScreen(originalFunction) {
                 return function () {
                     var nextButton,
-                        nextClicked = document.activeElement.classList.contains('ytp-button-next') || document.activeElement.classList.contains('ytp-next-button'),
-                        currentTime = document.getElementsByClassName('ytp-time-current')[0].textContent,
-                        totalTime   = document.getElementsByClassName('ytp-time-duration')[0].textContent;
-                    if (!parSets.plApl && !nextClicked && currentTime !== '0:00' && currentTime === totalTime) {
+                        hasEnded    = api && !(Math.round(api.getCurrentTime()) < Math.floor(api.getDuration())),
+                        nextClicked = document.activeElement.classList.contains('ytp-button-next') || document.activeElement.classList.contains('ytp-next-button');
+                    if (!parSets.plApl && !nextClicked && hasEnded) {
                         nextButton = document.getElementsByClassName('ytp-next-button')[0];
                         if (nextButton && nextButton.getAttribute('aria-disabled') === 'true') {
                             nextButton.onclick = api.nextVideo;
@@ -2434,7 +2417,10 @@
                         }
                         return false;
                     }
-                    if (parSets.plApl || nextClicked || currentTime !== totalTime) {
+                    if (parSets.plApl || nextClicked || !hasEnded) {
+                        if (nextClicked) {
+                            document.getElementById('movie_player').focus();
+                        }
                         return originalFunction.apply(this, arguments);
                     }
                 };
@@ -3043,7 +3029,7 @@
             }
             logo = channelLink = autoplaybar = descriptionPanel = null;
         }
-        function infiniteScroll(event) {
+        function infiniteScroll() {
             var observer,
                 loadMore = document.getElementsByClassName('load-more-button')[0];
             if (loadMore && parSets.GEN_INF_SCRL) {
@@ -3104,6 +3090,21 @@
                     return originalFunction.apply(this, arguments);
                 }
             };
+        }
+        function checkNewFeatures() {
+            var keys = Object.keys(defSets),
+                i    = keys.length;
+            while (i) {
+                i -= 1;
+                if (!parSets.hasOwnProperty(keys[i])) {
+                    set(keys[i], defSets[keys[i]]);
+                }
+            }
+        }
+        if (!parSets || Object.keys(parSets).length < 1) {
+            parSets = defSets;
+        } else {
+            checkNewFeatures();
         }
         window.matchMedia = false;
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
@@ -3180,6 +3181,14 @@
                 window.self.port.emit('particleSettings', details);
             }
         }
+    }
+    if (document.body) {
+        window.location.reload();
+    }
+    if (userscript) {
+        window.GM_getValue = GM_getValue;
+        window.GM_setValue = GM_setValue;
+        window.GM_xmlhttpRequest = GM_xmlhttpRequest;
     }
     if (!userscript) {
         if (window.chrome) {
