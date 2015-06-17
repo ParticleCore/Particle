@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.1.7
+// @version     0.1.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -209,7 +209,6 @@
             '    position: absolute;\n',
             '    right: 0px;\n',
             '    top: 0px;\n',
-            '    z-index: 5;\n',
             '}\n',
             '.part_fullbrowser #advanced-options{\n',
             '    z-index: initial;\n',
@@ -288,6 +287,10 @@
             '}\n',
             '#fullbrowser-button{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASAQMAAABhHmxTAAAABlBMVEUAAAAAAAClZ7nPAAAAAXRSTlMAQObYZgAAACVJREFUeF5j+P//Axw3MAgw7GO/AMYbGOAYJA7CyGJQdWA5kF4AfegdTRKgSyUAAAAASUVORK5CYII=") no-repeat center;\n',
+            '    width: 20px;\n',
+            '}\n',
+            '#cinemamode-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASAQMAAABhHmxTAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAACVJREFUeF5jOP/fAIz/MH8A4zPMBkAM4f///wEsB+ZjyoMxVD8AeaYfafArnLIAAAAASUVORK5CYII=") no-repeat center;\n',
             '    width: 20px;\n',
             '}\n',
         //   end| Player console
@@ -704,6 +707,25 @@
             '    }\n',
             '}\n',
         //   end| Hide player controls
+        // start| Cinema mode
+            '#movie_player:before, #masthead-positioner:before{\n',
+            '    bottom: 0;\n',
+            '    content: "";\n',
+            '    left: 0;\n',
+            '    pointer-events: none;\n',
+            '    position: fixed;\n',
+            '    right: 0;\n',
+            '    top: 0;\n',
+            '    transition: background-color 1s;\n',
+            '    z-index: 1;\n',
+            '}\n',
+            '.part_cinema_mode #movie_player:before, .part_cinema_mode #masthead-positioner:before{\n',
+            '    background-color: rgba(0, 0, 0, 0.9);\n',
+            '}\n',
+            '.part_cinema_mode .html5-video-player{\n',
+            '    overflow: initial;\n',
+            '}\n',
+        //   end| Cinema mode
         // start| Particle settings
             '#P-settings{\n',
             '    background: #f1f1f1;\n',
@@ -1108,6 +1130,10 @@
                 CNSL_FLBR             : {
                     en     : 'Fullbrowser mode',
                     'pt-PT': 'Modo navegador inteiro'
+                },
+                CNSL_CINM_MD          : {
+                    en     : 'Cinema mode',
+                    'pt-PT': 'Modo cinema'
                 },
                 PLST_AP               : {
                     en     : 'Autoplay',
@@ -2327,6 +2353,13 @@
                         document.documentElement.classList.remove('part_fullbrowser');
                     }
                 }
+                if (parSets.lightsOut) {
+                    if (state !== 5 && state !== -1 && state !== 0) {
+                        document.documentElement.classList.add('part_cinema_mode');
+                    } else {
+                        document.documentElement.classList.remove('part_cinema_mode');
+                    }
+                }
                 cueThumb = cueButton = newPlayer = null;
             }
             function volumeChanged(event) {
@@ -2760,7 +2793,8 @@
                     saveThumb   = controls.querySelector('#save-thumbnail-button'),
                     screenShot  = controls.querySelector('#screenshot-button'),
                     sidebarMode = controls.querySelector('#sidebar-button'),
-                    fullBrowser = controls.querySelector('#fullbrowser-button');
+                    fullBrowser = controls.querySelector('#fullbrowser-button'),
+                    cinemaMode  = controls.querySelector('#cinemamode-button');
                 function togglePlay() {
                     set('VID_PLR_ATPL', !parSets.VID_PLR_ATPL);
                     autoPlay.classList[(parSets.VID_PLR_ATPL) ? 'add' : 'remove']('active');
@@ -2942,6 +2976,14 @@
                         document.documentElement.classList[(parSets.fullBrs) ? 'add' : 'remove']('part_fullbrowser');
                     }
                 }
+                function toggleCinemaMode(event){
+                    var plrState = api && api.getPlayerState && api.getPlayerState() !== 5 && api.getPlayerState() !== -1 && api.getPlayerState() !== 0;
+                    set('lightsOut', event ? !parSets.lightsOut : true);
+                    cinemaMode.classList[(parSets.lightsOut) ? 'add' : 'remove']('active');
+                    if (event && plrState) {
+                        document.documentElement.classList[(parSets.lightsOut) ? 'add' : 'remove']('part_cinema_mode');
+                    }
+                }
                 handleEvents(autoPlay, 'click', togglePlay);
                 handleEvents(loopButton, 'click', toggleLoop);
                 handleEvents(seekMap, 'click', toggleMap);
@@ -2949,6 +2991,7 @@
                 handleEvents(screenShot, 'click', saveSS);
                 handleEvents(sidebarMode, 'click', openSidebar);
                 handleEvents(fullBrowser, 'click', toggleFullBrowser);
+                handleEvents(cinemaMode, 'click', toggleCinemaMode);
                 if (parSets.loopVid && !loopButton.classList.contains('active')) {
                     loopButton.classList.add('active');
                     toggleLoop();
@@ -2956,6 +2999,10 @@
                 if (parSets.fullBrs && !fullBrowser.classList.contains('active')) {
                     fullBrowser.classList.add('active');
                     toggleFullBrowser();
+                }
+                if (parSets.lightsOut && !cinemaMode.classList.contains('active')) {
+                    cinemaMode.classList.add('active');
+                    toggleCinemaMode();
                 }
             }
             function toggleConsole() {
@@ -2982,6 +3029,7 @@
                     '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
                     '    <div id="sidebar-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SDBR') + '"' + ((window.opener) ? ' style="display:none"' : '') + '></div>\n',
                     '    <div id="fullbrowser-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_FLBR') + '"></div>\n',
+                    '    <div id="cinemamode-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_CINM_MD') + '"></div>\n',
                     '</div>\n'
                 ].join('');
                 controls = string2HTML(controls).querySelector('div');
@@ -3163,7 +3211,7 @@
                     Object.keys(details.set).forEach(buildSettings);
                 }
                 if (!userscript) {
-                    window.chrome.storage.sync.set({'particleSettings': ((details.set && object) || details.replace)});
+                    window.chrome.storage.local.set({'particleSettings': ((details.set && object) || details.replace)});
                 } else {
                     window.GM_setValue('particleSettings', ((details.set && JSON.stringify(object)) || JSON.stringify(details.replace)));
                 }
@@ -3176,7 +3224,7 @@
             if (userscript) {
                 settingsHandler();
             } else if (window.chrome) {
-                window.chrome.storage.sync.get('particleSettings', settingsHandler);
+                window.chrome.storage.local.get('particleSettings', settingsHandler);
             } else {
                 window.self.port.emit('particleSettings', details);
             }
@@ -3190,9 +3238,20 @@
         window.GM_setValue = GM_setValue;
         window.GM_xmlhttpRequest = GM_xmlhttpRequest;
     }
+    function migrateChromeSettings(event) {
+        window.chrome.storage.local.set(event);
+        initParticle(event);
+    }
+    function checkForOldSettings(event) {
+        if (event.particleSettings) {
+            initParticle(event);
+        } else {
+            window.chrome.storage.sync.get('particleSettings', migrateChromeSettings);
+        }
+    }
     if (!userscript) {
         if (window.chrome) {
-            window.chrome.storage.sync.get('particleSettings', initParticle);
+            window.chrome.storage.local.get('particleSettings', checkForOldSettings);
         } else {
             window.self.port.once('particleSettings', initParticle);
         }
