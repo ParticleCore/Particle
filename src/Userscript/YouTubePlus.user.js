@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.0
+// @version     0.2.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -17,6 +17,7 @@
     var userscript      = typeof GM_info === 'object',
         defaultSettings = {
             GEN_BTTR_NTF     : true,
+            GEN_INF_SCRL     : true,
             GEN_YT_LOGO_LINK : true,
             GEN_CMPT_TTLS    : true,
             GEN_BLUE_GLOW    : true,
@@ -174,6 +175,12 @@
             '#blacklist-import, #blacklist-export{\n',
             '    margin-top: 10px;\n',
             '}\n',
+            '#blacklist a{\n',
+            '    font-weight: normal !important;\n',
+            '}\n',
+            '#blacklist a:not(:hover){\n',
+            '    color: #666666;\n',
+            '}\n',
             '#watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMA8KS9FQYBt8gPhw6JigvJyoYcNuUAAABRSURBVHhevdE5DsAgDERRs8ZAtrn/ZaMIiSKD5AbllX8qg/wubnHam0JPYSkACIl69nj5LB8VXRXm4EbggdvKYbCHHd1hHc3PxMqFuxhfsdwDNLwDxD27Q0MAAAAASUVORK5CYII=") no-repeat;\n',
             '    height: 24px;\n',
@@ -189,7 +196,14 @@
             '#watch-header{\n',
             '    position: relative;\n',
             '}\n',
-            '.part_fullbrowser #movie_player:not(.unstarted-mode):not(.ended-mode){\n',
+            '.part_fullbrowser .ytp-size-button{\n',
+            '    display: none !important;\n',
+            '}\n',
+            '.part_fullbrowser .ytp-fullbrowser-button{\n',
+            '    display: initial !important;\n',
+            '    float: right;\n',
+            '}\n',
+            '.part_fullbrowser div#movie_player.playing-mode, .part_fullbrowser div#movie_player.paused-mode{\n',
             '    bottom: 0px;\n',
             '    left: 0px;\n',
             '    position: fixed;\n',
@@ -442,7 +456,11 @@
             '    padding: initial;\n',
             '}\n',
             '.part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{\n',
+            '    left: initial;\n',
             '    opacity: 0;\n',
+            '    position: absolute;\n',
+            '    right: -9px !important;\n',
+            '    width: 20px;\n',
             '}\n',
             '.part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{\n',
             '    opacity: 1;\n',
@@ -452,8 +470,9 @@
             '    top: 110px;\n',
             '    z-index: 1;\n',
             '}\n',
-            '.part_grid_subs .shelf-item .shelf-title-table ul{\n',
+            '.part_grid_subs .shelf-title-table ul, .part_grid_subs .shelf-title-table iframe{\n',
             '    left: initial !important;\n',
+            '    right: 20px !important;\n',
             '}\n',
             '.part_grid_subs div#browse-items-primary .yt-lockup-thumbnail, .part_grid_search #results .yt-lockup-thumbnail{\n',
             '    float: initial !important;\n',
@@ -1134,6 +1153,10 @@
                     en     : 'Fullbrowser mode',
                     'pt-PT': 'Modo navegador inteiro'
                 },
+                CNSL_FLBR_TTLE        : {
+                    en     : 'Exit fullbrowser',
+                    'pt-PT': 'Sair navegador inteiro'
+                },
                 CNSL_CINM_MD          : {
                     en     : 'Cinema mode',
                     'pt-PT': 'Modo cinema'
@@ -1684,7 +1707,7 @@
                         var button = '',
                             list   = parSets && parSets.blacklist;
                         function buildList(ytid) {
-                            button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button>' + list[ytid] + '</div>\n';
+                            button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button><a href="/channel/' + ytid + '" target="_blank">' + list[ytid] + '</a></div>\n';
                         }
                         if (list && Object.keys(list).length > 0) {
                             Object.keys(list).forEach(buildList);
@@ -2330,9 +2353,10 @@
         }
         function playerReady(playerApi) {
             function playerState(state) {
-                var cueThumb    = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
-                    cueButton   = document.getElementsByClassName('ytp-large-play-button')[0],
-                    newPlayer   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
+                var cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
+                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0],
+                    cloneBtn  = document.getElementsByClassName('ytp-fullbrowser-button')[0],
+                    newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 if (newPlayer) {
                     document.documentElement.classList.add('new_player');
                     if (cueThumb && cueButton) {
@@ -2354,6 +2378,9 @@
                         document.documentElement.classList.add('part_fullbrowser');
                     } else {
                         document.documentElement.classList.remove('part_fullbrowser');
+                        if (state === 0 && cloneBtn) {
+                            cloneBtn.remove();
+                        }
                     }
                 }
                 if (parSets.lightsOut) {
@@ -2966,16 +2993,26 @@
                     newSidebar.focus();
                 }
                 function toggleFullBrowser(event) {
-                    var plrState = api && api.getPlayerState && api.getPlayerState() !== 5 && api.getPlayerState() !== -1 && api.getPlayerState() !== 0;
+                    var theaterBtn = document.getElementsByClassName('ytp-size-button')[0],
+                        cloneBtn   = document.getElementsByClassName('ytp-fullbrowser-button')[0],
+                        plrState   = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
                     function exitFullBrowser(key) {
-                        if (key.keyCode === 27 || key.key === 'Escape') {
-                            document.documentElement.classList.remove('part_fullbrowser');
+                        if (document.documentElement.classList.contains('part_fullbrowser') && (key.keyCode === 27 || key.key === 'Escape' || key.type === 'click')) {
+                            toggleFullBrowser(key);
+                            cloneBtn.remove();
                         }
+                    }
+                    if (theaterBtn && !cloneBtn) {
+                        cloneBtn = theaterBtn.cloneNode(true);
+                        cloneBtn.className = cloneBtn.className.replace('size', 'fullbrowser');
+                        cloneBtn.title = userLang('CNSL_FLBR_TTLE');
+                        theaterBtn.parentNode.insertBefore(cloneBtn, theaterBtn);
+                        handleEvents(cloneBtn, 'click', exitFullBrowser);
                     }
                     handleEvents(document, 'keydown', exitFullBrowser);
                     set('fullBrs', event ? !parSets.fullBrs : true);
                     fullBrowser.classList[(parSets.fullBrs) ? 'add' : 'remove']('active');
-                    if (event && plrState) {
+                    if (event && (plrState || (event.keyCode === 27 || event.key === 'Escape'))) {
                         document.documentElement.classList[(parSets.fullBrs) ? 'add' : 'remove']('part_fullbrowser');
                     }
                 }
@@ -3162,6 +3199,7 @@
         }
         window.matchMedia = false;
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
+        handleEvents(window, 'message', updateSettings);
         handleEvents(window, 'spfdone', initFunctions);
         handleEvents(window, 'spfrequest', request);
         handleEvents(window, 'readystatechange', initFunctions, true);
@@ -3170,7 +3208,6 @@
         } else {
             handleEvents(window, 'afterscriptexecute', scriptExit);
         }
-        handleEvents(window, 'message', updateSettings);
     }
     function updateSettings(event) {
         event = (event && event.particleSettings) || event || defaultSettings;
