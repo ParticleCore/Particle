@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.1
+// @version     0.2.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -196,10 +196,10 @@
             '#watch-header{\n',
             '    position: relative;\n',
             '}\n',
-            '.part_fullbrowser .ytp-size-button{\n',
+            '.part_fullbrowser .ytp-size-button, .part_fullbrowser .ytp-size-toggle-large, .part_fullbrowser .ytp-size-toggle-small{\n',
             '    display: none !important;\n',
             '}\n',
-            '.part_fullbrowser .ytp-fullbrowser-button{\n',
+            '.part_fullbrowser .fullbrowser_exit{\n',
             '    display: initial !important;\n',
             '    float: right;\n',
             '}\n',
@@ -2355,7 +2355,7 @@
             function playerState(state) {
                 var cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
                     cueButton = document.getElementsByClassName('ytp-large-play-button')[0],
-                    cloneBtn  = document.getElementsByClassName('ytp-fullbrowser-button')[0],
+                    cloneBtn  = document.getElementsByClassName('fullbrowser_exit')[0],
                     newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 if (newPlayer) {
                     document.documentElement.classList.add('new_player');
@@ -2993,8 +2993,8 @@
                     newSidebar.focus();
                 }
                 function toggleFullBrowser(event) {
-                    var theaterBtn = document.getElementsByClassName('ytp-size-button')[0],
-                        cloneBtn   = document.getElementsByClassName('ytp-fullbrowser-button')[0],
+                    var theaterBtn = document.getElementsByClassName('ytp-size-button')[0] || document.getElementsByClassName('ytp-size-toggle-large')[0] || document.getElementsByClassName('ytp-size-toggle-small')[0],
+                        cloneBtn   = document.getElementsByClassName('fullbrowser_exit')[0],
                         plrState   = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
                     function exitFullBrowser(key) {
                         if (document.documentElement.classList.contains('part_fullbrowser') && (key.keyCode === 27 || key.key === 'Escape' || key.type === 'click')) {
@@ -3004,8 +3004,9 @@
                     }
                     if (theaterBtn && !cloneBtn) {
                         cloneBtn = theaterBtn.cloneNode(true);
-                        cloneBtn.className = cloneBtn.className.replace('size', 'fullbrowser');
+                        cloneBtn.classList.add('fullbrowser_exit');
                         cloneBtn.title = userLang('CNSL_FLBR_TTLE');
+                        cloneBtn.setAttribute('aria-label', userLang('CNSL_FLBR_TTLE'));
                         theaterBtn.parentNode.insertBefore(cloneBtn, theaterBtn);
                         handleEvents(cloneBtn, 'click', exitFullBrowser);
                     }
