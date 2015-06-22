@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.3
+// @version     0.2.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -119,7 +119,7 @@
             '    text-align: center;\n',
             '    top: 0;\n',
             '    width: 100%;\n',
-            '    z-index: 100;\n',
+            '    z-index: 1000;\n',
             '}\n',
             '.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #movie_player:hover #part_floaterui{\n',
             '    display: block;\n',
