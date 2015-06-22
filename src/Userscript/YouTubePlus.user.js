@@ -1,11 +1,10 @@
 ﻿// ==UserScript==
-// @version     0.2.2
+// @version     0.2.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
 // @icon        data:image/png;base64,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
-// @match       http://www.youtube.com/*
-// @match       https://www.youtube.com/*
+// @match       *://www.youtube.com/*
 // @run-at      document-start
 // @downloadURL https://github.com/ParticleCore/Particle/raw/master/src/Userscript/YouTubePlus.user.js
 // @grant       GM_getValue
@@ -105,13 +104,37 @@
             '    position: fixed !important;\n',
             '}\n',
             'html.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #player #movie_player{\n',
-            '    top: 50% !important;\n',
             '    z-index: 10;\n',
             '}\n',
             'html.content-snap-width-skinny-mode.floater:not([data-player-size="fullscreen"]) #player #movie_player{\n',
             '    margin-top: 0 !important;\n',
             '    top: 50px !important;\n',
             '    transform: none;\n',
+            '}\n',
+            '#part_floaterui{\n',
+            '    background-image: linear-gradient(rgba(8, 8, 8, 0.5), transparent);\n',
+            '    display: none;\n',
+            '    font-size: 0;\n',
+            '    position: absolute;\n',
+            '    text-align: center;\n',
+            '    top: 0;\n',
+            '    width: 100%;\n',
+            '    z-index: 100;\n',
+            '}\n',
+            '.floater:not([data-player-size="fullscreen"]):not(.content-snap-width-skinny-mode) #movie_player:hover #part_floaterui{\n',
+            '    display: block;\n',
+            '}\n',
+            '#part_floaterui > button{\n',
+            '    cursor: pointer;\n',
+            '    height: 20px;\n',
+            '    margin: 5px;\n',
+            '    width: 20px;\n',
+            '}\n',
+            '#part_floaterui_move{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAA21BMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9mUQOSAAAASHRSTlMA8h/w3eAZ5ez48d7zKdYm5yDv4d/t3ORDUvYB2R0eJCfm1DLudIxOekF96458IjFxc4Eq14RybtooI/nYHPUYTT/3Idsl1eg+WQRKAAAA0klEQVQYGZ3BhXEEMRQFwZEWj5nZzMzMfvlH5L+qi8DdZFHUbkfdGsZvHOa93laHqky+SXDZlIlwMrus7cuUcTKxJ0jrMo6yCl2PSZ9UcET5qCMpnsNrXVJz1KzSP6VVkbQH25KyJbU+C8BXdDQBdpQ1gAeC1vGEwsGS/3g+Izg/IZgB6VTXmAslHvBc3ZPWJd3AraTY07rDrYZTSVkDfEVSMkweqaowaGB8rEKJF5nBgmAWy5QYy7yx9i7zQUlmVSP4TGTG5K7w9Y2Z/zjnyu73DwHYKAbwUHCPAAAAAElFTkSuQmCC") no-repeat center;\n',
+            '}\n',
+            '#part_floaterui_reset{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAMAAAC6V+0/AAAANlBMVEX///////////////////////////////////////////////////////////////////////8BOg0gAAAAEXRSTlMAZp9g9SwKpcl90yvU1ygM82HxkREAAABLSURBVHhetc47EoAgFEPR+D6ggJ/sf7MW6OgwFDTc8jQJ/vFpJm7ewWgKyItLbSUlQK0iv4ojpxZpiiAjuDuO1A6d0KtzaeQ8MBlvpEYNNBhyq44AAAAASUVORK5CYII=") no-repeat center;\n',
             '}\n',
         //   end| Floater player
         // start| Labelless video buttons
@@ -1333,6 +1356,14 @@
                     en     : 'Player always visible when reading comments',
                     'pt-PT': 'Reproductor sempre visível ao ler os comentários'
                 },
+                VID_PLR_ALVIS_MOVE    : {
+                    en     : 'Move',
+                    'pt-PT': 'Mover'
+                },
+                VID_PLR_ALVIS_RST     : {
+                    en     : 'Reset position',
+                    'pt-PT': 'Repôr posição'
+                },
                 VID_PLR_ATPL          : {
                     en     : 'Autoplay videos',
                     'pt-PT': 'Iniciar vídeos automáticamente'
@@ -2266,55 +2297,103 @@
             }
         }
         function alwaysVisible() {
-            var width,
-                height,
-                skinny,
-                sidebar,
-                newPlayer,
-                sidebarSize,
-                containerSize,
-                playerContainer,
-                videoPlayer = document.getElementById('movie_player');
             function initFloater() {
-                newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
-                skinny = document.documentElement.classList.contains('content-snap-width-skinny-mode');
-                videoPlayer = document.getElementById('movie_player');
-                playerContainer = document.getElementById('player-api');
-                containerSize = playerContainer && playerContainer.getBoundingClientRect();
-                sidebar = document.getElementById('watch7-sidebar');
-                sidebarSize = sidebar && sidebar.getBoundingClientRect();
+                var height,
+                    oldPosX,
+                    oldPosY,
+                    skinny          = document.documentElement.classList.contains('content-snap-width-skinny-mode'),
+                    newPlayer       = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1,
+                    videoPlayer     = document.getElementById('movie_player'),
+                    playerContainer = document.getElementById('player-api'),
+                    containerSize   = playerContainer && playerContainer.getBoundingClientRect(),
+                    sidebar         = document.getElementById('watch7-sidebar'),
+                    sidebarSize     = sidebar && sidebar.getBoundingClientRect(),
+                    outOfSight      = containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51),
+                    isFloater       = document.documentElement.classList.contains('floater'),
+                    floaterUI       = document.getElementById('part_floaterui');
                 function updatePos() {
                     if (!document.documentElement.classList.contains('floater')) {
-                        handleEvents(window, 'resize', updatePos, 'remove');
+                        handleEvents(window, 'resize', updatePos, false, 'remove');
                         return;
                     }
+                    sidebar = document.getElementById('watch7-sidebar');
                     sidebarSize = sidebar.getBoundingClientRect();
-                    videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
-                    videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
+                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9)));
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9))) + 'px';
+                    videoPlayer.style.height = height + 'px';
+                    if (!parSets.customFloater) {
+                        videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
+                        videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
+                        videoPlayer.style.top = '50%';
+                    } else {
+                        videoPlayer.style.marginTop = parSets.floaterY + 'px';
+                        videoPlayer.style.left = parSets.floaterX + 'px';
+                        videoPlayer.style.top = '0px';
+                    }
+                }
+                function customFloaterPosition(event) {
+                    if (event.type === 'mouseup') {
+                        handleEvents(document, 'mousemove', customFloaterPosition, false, 'remove');
+                        handleEvents(document, 'mouseup', customFloaterPosition, false, 'remove');
+                        set('floaterX', videoPlayer.offsetLeft);
+                        set('floaterY', videoPlayer.offsetTop);
+                        oldPosX = false;
+                        oldPosY = false;
+                    } else if (event.type === 'mousemove') {
+                        if (!oldPosX && !oldPosY) {
+                            oldPosX = event.clientX;
+                            oldPosY = event.clientY;
+                        } else {
+                            videoPlayer.style.marginTop = (videoPlayer.offsetTop + (event.clientY - oldPosY)) + 'px';
+                            videoPlayer.style.left = (videoPlayer.offsetLeft + (event.clientX - oldPosX)) + 'px';
+                            videoPlayer.style.top = '0px';
+                            oldPosX = event.clientX;
+                            oldPosY = event.clientY;
+                        }
+                    }
+                }
+                function floaterControl(event) {
+                    if (event.target.id === 'part_floaterui_reset') {
+                        set('customFloater', false);
+                        updatePos();
+                    } else if (event.target.id === 'part_floaterui_move') {
+                        set('customFloater', true);
+                        handleEvents(document, 'mousemove', customFloaterPosition);
+                        handleEvents(document, 'mouseup', customFloaterPosition);
+                    }
                 }
                 if (!sidebar) {
-                    handleEvents(window, 'scroll', initFloater, 'remove');
+                    handleEvents(window, 'scroll', initFloater, false, 'remove');
                     return;
                 }
-                if (videoPlayer && containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51) && !document.documentElement.classList.contains('floater')) {
-                    width = (skinny && containerSize.width) || sidebarSize.width;
-                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9)));
-                    document.documentElement.classList.toggle('floater');
-                    videoPlayer.setAttribute('style', 'width: ' + width + 'px; margin-top: -' + (height / 2) + 'px; height: ' + height + 'px; left: ' + ((skinny && '0') || sidebarSize.left) + 'px;');
-                    handleEvents(window, 'resize', updatePos);
-                } else if (videoPlayer && containerSize.bottom > (((skinny && containerSize.height - 2) || (!skinny && (containerSize.height / 2))) + 51) && document.documentElement.classList.contains('floater')) {
-                    document.documentElement.classList.toggle('floater');
-                    videoPlayer.removeAttribute('style');
-                    handleEvents(window, 'resize', updatePos, 'remove');
+                if (videoPlayer) {
+                    if (!floaterUI) {
+                        floaterUI = [
+                            '<div id="part_floaterui">',
+                            '<button id="part_floaterui_move" title="' + userLang('VID_PLR_ALVIS_MOVE') + '"></button>',
+                            '<button id="part_floaterui_reset" title="' + userLang('VID_PLR_ALVIS_RST') + '"></button>',
+                            '</div>'
+                        ].join('');
+                        floaterUI = string2HTML(floaterUI).querySelector('#part_floaterui');
+                        handleEvents(floaterUI, 'mousedown', floaterControl);
+                        videoPlayer.appendChild(floaterUI);
+                    }
+                    if (outOfSight && !isFloater) {
+                        document.documentElement.classList.toggle('floater');
+                        handleEvents(window, 'resize', updatePos);
+                        updatePos();
+                    } else if (!outOfSight && isFloater) {
+                        document.documentElement.classList.toggle('floater');
+                        handleEvents(window, 'resize', updatePos, false, 'remove');
+                        videoPlayer.removeAttribute('style');
+                    }
                 }
             }
             if (parSets.VID_PLR_ALVIS) {
                 if (window.location.pathname === '/watch') {
                     handleEvents(window, 'scroll', initFloater);
                 } else if (window.location.pathname !== '/watch') {
-                    handleEvents(window, 'scroll', initFloater, 'remove');
+                    handleEvents(window, 'scroll', initFloater, false, 'remove');
                 }
             }
         }
@@ -2879,7 +2958,7 @@
                             seekMap.classList.remove('active');
                         }
                         handleEvents(container, 'click', clickManager);
-                        handleEvents(window, 'spfdone', removeOld, 'remove');
+                        handleEvents(window, 'spfdone', removeOld, false, 'remove');
                     }
                     function parseThumbs() {
                         thumbControls = '<div id="seek-controls">\n';
