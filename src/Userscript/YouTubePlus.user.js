@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.4
+// @version     0.2.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -240,7 +240,7 @@
             '    z-index: initial;\n',
             '}\n',
             '#advanced-options{\n',
-            '    background: #FFF;\n',
+            '    background: inherit;\n',
             '    min-height: 20px;\n',
             '    min-width: 25px;\n',
             '    position: absolute;\n',
@@ -265,14 +265,13 @@
             '    opacity: 0.8;\n',
             '}\n',
             '#player-console{\n',
+            '    background: inherit;\n',
             '    display: none;\n',
             '    font-size: 0;\n',
             '    position: relative;\n',
-            '    right: 20px;\n',
-            '    top: 15px;\n',
+            '    right: 2px;\n',
+            '    top: 17px;\n',
             '    text-align: center;\n',
-            '    border-left: 20px solid;\n',
-            '    border-image: linear-gradient(to left, #FFF 20%, transparent 100%) 1 100%;\n',
             '}\n',
             '.player-console #player-console{\n',
             '    display: block;\n',
@@ -285,8 +284,7 @@
             '    position: relative;\n',
             '}\n',
             '#player-console:before{\n',
-            '    background: #FFF;\n',
-            '    border-right: 20px solid white;\n',
+            '    background: inherit;\n',
             '    content: "";\n',
             '    height: 100%;\n',
             '    position: absolute;\n',
@@ -315,7 +313,7 @@
             '    width: 22px;\n',
             '}\n',
             '#sidebar-button{\n',
-            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASAQMAAABl67xuAAAABlBMVEUAAAD///+l2Z/dAAAADklEQVR4XmNgbGCgBgYARvEJE30TDdMAAAAASUVORK5CYII=") no-repeat center;\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAASAQMAAABl67xuAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAA5JREFUeF5j+Ff/hxoYAEMOLINgU5CAAAAAAElFTkSuQmCC") no-repeat center;\n',
             '    width: 22px;\n',
             '}\n',
             '#loop-button{\n',
@@ -2301,6 +2299,7 @@
                 var height,
                     oldPosX,
                     oldPosY,
+                    activeMove,
                     skinny          = document.documentElement.classList.contains('content-snap-width-skinny-mode'),
                     newPlayer       = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1,
                     videoPlayer     = document.getElementById('movie_player'),
@@ -2313,15 +2312,14 @@
                     floaterUI       = document.getElementById('part_floaterui');
                 function updatePos() {
                     if (!document.documentElement.classList.contains('floater')) {
-                        handleEvents(window, 'resize', updatePos, false, 'remove');
-                        return;
+                        return handleEvents(window, 'resize', updatePos, false, 'remove');
                     }
                     sidebar = document.getElementById('watch7-sidebar');
                     sidebarSize = sidebar.getBoundingClientRect();
                     height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9)));
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
                     videoPlayer.style.height = height + 'px';
-                    if (!parSets.customFloater) {
+                    if (!parSets.customFloater || skinny) {
                         videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
                         videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
                         videoPlayer.style.top = '50%';
@@ -2332,24 +2330,20 @@
                     }
                 }
                 function customFloaterPosition(event) {
-                    if (event.type === 'mouseup') {
-                        handleEvents(document, 'mousemove', customFloaterPosition, false, 'remove');
-                        handleEvents(document, 'mouseup', customFloaterPosition, false, 'remove');
-                        set('floaterX', videoPlayer.offsetLeft);
-                        set('floaterY', videoPlayer.offsetTop);
-                        oldPosX = false;
-                        oldPosY = false;
-                    } else if (event.type === 'mousemove') {
-                        if (!oldPosX && !oldPosY) {
-                            oldPosX = event.clientX;
-                            oldPosY = event.clientY;
-                        } else {
+                    if (activeMove) {
+                        if (event.type === 'mouseup') {
+                            set('floaterY', videoPlayer.offsetTop);
+                            set('floaterX', videoPlayer.offsetLeft);
+                            activeMove = oldPosX = oldPosX = null;
+                            return;
+                        }
+                        if (event.type === 'mousemove') {
                             videoPlayer.style.marginTop = (videoPlayer.offsetTop + (event.clientY - oldPosY)) + 'px';
                             videoPlayer.style.left = (videoPlayer.offsetLeft + (event.clientX - oldPosX)) + 'px';
                             videoPlayer.style.top = '0px';
-                            oldPosX = event.clientX;
-                            oldPosY = event.clientY;
                         }
+                        oldPosX = event.clientX;
+                        oldPosY = event.clientY;
                     }
                 }
                 function floaterControl(event) {
@@ -2358,8 +2352,8 @@
                         updatePos();
                     } else if (event.target.id === 'part_floaterui_move') {
                         set('customFloater', true);
-                        handleEvents(document, 'mousemove', customFloaterPosition);
-                        handleEvents(document, 'mouseup', customFloaterPosition);
+                        activeMove = true;
+                        customFloaterPosition(event);
                     }
                 }
                 if (!sidebar) {
@@ -2369,13 +2363,15 @@
                 if (videoPlayer) {
                     if (!floaterUI) {
                         floaterUI = [
-                            '<div id="part_floaterui">',
-                            '<button id="part_floaterui_move" title="' + userLang('VID_PLR_ALVIS_MOVE') + '"></button>',
-                            '<button id="part_floaterui_reset" title="' + userLang('VID_PLR_ALVIS_RST') + '"></button>',
-                            '</div>'
+                            '<div id="part_floaterui">\n',
+                            '    <button id="part_floaterui_move" title="' + userLang('VID_PLR_ALVIS_MOVE') + '"></button>\n',
+                            '    <button id="part_floaterui_reset" title="' + userLang('VID_PLR_ALVIS_RST') + '"></button>\n',
+                            '</div>\n'
                         ].join('');
                         floaterUI = string2HTML(floaterUI).querySelector('#part_floaterui');
-                        handleEvents(floaterUI, 'mousedown', floaterControl);
+                        handleEvents(document, 'mousemove', customFloaterPosition);
+                        handleEvents(document, 'mouseup', customFloaterPosition);
+                        handleEvents(document, 'mousedown', floaterControl);
                         videoPlayer.appendChild(floaterUI);
                     }
                     if (outOfSight && !isFloater) {
@@ -3269,9 +3265,6 @@
                 }
             }
         }
-        if (document.body) {
-            window.location.reload();
-        }
         if (!parSets || Object.keys(parSets).length < 1) {
             parSets = defSets;
         } else {
@@ -3283,11 +3276,7 @@
         handleEvents(window, 'spfdone', initFunctions);
         handleEvents(window, 'spfrequest', request);
         handleEvents(window, 'readystatechange', initFunctions, true);
-        if (isChrome) {
-            handleEvents(document.documentElement, 'load', scriptExit, true);
-        } else {
-            handleEvents(window, 'afterscriptexecute', scriptExit);
-        }
+        handleEvents(document.documentElement, 'load', scriptExit, true);
     }
     function updateSettings(event) {
         event = (event && event.particleSettings) || event || defaultSettings;
