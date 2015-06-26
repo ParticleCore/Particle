@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.6
+// @version     0.2.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -517,7 +517,7 @@
             '.part_grid_search #results .yt-lockup-title a{\n',
             '    white-space: nowrap;\n',
             '}\n',
-            '.part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges{\n',
+            '.part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges, .part_grid_subs .yt-lockup-badges, .part_grid_subs .yt-uix-livereminder, .part_grid_search .yt-uix-livereminder{\n',
             '    display: none;\n',
             '}\n',
             '.part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n',
@@ -1001,12 +1001,13 @@
             '    color: #000;\n',
             '    text-shadow: none;\n',
             '}\n',
-            '#DNT{\n',
-            '    position: relative;\n',
-            '}\n',
-            '#DNT a{\n',
+            '#P-sidebar-list a{\n',
             '    color: #808080;\n',
             '    display: block;\n',
+            '    text-decoration: none;\n',
+            '}\n',
+            '#DNT{\n',
+            '    position: relative;\n',
             '}\n',
             '#DNT:hover a{\n',
             '    color: #F1F1F1;\n',
@@ -1235,6 +1236,10 @@
                 ABT                   : {
                     en     : 'About',
                     'pt-PT': 'Sobre'
+                },
+                HLP                   : {
+                    en     : 'Help',
+                    'pt-PT': 'Ajuda'
                 },
                 DNT                   : {
                     en     : 'Donate',
@@ -1596,14 +1601,6 @@
                 },
                 ABT_LNK_OPNU          : {
                     en: 'OpenUserJS'
-                },
-                ABT_PRBL              : {
-                    en     : 'Report a problem',
-                    'pt-PT': 'Reportar problema'
-                },
-                ABT_LNK_PRBL          : {
-                    en     : 'Click here for instructions',
-                    'pt-PT': 'Clique aqui para instruções'
                 }
             };
         function string2HTML(string) {
@@ -1804,6 +1801,7 @@
                             '                <li id="VID">' + userLang('VID') + '</li>\n',
                             '                <li id="BLK">' + userLang('BLK') + '</li>\n',
                             '                <li id="ABT">' + userLang('ABT') + '</li>\n',
+                            '                <li id="HLP"><a target="_blank" href="https://github.com/ParticleCore/Particle/wiki">' + userLang('HLP') + '</a></li>\n',
                             '                <li id="DNT"><a title="PayPal" target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW">' + userLang('DNT') + '</a></li>\n',
                             '            </ul>\n',
                             '        </div>\n',
@@ -1967,10 +1965,6 @@
                             '    </div>\n',
                             '    <div>\n',
                             '        <a target="_blank" href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
-                            '    </div>\n',
-                            htEl.title('ABT_PRBL', 'h3'),
-                            '    <div>\n',
-                            '        <a target="_blank" href="https://github.com/ParticleCore/Particle/wiki/Report-a-problem">' + userLang('ABT_LNK_PRBL') + '</a>\n',
                             '    </div>\n',
                             '</div>\n'
                         ].join('')
@@ -2307,6 +2301,10 @@
                     oldPosY,
                     XBounds,
                     YBounds,
+                    maxOffsetX,
+                    maxOffsetY,
+                    minOffsetX,
+                    minOffsetY,
                     activeMove,
                     skinny          = document.documentElement.classList.contains('content-snap-width-skinny-mode'),
                     newPlayer       = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1,
@@ -2330,13 +2328,11 @@
                     XBounds = parSets.floaterX > -1 && (parSets.floaterX + videoPlayer.offsetWidth) < document.documentElement.offsetWidth;
                     YBounds = parSets.floaterY > 50 && (parSets.floaterY + videoPlayer.offsetHeight) < document.documentElement.offsetHeight;
                     if (!parSets.customFloater || skinny) {
-                        videoPlayer.style.marginTop = '-' + (height / 2) + 'px';
+                        videoPlayer.style.top = 'calc(50% - ' + (height / 2) + 'px)';
                         videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
-                        videoPlayer.style.top = '50%';
                     } else {
-                        videoPlayer.style.marginTop = ((YBounds && parSets.floaterY) || (parSets.floaterY < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + 'px';
+                        videoPlayer.style.top = ((YBounds && parSets.floaterY) || (parSets.floaterY < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + 'px';
                         videoPlayer.style.left = ((XBounds && parSets.floaterX) || (parSets.floaterX < 1 && '0') || (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) + 'px';
-                        videoPlayer.style.top = '0px';
                     }
                 }
                 function customFloaterPosition(event) {
@@ -2350,13 +2346,16 @@
                             return;
                         }
                         if (event.type === 'mousemove') {
-                            newXval = (videoPlayer.offsetLeft + (event.clientX - oldPosX));
-                            newYval = (videoPlayer.offsetTop + (event.clientY - oldPosY));
-                            XBounds = newXval > -1 && (newXval + videoPlayer.offsetWidth) < document.documentElement.offsetWidth;
-                            YBounds = newYval > 50 && (newYval + videoPlayer.offsetHeight) < document.documentElement.offsetHeight;
-                            videoPlayer.style.marginTop = ((YBounds && newYval) || (newYval < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + 'px';
-                            videoPlayer.style.left = ((XBounds && newXval) || (newXval < 1 && '0') || (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) + 'px';
-                            videoPlayer.style.top = '0px';
+                            newXval = videoPlayer.offsetLeft + (event.clientX - oldPosX);
+                            newYval = videoPlayer.offsetTop + (event.clientY - oldPosY);
+                            newXval = (event.clientX < (minOffsetX + 1) && '0') || (event.clientX > (maxOffsetX - 1) && (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) || newXval;
+                            newYval = (event.clientY < (minOffsetY + 1) && '51') || (event.clientY > (maxOffsetY - 1) && (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) || newYval;
+                            if (newYval !== videoPlayer.style.top) {
+                                videoPlayer.style.top = newYval + 'px';
+                            }
+                            if (newXval !== videoPlayer.style.left) {
+                                videoPlayer.style.left = newXval + 'px';
+                            }
                         }
                         oldPosX = event.clientX;
                         oldPosY = event.clientY;
@@ -2369,6 +2368,10 @@
                     } else if (event.target.id === 'part_floaterui_move') {
                         set('customFloater', true);
                         activeMove = true;
+                        maxOffsetX = document.documentElement.offsetWidth - (videoPlayer.offsetWidth - (event.clientX - videoPlayer.offsetLeft));
+                        maxOffsetY = document.documentElement.offsetHeight - (videoPlayer.offsetHeight - (event.clientY - videoPlayer.offsetTop));
+                        minOffsetX = Math.abs(event.clientX - videoPlayer.offsetLeft);
+                        minOffsetY = Math.abs(event.clientY - videoPlayer.offsetTop) + 51;
                         customFloaterPosition(event);
                     }
                 }
