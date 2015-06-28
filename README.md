@@ -3,3 +3,5 @@ YouTube + [![version](https://img.shields.io/github/release/ParticleCore/Particl
 YouTube + (codename Particle) is focused on providing an extended YouTube experience for the user.
 
 This software is currently being published as an add-on for Firefox, extension for Chrome and userscript for Greasemonkey, and Tampermonkey. At the moment no support will be provided outside these platforms.
+
+This software supports only YouTube's HTML5 player. Some features will not work when using YouTube's flash player.
