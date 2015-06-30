@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.8
+// @version     0.2.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -3312,7 +3312,7 @@
             }
         }
         if (!event && userscript) {
-            event = JSON.parse(window.GM_getValue('particleSettings', {}));
+            event = JSON.parse(window.GM_getValue('particleSettings', '{}'));
         }
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
@@ -3335,7 +3335,7 @@
     function xhr(details) {
         details = details.data;
         function settingsHandler(item) {
-            var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', {}))) || {};
+            var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', '{}'))) || {};
             function buildSettings(keys) {
                 object[keys] = details.set[keys];
             }
@@ -3350,7 +3350,7 @@
                 }
             }
             if (userscript) {
-                updateSettings(JSON.parse(window.GM_getValue('particleSettings', {})));
+                updateSettings(JSON.parse(window.GM_getValue('particleSettings', '{}')));
             }
         }
         if (typeof details === 'object' && (details.set || details.get || details.replace)) {
