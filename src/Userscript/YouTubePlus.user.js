@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.7
+// @version     0.2.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -13,44 +13,8 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    var userscript      = typeof GM_info === 'object',
-        defaultSettings = {
-            GEN_BTTR_NTF     : true,
-            GEN_INF_SCRL     : true,
-            GEN_YT_LOGO_LINK : true,
-            GEN_CMPT_TTLS    : true,
-            GEN_BLUE_GLOW    : true,
-            GEN_CHN_DFLT_PAGE: 'videos',
-            GEN_SDBR_ON      : true,
-            VID_END_SHRE     : true,
-            VID_DFLT_QLTY    : 'auto',
-            VID_PLST_SEP     : true,
-            VID_PLST_ATPL    : true,
-            VID_PLST_RVRS    : true,
-            VID_PLR_ANTS     : true,
-            VID_PLR_CC       : true,
-            VID_PLR_ALVIS    : true,
-            VID_PLR_ADS      : true,
-            VID_PLR_SIZE_MEM : true,
-            VID_PLR_CTRL_VIS : true,
-            VID_PLR_DYN_SIZE : true,
-            VID_PLR_FIT_WDTH : '1280px',
-            VID_PROG_BAR_CLR : 'red',
-            VID_CTRL_BAR_CLR : 'light',
-            VID_HIDE_COMS    : '1',
-            VID_POST_TIME    : true,
-            VID_VID_CNT      : true,
-            VID_DESC_SHRT    : true,
-            VID_SDBR_ALGN    : '1',
-            VID_TTL_CMPT     : true,
-            BLK_ON           : true,
-            volLev           : 50,
-            plApl            : false,
-            plRev            : false,
-            advOpts          : true,
-            blacklist        : {}
-        },
-        particleStyle   = [
+    var userscript  = typeof GM_info === 'object',
+        styleSheet  = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
             '    margin-left: 0 !important;\n',
@@ -538,7 +502,7 @@
             '.part_grid_search .search .branded-page-v2-body{\n',
             '    overflow: hidden;\n',
             '}\n',
-            '.part_grid_search #results .exploratory-section{\n',
+            '.part_grid_search #results .exploratory-section, .part_grid_search #results .compact-shelf{\n',
             '    display: none;\n',
             '}\n',
             '.part_grid_search .webkit #results .yt-ui-ellipsis{\n',
@@ -658,6 +622,12 @@
             '}\n',
             '.part_notif_button .show-guide-button-notification #appbar-guide-button{\n',
             '    opacity: 1 !important;\n',
+            '}\n',
+            '.part_notif_button #yt-masthead #logo-container span.content-region{\n',
+            '    left: initial;\n',
+            '    padding: 1px 0 0 3px;\n',
+            '    position: absolute;\n',
+            '    top: initial;\n',
             '}\n',
         //   end| Improved notification button
         // start| Static normal mode
@@ -1004,7 +974,11 @@
             '#P-sidebar-list a{\n',
             '    color: #808080;\n',
             '    display: block;\n',
+            '    padding: 0 21px;\n',
             '    text-decoration: none;\n',
+            '}\n',
+            '#DNT, #HLP{\n',
+            '    padding: 0 !important;\n',
             '}\n',
             '#DNT{\n',
             '    position: relative;\n',
@@ -1091,11 +1065,46 @@
         ].join('');
     function particle() {
         var api,
-            channelId = {},
-            events    = [],
-            isChrome  = typeof window.chrome === 'object',
-            defSets   = null,
             parSets,
+            events    = [],
+            channelId = {},
+            isChrome  = typeof window.chrome === 'object',
+            defSets   = {
+                GEN_BTTR_NTF     : true,
+                GEN_INF_SCRL     : true,
+                GEN_YT_LOGO_LINK : true,
+                GEN_CMPT_TTLS    : true,
+                GEN_BLUE_GLOW    : true,
+                GEN_CHN_DFLT_PAGE: 'videos',
+                GEN_SDBR_ON      : true,
+                VID_END_SHRE     : true,
+                VID_DFLT_QLTY    : 'auto',
+                VID_PLST_SEP     : true,
+                VID_PLST_ATPL    : true,
+                VID_PLST_RVRS    : true,
+                VID_PLR_ANTS     : true,
+                VID_PLR_CC       : true,
+                VID_PLR_ALVIS    : true,
+                VID_PLR_ADS      : true,
+                VID_PLR_SIZE_MEM : true,
+                VID_PLR_CTRL_VIS : true,
+                VID_PLR_DYN_SIZE : true,
+                VID_PLR_FIT_WDTH : '1280px',
+                VID_PROG_BAR_CLR : 'red',
+                VID_CTRL_BAR_CLR : 'light',
+                VID_HIDE_COMS    : '1',
+                VID_POST_TIME    : true,
+                VID_VID_CNT      : true,
+                VID_DESC_SHRT    : true,
+                VID_SDBR_ALGN    : '1',
+                VID_TTL_CMPT     : true,
+                BLK_ON           : true,
+                volLev           : 50,
+                plApl            : false,
+                plRev            : false,
+                advOpts          : true,
+                blacklist        : {}
+            },
             lang      = {
                 ADV_OPTS              : {
                     en     : 'Advanced options',
@@ -1612,18 +1621,19 @@
             object[setting] = newValue;
             window.postMessage({set: object}, '*');
         }
-        function handleEvents(target, event, call, capture, type) {
-            var name = call.name;
-            capture = !!capture;
-            if (target.events && target.events[event] && target.events[event][name]) {
-                target.removeEventListener(event, target.events[event][name], capture);
-                delete target.events[event][name];
+        function eventHandler(target, event, call, capture, type) {
+            if (target.events && target.events[event] && target.events[event][call.name]) {
+                target.removeEventListener(event, target.events[event][call.name], !!capture);
+                delete target.events[event][call.name];
+                if (JSON.stringify(target.events[event]) === '{}') {
+                    delete target.events[event];
+                }
             }
             if (!type) {
-                target.addEventListener(event, call, capture);
+                target.addEventListener(event, call, !!capture);
                 target.events = target.events || {};
                 target.events[event] = target.events[event] || {};
-                target.events[event][name] = call;
+                target.events[event][call.name] = call;
                 if ((String(target)).split('HTML').length > 1 && events.indexOf(target) < 0) {
                     events.push(target);
                 }
@@ -1653,16 +1663,11 @@
             request.send();
         }
         function timeConv(time) {
-            var days    = time / 86400,
-                hours   = (time % 86400) / 3600,
-                minutes = (time % 3600) / 60,
-                seconds = (time % 3600) % 60;
             function zero(trim) {
                 return ('0' + Math.floor(trim)).slice(-2);
             }
-            time = zero(days) + ':' + zero(hours) + ':' + zero(minutes) + ':' + zero(seconds);
-            time = time.replace(/^0(0:(0(0:(0)?)?)?)?/, '');
-            return time;
+            time = zero(time / 86400) + ':' + zero(time % 86400 / 3600) + ':' + zero(time % 3600 / 60) + ':' + zero(time % 3600 % 60);
+            return time.replace(/^0(0:(0(0:(0)?)?)?)?/, '');
         }
         function customStyles() {
             var classes,
@@ -1716,7 +1721,7 @@
             if (window.location.href.split('/feed/subscriptions').length < 2) {
                 document.documentElement.classList.remove('part_grid_subs');
             }
-            classes = setsList = commSect = sidebar = adverts = null;
+            classes = plrApi = commSect = sidebar = adverts = setsList = null;
         }
         function updateSettings(event) {
             if (event.data && event.data.updateSettings) {
@@ -1996,9 +2001,9 @@
                     var value,
                         notification = document.getElementById('appbar-main-guide-notification-container'),
                         navId        = document.getElementsByClassName('selected')[0].id,
-                        savedSets    = parSets,
                         userSets     = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
-                        length       = userSets.length;
+                        length       = userSets.length,
+                        savedSets    = parSets;
                     function hideNotif() {
                         document.body.classList.remove('show-guide-button-notification');
                     }
@@ -2072,7 +2077,7 @@
                     pWrapper = string2HTML(template().setMenu).querySelector('#P-settings');
                     pWrapper.querySelector('#P-container').appendChild(string2HTML(template().GEN).querySelector('#P-content'));
                     bodyContainer.insertBefore(pWrapper, pageContainer);
-                    handleEvents(pWrapper, 'click', navigateSettings);
+                    eventHandler(pWrapper, 'click', navigateSettings);
                 }
                 document[isChrome ? 'body' : 'documentElement'].scrollTop = 0;
                 bodyContainer = pageContainer = pWrapper = null;
@@ -2083,7 +2088,7 @@
                 settingsButton = document.createElement('button');
                 settingsButton.id = 'P';
                 settingsButton.title = 'YouTube+ settings';
-                handleEvents(settingsButton, 'click', settingsTemplate);
+                eventHandler(settingsButton, 'click', settingsTemplate);
                 if (buttonNotif) {
                     buttonsSection.insertBefore(settingsButton, buttonNotif);
                 } else {
@@ -2177,8 +2182,8 @@
             }
         }
         function commentsButton() {
-            var comments = document.getElementById('watch-discussion'),
-                wrapper;
+            var wrapper,
+                comments = document.getElementById('watch-discussion');
             function showComments() {
                 comments.classList.toggle('show');
                 wrapper.querySelector('button').textContent = userLang((comments.classList.contains('show')) ? 'HIDE_CMTS' : 'SHOW_CMTS');
@@ -2189,7 +2194,7 @@
                     '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n' +
                     '</div>\n';
                 wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
-                handleEvents(wrapper, 'click', showComments);
+                eventHandler(wrapper, 'click', showComments);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
         }
@@ -2291,6 +2296,7 @@
                 if (window.ytplayer && window.ytplayer.config) {
                     window.ytplayer.config.args = config.args;
                 }
+                base = hdThumb = maxRes = null;
                 return config;
             }
         }
@@ -2318,7 +2324,7 @@
                     floaterUI       = document.getElementById('part_floaterui');
                 function updatePos() {
                     if (!document.documentElement.classList.contains('floater')) {
-                        return handleEvents(window, 'resize', updatePos, false, 'remove');
+                        return eventHandler(window, 'resize', updatePos, false, 'remove');
                     }
                     sidebar = document.getElementById('watch7-sidebar');
                     sidebarSize = sidebar.getBoundingClientRect();
@@ -2376,7 +2382,7 @@
                     }
                 }
                 if (!sidebar) {
-                    handleEvents(window, 'scroll', initFloater, false, 'remove');
+                    eventHandler(window, 'scroll', initFloater, false, 'remove');
                     return;
                 }
                 if (videoPlayer) {
@@ -2388,28 +2394,28 @@
                             '</div>\n'
                         ].join('');
                         floaterUI = string2HTML(floaterUI).querySelector('#part_floaterui');
-                        handleEvents(document, 'mousemove', customFloaterPosition);
-                        handleEvents(document, 'mouseup', customFloaterPosition);
-                        handleEvents(document, 'mousedown', floaterControl);
+                        eventHandler(document, 'mousemove', customFloaterPosition);
+                        eventHandler(document, 'mouseup', customFloaterPosition);
+                        eventHandler(document, 'mousedown', floaterControl);
                         videoPlayer.appendChild(floaterUI);
                         floaterUI = null;
                     }
                     if (outOfSight && !isFloater) {
                         document.documentElement.classList.toggle('floater');
-                        handleEvents(window, 'resize', updatePos);
+                        eventHandler(window, 'resize', updatePos);
                         updatePos();
                     } else if (!outOfSight && isFloater) {
                         document.documentElement.classList.toggle('floater');
-                        handleEvents(window, 'resize', updatePos, false, 'remove');
+                        eventHandler(window, 'resize', updatePos, false, 'remove');
                         videoPlayer.removeAttribute('style');
                     }
                 }
             }
             if (parSets.VID_PLR_ALVIS) {
                 if (window.location.pathname === '/watch') {
-                    handleEvents(window, 'scroll', initFloater);
+                    eventHandler(window, 'scroll', initFloater);
                 } else if (window.location.pathname !== '/watch') {
-                    handleEvents(window, 'scroll', initFloater, false, 'remove');
+                    eventHandler(window, 'scroll', initFloater, false, 'remove');
                 }
             }
         }
@@ -2443,14 +2449,13 @@
                     '</li>';
                 button = string2HTML(button).querySelector('li');
                 navMenu.insertBefore(button, navMenu.firstChild);
-                handleEvents(button, 'click', initSubPlaylist);
+                eventHandler(button, 'click', initSubPlaylist);
             }
         }
         function playerReady(playerApi) {
             function playerState(state) {
                 var cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
                     cueButton = document.getElementsByClassName('ytp-large-play-button')[0],
-                    cloneBtn  = document.getElementsByClassName('fullbrowser_exit')[0],
                     newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
                 if (newPlayer) {
                     document.documentElement.classList.add('new_player');
@@ -2469,21 +2474,10 @@
                     }
                 }
                 if (parSets.fullBrs) {
-                    if (state < 5 && state > 0) {
-                        document.documentElement.classList.add('part_fullbrowser');
-                    } else {
-                        document.documentElement.classList.remove('part_fullbrowser');
-                        if (state === 0 && cloneBtn) {
-                            cloneBtn.remove();
-                        }
-                    }
+                    document.documentElement.classList[(state < 5 && state > 0) ? 'add' : 'remove']('part_fullbrowser');
                 }
                 if (parSets.lightsOut) {
-                    if (state < 5 && state > 0) {
-                        document.documentElement.classList.add('part_cinema_mode');
-                    } else {
-                        document.documentElement.classList.remove('part_cinema_mode');
-                    }
+                    document.documentElement.classList[(state < 5 && state > 0) ? 'add' : 'remove']('part_cinema_mode');
                 }
                 cueThumb = cueButton = newPlayer = null;
             }
@@ -2508,12 +2502,12 @@
             }
             if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
                 api = document.getElementById('movie_player');
-                handleEvents(api, 'onStateChange', playerState);
+                eventHandler(api, 'onStateChange', playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
-                    handleEvents(api, 'onVolumeChange', volumeChanged);
+                    eventHandler(api, 'onVolumeChange', volumeChanged);
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
-                    handleEvents(api, 'SIZE_CLICKED', sizeChanged);
+                    eventHandler(api, 'SIZE_CLICKED', sizeChanged);
                 }
                 if (!parSets.VID_PLR_ATPL) {
                     argsCleaner(window.ytplayer.config);
@@ -2536,8 +2530,8 @@
             function baseDetour(originalFunction) {
                 return function () {
                     originalFunction.apply(this, arguments);
-                    window.yt.config_.SHARE_ON_VIDEO_END = (parSets.VID_END_SHRE) ? false : true;
-                    window.yt.config_.UNIVERSAL_HOVERCARDS = (parSets.GEN_DSB_HVRC) ? false : true;
+                    window.yt.config_.SHARE_ON_VIDEO_END = !parSets.VID_END_SHRE;
+                    window.yt.config_.UNIVERSAL_HOVERCARDS = !parSets.GEN_DSB_HVRC;
                 };
             }
             function embedDetour(originalFunction) {
@@ -2545,12 +2539,14 @@
                     var args = arguments;
                     argsCleaner(args[1]);
                     if (args[0].id === 'upsell-video') {
+                        args = null;
                         return originalFunction.apply(this, args);
                     }
                     originalFunction.apply(this, args);
                     if (api) {
                         api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
+                    args = null;
                 };
             }
             function autoplayDetour(originalFunction) {
@@ -2559,6 +2555,7 @@
                     if (!args[1] || parSets.plApl || (!parSets.plApl && args[1].feature && args[1].feature !== 'autoplay')) {
                         originalFunction.apply(this, arguments);
                     }
+                    args = null;
                 };
             }
             function autoplayDetourFullScreen(originalFunction) {
@@ -2570,15 +2567,17 @@
                         nextButton = document.getElementsByClassName('ytp-next-button')[0];
                         if (nextButton && nextButton.getAttribute('aria-disabled') === 'true') {
                             nextButton.onclick = api.nextVideo;
-                            handleEvents(nextButton, 'click', api.nextVideo);
+                            eventHandler(nextButton, 'click', api.nextVideo);
                             nextButton.setAttribute('aria-disabled', 'false');
                         }
+                        nextButton = hasEnded = nextClicked = null;
                         return false;
                     }
                     if (parSets.plApl || nextClicked || !hasEnded) {
                         if (nextClicked) {
                             document.getElementById('movie_player').focus();
                         }
+                        nextButton = hasEnded = nextClicked = null;
                         return originalFunction.apply(this, arguments);
                     }
                 };
@@ -2586,9 +2585,9 @@
             function fullscreenVideoChange(originalFunction) {
                 return function () {
                     var key,
-                        patch   = [{}],
-                        config  = {args: {}},
-                        args    = arguments;
+                        patch  = [{}],
+                        config = {args: {}},
+                        args   = arguments;
                     function buildConfig(conf) {
                         config.args[conf.split('=')[0]] = decodeURIComponent(conf.split('=')[1]).replace(/\+/g, ' ');
                     }
@@ -2608,6 +2607,7 @@
                     patch[0].responseText = patch[0].response;
                     api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     originalFunction.apply(this, patch);
+                    key = patch = config = args = null;
                 };
             }
             function fsPointerDetour(originalFunction) {
@@ -2624,6 +2624,7 @@
                         }
                     }
                     Object.keys(self).some(firstLevel);
+                    self = null;
                     return originalFunction.apply(this, arguments);
                 };
             }
@@ -2657,6 +2658,7 @@
                             moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
+                    moviePlayer = playerInstance = args = null;
                 };
             }
             function ytIterator(keys) {
@@ -2669,6 +2671,7 @@
                         window._yt_www[keys] = autoplayDetour(window._yt_www[keys]);
                     }
                 }
+                str = null;
             }
             if (event && event.target && event.target.getAttribute('name') === 'www/base') {
                 window.yt.setConfig = baseDetour(window.yt.setConfig);
@@ -2747,12 +2750,12 @@
                 if (detailList[i]) {
                     if (parSets.GEN_SDBR_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
                         button = createButton('sidebarmode', detailList[i]);
-                        handleEvents(button, 'click', initThumbMod);
+                        eventHandler(button, 'click', initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
                     if (parSets.BLK_ON && window.location.href.split('/feed/subscriptions').length < 2 && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
                         button = createButton('blacklist', detailList[i]);
-                        handleEvents(button, 'click', initThumbMod);
+                        eventHandler(button, 'click', initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
                 }
@@ -2786,6 +2789,7 @@
                                 }
                             }
                         }
+                        upNext = null;
                     } else if (userName && userId && videoLink && thumbField) {
                         detailList[i] = {
                             username: userName,
@@ -2809,6 +2813,7 @@
                         }
                     }
                 }
+                i = emptyShelves = null;
             }
             function getList(list) {
                 list = document.getElementsByClassName(list);
@@ -2840,9 +2845,9 @@
                 }
             }
             if (!event && parSets.VID_VOL_WHEEL) {
-                handleEvents(window, 'wheel', volumeWheel);
+                eventHandler(window, 'wheel', volumeWheel);
             }
-            direction = playerApi = playlistFS = currentVol =null;
+            playerApi = direction = currentVol = playlistFS =null;
         }
         function playlistControls() {
             var href  = window.location.href,
@@ -2887,7 +2892,7 @@
                     ].join('');
                 plBar.className = plBar.className.replace('radio-playlist', '');
                 button = string2HTML(button).querySelector('button');
-                handleEvents(button, 'click', call);
+                eventHandler(button, 'click', call);
                 navCtrls.appendChild(button);
                 navCtrls = button = null;
             }
@@ -2973,8 +2978,8 @@
                             container.remove();
                             seekMap.classList.remove('active');
                         }
-                        handleEvents(container, 'click', clickManager);
-                        handleEvents(window, 'spfdone', removeOld, false, 'remove');
+                        eventHandler(container, 'click', clickManager);
+                        eventHandler(window, 'spfdone', removeOld, false, 'remove');
                     }
                     function parseThumbs() {
                         thumbControls = '<div id="seek-controls">\n';
@@ -3033,8 +3038,8 @@
                             container = string2HTML(container).querySelector('#seek-thumb-map');
                             document.getElementById('movie_player').appendChild(container);
                             centerThumb();
-                            handleEvents(container, 'click', clickManager);
-                            handleEvents(window, 'spfdone', removeOld);
+                            eventHandler(container, 'click', clickManager);
+                            eventHandler(window, 'spfdone', removeOld);
                         } else if (container.id) {
                             seekMap.classList.toggle('active');
                             container.classList.toggle('invisible');
@@ -3071,7 +3076,7 @@
                         container.appendChild(canvas);
                         close.id = 'close-screenshot';
                         close.textContent = userLang('CNSL_SS_CLS');
-                        handleEvents(close, 'click', hideContainer);
+                        eventHandler(close, 'click', hideContainer);
                         container.appendChild(close);
                         document.body.appendChild(container);
                     } else if (container.id && container.classList.contains('invisible')) {
@@ -3093,12 +3098,13 @@
                         if (document.documentElement.classList.contains('part_fullbrowser') && (key.keyCode === 27 || key.key === 'Escape' || key.target.className.split('ytp-size').length > 1)) {
                             toggleFullBrowser(key);
                             if (key.type === 'click') {
+                                eventHandler(document, 'click', exitFullBrowser, false, 'remove');
                                 key.target.click();
                             }
                         }
                     }
-                    handleEvents(document, 'keydown', exitFullBrowser);
-                    handleEvents(document, 'click', exitFullBrowser);
+                    eventHandler(document, 'keydown', exitFullBrowser);
+                    eventHandler(document, 'click', exitFullBrowser);
                     set('fullBrs', event ? !parSets.fullBrs : true);
                     fullBrowser.classList[(parSets.fullBrs) ? 'add' : 'remove']('active');
                     if (event && (plrState || (event.keyCode === 27 || event.key === 'Escape'))) {
@@ -3113,14 +3119,14 @@
                         document.documentElement.classList[(parSets.lightsOut) ? 'add' : 'remove']('part_cinema_mode');
                     }
                 }
-                handleEvents(autoPlay, 'click', togglePlay);
-                handleEvents(loopButton, 'click', toggleLoop);
-                handleEvents(seekMap, 'click', toggleMap);
-                handleEvents(saveThumb, 'click', dlThumb);
-                handleEvents(screenShot, 'click', saveSS);
-                handleEvents(sidebarMode, 'click', openSidebar);
-                handleEvents(fullBrowser, 'click', toggleFullBrowser);
-                handleEvents(cinemaMode, 'click', toggleCinemaMode);
+                eventHandler(autoPlay, 'click', togglePlay);
+                eventHandler(loopButton, 'click', toggleLoop);
+                eventHandler(seekMap, 'click', toggleMap);
+                eventHandler(saveThumb, 'click', dlThumb);
+                eventHandler(screenShot, 'click', saveSS);
+                eventHandler(sidebarMode, 'click', openSidebar);
+                eventHandler(fullBrowser, 'click', toggleFullBrowser);
+                eventHandler(cinemaMode, 'click', toggleCinemaMode);
                 if (parSets.loopVid && !loopButton.classList.contains('active')) {
                     loopButton.classList.add('active');
                     toggleLoop();
@@ -3141,7 +3147,7 @@
             if (window.location.pathname === '/watch' && header && !cnslBtn) {
                 cnslBtn = '<button id="console-button" title="' + userLang('ADV_OPTS') + '"></button>';
                 cnslBtn = string2HTML(cnslBtn).querySelector('#console-button');
-                handleEvents(cnslBtn, 'click', toggleConsole);
+                eventHandler(cnslBtn, 'click', toggleConsole);
                 cnslCont = '<div id="advanced-options"></div>';
                 cnslCont = string2HTML(cnslCont).querySelector('#advanced-options');
                 cnslCont.appendChild(cnslBtn);
@@ -3172,12 +3178,18 @@
         function generalChanges() {
             var logo,
                 channelLink,
-                autoplaybar      = document.getElementsByClassName('autoplay-bar')[0],
-                descriptionPanel = document.getElementById('action-panel-details');
+                autoplaybar = document.getElementsByClassName('autoplay-bar')[0],
+                description = document.getElementById('action-panel-details');
             function linkIterator(link) {
                 if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
                     channelLink[link].href += '/' + parSets.GEN_CHN_DFLT_PAGE;
                 }
+            }
+            if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
+                channelLink = document.querySelectorAll('[href*="/channel/"]');
+                Object.keys(channelLink).forEach(linkIterator);
+                channelLink = document.querySelectorAll('[href*="/user/"]');
+                Object.keys(channelLink).forEach(linkIterator);
             }
             if (parSets.GEN_YT_LOGO_LINK && window.yt && window.yt.config_ && window.yt.config_.LOGGED_IN) {
                 logo = document.getElementById('logo-container');
@@ -3189,22 +3201,16 @@
                 autoplaybar.removeAttribute('class');
                 document.getElementsByClassName('checkbox-on-off')[0].remove();
             }
-            if (parSets.VID_LAYT_AUTO_PNL && window.location.pathname === '/watch' && descriptionPanel) {
-                descriptionPanel.classList.remove('yt-uix-expander-collapsed');
+            if (parSets.VID_LAYT_AUTO_PNL && window.location.pathname === '/watch' && description) {
+                description.classList.remove('yt-uix-expander-collapsed');
             }
             if (parSets.GEN_SPF_OFF && window.spf && window.spf.dispose) {
                 window.spf.dispose();
             }
-            if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
-                channelLink = document.querySelectorAll('[href*="/channel/"]');
-                Object.keys(channelLink).forEach(linkIterator);
-                channelLink = document.querySelectorAll('[href*="/user/"]');
-                Object.keys(channelLink).forEach(linkIterator);
-            }
             if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
                 document.documentElement.scrollTop = document.body.scrollTop = 0;
             }
-            logo = channelLink = autoplaybar = descriptionPanel = null;
+            logo = channelLink = autoplaybar = description = null;
         }
         function infiniteScroll() {
             var observer,
@@ -3213,9 +3219,7 @@
                 if (!loadMore.classList.contains('infiniteScroll')) {
                     loadMore.classList.add('infiniteScroll');
                     observer = new window.MutationObserver(infiniteScroll);
-                    observer.observe(loadMore, {
-                        attributes: true
-                    });
+                    observer.observe(loadMore, {attributes: true});
                 } else if (!loadMore.classList.contains('scrolldetect')) {
                     loadMore.classList.add('scrolldetect');
                     loadMore.setAttribute('data-scrolldetect-callback', 'load-more-auto');
@@ -3283,16 +3287,20 @@
         } else {
             checkNewFeatures();
         }
+        if (isChrome) {
+            eventHandler(document.documentElement, 'load', scriptExit, true);
+        } else {
+            eventHandler(window, 'afterscriptexecute', scriptExit);
+        }
+        eventHandler(window, 'message', updateSettings);
+        eventHandler(window, 'spfdone', initFunctions);
+        eventHandler(window, 'spfrequest', request);
+        eventHandler(window, 'readystatechange', initFunctions, true);
         window.matchMedia = false;
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
-        handleEvents(window, 'message', updateSettings);
-        handleEvents(window, 'spfdone', initFunctions);
-        handleEvents(window, 'spfrequest', request);
-        handleEvents(window, 'readystatechange', initFunctions, true);
-        handleEvents(document.documentElement, 'load', scriptExit, true);
     }
     function updateSettings(event) {
-        event = (event && event.particleSettings) || event || defaultSettings;
+        event = (event && event.particleSettings) || event || {};
         event.updateSettings = true;
         window.postMessage(event, '*');
     }
@@ -3304,15 +3312,15 @@
             }
         }
         if (!event && userscript) {
-            event = JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)));
+            event = JSON.parse(window.GM_getValue('particleSettings', {}));
         }
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
             inject = document.createElement('style');
-            inject.textContent = particleStyle;
+            inject.textContent = styleSheet;
             document.documentElement.appendChild(inject);
             inject = document.createElement('script');
-            inject.textContent = '(' + String(particle).replace('defSets   = null,', 'defSets   = ' + JSON.stringify(defaultSettings) + ',').replace('parSets,', 'parSets   = ' + event + ',') + '())';
+            inject.textContent = '(' + String(particle).replace('parSets,', 'parSets = ' + event + ',') + '())';
             document.documentElement.appendChild(inject);
             if (!userscript) {
                 if (window.chrome) {
@@ -3321,13 +3329,13 @@
                     window.self.port.on('particleSettings', updateSettings);
                 }
             }
-            inject = particleStyle = null;
+            inject = styleSheet = null;
         }
     }
     function xhr(details) {
         details = details.data;
         function settingsHandler(item) {
-            var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings)))) || defaultSettings;
+            var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', {}))) || {};
             function buildSettings(keys) {
                 object[keys] = details.set[keys];
             }
@@ -3342,7 +3350,7 @@
                 }
             }
             if (userscript) {
-                updateSettings(JSON.parse(window.GM_getValue('particleSettings', JSON.stringify(defaultSettings))));
+                updateSettings(JSON.parse(window.GM_getValue('particleSettings', {})));
             }
         }
         if (typeof details === 'object' && (details.set || details.get || details.replace)) {
@@ -3359,20 +3367,9 @@
         window.GM_getValue = GM_getValue;
         window.GM_setValue = GM_setValue;
     }
-    function migrateChromeSettings(event) {
-        window.chrome.storage.local.set(event);
-        initParticle(event);
-    }
-    function checkForOldSettings(event) {
-        if (event.particleSettings) {
-            initParticle(event);
-        } else {
-            window.chrome.storage.sync.get('particleSettings', migrateChromeSettings);
-        }
-    }
     if (!userscript) {
         if (window.chrome) {
-            window.chrome.storage.local.get('particleSettings', checkForOldSettings);
+            window.chrome.storage.local.get('particleSettings', initParticle);
         } else {
             window.self.port.once('particleSettings', initParticle);
         }
