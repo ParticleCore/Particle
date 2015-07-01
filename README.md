@@ -8,6 +8,4 @@ This software supports only YouTube's HTML5 player. Some features will not work 
 
 
 
-**[Download](https://github.com/ParticleCore/Particle/wiki/Download)  
-[Features](https://github.com/ParticleCore/Particle/wiki/Features)  
-[Report a problem](https://github.com/ParticleCore/Particle/wiki/Report-a-problem)**
+**[Download](https://github.com/ParticleCore/Particle/wiki/Download) | [Features](https://github.com/ParticleCore/Particle/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Particle/wiki/Report-a-problem)**
