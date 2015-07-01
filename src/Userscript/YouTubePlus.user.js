@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.2.9
+// @version     0.3.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -52,7 +52,7 @@
             '}\n',
         //   end| Compact video title
         // start| Compact thumbnail titles
-            '.part_compact_titles .feed-item-container .yt-ui-ellipsis, .yt-shelf-grid-item .yt-ui-ellipsis{\n',
+            '.part_compact_titles .feed-item-container .yt-ui-ellipsis, .part_compact_titles .yt-shelf-grid-item .yt-ui-ellipsis{\n',
             '    white-space: nowrap !important;\n',
             '    display: inherit !important;\n',
             '}\n',
@@ -435,6 +435,7 @@
             '    display: inline-block;\n',
             '    margin-bottom: 20px;\n',
             '    margin-right: 10px;\n',
+            '    vertical-align: top;\n',
             '    width: 196px;\n',
             '    word-wrap: break-word;\n',
             '}\n',
@@ -478,7 +479,7 @@
             '    margin-bottom: 1px;\n',
             '    max-width: 176px;\n',
             '}\n',
-            '.part_grid_search #results .yt-lockup-title a{\n',
+            '.part_grid_search.part_compact_titles  #results .yt-lockup-title a{\n',
             '    white-space: nowrap;\n',
             '}\n',
             '.part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges, .part_grid_subs .yt-lockup-badges, .part_grid_subs .yt-uix-livereminder, .part_grid_search .yt-uix-livereminder{\n',
@@ -486,15 +487,6 @@
             '}\n',
             '.part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n',
             '    display: inline;\n',
-            '}\n',
-            '.part_grid_subs .yt-lockup-meta-info, .part_grid_subs .feed-item-container .yt-ui-ellipsis, .part_grid_search .yt-lockup-meta-info, .part_grid_search .yt-lockup-content div{\n',
-            '    overflow: hidden;\n',
-            '    text-overflow: ellipsis;\n',
-            '    white-space: nowrap;\n',
-            '}\n',
-            '.part_grid_search #results .item-section > li{\n',
-            '    float: left;\n',
-            '    min-height: 164px;\n',
             '}\n',
             '.part_grid_search #results .item-section{\n',
             '    float: left;\n',
@@ -583,10 +575,10 @@
             '.content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n',
             '   display: none !important;\n',
             '}\n',
-            '.new_player .ytp-large-play-button{\n',
+            '.ytp-large-play-button{\n',
             '   text-align: center;\n',
             '}\n',
-            '.new_player .ytp-large-play-button svg{\n',
+            '.ytp-large-play-button svg{\n',
             '   max-width: 85px;\n',
             '}\n',
             '.new_player .html5-video-container{\n',
@@ -976,6 +968,9 @@
             '    display: block;\n',
             '    padding: 0 21px;\n',
             '    text-decoration: none;\n',
+            '}\n',
+            '#P-sidebar-list #HLP a:hover{\n',
+            '    color: #1E1E1E;\n',
             '}\n',
             '#DNT, #HLP{\n',
             '    padding: 0 !important;\n',
@@ -1616,10 +1611,8 @@
             return new window.DOMParser().parseFromString(string, 'text/html');
         }
         function set(setting, newValue) {
-            var object = {};
             parSets[setting] = newValue;
-            object[setting] = newValue;
-            window.postMessage({set: object}, '*');
+            window.postMessage({set: parSets}, '*');
         }
         function eventHandler(target, event, call, capture, type) {
             if (target.events && target.events[event] && target.events[event][call.name]) {
@@ -2017,7 +2010,7 @@
                         }
                     }
                     parSets = savedSets;
-                    window.postMessage({replace: parSets}, '*');
+                    window.postMessage({set: parSets}, '*');
                     customStyles();
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
@@ -2045,7 +2038,7 @@
                     saveSettings();
                 } else if (event.target.classList.contains('P-reset')) {
                     parSets = defSets;
-                    window.postMessage({replace: defSets}, '*');
+                    window.postMessage({set: defSets}, '*');
                     settingsButton.click();
                     settingsButton.click();
                 } else if (event.target.classList.contains('close')) {
@@ -2122,7 +2115,8 @@
                     details = details.target.responseText;
                     if (details) {
                         details = JSON.parse(details);
-                        details = details.body && details.body.content && details.body.content.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
+                        details = details.body && details.body.content && (details.body.content.html || details.body.content);
+                        details = details && details.match && details.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
                         details = details && details.match(/<li>([\w\W]*?)<\/li>/g)[1];
                         if (details) {
                             link.className = 'spf-link';
@@ -2156,7 +2150,8 @@
                     if (details) {
                         if (watchTime.textContent.split('·').length < 2) {
                             details = JSON.parse(details);
-                            details = details.body && details.body.content && details.body.content.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
+                            details = details.body && details.body.content && (details.body.content.html || details.body.content);
+                            details = details && details.match && details.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
                             if (details) {
                                 watchTime.textContent += ' · ' + details[1].split('</li><li>')[0];
                             }
@@ -3093,7 +3088,7 @@
                     newSidebar.focus();
                 }
                 function toggleFullBrowser(event) {
-                    var plrState   = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
+                    var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
                     function exitFullBrowser(key) {
                         if (document.documentElement.classList.contains('part_fullbrowser') && (key.keyCode === 27 || key.key === 'Escape' || key.target.className.split('ytp-size').length > 1)) {
                             toggleFullBrowser(key);
@@ -3107,7 +3102,7 @@
                     eventHandler(document, 'click', exitFullBrowser);
                     set('fullBrs', event ? !parSets.fullBrs : true);
                     fullBrowser.classList[(parSets.fullBrs) ? 'add' : 'remove']('active');
-                    if (event && (plrState || (event.keyCode === 27 || event.key === 'Escape'))) {
+                    if (event && (plrState || event.keyCode === 27 || event.key === 'Escape')) {
                         document.documentElement.classList[(parSets.fullBrs) ? 'add' : 'remove']('part_fullbrowser');
                     }
                 }
@@ -3332,32 +3327,14 @@
             inject = styleSheet = null;
         }
     }
-    function xhr(details) {
+    function internalXHR(details) {
         details = details.data;
-        function settingsHandler(item) {
-            var object = (item && item.particleSettings) || (userscript && JSON.parse(window.GM_getValue('particleSettings', '{}'))) || {};
-            function buildSettings(keys) {
-                object[keys] = details.set[keys];
-            }
-            if (!details.get) {
-                if (details.set) {
-                    Object.keys(details.set).forEach(buildSettings);
-                }
-                if (!userscript) {
-                    window.chrome.storage.local.set({'particleSettings': ((details.set && object) || details.replace)});
-                } else {
-                    window.GM_setValue('particleSettings', ((details.set && JSON.stringify(object)) || JSON.stringify(details.replace)));
-                }
-            }
+        if (typeof details === 'object' && details.set) {
             if (userscript) {
+                window.GM_setValue('particleSettings', JSON.stringify(details.set));
                 updateSettings(JSON.parse(window.GM_getValue('particleSettings', '{}')));
-            }
-        }
-        if (typeof details === 'object' && (details.set || details.get || details.replace)) {
-            if (userscript) {
-                settingsHandler();
             } else if (window.chrome) {
-                window.chrome.storage.local.get('particleSettings', settingsHandler);
+                window.chrome.storage.local.set({'particleSettings': details.set});
             } else {
                 window.self.port.emit('particleSettings', details);
             }
@@ -3376,5 +3353,5 @@
     } else if (userscript) {
         initParticle();
     }
-    window.addEventListener('message', xhr);
+    window.addEventListener('message', internalXHR);
 }());
