@@ -1,10 +1,11 @@
 ﻿// ==UserScript==
-// @version     0.3.0
+// @version     0.3.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
 // @icon        data:image/png;base64,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
 // @match       *://www.youtube.com/*
+// @exclude     *://www.youtube.com/embed/*
 // @run-at      document-start
 // @downloadURL https://github.com/ParticleCore/Particle/raw/master/src/Userscript/YouTubePlus.user.js
 // @grant       GM_getValue
@@ -2219,9 +2220,9 @@
             cookie = pageElement = playerElement = null;
         }
         function argsCleaner(config) {
-            var base = (config.args.iurl_webp) ? '_webp' : '',
+            var maxRes,
                 hdThumb,
-                maxRes;
+                base = (config.args.iurl_webp && '_webp') || '';
             function prefixIterator(prefix) {
                 config.args[prefix + base] = config.args['iurlmaxres' + base];
             }
@@ -2308,7 +2309,7 @@
                     minOffsetY,
                     activeMove,
                     skinny          = document.documentElement.classList.contains('content-snap-width-skinny-mode'),
-                    newPlayer       = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1,
+                    newPlayer       = document.querySelector('link[href*="player-new"]'),
                     videoPlayer     = document.getElementById('movie_player'),
                     playerContainer = document.getElementById('player-api'),
                     containerSize   = playerContainer && playerContainer.getBoundingClientRect(),
@@ -2450,22 +2451,18 @@
         function playerReady(playerApi) {
             function playerState(state) {
                 var cueThumb  = document.getElementsByClassName('ytp-thumbnail-overlay')[0],
-                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0],
-                    newPlayer = window.ytplayer && window.ytplayer.config && window.ytplayer.config.assets.js.split('-new').length > 1;
-                if (newPlayer) {
-                    document.documentElement.classList.add('new_player');
-                    if (cueThumb && cueButton) {
-                        if (state === 5) {
-                            cueThumb.removeAttribute('aria-hidden');
-                            cueThumb.style.display = 'initial';
-                            cueButton.removeAttribute('aria-hidden');
-                            cueButton.style.display = 'initial';
-                        } else {
-                            cueThumb.setAttribute('aria-hidden', 'true');
-                            cueThumb.style.display = 'none';
-                            cueButton.setAttribute('aria-hidden', 'true');
-                            cueButton.style.display = 'none';
-                        }
+                    cueButton = document.getElementsByClassName('ytp-large-play-button')[0];
+                if (document.documentElement.classList.contains('new_player') && cueThumb && cueButton) {
+                    if (state === 5) {
+                        cueThumb.removeAttribute('aria-hidden');
+                        cueThumb.style.display = 'initial';
+                        cueButton.removeAttribute('aria-hidden');
+                        cueButton.style.display = 'initial';
+                    } else {
+                        cueThumb.setAttribute('aria-hidden', 'true');
+                        cueThumb.style.display = 'none';
+                        cueButton.setAttribute('aria-hidden', 'true');
+                        cueButton.style.display = 'none';
                     }
                 }
                 if (parSets.fullBrs) {
@@ -2474,7 +2471,7 @@
                 if (parSets.lightsOut) {
                     document.documentElement.classList[(state < 5 && state > 0) ? 'add' : 'remove']('part_cinema_mode');
                 }
-                cueThumb = cueButton = newPlayer = null;
+                cueThumb = cueButton = null;
             }
             function volumeChanged(event) {
                 set('volLev', event.volume);
@@ -2490,12 +2487,11 @@
                 }
                 if (!event) {
                     observer = new window.MutationObserver(forceIdealAspect);
-                    observer.observe(moviePlayer, {
-                        attributes: true
-                    });
+                    observer.observe(moviePlayer, {attributes: true});
                 }
+                observer = moviePlayer = null;
             }
-            if ((typeof playerApi === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) && !document.getElementById('c4-player')) {
+            if ((typeof playerApi === 'object' || document.querySelector('link[href*="player-new"]')) && !document.getElementById('c4-player')) {
                 api = document.getElementById('movie_player');
                 eventHandler(api, 'onStateChange', playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
@@ -2516,7 +2512,7 @@
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
                 }
-                if (parSets.VID_PLR_CTRL_VIS && window.ytplayer.config.assets.js.split('-new').length < 2) {
+                if (parSets.VID_PLR_CTRL_VIS && !document.querySelector('link[href*="player-new"]')) {
                     forceIdealAspect();
                 }
             }
@@ -2645,11 +2641,11 @@
                     args[1] = argsCleaner(args[1]);
                     if (args[0].id === 'upsell-video') {
                         originalFunction.apply(this, args);
-                    } else if (typeof args[0] === 'object' || window.ytplayer.config.assets.js.split('-new').length > 1) {
+                    } else if (typeof args[0] === 'object' || document.querySelector('link[href*="player-new"]')) {
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         moviePlayer = document.getElementById('movie_player');
-                        if (moviePlayer && !parSets.VID_PLR_ATPL && window.ytplayer.config.assets.js.split('-new').length > 1) {
+                        if (moviePlayer && !parSets.VID_PLR_ATPL && document.querySelector('link[href*="player-new"]')) {
                             moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
@@ -3205,6 +3201,9 @@
             if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
                 document.documentElement.scrollTop = document.body.scrollTop = 0;
             }
+            if (document.querySelector('link[href*="player-new"]')) {
+                document.documentElement.classList.add('new_player');
+            }
             logo = channelLink = autoplaybar = description = null;
         }
         function infiniteScroll() {
@@ -3291,8 +3290,8 @@
         eventHandler(window, 'spfdone', initFunctions);
         eventHandler(window, 'spfrequest', request);
         eventHandler(window, 'readystatechange', initFunctions, true);
-        window.matchMedia = false;
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
+        window.matchMedia = false;
     }
     function updateSettings(event) {
         event = (event && event.particleSettings) || event || {};
