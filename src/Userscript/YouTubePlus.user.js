@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.3.2
+// @version     0.3.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2329,6 +2329,7 @@
                         if (event.type === 'mouseup') {
                             set('floaterY', videoPlayer.offsetTop);
                             set('floaterX', videoPlayer.offsetLeft);
+                            activeMove = false;
                             return;
                         }
                         if (event.type === 'mousemove') {
