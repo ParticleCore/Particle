@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.3.3
+// @version     0.3.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1222,7 +1222,7 @@
                 },
                 VID                   : {
                     en     : 'Video',
-                    'pt-PT': 'Video'
+                    'pt-PT': 'Vídeo'
                 },
                 CHN                   : {
                     en     : 'Channels',
@@ -1723,7 +1723,7 @@
                 buttonNotif,
                 buttonsSection,
                 settingsButton;
-            if (document.readyState === 'complete') {
+            if (document.getElementById('P')) {
                 return;
             }
             function template() {
@@ -2206,12 +2206,6 @@
             }
         }
         function argsCleaner(config) {
-            var maxRes,
-                hdThumb,
-                base = (config.args.iurl_webp && '_webp') || '';
-            function prefixIterator(prefix) {
-                config.args[prefix + base] = config.args['iurlmaxres' + base];
-            }
             function clearRVS(rvs) {
                 var i,
                     rvsList   = [],
@@ -2243,15 +2237,13 @@
                 if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
                     config.args.player_wide = '1';
                 }
-                if (config.args.iv_load_policy) {
-                    config.args.iv_load_policy = (parSets.VID_PLR_ANTS) ? '3' : '1';
+                if (config.args.iv_load_policy && parSets.VID_PLR_ANTS) {
+                    config.args.iv_load_policy = '3';
                 }
-                if (config.args.cc_load_policy) {
-                    config.args.cc_load_policy = (parSets.VID_PLR_CC) ? '0' : '1';
-                    if (parSets.VID_PLR_CC) {
-                        delete config.args.ttsurl;
-                        delete config.args.caption_tracks;
-                    }
+                if (config.args.cc_load_policy && parSets.VID_PLR_CC) {
+                    config.args.cc_load_policy = '0';
+                    delete config.args.ttsurl;
+                    delete config.args.caption_tracks;
                 }
                 config.args.autohide = '2';
                 config.args.vq = parSets.VID_DFLT_QLTY;
@@ -2259,16 +2251,6 @@
                 config.args.color = parSets.VID_PROG_BAR_CLR;
                 config.args.dash = (parSets.VID_PLR_DASH) ? '0' : '1';
                 config.args.autoplay = (parSets.VID_PLR_ATPL) ? '1' : '0';
-                if (config.args.autoplay === '0') {
-                    hdThumb = document.querySelector('[href*="maxresdefault"]') || document.querySelector('[content*="maxresdefault"]');
-                    maxRes = hdThumb && (hdThumb.getAttribute('href') || hdThumb.getAttribute('content'));
-                    config.args['iurlmaxres' + base] = config.args['iurlmaxres' + base] || maxRes || false;
-                    if (config.args['iurlmaxres' + base] === false || (config.args['iurlmaxres' + base] && config.args['iurlmaxres' + base].split(config.args.video_id).length < 2)) {
-                        delete config.args['iurlmaxres' + base];
-                    } else if (config.args['iurlmaxres' + base]) {
-                        ['iurl', 'iurlsd', 'iurlmq', 'iurlhq'].forEach(prefixIterator);
-                    }
-                }
                 if (parSets.BLK_ON && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
                     config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = clearRVS(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
                 }
@@ -2793,7 +2775,6 @@
             if (!event && parSets.VID_VOL_WHEEL) {
                 eventHandler(window, 'wheel', volumeWheel);
             }
-            playerApi = direction = currentVol = playlistFS =null;
         }
         function playlistControls() {
             var href  = window.location.href,
@@ -3240,6 +3221,7 @@
         eventHandler(window, 'readystatechange', initFunctions, true);
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         window.matchMedia = false;
+        initFunctions();
     }
     function updateSettings(event) {
         event = (event && event.particleSettings) || event || {};
