@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.3.4
+// @version     0.3.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2182,11 +2182,10 @@
             }
         }
         function playerMode() {
-            var cookie        = document.cookie,
-                pageElement   = document.getElementById('page'),
+            var pageElement   = document.getElementById('page'),
                 playerElement = document.getElementById('player');
             if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
-                if (window.navigator.cookieEnabled && (cookie.split('wide=0').length > 1 || cookie.split('wide=1').length < 2)) {
+                if (window.navigator.cookieEnabled && (document.cookie.split('wide=0').length > 1 || document.cookie.split('wide=1').length < 2)) {
                     document.cookie = 'wide=1; path=/';
                 }
                 if (playerElement && window.location.pathname === '/watch') {
@@ -2195,7 +2194,7 @@
                     playerElement.className = playerElement.className.replace('small', 'large');
                 }
             } else if (parSets.VID_PLR_SIZE_MEM && !parSets.theaterMode) {
-                if (window.navigator.cookieEnabled && (cookie.split('wide=1').length > 1 || cookie.split('wide=0').length < 2)) {
+                if (window.navigator.cookieEnabled && (document.cookie.split('wide=1').length > 1 || document.cookie.split('wide=0').length < 2)) {
                     document.cookie = 'wide=0; path=/';
                 }
                 if (playerElement && window.location.pathname === '/watch') {
@@ -2207,35 +2206,28 @@
         }
         function argsCleaner(config) {
             function clearRVS(rvs) {
-                var i,
-                    rvsList   = [],
-                    rvsReturn = [];
                 rvs = rvs.split(',');
                 function blacklistMatch(names) {
-                    i = rvs.length;
+                    var i = rvs.length;
                     while (i) {
                         i -= 1;
                         if (rvs[i].replace(/\+/g, ' ').split(parSets.blacklist[names]).length > 1) {
-                            rvsList.push(i);
+                            rvs.splice(i, 1);
                         }
                     }
                 }
                 Object.keys(parSets.blacklist).forEach(blacklistMatch);
-                i = rvs.length;
-                while (i) {
-                    i -= 1;
-                    if (rvsList.indexOf(i) < 0) {
-                        rvsReturn.push(rvs[i]);
-                    }
-                }
-                return rvsReturn.join(',');
+                return rvs.join(',');
             }
             if (config.args.video_id) {
-                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
-                    delete config.args.ad3_module;
-                }
-                if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
-                    config.args.player_wide = '1';
+                config.args.autohide = '2';
+                config.args.vq = parSets.VID_DFLT_QLTY;
+                config.args.theme = parSets.VID_CTRL_BAR_CLR;
+                config.args.color = parSets.VID_PROG_BAR_CLR;
+                config.args.dash = (parSets.VID_PLR_DASH && '0') || config.args.dash;
+                config.args.autoplay = (parSets.VID_PLR_ATPL && '1') || config.args.autoplay;
+                if (parSets.VID_PLR_SIZE_MEM) {
+                    config.args.player_wide = (parSets.theaterMode && '1') || '0';
                 }
                 if (config.args.iv_load_policy && parSets.VID_PLR_ANTS) {
                     config.args.iv_load_policy = '3';
@@ -2245,12 +2237,9 @@
                     delete config.args.ttsurl;
                     delete config.args.caption_tracks;
                 }
-                config.args.autohide = '2';
-                config.args.vq = parSets.VID_DFLT_QLTY;
-                config.args.theme = parSets.VID_CTRL_BAR_CLR;
-                config.args.color = parSets.VID_PROG_BAR_CLR;
-                config.args.dash = (parSets.VID_PLR_DASH) ? '0' : '1';
-                config.args.autoplay = (parSets.VID_PLR_ATPL) ? '1' : '0';
+                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
+                    delete config.args.ad3_module;
+                }
                 if (parSets.BLK_ON && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
                     config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = clearRVS(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
                 }
@@ -2767,9 +2756,9 @@
             if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === 'player-api' || playerApi.contains(event.target))) {
                 event.preventDefault();
                 if (direction > 0 && currentVol > 0) {
-                    api.setVolume(currentVol - 10);
+                    api.setVolume(currentVol - 5);
                 } else if (direction < 0 && currentVol < 100) {
-                    api.setVolume(currentVol + 10);
+                    api.setVolume(currentVol + 5);
                 }
             }
             if (!event && parSets.VID_VOL_WHEEL) {
