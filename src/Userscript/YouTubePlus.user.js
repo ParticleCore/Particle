@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.3.5
+// @version     0.3.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -13,8 +13,8 @@
 // @noframes
 // ==/UserScript==
 (function () {
-    'use strict';
-    var userscript  = typeof GM_info === 'object',
+    "use strict";
+    var userscript  = typeof GM_info === "object",
         styleSheet  = [
         // start| Playlist spacer
             '.part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n',
@@ -1058,17 +1058,17 @@
             parSets,
             events    = [],
             channelId = {},
-            isChrome  = typeof window.chrome === 'object',
+            isChrome  = typeof window.chrome === "object",
             defSets   = {
                 GEN_BTTR_NTF     : true,
                 GEN_INF_SCRL     : true,
                 GEN_YT_LOGO_LINK : true,
                 GEN_CMPT_TTLS    : true,
                 GEN_BLUE_GLOW    : true,
-                GEN_CHN_DFLT_PAGE: 'videos',
+                GEN_CHN_DFLT_PAGE: "videos",
                 GEN_SDBR_ON      : true,
                 VID_END_SHRE     : true,
-                VID_DFLT_QLTY    : 'auto',
+                VID_DFLT_QLTY    : "auto",
                 VID_PLST_SEP     : true,
                 VID_PLST_ATPL    : true,
                 VID_PLST_RVRS    : true,
@@ -1079,14 +1079,14 @@
                 VID_PLR_SIZE_MEM : true,
                 VID_PLR_CTRL_VIS : true,
                 VID_PLR_DYN_SIZE : true,
-                VID_PLR_FIT_WDTH : '1280px',
-                VID_PROG_BAR_CLR : 'red',
-                VID_CTRL_BAR_CLR : 'light',
-                VID_HIDE_COMS    : '1',
+                VID_PLR_FIT_WDTH : "1280px",
+                VID_PROG_BAR_CLR : "red",
+                VID_CTRL_BAR_CLR : "light",
+                VID_HIDE_COMS    : "1",
                 VID_POST_TIME    : true,
                 VID_VID_CNT      : true,
                 VID_DESC_SHRT    : true,
-                VID_SDBR_ALGN    : '1',
+                VID_SDBR_ALGN    : "1",
                 VID_TTL_CMPT     : true,
                 BLK_ON           : true,
                 volLev           : 50,
@@ -1097,523 +1097,523 @@
             },
             lang      = {
                 ADV_OPTS              : {
-                    en     : 'Advanced options',
-                    'pt-PT': 'Opções avançadas'
+                    en     : "Advanced options",
+                    "pt-PT": "Opções avançadas"
                 },
                 SUB_PLST              : {
-                    en     : 'Play recent uploads',
-                    'pt-PT': 'Reproduzir vídeos recentes'
+                    en     : "Play recent uploads",
+                    "pt-PT": "Reproduzir vídeos recentes"
                 },
                 GEN_SDBR_ON           : {
-                    en     : 'Enable sidebar mode',
-                    'pt-PT': 'Activar modo barra lateral'
+                    en     : "Enable sidebar mode",
+                    "pt-PT": "Activar modo barra lateral"
                 },
                 SDBR_OPEN             : {
-                    en     : 'Open in sidebar',
-                    'pt-PT': 'Abrir barra lateral'
+                    en     : "Open in sidebar",
+                    "pt-PT": "Abrir barra lateral"
                 },
                 BLCK_ADD              : {
-                    en     : 'Add to blacklist',
-                    'pt-PT': 'Adicionar à lista negra'
+                    en     : "Add to blacklist",
+                    "pt-PT": "Adicionar à lista negra"
                 },
                 BLCK_EDIT             : {
-                    en     : 'Edit',
-                    'pt-PT': 'Editar'
+                    en     : "Edit",
+                    "pt-PT": "Editar"
                 },
                 BLCK_SAVE             : {
-                    en     : 'Save',
-                    'pt-PT': 'Guardar'
+                    en     : "Save",
+                    "pt-PT": "Guardar"
                 },
                 BLCK_CLSE             : {
-                    en     : 'Close',
-                    'pt-PT': 'Fechar'
+                    en     : "Close",
+                    "pt-PT": "Fechar"
                 },
                 CNSL_CNSL             : {
-                    en     : 'Console',
-                    'pt-PT': 'Consola'
+                    en     : "Console",
+                    "pt-PT": "Consola"
                 },
                 CNSL_AP               : {
-                    en     : 'Autoplay',
-                    'pt-PT': 'Início automático'
+                    en     : "Autoplay",
+                    "pt-PT": "Início automático"
                 },
                 CNSL_RPT              : {
-                    en     : 'Repeat video',
-                    'pt-PT': 'Repetir vídeo'
+                    en     : "Repeat video",
+                    "pt-PT": "Repetir vídeo"
                 },
                 CNSL_SKMP             : {
-                    en     : 'Seek map',
-                    'pt-PT': 'Mapa de procura'
+                    en     : "Seek map",
+                    "pt-PT": "Mapa de procura"
                 },
                 CNSL_SKMP_OFF         : {
-                    en     : 'No thumbs found',
-                    'pt-PT': 'Não existem imagens'
+                    en     : "No thumbs found",
+                    "pt-PT": "Não existem imagens"
                 },
                 CNSL_SKMP_SMAL        : {
-                    en     : 'SMALL',
-                    'pt-PT': 'PEQUENO'
+                    en     : "SMALL",
+                    "pt-PT": "PEQUENO"
                 },
                 CNSL_SKMP_MED         : {
-                    en     : 'MEDIUM',
-                    'pt-PT': 'MÉDIO'
+                    en     : "MEDIUM",
+                    "pt-PT": "MÉDIO"
                 },
                 CNSL_SKMP_LRGE        : {
-                    en     : 'LARGE',
-                    'pt-PT': 'GRANDE'
+                    en     : "LARGE",
+                    "pt-PT": "GRANDE"
                 },
                 CNSL_SVTH             : {
-                    en     : 'Open thumbnail',
-                    'pt-PT': 'Abrir imagem de fundo'
+                    en     : "Open thumbnail",
+                    "pt-PT": "Abrir imagem de fundo"
                 },
                 CNSL_SS               : {
-                    en     : 'Take screenshot',
-                    'pt-PT': 'Capturar imagem'
+                    en     : "Take screenshot",
+                    "pt-PT": "Capturar imagem"
                 },
                 CNSL_SS_CLS           : {
-                    en     : 'CLOSE',
-                    'pt-PT': 'FECHAR'
+                    en     : "CLOSE",
+                    "pt-PT": "FECHAR"
                 },
                 CNSL_SDBR             : {
-                    en     : 'Sidebar mode',
-                    'pt-PT': 'Modo barra lateral'
+                    en     : "Sidebar mode",
+                    "pt-PT": "Modo barra lateral"
                 },
                 CNSL_FLBR             : {
-                    en     : 'Fullbrowser mode',
-                    'pt-PT': 'Modo navegador inteiro'
+                    en     : "Fullbrowser mode",
+                    "pt-PT": "Modo navegador inteiro"
                 },
                 CNSL_FLBR_TTLE        : {
-                    en     : 'Exit fullbrowser',
-                    'pt-PT': 'Sair navegador inteiro'
+                    en     : "Exit fullbrowser",
+                    "pt-PT": "Sair navegador inteiro"
                 },
                 CNSL_CINM_MD          : {
-                    en     : 'Cinema mode',
-                    'pt-PT': 'Modo cinema'
+                    en     : "Cinema mode",
+                    "pt-PT": "Modo cinema"
                 },
                 PLST_AP               : {
-                    en     : 'Autoplay',
-                    'pt-PT': 'Início automático'
+                    en     : "Autoplay",
+                    "pt-PT": "Início automático"
                 },
                 PLST_RVRS             : {
-                    en     : 'Reverse',
-                    'pt-PT': 'Inverter'
+                    en     : "Reverse",
+                    "pt-PT": "Inverter"
                 },
                 SHOW_CMTS             : {
-                    en     : 'Show comments',
-                    'pt-PT': 'Mostrar comentários'
+                    en     : "Show comments",
+                    "pt-PT": "Mostrar comentários"
                 },
                 HIDE_CMTS             : {
-                    en     : 'Hide comments',
-                    'pt-PT': 'Esconder comentários'
+                    en     : "Hide comments",
+                    "pt-PT": "Esconder comentários"
                 },
                 GLB_RSET              : {
-                    en     : 'Reset',
-                    'pt-PT': 'Repor'
+                    en     : "Reset",
+                    "pt-PT": "Repor"
                 },
                 GLB_SVE               : {
-                    en     : 'Save',
-                    'pt-PT': 'Guardar'
+                    en     : "Save",
+                    "pt-PT": "Guardar"
                 },
                 FTR_DESC              : {
-                    en     : 'Find out what this does',
-                    'pt-PT': 'Descubra o que isto faz'
+                    en     : "Find out what this does",
+                    "pt-PT": "Descubra o que isto faz"
                 },
                 GEN                   : {
-                    en     : 'General',
-                    'pt-PT': 'Geral'
+                    en     : "General",
+                    "pt-PT": "Geral"
                 },
                 VID                   : {
-                    en     : 'Video',
-                    'pt-PT': 'Vídeo'
+                    en     : "Video",
+                    "pt-PT": "Vídeo"
                 },
                 CHN                   : {
-                    en     : 'Channels',
-                    'pt-PT': 'Canais'
+                    en     : "Channels",
+                    "pt-PT": "Canais"
                 },
                 BLK                   : {
-                    en     : 'Blacklist',
-                    'pt-PT': 'Lista negra'
+                    en     : "Blacklist",
+                    "pt-PT": "Lista negra"
                 },
                 ABT                   : {
-                    en     : 'About',
-                    'pt-PT': 'Sobre'
+                    en     : "About",
+                    "pt-PT": "Sobre"
                 },
                 HLP                   : {
-                    en     : 'Help',
-                    'pt-PT': 'Ajuda'
+                    en     : "Help",
+                    "pt-PT": "Ajuda"
                 },
                 DNT                   : {
-                    en     : 'Donate',
-                    'pt-PT': 'Doação'
+                    en     : "Donate",
+                    "pt-PT": "Doação"
                 },
                 GEN_TTL               : {
-                    en     : 'General settings',
-                    'pt-PT': 'Definições gerais'
+                    en     : "General settings",
+                    "pt-PT": "Definições gerais"
                 },
                 GEN_GEN               : {
-                    en     : 'General',
-                    'pt-PT': 'Geral'
+                    en     : "General",
+                    "pt-PT": "Geral"
                 },
                 GEN_LYT               : {
-                    en     : 'Layout',
-                    'pt-PT': 'Aparência'
+                    en     : "Layout",
+                    "pt-PT": "Aparência"
                 },
                 GEN_DSBL_ADS          : {
-                    en     : 'Disable advertisements outside the video page',
-                    'pt-PT': 'Desactivar publicidades fora da página de vídeo'
+                    en     : "Disable advertisements outside the video page",
+                    "pt-PT": "Desactivar publicidades fora da página de vídeo"
                 },
                 GEN_INF_SCRL          : {
-                    en     : 'Enable infinite scroll in feeds',
-                    'pt-PT': 'Activar scroll infinito em feeds'
+                    en     : "Enable infinite scroll in feeds",
+                    "pt-PT": "Activar scroll infinito em feeds"
                 },
                 GEN_YT_LOGO_LINK      : {
-                    en     : 'YouTube logo redirects to subscriptions',
-                    'pt-PT': 'Logotipo do Youtube redirecciona para as subscrições'
+                    en     : "YouTube logo redirects to subscriptions",
+                    "pt-PT": "Logotipo do Youtube redirecciona para as subscrições"
                 },
                 GEN_REM_APUN          : {
-                    en     : 'Remove autoplay up next',
-                    'pt-PT': 'Remover reprodução automática do vídeo a seguir'
+                    en     : "Remove autoplay up next",
+                    "pt-PT": "Remover reprodução automática do vídeo a seguir"
                 },
                 GEN_SPF_OFF           : {
-                    en     : 'Disable SPF',
-                    'pt-PT': 'Desactivar SPF'
+                    en     : "Disable SPF",
+                    "pt-PT": "Desactivar SPF"
                 },
                 GEN_HIDE_FTR          : {
-                    en     : 'Hide footer',
-                    'pt-PT': 'Esconder rodapé'
+                    en     : "Hide footer",
+                    "pt-PT": "Esconder rodapé"
                 },
                 GEN_BLUE_GLOW         : {
-                    en     : 'Remove blue glow around clicked buttons',
-                    'pt-PT': 'Retirar brilho azul em torno dos botões clicados'
+                    en     : "Remove blue glow around clicked buttons",
+                    "pt-PT": "Retirar brilho azul em torno dos botões clicados"
                 },
                 GEN_HDE_RECM_SDBR     : {
-                    en     : 'Hide recommended channels sidebar',
-                    'pt-PT': 'Esconder barra lateral de canais recomendados'
+                    en     : "Hide recommended channels sidebar",
+                    "pt-PT": "Esconder barra lateral de canais recomendados"
                 },
                 GEN_HDE_SRCH_SDBR     : {
-                    en     : 'Hide search results sidebar',
-                    'pt-PT': 'Esconder barra lateral nos resultados de pesquisa'
+                    en     : "Hide search results sidebar",
+                    "pt-PT": "Esconder barra lateral nos resultados de pesquisa"
                 },
                 GEN_HDE_CHN_SDBR      : {
-                    en     : 'Hide channel sidebar',
-                    'pt-PT': 'Esconder barra lateral dos canais'
+                    en     : "Hide channel sidebar",
+                    "pt-PT": "Esconder barra lateral dos canais"
                 },
                 GEN_CMPT_TTLS         : {
-                    en     : 'Compact titles in feeds',
-                    'pt-PT': 'Títulos compactos nas listas'
+                    en     : "Compact titles in feeds",
+                    "pt-PT": "Títulos compactos nas listas"
                 },
                 GEN_DSB_HVRC          : {
-                    en     : 'Disable hovercards',
-                    'pt-PT': 'Desactivar hovercards'
+                    en     : "Disable hovercards",
+                    "pt-PT": "Desactivar hovercards"
                 },
                 GEN_BTTR_NTF          : {
-                    en     : 'Improved blue notification box',
-                    'pt-PT': 'Caixa de notificação azul melhorada'
+                    en     : "Improved blue notification box",
+                    "pt-PT": "Caixa de notificação azul melhorada"
                 },
                 GEN_GRID_SUBS         : {
-                    en     : 'Grid layout in subscriptions',
-                    'pt-PT': 'Subscrições em formato grelha'
+                    en     : "Grid layout in subscriptions",
+                    "pt-PT": "Subscrições em formato grelha"
                 },
                 GEN_GRID_SRCH         : {
-                    en     : 'Grid layout in search results',
-                    'pt-PT': 'Resultados de pesquisa em formato grelha'
+                    en     : "Grid layout in search results",
+                    "pt-PT": "Resultados de pesquisa em formato grelha"
                 },
                 VID_TTL               : {
-                    en     : 'Video settings',
-                    'pt-PT': 'Definições de vídeo'
+                    en     : "Video settings",
+                    "pt-PT": "Definições de vídeo"
                 },
                 VID_PLR               : {
-                    en     : 'Player settings',
-                    'pt-PT': 'Definições do reproductor'
+                    en     : "Player settings",
+                    "pt-PT": "Definições do reproductor"
                 },
                 VID_PLR_LYT           : {
-                    en     : 'Player layout',
-                    'pt-PT': 'Aspecto do reproductor'
+                    en     : "Player layout",
+                    "pt-PT": "Aspecto do reproductor"
                 },
                 VID_DFLT_QLTY         : {
-                    en     : 'Default video quality:',
-                    'pt-PT': 'Qualidade de vídeo padrão:'
+                    en     : "Default video quality:",
+                    "pt-PT": "Qualidade de vídeo padrão:"
                 },
                 VID_DFLT_QLTY_AUTO    : {
-                    en     : 'Auto',
-                    'pt-PT': 'Auto'
+                    en     : "Auto",
+                    "pt-PT": "Auto"
                 },
                 VID_DFLT_QLTY_TNY     : {
-                    en: '144p'
+                    en: "144p"
                 },
                 VID_DFLT_QLTY_SML     : {
-                    en: '240p'
+                    en: "240p"
                 },
                 VID_DFLT_QLTY_MDM     : {
-                    en: '360p'
+                    en: "360p"
                 },
                 VID_DFLT_QLTY_LRG     : {
-                    en: '480p'
+                    en: "480p"
                 },
                 VID_DFLT_QLTY_720     : {
-                    en: '720p'
+                    en: "720p"
                 },
                 VID_DFLT_QLTY_1080    : {
-                    en: '1080p'
+                    en: "1080p"
                 },
                 VID_DFLT_QLTY_1440    : {
-                    en: '1440p'
+                    en: "1440p"
                 },
                 VID_DFLT_QLTY_ORIG    : {
-                    en: '2160p'
+                    en: "2160p"
                 },
                 VID_PLR_ALVIS         : {
-                    en     : 'Player always visible when reading comments',
-                    'pt-PT': 'Reproductor sempre visível ao ler os comentários'
+                    en     : "Player always visible when reading comments",
+                    "pt-PT": "Reproductor sempre visível ao ler os comentários"
                 },
                 VID_PLR_ALVIS_MOVE    : {
-                    en     : 'Move',
-                    'pt-PT': 'Mover'
+                    en     : "Move",
+                    "pt-PT": "Mover"
                 },
                 VID_PLR_ALVIS_RST     : {
-                    en     : 'Reset position',
-                    'pt-PT': 'Repôr posição'
+                    en     : "Reset position",
+                    "pt-PT": "Repôr posição"
                 },
                 VID_PLR_ATPL          : {
-                    en     : 'Autoplay videos',
-                    'pt-PT': 'Iniciar vídeos automáticamente'
+                    en     : "Autoplay videos",
+                    "pt-PT": "Iniciar vídeos automáticamente"
                 },
                 VID_PROG_BAR_CLR      : {
-                    en     : 'Progress bar color:',
-                    'pt-PT': 'Cor da barra de progresso:'
+                    en     : "Progress bar color:",
+                    "pt-PT": "Cor da barra de progresso:"
                 },
                 VID_PROG_BAR_CLR_RED  : {
-                    en     : 'Red',
-                    'pt-PT': 'Vermelha'
+                    en     : "Red",
+                    "pt-PT": "Vermelha"
                 },
                 VID_PROG_BAR_CLR_WHT  : {
-                    en     : 'White',
-                    'pt-PT': 'Branca'
+                    en     : "White",
+                    "pt-PT": "Branca"
                 },
                 VID_CTRL_BAR_CLR      : {
-                    en     : 'Control bar color:',
-                    'pt-PT': 'Cor da barra de controlos:'
+                    en     : "Control bar color:",
+                    "pt-PT": "Cor da barra de controlos:"
                 },
                 VID_CTRL_BAR_CLR_DARK : {
-                    en     : 'Dark',
-                    'pt-PT': 'Escura'
+                    en     : "Dark",
+                    "pt-PT": "Escura"
                 },
                 VID_CTRL_BAR_CLR_LGHT : {
-                    en     : 'Light',
-                    'pt-PT': 'Clara'
+                    en     : "Light",
+                    "pt-PT": "Clara"
                 },
                 VID_LAYT              : {
-                    en     : 'Layout',
-                    'pt-PT': 'Aparência'
+                    en     : "Layout",
+                    "pt-PT": "Aparência"
                 },
                 VID_VID_CNT           : {
-                    en     : 'Show link with number of uploaded videos',
-                    'pt-PT': 'Mostrar link com número de vídeos carregados'
+                    en     : "Show link with number of uploaded videos",
+                    "pt-PT": "Mostrar link com número de vídeos carregados"
                 },
                 VID_POST_TIME         : {
-                    en     : 'Show how long the video has been published',
-                    'pt-PT': 'Mostrar há quanto tempo o vídeo foi publicado'
+                    en     : "Show how long the video has been published",
+                    "pt-PT": "Mostrar há quanto tempo o vídeo foi publicado"
                 },
                 VID_HIDE_DETLS        : {
-                    en     : 'Hide video details',
-                    'pt-PT': 'Esconder detalhes do vídeo'
+                    en     : "Hide video details",
+                    "pt-PT": "Esconder detalhes do vídeo"
                 },
                 VID_HIDE_COMS         : {
-                    en     : 'Comment section',
-                    'pt-PT': 'Secção de comentários'
+                    en     : "Comment section",
+                    "pt-PT": "Secção de comentários"
                 },
                 VID_HIDE_COMS_SHOW    : {
-                    en     : 'Show',
-                    'pt-PT': 'Mostrar'
+                    en     : "Show",
+                    "pt-PT": "Mostrar"
                 },
                 VID_HIDE_COMS_HIDE    : {
-                    en     : 'Hide',
-                    'pt-PT': 'Esconder'
+                    en     : "Hide",
+                    "pt-PT": "Esconder"
                 },
                 VID_HIDE_COMS_REM     : {
-                    en     : 'Remove',
-                    'pt-PT': 'Remover'
+                    en     : "Remove",
+                    "pt-PT": "Remover"
                 },
                 VID_END_SHRE          : {
-                    en     : 'Disable share panel when video ends',
-                    'pt-PT': 'Desactivar painel de partilha quando o video acaba'
+                    en     : "Disable share panel when video ends",
+                    "pt-PT": "Desactivar painel de partilha quando o video acaba"
                 },
                 VID_PLST              : {
-                    en     : 'Playlists',
-                    'pt-PT': 'Listas'
+                    en     : "Playlists",
+                    "pt-PT": "Listas"
                 },
                 VID_PLST_SEP          : {
-                    en     : 'Separate playlist from player',
-                    'pt-PT': 'Separar lista de reprodução do reproductor'
+                    en     : "Separate playlist from player",
+                    "pt-PT": "Separar lista de reprodução do reproductor"
                 },
                 VID_PLST_ATPL         : {
-                    en     : 'Enable playlist autoplay control',
-                    'pt-PT': 'Activar controlo de início automático das listas'
+                    en     : "Enable playlist autoplay control",
+                    "pt-PT": "Activar controlo de início automático das listas"
                 },
                 VID_PLST_RVRS         : {
-                    en     : 'Enable reverse playlist control',
-                    'pt-PT': 'Activar controlo de inversão das listas'
+                    en     : "Enable reverse playlist control",
+                    "pt-PT": "Activar controlo de inversão das listas"
                 },
                 VID_PLR_SIZE_MEM      : {
-                    en     : 'Memorize player mode',
-                    'pt-PT': 'Memorizar tamanho do reproductor'
+                    en     : "Memorize player mode",
+                    "pt-PT": "Memorizar tamanho do reproductor"
                 },
                 VID_VOL_WHEEL         : {
-                    en     : 'Change volume with mouse wheel',
-                    'pt-PT': 'Alterar nível de som com a roda do rato'
+                    en     : "Change volume with mouse wheel",
+                    "pt-PT": "Alterar nível de som com a roda do rato"
                 },
                 VID_PLR_VOL_MEM       : {
-                    en     : 'Memorize audio volume',
-                    'pt-PT': 'Memorizar volume de audio'
+                    en     : "Memorize audio volume",
+                    "pt-PT": "Memorizar volume de audio"
                 },
                 VID_PLR_ADS           : {
-                    en     : 'Disable advertisements in the video page',
-                    'pt-PT': 'Desactivar publicidades na página de vídeo'
+                    en     : "Disable advertisements in the video page",
+                    "pt-PT": "Desactivar publicidades na página de vídeo"
                 },
                 VID_SUB_ADS           : {
-                    en     : 'Enable advertisements only in videos from subscribed channels',
-                    'pt-PT': 'Activar publicidades só para vídeos de canais subscritos'
+                    en     : "Enable advertisements only in videos from subscribed channels",
+                    "pt-PT": "Activar publicidades só para vídeos de canais subscritos"
                 },
                 VID_PLR_ANTS          : {
-                    en     : 'Disable annotations',
-                    'pt-PT': 'Desactivar notas'
+                    en     : "Disable annotations",
+                    "pt-PT": "Desactivar notas"
                 },
                 VID_PLR_DASH          : {
-                    en     : 'Disable DASH playback',
-                    'pt-PT': 'Desactivar reprodução DASH'
+                    en     : "Disable DASH playback",
+                    "pt-PT": "Desactivar reprodução DASH"
                 },
                 VID_PLR_CC            : {
-                    en     : 'Disable subtitles',
-                    'pt-PT': 'Desactivar legendas'
+                    en     : "Disable subtitles",
+                    "pt-PT": "Desactivar legendas"
                 },
                 VID_PLR_CTRL_VIS      : {
-                    en     : 'Hide player controls',
-                    'pt-PT': 'Esconder controlos do reproductor'
+                    en     : "Hide player controls",
+                    "pt-PT": "Esconder controlos do reproductor"
                 },
                 VID_PLR_FIT           : {
-                    en     : 'Fit to page in theater mode',
-                    'pt-PT': 'Ajustar na página no modo cinema'
+                    en     : "Fit to page in theater mode",
+                    "pt-PT": "Ajustar na página no modo cinema"
                 },
                 VID_PLR_FIT_WDTH      : {
-                    en     : 'Fit to page max width:',
-                    'pt-PT': 'Largura máxima do ajuste na página:'
+                    en     : "Fit to page max width:",
+                    "pt-PT": "Largura máxima do ajuste na página:"
                 },
                 VID_PLR_DYN_SIZE      : {
-                    en     : 'Disable dynamic player size in default view',
-                    'pt-PT': 'Desactivar tamanho dinâmico do reproductor na vista predefinida'
+                    en     : "Disable dynamic player size in default view",
+                    "pt-PT": "Desactivar tamanho dinâmico do reproductor na vista predefinida"
                 },
                 VID_DESC_SHRT         : {
-                    en     : 'Short video description buttons',
-                    'pt-PT': 'Botões curtos na descrição do vídeo'
+                    en     : "Short video description buttons",
+                    "pt-PT": "Botões curtos na descrição do vídeo"
                 },
                 VID_TTL_CMPT          : {
-                    en     : 'Compact title in video description',
-                    'pt-PT': 'Título compacto na descrição do vídeo'
+                    en     : "Compact title in video description",
+                    "pt-PT": "Título compacto na descrição do vídeo"
                 },
                 VID_SDBR_ALGN         : {
-                    en     : 'Sidebar mode alignment',
-                    'pt-PT': 'Alinhar modo barra lateral'
+                    en     : "Sidebar mode alignment",
+                    "pt-PT": "Alinhar modo barra lateral"
                 },
                 VID_SDBR_ALGN_NONE    : {
-                    en     : 'None',
-                    'pt-PT': 'Nenhum'
+                    en     : "None",
+                    "pt-PT": "Nenhum"
                 },
                 VID_SDBR_ALGN_LEFT    : {
-                    en     : 'Left',
-                    'pt-PT': 'Esquerda'
+                    en     : "Left",
+                    "pt-PT": "Esquerda"
                 },
                 VID_SDBR_ALGN_RIGHT   : {
-                    en     : 'Right',
-                    'pt-PT': 'Direita'
+                    en     : "Right",
+                    "pt-PT": "Direita"
                 },
                 VID_LAYT_AUTO_PNL     : {
-                    en     : 'Auto expand video description',
-                    'pt-PT': 'Automáticamente mostrar mais na descrição do vídeo'
+                    en     : "Auto expand video description",
+                    "pt-PT": "Automáticamente mostrar mais na descrição do vídeo"
                 },
                 GEN_CHN_DFLT_PAGE     : {
-                    en     : 'Default channel page:',
-                    'pt-PT': 'Página de canal predefinida:'
+                    en     : "Default channel page:",
+                    "pt-PT": "Página de canal predefinida:"
                 },
                 GEN_CHN_DFLT_PAGE_DFLT: {
-                    en     : 'Default',
-                    'pt-PT': 'Padrão'
+                    en     : "Default",
+                    "pt-PT": "Padrão"
                 },
                 GEN_CHN_DFLT_PAGE_VID : {
-                    en     : 'Videos',
-                    'pt-PT': 'Vídeos'
+                    en     : "Videos",
+                    "pt-PT": "Vídeos"
                 },
                 GEN_CHN_DFLT_PAGE_PL  : {
-                    en     : 'Playlists',
-                    'pt-PT': 'Listas de reprodução'
+                    en     : "Playlists",
+                    "pt-PT": "Listas de reprodução"
                 },
                 GEN_CHN_DFLT_PAGE_CHN : {
-                    en     : 'Channels',
-                    'pt-PT': 'Canais'
+                    en     : "Channels",
+                    "pt-PT": "Canais"
                 },
                 GEN_CHN_DFLT_PAGE_DISC: {
-                    en     : 'Discussion',
-                    'pt-PT': 'Discussão'
+                    en     : "Discussion",
+                    "pt-PT": "Discussão"
                 },
                 GEN_CHN_DFLT_PAGE_ABT : {
-                    en     : 'About',
-                    'pt-PT': 'Acerca de'
+                    en     : "About",
+                    "pt-PT": "Acerca de"
                 },
                 BLK_TTL               : {
-                    en     : 'Blacklist settings',
-                    'pt-PT': 'Definições da lista negra'
+                    en     : "Blacklist settings",
+                    "pt-PT": "Definições da lista negra"
                 },
                 BLK_BLK               : {
-                    en     : 'Blacklist',
-                    'pt-PT': 'Lista negra'
+                    en     : "Blacklist",
+                    "pt-PT": "Lista negra"
                 },
                 BLK_ON                : {
-                    en     : 'Enable blacklist',
-                    'pt-PT': 'Activar lista negra'
+                    en     : "Enable blacklist",
+                    "pt-PT": "Activar lista negra"
                 },
                 ABT_TTL               : {
-                    en     : 'Information and useful links',
-                    'pt-PT': 'Informação e ligações úteis'
+                    en     : "Information and useful links",
+                    "pt-PT": "Informação e ligações úteis"
                 },
                 ABT_THKS              : {
-                    en     : 'Thanks to:',
-                    'pt-PT': 'Agradecimentos a:'
+                    en     : "Thanks to:",
+                    "pt-PT": "Agradecimentos a:"
                 },
                 ABT_THKS_YEPPHA       : {
-                    en     : ', who\'s work inspired the creation of this project, without whom none of this would exist today.',
-                    'pt-PT': ', cujo trabalho inspirou a criação deste projecto, sem ele nada disto existiria hoje.'
+                    en     : ", who's work inspired the creation of this project, without whom none of this would exist today.",
+                    "pt-PT": ", cujo trabalho inspirou a criação deste projecto, sem ele nada disto existiria hoje."
                 },
                 ABT_THKS_USERSCRIPT   : {
-                    en     : ' for making the task of developing and shipping third party software incredibly easier.',
-                    'pt-PT': ' por tornarem o processo de produção e publicação de software bastante fácil.'
+                    en     : " for making the task of developing and shipping third party software incredibly easier.",
+                    "pt-PT": " por tornarem o processo de produção e publicação de software bastante fácil."
                 },
                 ABT_THKS_STACKOV      : {
-                    en     : ' for all of its priceless information which greatly contributes for software development.',
-                    'pt-PT': ' por toda a informação valiosa que contém e que contribui bastante para a criação de software.'
+                    en     : " for all of its priceless information which greatly contributes for software development.",
+                    "pt-PT": " por toda a informação valiosa que contém e que contribui bastante para a criação de software."
                 },
                 ABT_INFO              : {
-                    en     : 'Official pages',
-                    'pt-PT': 'Páginas oficiais'
+                    en     : "Official pages",
+                    "pt-PT": "Páginas oficiais"
                 },
                 ABT_LNK_GHB           : {
-                    en: 'GitHub'
+                    en: "GitHub"
                 },
                 ABT_LNK_GRFK          : {
-                    en: 'Greasy Fork'
+                    en: "Greasy Fork"
                 },
                 ABT_LNK_OPNU          : {
-                    en: 'OpenUserJS'
+                    en: "OpenUserJS"
                 }
             };
         function string2HTML(string) {
-            return new window.DOMParser().parseFromString(string, 'text/html');
+            return new window.DOMParser().parseFromString(string, "text/html");
         }
         function set(setting, newValue) {
             parSets[setting] = newValue;
-            window.postMessage({set: parSets}, '*');
+            window.postMessage({set: parSets}, "*");
         }
         function eventHandler(target, event, call, capture, type) {
             if (target.events && target.events[event] && target.events[event][call.name]) {
                 target.removeEventListener(event, target.events[event][call.name], !!capture);
                 delete target.events[event][call.name];
-                if (JSON.stringify(target.events[event]) === '{}') {
+                if (JSON.stringify(target.events[event]) === "{}") {
                     delete target.events[event];
                 }
             }
@@ -1622,7 +1622,7 @@
                 target.events = target.events || {};
                 target.events[event] = target.events[event] || {};
                 target.events[event][call.name] = call;
-                if ((String(target)).split('HTML').length > 1 && events.indexOf(target) < 0) {
+                if ((String(target)).split("HTML").length > 1 && events.indexOf(target) < 0) {
                     events.push(target);
                 }
             }
@@ -1638,7 +1638,7 @@
             }
         }
         function userLang(label) {
-            var ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || 'en';
+            var ytlang = (window.yt && window.yt.config_ && window.yt.config_.FEEDBACK_LOCALE_LANGUAGE) || "en";
             if (lang[label][ytlang]) {
                 return lang[label][ytlang];
             }
@@ -1646,56 +1646,56 @@
         }
         function localXHR(details) {
             var request = new XMLHttpRequest();
-            request.addEventListener('load', details.call);
+            request.addEventListener("load", details.call);
             request.open(details.method, details.url, true);
             request.send();
         }
         function timeConv(time) {
             function zero(trim) {
-                return ('0' + Math.floor(trim)).slice(-2);
+                return ("0" + Math.floor(trim)).slice(-2);
             }
-            time = zero(time / 86400) + ':' + zero(time % 86400 / 3600) + ':' + zero(time % 3600 / 60) + ':' + zero(time % 3600 % 60);
-            return time.replace(/^0(0:(0(0:(0)?)?)?)?/, '');
+            time = zero(time / 86400) + ":" + zero(time % 86400 / 3600) + ":" + zero(time % 3600 / 60) + ":" + zero(time % 3600 % 60);
+            return time.replace(/^0(0:(0(0:(0)?)?)?)?/, "");
         }
         function customStyles() {
             var classes,
-                plrApi   = document.getElementById('player-api'),
-                commSect = document.getElementById('watch-discussion'),
-                sidebar  = document.getElementsByClassName('branded-page-v2-secondary-col')[0],
-                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById('masthead_child') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)')),
+                plrApi   = document.getElementById("player-api"),
+                commSect = document.getElementById("watch-discussion"),
+                sidebar  = document.getElementsByClassName("branded-page-v2-secondary-col")[0],
+                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)")),
                 setsList = {
-                    'GEN_DSBL_ADS'    : 'part_no_ads',
-                    'GEN_BLUE_GLOW'   : 'part_dsbl_glow',
-                    'GEN_HIDE_FTR'    : 'part_hide_footer',
-                    'GEN_BTTR_NTF'    : 'part_notif_button',
-                    'GEN_GRID_SUBS'   : 'part_grid_subs',
-                    'GEN_GRID_SRCH'   : 'part_grid_search',
-                    'GEN_CMPT_TTLS'   : 'part_compact_titles',
-                    'VID_PLR_FIT'     : 'part_fit_theater',
-                    'VID_PLR_DYN_SIZE': 'part_static_size',
-                    'VID_HIDE_DETLS'  : 'part_hide_details',
-                    'VID_TTL_CMPT'    : 'part_compact_title',
-                    'VID_PLR_CTRL_VIS': 'part_hide_controls',
-                    'VID_PLST_SEP'    : 'part_playlist_spacer',
-                    'VID_DESC_SHRT'   : 'part_labelless_buttons'
+                    "GEN_DSBL_ADS"    : "part_no_ads",
+                    "GEN_BLUE_GLOW"   : "part_dsbl_glow",
+                    "GEN_HIDE_FTR"    : "part_hide_footer",
+                    "GEN_BTTR_NTF"    : "part_notif_button",
+                    "GEN_GRID_SUBS"   : "part_grid_subs",
+                    "GEN_GRID_SRCH"   : "part_grid_search",
+                    "GEN_CMPT_TTLS"   : "part_compact_titles",
+                    "VID_PLR_FIT"     : "part_fit_theater",
+                    "VID_PLR_DYN_SIZE": "part_static_size",
+                    "VID_HIDE_DETLS"  : "part_hide_details",
+                    "VID_TTL_CMPT"    : "part_compact_title",
+                    "VID_PLR_CTRL_VIS": "part_hide_controls",
+                    "VID_PLST_SEP"    : "part_playlist_spacer",
+                    "VID_DESC_SHRT"   : "part_labelless_buttons"
                 };
             while (adverts) {
                 adverts.remove();
-                adverts = document.getElementById('masthead_child') || document.getElementById('feed-pyv-container') || document.getElementsByClassName('pyv-afc-ads-container')[0] || document.getElementsByClassName('ad-div')[0] || document.querySelector('.video-list-item:not(.related-list-item)');
+                adverts = document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)");
             }
-            if ((window.location.pathname === '/results' && sidebar && sidebar.querySelectorAll('*').length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split('/feed/subscriptions').length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === '/results') || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
+            if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                 sidebar.remove();
             }
-            if (window.location.pathname === '/watch' && parSets.VID_HIDE_COMS > 1 && commSect) {
+            if (window.location.pathname === "/watch" && parSets.VID_HIDE_COMS > 1 && commSect) {
                 commSect.remove();
             }
-            if (parSets.VID_HIDE_COMS === '1') {
-                document.documentElement.classList.add('part_hide_comments');
-            } else if (parSets.VID_HIDE_COMS !== '1') {
-                document.documentElement.classList.remove('part_hide_comments');
+            if (parSets.VID_HIDE_COMS === "1") {
+                document.documentElement.classList.add("part_hide_comments");
+            } else if (parSets.VID_HIDE_COMS !== "1") {
+                document.documentElement.classList.remove("part_hide_comments");
             }
             if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
-                plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || '1280px';
+                plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || "1280px";
             }
             for (classes in setsList) {
                 if (setsList.hasOwnProperty(classes)) {
@@ -1706,8 +1706,8 @@
                     }
                 }
             }
-            if (window.location.href.split('/feed/subscriptions').length < 2) {
-                document.documentElement.classList.remove('part_grid_subs');
+            if (window.location.href.split("/feed/subscriptions").length < 2) {
+                document.documentElement.classList.remove("part_grid_subs");
             }
         }
         function updateSettings(event) {
@@ -1723,15 +1723,15 @@
                 buttonNotif,
                 buttonsSection,
                 settingsButton;
-            if (document.getElementById('P')) {
+            if (document.getElementById("P")) {
                 return;
             }
             function template() {
                 var custom = function () {
-                        var button = '',
+                        var button = "",
                             list   = parSets && parSets.blacklist;
                         function buildList(ytid) {
-                            button += '<div class="blacklist" data-ytid="' + ytid + '"><button class="close"></button><a href="/channel/' + ytid + '" target="_blank">' + list[ytid] + '</a></div>\n';
+                            button += "<div class='blacklist' data-ytid='" + ytid + "''><button class='close'></button><a href='/channel/" + ytid + "' target='_blank'>" + list[ytid] + "</a></div>\n";
                         }
                         if (list && Object.keys(list).length > 0) {
                             Object.keys(list).forEach(buildList);
@@ -1740,226 +1740,226 @@
                     },
                     htEl   = {
                         info  : function (anchor) {
-                            return '<a href="https://github.com/ParticleCore/Particle/wiki/Features#' + anchor + '" title="' + userLang('FTR_DESC') + '" target="_blank">?</a>';
+                            return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' title='" + userLang("FTR_DESC") + "' target='_blank'>?</a>";
                         },
                         title : function (content, tag) {
-                            return '<' + tag + '>' + userLang(content) + '</' + tag + '>\n';
+                            return "<" + tag + ">" + userLang(content) + "</" + tag + ">\n";
                         },
                         select: function (id, list, anchor) {
-                            var select = '<div><label for="' + id + '">' + userLang(id) + '</label>\n' +
-                                '<div class="P-select"><select id="' + id + '">\n';
+                            var select = "<div><label for='" + id + "'>" + userLang(id) + "</label>\n" +
+                                "<div class='P-select'><select id='" + id + "'>\n";
                             function keysIterator(keys) {
-                                select += '<option';
+                                select += "<option";
                                 if (parSets && parSets[id] === list[keys]) {
-                                    select += ' selected="true"';
+                                    select += " selected='true'";
                                 }
-                                select += ' value="' + list[keys] + '">' + userLang(keys) + '</option>\n';
+                                select += " value='" + list[keys] + "'>" + userLang(keys) + "</option>\n";
                             }
                             Object.keys(list).forEach(keysIterator);
-                            return select + '</select></div>\n' + htEl.info(anchor) + '</div>';
+                            return select + "</select></div>\n" + htEl.info(anchor) + "</div>";
                         },
                         radio : function (name, list, anchor) {
-                            var radio = '<div><label>' + userLang(name) + '</label>\n';
+                            var radio = "<div><label>" + userLang(name) + "</label>\n";
                             function keysIterator(keys) {
-                                radio += '<input id="' + keys + '" name="' + name + '" value="' + list[keys] + '" type="radio"';
+                                radio += "<input id='" + keys + "' name='" + name + "' value='" + list[keys] + "' type='radio'";
                                 if (parSets && parSets[name] === list[keys]) {
-                                    radio += ' checked="true"';
+                                    radio += " checked='true'";
                                 }
-                                radio += '>\n<label for="' + keys + '">' + userLang(keys) + '</label>\n';
+                                radio += ">\n<label for='" + keys + "'>" + userLang(keys) + "</label>\n";
                             }
                             Object.keys(list).forEach(keysIterator);
                             return radio + htEl.info(anchor) + '</div>';
                         },
                         input : function (id, type, placeholder, size, anchor) {
-                            var input = '<div><input id="' + id + '" type="' + type + '"';
+                            var input = "<div><input id='" + id + "' type='" + type + "'";
                             if (placeholder) {
-                                input += ' placeholder="' + placeholder + '" size="' + size + '"';
+                                input += " placeholder='" + placeholder + "' size='" + size + "'";
                                 if (parSets && typeof parSets[id] === 'string') {
-                                    input += ' value="' + (parSets && parSets[id]) + '"';
+                                    input += " value='" + (parSets && parSets[id]) + "'";
                                 }
                             } else if (parSets && parSets[id] === true) {
-                                input += ' checked="true"';
+                                input += " checked='true'";
                             }
-                            return input + '>\n<label for="' + id + '">' + userLang(id) + '</label>\n' + htEl.info(anchor) + '</div>';
+                            return input + ">\n<label for='" + id + "'>" + userLang(id) + "</label>\n" + htEl.info(anchor) + "</div>";
                         }
                     },
                     menus  = {
                         setMenu: [
-                            '<div id="P-settings">\n',
-                            '    <div id="P-container">\n',
-                            '        <div id="P-sidebar">\n',
-                            '            <ul id="P-sidebar-list">\n',
-                            '                <li id="GEN" class="selected">' + userLang('GEN') + '</li>\n',
-                            '                <li id="VID">' + userLang('VID') + '</li>\n',
-                            '                <li id="BLK">' + userLang('BLK') + '</li>\n',
-                            '                <li id="ABT">' + userLang('ABT') + '</li>\n',
-                            '                <li id="HLP"><a target="_blank" href="https://github.com/ParticleCore/Particle/wiki">' + userLang('HLP') + '</a></li>\n',
-                            '                <li id="DNT"><a title="PayPal" target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW">' + userLang('DNT') + '</a></li>\n',
-                            '            </ul>\n',
-                            '        </div>\n',
-                            '    </div>\n',
-                            '</div>\n'
-                        ].join(''),
+                            "<div id='P-settings'>\n",
+                            "    <div id='P-container'>\n",
+                            "        <div id='P-sidebar'>\n",
+                            "            <ul id='P-sidebar-list'>\n",
+                            "                <li id='GEN' class='selected'>" + userLang("GEN") + "</li>\n",
+                            "                <li id='VID'>" + userLang("VID") + "</li>\n",
+                            "                <li id='BLK'>" + userLang("BLK") + "</li>\n",
+                            "                <li id='ABT'>" + userLang("ABT") + "</li>\n",
+                            "                <li id='HLP'><a target='_blank' href='https://github.com/ParticleCore/Particle/wiki'>" + userLang("HLP") + "</a></li>\n",
+                            "                <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW'>" + userLang("DNT") + "</a></li>\n",
+                            "            </ul>\n",
+                            "        </div>\n",
+                            "    </div>\n",
+                            "</div>\n"
+                        ].join(""),
                         GEN    : [
-                            '<div id="P-content">\n',
-                            '    <div class="P-header">\n',
-                            '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                            '        <button class="P-reset">' + userLang('GLB_RSET') + '</button>\n',
-                            htEl.title('GEN_TTL', 'h2'),
-                            '    </div>\n',
-                            '    <hr class="P-horz">\n',
-                            htEl.title('GEN_GEN', 'h3'),
-                            htEl.input('GEN_DSBL_ADS', 'checkbox', null, null, 'outside_ads'),
-                            htEl.input('GEN_YT_LOGO_LINK', 'checkbox', null, null, 'logo_redirect'),
-                            htEl.input('GEN_INF_SCRL', 'checkbox', null, null, 'infinite_scroll'),
-                            htEl.input('GEN_SDBR_ON', 'checkbox', null, null, 'sidebar_on'),
-                            htEl.input('GEN_REM_APUN', 'checkbox', null, null, 'remove_autoplay'),
-                            htEl.input('GEN_SPF_OFF', 'checkbox', null, null, 'spf_off'),
-                            htEl.select('GEN_CHN_DFLT_PAGE', {
-                                'GEN_CHN_DFLT_PAGE_DFLT': 'default',
-                                'GEN_CHN_DFLT_PAGE_VID' : 'videos',
-                                'GEN_CHN_DFLT_PAGE_PL'  : 'playlists',
-                                'GEN_CHN_DFLT_PAGE_CHN' : 'channels',
-                                'GEN_CHN_DFLT_PAGE_DISC': 'discussion',
-                                'GEN_CHN_DFLT_PAGE_ABT' : 'about'
-                            }, 'channel_page'),
-                            htEl.title('GEN_LYT', 'h3'),
-                            htEl.input('GEN_GRID_SUBS', 'checkbox', null, null, 'sub_grid'),
-                            htEl.input('GEN_GRID_SRCH', 'checkbox', null, null, 'search_grid'),
-                            htEl.input('GEN_BTTR_NTF', 'checkbox', null, null, 'blue_box'),
-                            htEl.input('GEN_DSB_HVRC', 'checkbox', null, null, 'hovercards_off'),
-                            htEl.input('GEN_CMPT_TTLS', 'checkbox', null, null, 'feed_titles'),
-                            htEl.input('GEN_BLUE_GLOW', 'checkbox', null, null, 'blue_glow'),
-                            htEl.input('GEN_HIDE_FTR', 'checkbox', null, null, 'hide_footer'),
-                            htEl.input('GEN_HDE_RECM_SDBR', 'checkbox', null, null, 'hide_recom_sidebar'),
-                            htEl.input('GEN_HDE_SRCH_SDBR', 'checkbox', null, null, 'hide_search_sidebar'),
-                            htEl.input('GEN_HDE_CHN_SDBR', 'checkbox', null, null, 'hide_channel_sidebar'),
-                            '</div>\n'
-                        ].join(''),
+                            "<div id='P-content'>\n",
+                            "    <div class='P-header'>\n",
+                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n",
+                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n",
+                            htEl.title("GEN_TTL", "h2"),
+                            "    </div>\n",
+                            "    <hr class='P-horz'>\n",
+                            htEl.title("GEN_GEN", "h3"),
+                            htEl.input("GEN_DSBL_ADS", "checkbox", null, null, "outside_ads"),
+                            htEl.input("GEN_YT_LOGO_LINK", "checkbox", null, null, "logo_redirect"),
+                            htEl.input("GEN_INF_SCRL", "checkbox", null, null, "infinite_scroll"),
+                            htEl.input("GEN_SDBR_ON", "checkbox", null, null, "sidebar_on"),
+                            htEl.input("GEN_REM_APUN", "checkbox", null, null, "remove_autoplay"),
+                            htEl.input("GEN_SPF_OFF", "checkbox", null, null, "spf_off"),
+                            htEl.select("GEN_CHN_DFLT_PAGE", {
+                                "GEN_CHN_DFLT_PAGE_DFLT": "default",
+                                "GEN_CHN_DFLT_PAGE_VID" : "videos",
+                                "GEN_CHN_DFLT_PAGE_PL"  : "playlists",
+                                "GEN_CHN_DFLT_PAGE_CHN" : "channels",
+                                "GEN_CHN_DFLT_PAGE_DISC": "discussion",
+                                "GEN_CHN_DFLT_PAGE_ABT" : "about"
+                            }, "channel_page"),
+                            htEl.title("GEN_LYT", "h3"),
+                            htEl.input("GEN_GRID_SUBS", "checkbox", null, null, "sub_grid"),
+                            htEl.input("GEN_GRID_SRCH", "checkbox", null, null, "search_grid"),
+                            htEl.input("GEN_BTTR_NTF", "checkbox", null, null, "blue_box"),
+                            htEl.input("GEN_DSB_HVRC", "checkbox", null, null, "hovercards_off"),
+                            htEl.input("GEN_CMPT_TTLS", "checkbox", null, null, "feed_titles"),
+                            htEl.input("GEN_BLUE_GLOW", "checkbox", null, null, "blue_glow"),
+                            htEl.input("GEN_HIDE_FTR", "checkbox", null, null, "hide_footer"),
+                            htEl.input("GEN_HDE_RECM_SDBR", "checkbox", null, null, "hide_recom_sidebar"),
+                            htEl.input("GEN_HDE_SRCH_SDBR", "checkbox", null, null, "hide_search_sidebar"),
+                            htEl.input("GEN_HDE_CHN_SDBR", "checkbox", null, null, "hide_channel_sidebar"),
+                            "</div>\n"
+                        ].join(""),
                         VID    : [
-                            '<div id="P-content">\n',
-                            '    <div class="P-header">\n',
-                            '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                            '        <button class="P-reset">' + userLang('GLB_RSET') + '</button>\n',
-                            htEl.title('VID_TTL', 'h2'),
-                            '    </div>\n',
-                            '    <hr class="P-horz">\n',
-                            htEl.title('VID_PLR', 'h3'),
-                            htEl.input('VID_PLR_ADS', 'checkbox', null, null, 'video_ads'),
-                            htEl.input('VID_SUB_ADS', 'checkbox', null, null, 'subs_ads_on'),
-                            htEl.input('VID_PLR_ALVIS', 'checkbox', null, null, 'floating_player'),
-                            htEl.input('VID_PLR_ATPL', 'checkbox', null, null, 'video_autoplay'),
-                            htEl.input('VID_PLR_CC', 'checkbox', null, null, 'subtitles_off'),
-                            htEl.input('VID_PLR_ANTS', 'checkbox', null, null, 'annotations_off'),
-                            htEl.input('VID_END_SHRE', 'checkbox', null, null, 'share_panel_off'),
-                            htEl.input('VID_PLR_VOL_MEM', 'checkbox', null, null, 'remember_volume'),
-                            htEl.input('VID_PLR_SIZE_MEM', 'checkbox', null, null, 'remember_mode'),
-                            htEl.input('VID_VOL_WHEEL', 'checkbox', null, null, 'wheel_volume'),
-                            htEl.input('VID_PLR_DASH', 'checkbox', null, null, 'dash_off'),
-                            htEl.select('VID_DFLT_QLTY', {
-                                'VID_DFLT_QLTY_AUTO': 'auto',
-                                'VID_DFLT_QLTY_ORIG': 'highres',
-                                'VID_DFLT_QLTY_1440': 'hd1440',
-                                'VID_DFLT_QLTY_1080': 'hd1080',
-                                'VID_DFLT_QLTY_720' : 'hd720',
-                                'VID_DFLT_QLTY_LRG' : 'large',
-                                'VID_DFLT_QLTY_MDM' : 'medium',
-                                'VID_DFLT_QLTY_SML' : 'small',
-                                'VID_DFLT_QLTY_TNY' : 'tiny'
-                            }, 'default_quality'),
-                            htEl.title('VID_PLR_LYT', 'h3'),
-                            htEl.input('VID_PLR_CTRL_VIS', 'checkbox', null, null, 'hide_controls'),
-                            htEl.input('VID_PLR_DYN_SIZE', 'checkbox', null, null, 'dynamic_size_off'),
-                            htEl.input('VID_PLR_FIT', 'checkbox', null, null, 'fit_to_page'),
-                            htEl.input('VID_PLR_FIT_WDTH', 'text', '1280px', 6, 'fit_max_width'),
-                            '    <br>',
-                            htEl.radio('VID_PROG_BAR_CLR', {
-                                'VID_PROG_BAR_CLR_RED': 'red',
-                                'VID_PROG_BAR_CLR_WHT': 'white'
-                            }, 'progress_color'),
-                            htEl.radio('VID_CTRL_BAR_CLR', {
-                                'VID_CTRL_BAR_CLR_DARK': 'dark',
-                                'VID_CTRL_BAR_CLR_LGHT': 'light'
-                            }, 'control_color'),
-                            htEl.title('VID_PLST', 'h3'),
-                            htEl.input('VID_PLST_SEP', 'checkbox', null, null, 'separate_playlist'),
-                            htEl.input('VID_PLST_ATPL', 'checkbox', null, null, 'playlist_autoplay'),
-                            htEl.input('VID_PLST_RVRS', 'checkbox', null, null, 'playlist_reverse'),
-                            htEl.title('VID_LAYT', 'h3'),
-                            htEl.select('VID_HIDE_COMS', {
-                                'VID_HIDE_COMS_SHOW': '0',
-                                'VID_HIDE_COMS_HIDE': '1',
-                                'VID_HIDE_COMS_REM' : '2'
-                            }, 'comments'),
-                            htEl.select('VID_SDBR_ALGN', {
-                                'VID_SDBR_ALGN_NONE' : '0',
-                                'VID_SDBR_ALGN_LEFT' : '1',
-                                'VID_SDBR_ALGN_RIGHT': '2'
-                            }, 'sidebar_align'),
-                            htEl.input('VID_TTL_CMPT', 'checkbox', null, null, 'video_title'),
-                            htEl.input('VID_DESC_SHRT', 'checkbox', null, null, 'labelless_buttons'),
-                            htEl.input('VID_VID_CNT', 'checkbox', null, null, 'upload_counter'),
-                            htEl.input('VID_POST_TIME', 'checkbox', null, null, 'relative_upload_time'),
-                            htEl.input('VID_HIDE_DETLS', 'checkbox', null, null, 'hide_video_details'),
-                            htEl.input('VID_LAYT_AUTO_PNL', 'checkbox', null, null, 'expand_description'),
-                            '</div>\n'
-                        ].join(''),
+                            "<div id='P-content'>\n",
+                            "    <div class='P-header'>\n",
+                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n",
+                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n",
+                            htEl.title("VID_TTL", "h2"),
+                            "    </div>\n",
+                            "    <hr class='P-horz'>\n",
+                            htEl.title("VID_PLR", "h3"),
+                            htEl.input("VID_PLR_ADS", "checkbox", null, null, "video_ads"),
+                            htEl.input("VID_SUB_ADS", "checkbox", null, null, "subs_ads_on"),
+                            htEl.input("VID_PLR_ALVIS", "checkbox", null, null, "floating_player"),
+                            htEl.input("VID_PLR_ATPL", "checkbox", null, null, "video_autoplay"),
+                            htEl.input("VID_PLR_CC", "checkbox", null, null, "subtitles_off"),
+                            htEl.input("VID_PLR_ANTS", "checkbox", null, null, "annotations_off"),
+                            htEl.input("VID_END_SHRE", "checkbox", null, null, "share_panel_off"),
+                            htEl.input("VID_PLR_VOL_MEM", "checkbox", null, null, "remember_volume"),
+                            htEl.input("VID_PLR_SIZE_MEM", "checkbox", null, null, "remember_mode"),
+                            htEl.input("VID_VOL_WHEEL", "checkbox", null, null, "wheel_volume"),
+                            htEl.input("VID_PLR_DASH", "checkbox", null, null, "dash_off"),
+                            htEl.select("VID_DFLT_QLTY", {
+                                "VID_DFLT_QLTY_AUTO": "auto",
+                                "VID_DFLT_QLTY_ORIG": "highres",
+                                "VID_DFLT_QLTY_1440": "hd1440",
+                                "VID_DFLT_QLTY_1080": "hd1080",
+                                "VID_DFLT_QLTY_720" : "hd720",
+                                "VID_DFLT_QLTY_LRG" : "large",
+                                "VID_DFLT_QLTY_MDM" : "medium",
+                                "VID_DFLT_QLTY_SML" : "small",
+                                "VID_DFLT_QLTY_TNY" : "tiny"
+                            }, "default_quality"),
+                            htEl.title("VID_PLR_LYT", "h3"),
+                            htEl.input("VID_PLR_CTRL_VIS", "checkbox", null, null, "hide_controls"),
+                            htEl.input("VID_PLR_DYN_SIZE", "checkbox", null, null, "dynamic_size_off"),
+                            htEl.input("VID_PLR_FIT", "checkbox", null, null, "fit_to_page"),
+                            htEl.input("VID_PLR_FIT_WDTH", "text", "1280px", 6, "fit_max_width"),
+                            "    <br>",
+                            htEl.radio("VID_PROG_BAR_CLR", {
+                                "VID_PROG_BAR_CLR_RED": "red",
+                                "VID_PROG_BAR_CLR_WHT": "white"
+                            }, "progress_color"),
+                            htEl.radio("VID_CTRL_BAR_CLR", {
+                                "VID_CTRL_BAR_CLR_DARK": "dark",
+                                "VID_CTRL_BAR_CLR_LGHT": "light"
+                            }, "control_color"),
+                            htEl.title("VID_PLST", "h3"),
+                            htEl.input("VID_PLST_SEP", "checkbox", null, null, "separate_playlist"),
+                            htEl.input("VID_PLST_ATPL", "checkbox", null, null, "playlist_autoplay"),
+                            htEl.input("VID_PLST_RVRS", "checkbox", null, null, "playlist_reverse"),
+                            htEl.title("VID_LAYT", "h3"),
+                            htEl.select("VID_HIDE_COMS", {
+                                "VID_HIDE_COMS_SHOW": "0",
+                                "VID_HIDE_COMS_HIDE": "1",
+                                "VID_HIDE_COMS_REM" : "2"
+                            }, "comments"),
+                            htEl.select("VID_SDBR_ALGN", {
+                                "VID_SDBR_ALGN_NONE" : "0",
+                                "VID_SDBR_ALGN_LEFT" : "1",
+                                "VID_SDBR_ALGN_RIGHT": "2"
+                            }, "sidebar_align"),
+                            htEl.input("VID_TTL_CMPT", "checkbox", null, null, "video_title"),
+                            htEl.input("VID_DESC_SHRT", "checkbox", null, null, "labelless_buttons"),
+                            htEl.input("VID_VID_CNT", "checkbox", null, null, "upload_counter"),
+                            htEl.input("VID_POST_TIME", "checkbox", null, null, "relative_upload_time"),
+                            htEl.input("VID_HIDE_DETLS", "checkbox", null, null, "hide_video_details"),
+                            htEl.input("VID_LAYT_AUTO_PNL", "checkbox", null, null, "expand_description"),
+                            "</div>\n"
+                        ].join(""),
                         BLK    : [
-                            '<div id="P-content">\n',
-                            '    <div class="P-header">\n',
-                            '        <button class="P-save">' + userLang('GLB_SVE') + '</button>\n',
-                            '        <button class="P-reset">' + userLang('GLB_RSET') + '</button>\n',
-                            htEl.title('BLK_TTL', 'h2'),
-                            '    </div>\n',
-                            '    <hr class="P-horz">\n',
-                            htEl.title('BLK_BLK', 'h3'),
-                            htEl.input('BLK_ON', 'checkbox', null, null, 'blacklist_on'),
-                            '    <div id="blacklist">\n',
-                            '        <div id="blacklist-controls">\n',
-                            '            <button id="blacklist-edit" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
-                            '                <span class="yt-uix-button-content">' + userLang('BLCK_EDIT') + '</span>\n',
-                            '            </button>\n',
-                            '            <button id="blacklist-save" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
-                            '                <span class="yt-uix-button-content">' + userLang('BLCK_SAVE') + '</span>\n',
-                            '            </button>\n',
-                            '            <button id="blacklist-close" class="yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default">\n',
-                            '                <span class="yt-uix-button-content">' + userLang('BLCK_CLSE') + '</span>\n',
-                            '            </button>\n',
-                            '        </div>\n',
-                            '        ' + custom() + '\n',
-                            '        <textarea id="blacklist-edit-list"></textarea>\n',
-                            '    </div>\n',
-                            '    <br>',
-                            '</div>\n'
-                        ].join(''),
+                            "<div id='P-content'>\n",
+                            "    <div class='P-header'>\n",
+                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n",
+                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n",
+                            htEl.title("BLK_TTL", "h2"),
+                            "    </div>\n",
+                            "    <hr class='P-horz'>\n",
+                            htEl.title("BLK_BLK", "h3"),
+                            htEl.input("BLK_ON", "checkbox", null, null, "blacklist_on"),
+                            "    <div id='blacklist'>\n",
+                            "        <div id='blacklist-controls'>\n",
+                            "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n",
+                            "                <span class='yt-uix-button-content'>" + userLang("BLCK_EDIT") + "</span>\n",
+                            "            </button>\n",
+                            "            <button id='blacklist-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n",
+                            "                <span class='yt-uix-button-content'>" + userLang("BLCK_SAVE") + "</span>\n",
+                            "            </button>\n",
+                            "            <button id='blacklist-close' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n",
+                            "                <span class='yt-uix-button-content'>" + userLang("BLCK_CLSE") + "</span>\n",
+                            "            </button>\n",
+                            "        </div>\n",
+                            "        " + custom() + "\n",
+                            "        <textarea id='blacklist-edit-list'></textarea>\n",
+                            "    </div>\n",
+                            "    <br>\n",
+                            "</div>\n"
+                        ].join(""),
                         ABT    : [
-                            '<div id="P-content">\n',
-                            '    <div class="P-header">\n',
-                            htEl.title('ABT_TTL', 'h2'),
-                            '    </div>\n',
-                            '    <hr class="P-horz">\n',
-                            htEl.title('ABT_THKS', 'h3'),
-                            '    <div>\n',
-                            '        <a target="_blank" href="https://github.com/YePpHa">Jeppe Rune Mortensen</a>' + userLang('ABT_THKS_YEPPHA') + '\n',
-                            '    </div>\n',
-                            '    <div>\n',
-                            '        <a target="_blank" href="http://www.greasespot.net/">Greasemonkey</a> + <a href="http://tampermonkey.net/">Tampermonkey</a>' + userLang('ABT_THKS_USERSCRIPT') + '\n',
-                            '    </div>\n',
-                            '    <div>\n',
-                            '        <a target="_blank" href="http://stackoverflow.com/">Stack Overflow</a>' + userLang('ABT_THKS_STACKOV') + '\n',
-                            '    </div>\n',
-                            htEl.title('ABT_INFO', 'h3'),
-                            '    <div>\n',
-                            '        <a target="_blank" href="https://github.com/ParticleCore/Particle/">GitHub</a>\n',
-                            '    </div>\n',
-                            '    <div>\n',
-                            '        <a target="_blank" href="https://greasyfork.org/en/users/8223-particlecore">Greasy Fork</a>\n',
-                            '    </div>\n',
-                            '    <div>\n',
-                            '        <a target="_blank" href="http://openuserjs.org/scripts/ParticleCore/">OpenUserJS</a>\n',
-                            '    </div>\n',
-                            '</div>\n'
-                        ].join('')
+                            "<div id='P-content'>\n",
+                            "    <div class='P-header'>\n",
+                            htEl.title("ABT_TTL", "h2"),
+                            "    </div>\n",
+                            "    <hr class='P-horz'>\n",
+                            htEl.title("ABT_THKS", "h3"),
+                            "    <div>\n",
+                            "        <a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a>" + userLang("ABT_THKS_YEPPHA") + "\n",
+                            "    </div>\n",
+                            "    <div>\n",
+                            "        <a target='_blank' href='http://www.greasespot.net/'>Greasemonkey</a> + <a href='http://tampermonkey.net/'>Tampermonkey</a>" + userLang("ABT_THKS_USERSCRIPT") + "\n",
+                            "    </div>\n",
+                            "    <div>\n",
+                            "        <a target='_blank' href='http://stackoverflow.com/'>Stack Overflow</a>" + userLang("ABT_THKS_STACKOV") + "\n",
+                            "    </div>\n",
+                            htEl.title("ABT_INFO", "h3"),
+                            "    <div>\n",
+                            "        <a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a>\n",
+                            "    </div>\n",
+                            "    <div>\n",
+                            "        <a target='_blank' href='https://greasyfork.org/en/users/8223-particlecore'>Greasy Fork</a>\n",
+                            "    </div>\n",
+                            "    <div>\n",
+                            "        <a target='_blank' href='http://openuserjs.org/scripts/ParticleCore/'>OpenUserJS</a>\n",
+                            "    </div>\n",
+                            "</div>\n"
+                        ].join("")
                     };
                 return menus;
             }
@@ -1968,111 +1968,111 @@
                     function removeEmptyLines(string) {
                         return (/\S/).test(string);
                     }
-                    if (target.id === 'blacklist-edit') {
-                        document.getElementById('blacklist').classList.add('edit');
-                        document.getElementById('blacklist-edit-list').value = JSON.stringify(parSets.blacklist).replace(/":"/g, '": "').replace(/","/g, '"\n"').replace('{"', '"').replace('"}', '"').replace('{}', '');
-                    } else if (target.id === 'blacklist-save') {
-                        set('blacklist', JSON.parse('{' + document.getElementById('blacklist-edit-list').value.split('\n').filter(removeEmptyLines).join(',') + '}'));
-                    } else if (target.id === 'blacklist-close') {
-                        document.getElementById('BLK').click();
+                    if (target.id === "blacklist-edit") {
+                        document.getElementById("blacklist").classList.add("edit");
+                        document.getElementById("blacklist-edit-list").value = JSON.stringify(parSets.blacklist).replace(/":"/g, '": "').replace(/","/g, '"\n"').replace('{"', '"').replace('"}', '"').replace("{}", "");
+                    } else if (target.id === "blacklist-save") {
+                        set("blacklist", JSON.parse("{" + document.getElementById("blacklist-edit-list").value.split("\n").filter(removeEmptyLines).join(",") + "}"));
+                    } else if (target.id === "blacklist-close") {
+                        document.getElementById("BLK").click();
                     }
                 }
                 function remBlackList() {
                     var newKey = parSets.blacklist;
-                    delete newKey[event.target.parentNode.getAttribute('data-ytid')];
+                    delete newKey[event.target.parentNode.getAttribute("data-ytid")];
                     event.target.parentNode.remove();
-                    set('blacklist', newKey);
+                    set("blacklist", newKey);
                 }
                 function saveSettings(salt) {
                     var value,
-                        notification = document.getElementById('appbar-main-guide-notification-container'),
-                        navId        = document.getElementsByClassName('selected')[0].id,
-                        userSets     = document.getElementById('P-content').querySelectorAll('[id^="' + navId + '"]'),
+                        notification = document.getElementById("appbar-main-guide-notification-container"),
+                        navId        = document.getElementsByClassName("selected")[0].id,
+                        userSets     = document.getElementById("P-content").querySelectorAll("[id^='" + navId + "']"),
                         length       = userSets.length,
                         savedSets    = parSets;
                     function hideNotif() {
-                        document.body.classList.remove('show-guide-button-notification');
+                        document.body.classList.remove("show-guide-button-notification");
                     }
                     while (length) {
                         length -= 1;
-                        value = (userSets[length].checked && (userSets[length].value === 'on' || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute('type') === 'text' && userSets[length].value);
+                        value = (userSets[length].checked && (userSets[length].value === "on" || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute("type") === "text" && userSets[length].value);
                         if (value) {
                             savedSets[userSets[length].name || userSets[length].id] = value;
-                        } else if (!value && userSets[length].type !== 'radio') {
+                        } else if (!value && userSets[length].type !== "radio") {
                             savedSets[userSets[length].id] = false;
                         }
                     }
                     parSets = savedSets;
-                    window.postMessage({set: parSets}, '*');
+                    window.postMessage({set: parSets}, "*");
                     customStyles();
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
                             notification.remove();
                             notification = [
-                                '<div id="appbar-main-guide-notification-container">\n',
-                                '    <div class="appbar-guide-notification" role="alert">\n',
-                                '        <span class="appbar-guide-notification-content-wrapper yt-valign">\n',
-                                '            <span class="appbar-guide-notification-icon yt-sprite"></span>\n',
-                                '            <span class="appbar-guide-notification-text-content"></span>\n',
-                                '        </span>\n',
-                                '    </div>\n',
-                                '</div>'
-                            ].join('');
-                            notification = string2HTML(notification).querySelector('#appbar-main-guide-notification-container');
-                            document.getElementsByClassName('yt-masthead-logo-container')[0].appendChild(notification);
+                                "<div id='appbar-main-guide-notification-container'>\n",
+                                "    <div class='appbar-guide-notification' role='alert'>\n",
+                                "        <span class='appbar-guide-notification-content-wrapper yt-valign'>\n",
+                                "            <span class='appbar-guide-notification-icon yt-sprite'></span>\n",
+                                "            <span class='appbar-guide-notification-text-content'></span>\n",
+                                "        </span>\n",
+                                "    </div>\n",
+                                "</div>\n"
+                            ].join("");
+                            notification = string2HTML(notification).querySelector("#appbar-main-guide-notification-container");
+                            document.getElementsByClassName("yt-masthead-logo-container")[0].appendChild(notification);
                         }
-                        document.getElementsByClassName('appbar-guide-notification-text-content')[0].textContent = 'Settings saved';
-                        document.body.classList.add('show-guide-button-notification');
+                        document.getElementsByClassName("appbar-guide-notification-text-content")[0].textContent = "Settings saved";
+                        document.body.classList.add("show-guide-button-notification");
                         window.setTimeout(hideNotif, 2000);
                     }
                 }
-                if (event.target.classList.contains('P-save')) {
+                if (event.target.classList.contains("P-save")) {
                     saveSettings();
-                } else if (event.target.classList.contains('P-reset')) {
+                } else if (event.target.classList.contains("P-reset")) {
                     parSets = defSets;
-                    window.postMessage({set: defSets}, '*');
+                    window.postMessage({set: defSets}, "*");
                     settingsButton.click();
                     settingsButton.click();
-                } else if (event.target.classList.contains('close')) {
+                } else if (event.target.classList.contains("close")) {
                     remBlackList();
-                } else if (event.target.id === 'blacklist-edit' || event.target.id === 'blacklist-save' || event.target.id === 'blacklist-close') {
+                } else if (event.target.id === "blacklist-edit" || event.target.id === "blacklist-save" || event.target.id === "blacklist-close") {
                     manageBlackList(event.target);
-                } else if (event.target.id === 'P-container' || event.target.id === 'P-settings') {
-                    event = (event.target.id === 'P-settings') ? event.target : event.target.parentNode;
+                } else if (event.target.id === "P-container" || event.target.id === "P-settings") {
+                    event = (event.target.id === "P-settings") ? event.target : event.target.parentNode;
                     event.remove();
-                } else if (event.target.id !== 'DNT' && event.target.tagName !== 'A' && event.target.parentNode.id === 'P-sidebar-list') {
-                    saveSettings('no-notification');
-                    document.getElementById('P-content').remove();
-                    pContainer = document.getElementById('P-container');
-                    pContent = string2HTML(template()[event.target.id]).querySelector('#P-content');
+                } else if (event.target.id !== "DNT" && event.target.tagName !== "A" && event.target.parentNode.id === "P-sidebar-list") {
+                    saveSettings("no-notification");
+                    document.getElementById("P-content").remove();
+                    pContainer = document.getElementById("P-container");
+                    pContent = string2HTML(template()[event.target.id]).querySelector("#P-content");
                     pContainer.appendChild(pContent);
-                    event.target.parentNode.getElementsByClassName('selected')[0].removeAttribute('class');
-                    event.target.className = 'selected';
+                    event.target.parentNode.getElementsByClassName("selected")[0].removeAttribute("class");
+                    event.target.className = "selected";
                 }
             }
             function settingsTemplate() {
                 var bodyContainer,
                     pageContainer,
-                    pWrapper = document.getElementById('P-settings');
+                    pWrapper = document.getElementById("P-settings");
                 if (pWrapper) {
                     pWrapper.remove();
                 } else {
-                    bodyContainer = document.getElementById('body-container');
-                    pageContainer = document.getElementById('page-container');
-                    pWrapper = string2HTML(template().setMenu).querySelector('#P-settings');
-                    pWrapper.querySelector('#P-container').appendChild(string2HTML(template().GEN).querySelector('#P-content'));
+                    bodyContainer = document.getElementById("body-container");
+                    pageContainer = document.getElementById("page-container");
+                    pWrapper = string2HTML(template().setMenu).querySelector("#P-settings");
+                    pWrapper.querySelector("#P-container").appendChild(string2HTML(template().GEN).querySelector("#P-content"));
                     bodyContainer.insertBefore(pWrapper, pageContainer);
-                    eventHandler(pWrapper, 'click', navigateSettings);
+                    eventHandler(pWrapper, "click", navigateSettings);
                 }
-                document[isChrome ? 'body' : 'documentElement'].scrollTop = 0;
+                document[isChrome ? "body" : "documentElement"].scrollTop = 0;
             }
-            buttonNotif = document.getElementsByClassName('notifications-container')[0];
-            buttonsSection = document.getElementById('yt-masthead-user') || document.getElementById('yt-masthead-signin');
-            if (buttonsSection && !document.getElementById('P')) {
-                settingsButton = document.createElement('button');
-                settingsButton.id = 'P';
-                settingsButton.title = 'YouTube+ settings';
-                eventHandler(settingsButton, 'click', settingsTemplate);
+            buttonNotif = document.getElementsByClassName("notifications-container")[0];
+            buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
+            if (buttonsSection && !document.getElementById("P")) {
+                settingsButton = document.createElement("button");
+                settingsButton.id = "P";
+                settingsButton.title = "YouTube+ settings";
+                eventHandler(settingsButton, "click", settingsTemplate);
                 if (buttonNotif) {
                     buttonsSection.insertBefore(settingsButton, buttonNotif);
                 } else {
@@ -2086,18 +2086,18 @@
                     span,
                     user,
                     verified,
-                    name = document.getElementsByClassName('yt-user-info')[0];
+                    name = document.getElementsByClassName("yt-user-info")[0];
                 function videoCounter() {
-                    link.href = window.location.origin + '/channel/' + user.getAttribute('data-ytid') + '/videos';
-                    span = document.createElement('span');
-                    span.textContent = ' · ';
+                    link.href = window.location.origin + "/channel/" + user.getAttribute("data-ytid") + "/videos";
+                    span = document.createElement("span");
+                    span.textContent = " · ";
                     name.appendChild(span);
                     name.appendChild(link);
-                    verified = document.getElementsByClassName('yt-channel-title-icon-verified')[0];
+                    verified = document.getElementsByClassName("yt-channel-title-icon-verified")[0];
                     if (verified) {
-                        user.className += ' yt-uix-tooltip';
-                        user.setAttribute('data-tooltip-text', verified.getAttribute('data-tooltip-text'));
-                        user.style.color = '#167ac6';
+                        user.className += " yt-uix-tooltip";
+                        user.setAttribute("data-tooltip-text", verified.getAttribute("data-tooltip-text"));
+                        user.style.color = "#167ac6";
                         verified.remove();
                     }
                 }
@@ -2109,53 +2109,53 @@
                         details = details && details.match && details.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
                         details = details && details.match(/<li>([\w\W]*?)<\/li>/g)[1];
                         if (details) {
-                            link.className = 'spf-link';
-                            link.textContent = channelId[user.getAttribute('data-ytid')] = details.replace(/<\/?li>/g, '').replace('&#39;', '\'');
+                            link.className = "spf-link";
+                            link.textContent = channelId[user.getAttribute("data-ytid")] = details.replace(/<\/?li>/g, "").replace("&#39;", "'");
                             videoCounter();
                         }
                     }
                 }
-                if (!document.getElementById('uploaded-videos') && name) {
-                    link = document.createElement('a');
-                    link.id = 'uploaded-videos';
+                if (!document.getElementById("uploaded-videos") && name) {
+                    link = document.createElement("a");
+                    link.id = "uploaded-videos";
                     name.appendChild(link);
-                    user = name.querySelector('a');
-                    if (channelId[user.getAttribute('data-ytid')]) {
-                        link.textContent = channelId[user.getAttribute('data-ytid')];
+                    user = name.querySelector("a");
+                    if (channelId[user.getAttribute("data-ytid")]) {
+                        link.textContent = channelId[user.getAttribute("data-ytid")];
                         videoCounter();
                     } else {
                         localXHR({
-                            method: 'GET',
-                            url: '/playlist?spf=navigate&list=' + user.getAttribute('data-ytid').replace('UC', 'UU'),
+                            method: "GET",
+                            url: "/playlist?spf=navigate&list=" + user.getAttribute("data-ytid").replace("UC", "UU"),
                             call: getPLInfo
                         });
                     }
                 }
             }
             function publishedTime() {
-                var watchTime = document.getElementsByClassName('watch-time-text')[0];
+                var watchTime = document.getElementsByClassName("watch-time-text")[0];
                 function getCHInfo(details) {
                     details = details.target.responseText;
                     if (details) {
-                        if (watchTime.textContent.split('·').length < 2) {
+                        if (watchTime.textContent.split("·").length < 2) {
                             details = JSON.parse(details);
                             details = details.body && details.body.content && (details.body.content.html || details.body.content);
                             details = details && details.match && details.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
                             if (details) {
-                                watchTime.textContent += ' · ' + details[1].split('</li><li>')[0];
+                                watchTime.textContent += " · " + details[1].split("</li><li>")[0];
                             }
                         }
                     }
                 }
                 if (watchTime && window.ytplayer && window.ytplayer.config) {
                     localXHR({
-                        method: 'GET',
-                        url: '/channel/' + window.ytplayer.config.args.ucid + '/search?query="' + window.ytplayer.config.args.video_id + '"&spf=navigate',
+                        method: "GET",
+                        url: "/channel/" + window.ytplayer.config.args.ucid + "/search?query='" + window.ytplayer.config.args.video_id + "'&spf=navigate",
                         call: getCHInfo
                     });
                 }
             }
-            if (window.location.pathname === '/watch') {
+            if (window.location.pathname === "/watch") {
                 if (parSets.VID_VID_CNT) {
                     username();
                 }
@@ -2166,74 +2166,76 @@
         }
         function commentsButton() {
             var wrapper,
-                comments = document.getElementById('watch-discussion');
+                comments = document.getElementById("watch-discussion");
             function showComments() {
-                comments.classList.toggle('show');
-                wrapper.querySelector('button').textContent = userLang((comments.classList.contains('show')) ? 'HIDE_CMTS' : 'SHOW_CMTS');
+                comments.classList.toggle("show");
+                wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show")) ? "HIDE_CMTS" : "SHOW_CMTS");
             }
-            if (comments && !document.getElementById('P-show-comments') && parSets.VID_HIDE_COMS === '1') {
+            if (comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
                 wrapper =
-                    '<div id="P-show-comments" class="yt-card">\n' +
-                    '    <button class="yt-uix-button yt-uix-button-expander">' + userLang('SHOW_CMTS') + '</button>\n' +
-                    '</div>\n';
-                wrapper = string2HTML(wrapper).querySelector('#P-show-comments');
-                eventHandler(wrapper, 'click', showComments);
+                    "<div id='P-show-comments' class='yt-card'>\n" +
+                    "    <button class='yt-uix-button yt-uix-button-expander'>" + userLang("SHOW_CMTS") + "</button>\n" +
+                    "</div>\n";
+                wrapper = string2HTML(wrapper).querySelector("#P-show-comments");
+                eventHandler(wrapper, "click", showComments);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
         }
         function playerMode() {
-            var pageElement   = document.getElementById('page'),
-                playerElement = document.getElementById('player');
+            var pageElement   = document.getElementById("page"),
+                playerElement = document.getElementById("player");
             if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
-                if (window.navigator.cookieEnabled && (document.cookie.split('wide=0').length > 1 || document.cookie.split('wide=1').length < 2)) {
-                    document.cookie = 'wide=1; path=/';
+                if (window.navigator.cookieEnabled && (document.cookie.split("wide=0").length > 1 || document.cookie.split("wide=1").length < 2)) {
+                    document.cookie = "wide=1; path=/";
                 }
-                if (playerElement && window.location.pathname === '/watch') {
-                    pageElement.classList.add('watch-wide');
-                    pageElement.className = pageElement.className.replace('non-', '');
-                    playerElement.className = playerElement.className.replace('small', 'large');
+                if (playerElement && window.location.pathname === "/watch") {
+                    pageElement.classList.add("watch-wide");
+                    pageElement.className = pageElement.className.replace("non-", "");
+                    playerElement.className = playerElement.className.replace("small", "large");
                 }
             } else if (parSets.VID_PLR_SIZE_MEM && !parSets.theaterMode) {
-                if (window.navigator.cookieEnabled && (document.cookie.split('wide=1').length > 1 || document.cookie.split('wide=0').length < 2)) {
-                    document.cookie = 'wide=0; path=/';
+                if (window.navigator.cookieEnabled && (document.cookie.split("wide=1").length > 1 || document.cookie.split("wide=0").length < 2)) {
+                    document.cookie = "wide=0; path=/";
                 }
-                if (playerElement && window.location.pathname === '/watch') {
-                    pageElement.classList.remove('watch-wide');
-                    pageElement.className = pageElement.className.replace('watch-stage', 'watch-non-stage');
-                    playerElement.className = playerElement.className.replace('large', 'small').replace('medium', 'small');
+                if (playerElement && window.location.pathname === "/watch") {
+                    pageElement.classList.remove("watch-wide");
+                    pageElement.className = pageElement.className.replace("watch-stage", "watch-non-stage");
+                    playerElement.className = playerElement.className.replace("large", "small").replace("medium", "small");
                 }
             }
         }
         function argsCleaner(config) {
             function clearRVS(rvs) {
-                rvs = rvs.split(',');
+                rvs = rvs.split(",");
                 function blacklistMatch(names) {
                     var i = rvs.length;
                     while (i) {
                         i -= 1;
-                        if (rvs[i].replace(/\+/g, ' ').split(parSets.blacklist[names]).length > 1) {
+                        if (rvs[i].replace(/\+/g, " ").split(parSets.blacklist[names]).length > 1) {
                             rvs.splice(i, 1);
                         }
                     }
                 }
                 Object.keys(parSets.blacklist).forEach(blacklistMatch);
-                return rvs.join(',');
+                return rvs.join(",");
             }
             if (config.args.video_id) {
-                config.args.autohide = '2';
+                config.args.autohide = "2";
                 config.args.vq = parSets.VID_DFLT_QLTY;
                 config.args.theme = parSets.VID_CTRL_BAR_CLR;
                 config.args.color = parSets.VID_PROG_BAR_CLR;
-                config.args.dash = (parSets.VID_PLR_DASH && '0') || config.args.dash;
-                config.args.autoplay = (parSets.VID_PLR_ATPL && '1') || config.args.autoplay;
+                config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
+                if (!parSets.VID_PLR_ATPL) {
+                    config.args.autoplay = "0";
+                }
                 if (parSets.VID_PLR_SIZE_MEM) {
-                    config.args.player_wide = (parSets.theaterMode && '1') || '0';
+                    config.args.player_wide = (parSets.theaterMode && "1") || "0";
                 }
                 if (config.args.iv_load_policy && parSets.VID_PLR_ANTS) {
-                    config.args.iv_load_policy = '3';
+                    config.args.iv_load_policy = "3";
                 }
                 if (config.args.cc_load_policy && parSets.VID_PLR_CC) {
-                    config.args.cc_load_policy = '0';
+                    config.args.cc_load_policy = "0";
                     delete config.args.ttsurl;
                     delete config.args.caption_tracks;
                 }
@@ -2243,7 +2245,7 @@
                 if (parSets.BLK_ON && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
                     config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = clearRVS(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
                 }
-                if (window.location.pathname === '/watch' && window.ytplayer && window.ytplayer.config === null) {
+                if (window.location.pathname === "/watch" && window.ytplayer && window.ytplayer.config === null) {
                     window.ytplayer.config = config;
                 }
                 if (window.ytplayer && window.ytplayer.config) {
@@ -2264,55 +2266,55 @@
                     minOffsetX,
                     minOffsetY,
                     activeMove,
-                    skinny          = document.documentElement.classList.contains('content-snap-width-skinny-mode'),
-                    newPlayer       = document.querySelector('link[href*="player-new"]'),
-                    videoPlayer     = document.getElementById('movie_player'),
-                    playerContainer = document.getElementById('player-api'),
+                    skinny          = document.documentElement.classList.contains("content-snap-width-skinny-mode"),
+                    newPlayer       = document.querySelector("link[href*='player-new']"),
+                    videoPlayer     = document.getElementById("movie_player"),
+                    playerContainer = document.getElementById("player-api"),
                     containerSize   = playerContainer && playerContainer.getBoundingClientRect(),
-                    sidebar         = document.getElementById('watch7-sidebar'),
+                    sidebar         = document.getElementById("watch7-sidebar"),
                     sidebarSize     = sidebar && sidebar.getBoundingClientRect(),
                     outOfSight      = containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51),
-                    isFloater       = document.documentElement.classList.contains('floater'),
-                    floaterUI       = document.getElementById('part_floaterui');
+                    isFloater       = document.documentElement.classList.contains("floater"),
+                    floaterUI       = document.getElementById("part_floaterui");
                 function updatePos() {
-                    if (!document.documentElement.classList.contains('floater')) {
-                        return eventHandler(window, 'resize', updatePos, false, 'remove');
+                    if (!document.documentElement.classList.contains("floater")) {
+                        return eventHandler(window, "resize", updatePos, false, "remove");
                     }
-                    sidebar = document.getElementById('watch7-sidebar');
+                    sidebar = document.getElementById("watch7-sidebar");
                     sidebarSize = sidebar.getBoundingClientRect();
                     height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9)));
-                    videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + 'px';
-                    videoPlayer.style.height = height + 'px';
+                    videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + "px";
+                    videoPlayer.style.height = height + "px";
                     XBounds = parSets.floaterX > -1 && (parSets.floaterX + videoPlayer.offsetWidth) < document.documentElement.offsetWidth;
                     YBounds = parSets.floaterY > 50 && (parSets.floaterY + videoPlayer.offsetHeight) < document.documentElement.offsetHeight;
                     if (!parSets.customFloater || skinny) {
-                        videoPlayer.style.top = 'calc(50% - ' + (height / 2) + 'px)';
-                        videoPlayer.style.left = ((skinny && '0') || sidebarSize.left) + 'px';
+                        videoPlayer.style.top = "calc(50% - " + (height / 2) + "px)";
+                        videoPlayer.style.left = ((skinny && "0") || sidebarSize.left) + "px";
                     } else {
-                        videoPlayer.style.top = ((YBounds && parSets.floaterY) || (parSets.floaterY < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + 'px';
-                        videoPlayer.style.left = ((XBounds && parSets.floaterX) || (parSets.floaterX < 1 && '0') || (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) + 'px';
+                        videoPlayer.style.top = ((YBounds && parSets.floaterY) || (parSets.floaterY < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + "px";
+                        videoPlayer.style.left = ((XBounds && parSets.floaterX) || (parSets.floaterX < 1 && "0") || (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) + "px";
                     }
                 }
                 function customFloaterPosition(event) {
                     var newXval,
                         newYval;
                     if (activeMove) {
-                        if (event.type === 'mouseup') {
-                            set('floaterY', videoPlayer.offsetTop);
-                            set('floaterX', videoPlayer.offsetLeft);
+                        if (event.type === "mouseup") {
+                            set("floaterY", videoPlayer.offsetTop);
+                            set("floaterX", videoPlayer.offsetLeft);
                             activeMove = false;
                             return;
                         }
-                        if (event.type === 'mousemove') {
+                        if (event.type === "mousemove") {
                             newXval = videoPlayer.offsetLeft + (event.clientX - oldPosX);
                             newYval = videoPlayer.offsetTop + (event.clientY - oldPosY);
-                            newXval = (event.clientX < (minOffsetX + 1) && '0') || (event.clientX > (maxOffsetX - 1) && (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) || newXval;
-                            newYval = (event.clientY < (minOffsetY + 1) && '51') || (event.clientY > (maxOffsetY - 1) && (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) || newYval;
+                            newXval = (event.clientX < (minOffsetX + 1) && "0") || (event.clientX > (maxOffsetX - 1) && (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) || newXval;
+                            newYval = (event.clientY < (minOffsetY + 1) && "51") || (event.clientY > (maxOffsetY - 1) && (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) || newYval;
                             if (newYval !== videoPlayer.style.top) {
-                                videoPlayer.style.top = newYval + 'px';
+                                videoPlayer.style.top = newYval + "px";
                             }
                             if (newXval !== videoPlayer.style.left) {
-                                videoPlayer.style.left = newXval + 'px';
+                                videoPlayer.style.left = newXval + "px";
                             }
                         }
                         oldPosX = event.clientX;
@@ -2320,11 +2322,11 @@
                     }
                 }
                 function floaterControl(event) {
-                    if (event.target.id === 'part_floaterui_reset') {
-                        set('customFloater', false);
+                    if (event.target.id === "part_floaterui_reset") {
+                        set("customFloater", false);
                         updatePos();
-                    } else if (event.target.id === 'part_floaterui_move') {
-                        set('customFloater', true);
+                    } else if (event.target.id === "part_floaterui_move") {
+                        set("customFloater", true);
                         activeMove = true;
                         maxOffsetX = document.documentElement.offsetWidth - (videoPlayer.offsetWidth - (event.clientX - videoPlayer.offsetLeft));
                         maxOffsetY = document.documentElement.offsetHeight - (videoPlayer.offsetHeight - (event.clientY - videoPlayer.offsetTop));
@@ -2334,122 +2336,113 @@
                     }
                 }
                 if (!sidebar) {
-                    eventHandler(window, 'scroll', initFloater, false, 'remove');
+                    eventHandler(window, "scroll", initFloater, false, "remove");
                     return;
                 }
                 if (videoPlayer) {
                     if (!floaterUI) {
                         floaterUI = [
-                            '<div id="part_floaterui">\n',
-                            '    <button id="part_floaterui_move" title="' + userLang('VID_PLR_ALVIS_MOVE') + '"></button>\n',
-                            '    <button id="part_floaterui_reset" title="' + userLang('VID_PLR_ALVIS_RST') + '"></button>\n',
-                            '</div>\n'
-                        ].join('');
-                        floaterUI = string2HTML(floaterUI).querySelector('#part_floaterui');
-                        eventHandler(document, 'mousemove', customFloaterPosition);
-                        eventHandler(document, 'mouseup', customFloaterPosition);
-                        eventHandler(document, 'mousedown', floaterControl);
+                            "<div id='part_floaterui'>\n",
+                            "    <button id='part_floaterui_move' title='" + userLang("VID_PLR_ALVIS_MOVE") + "'></button>\n",
+                            "    <button id='part_floaterui_reset' title='" + userLang("VID_PLR_ALVIS_RST") + "'></button>\n",
+                            "</div>\n"
+                        ].join("");
+                        floaterUI = string2HTML(floaterUI).querySelector("#part_floaterui");
+                        eventHandler(document, "mousemove", customFloaterPosition);
+                        eventHandler(document, "mouseup", customFloaterPosition);
+                        eventHandler(document, "mousedown", floaterControl);
                         videoPlayer.appendChild(floaterUI);
                     }
                     if (outOfSight && !isFloater) {
-                        document.documentElement.classList.add('floater');
-                        eventHandler(window, 'resize', updatePos);
+                        document.documentElement.classList.add("floater");
+                        eventHandler(window, "resize", updatePos);
                         updatePos();
                     } else if (!outOfSight && isFloater) {
-                        document.documentElement.classList.remove('floater');
-                        eventHandler(window, 'resize', updatePos, false, 'remove');
-                        videoPlayer.removeAttribute('style');
+                        document.documentElement.classList.remove("floater");
+                        eventHandler(window, "resize", updatePos, false, "remove");
+                        videoPlayer.removeAttribute("style");
                     }
                 }
             }
             if (parSets.VID_PLR_ALVIS) {
-                if (window.location.pathname === '/watch') {
-                    eventHandler(window, 'scroll', initFloater);
-                } else if (window.location.pathname !== '/watch') {
-                    eventHandler(window, 'scroll', initFloater, false, 'remove');
+                if (window.location.pathname === "/watch") {
+                    eventHandler(window, "scroll", initFloater);
+                } else if (window.location.pathname !== "/watch") {
+                    eventHandler(window, "scroll", initFloater, false, "remove");
                 }
             }
         }
         function subPlaylist() {
             var i,
                 list      = [],
-                button    = document.getElementById('subscription-playlist'),
-                navMenu   = document.getElementById('channel-navigation-menu'),
-                listTitle = document.getElementsByClassName('appbar-nav-menu')[0],
-                videoList = document.getElementsByClassName('addto-watch-later-button');
+                button    = document.getElementById("subscription-playlist"),
+                navMenu   = document.getElementById("channel-navigation-menu"),
+                listTitle = document.getElementsByClassName("appbar-nav-menu")[0],
+                videoList = document.getElementsByClassName("addto-watch-later-button");
             function initSubPlaylist() {
                 i = videoList.length;
                 while (i) {
                     i -= 1;
                     if (i > -1) {
-                        list.push(videoList[i].getAttribute('data-video-ids'));
+                        list.push(videoList[i].getAttribute("data-video-ids"));
                     }
                 }
-                list.reverse().join('%2C');
-                listTitle = listTitle && listTitle.getElementsByClassName('epic-nav-item-heading')[0].textContent.trim();
-                button = document.getElementById('subscription-playlist');
-                button.href = '/watch_videos?title=' + listTitle + '&video_ids=' + list;
+                list.reverse().join("%2C");
+                listTitle = listTitle && listTitle.getElementsByClassName("epic-nav-item-heading")[0].textContent.trim();
+                button = document.getElementById("subscription-playlist");
+                button.href = "/watch_videos?title=" + listTitle + "&video_ids=" + list;
             }
-            if (window.location.href.split('/feed/subscriptions').length > 1 && !button && listTitle && videoList) {
+            if (window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
                 button =
-                    '<li id="subscription-playlist-icon">\n' +
-                    '    <a id="subscription-playlist" title="' + userLang('SUB_PLST') + '" class="yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default">\n' +
-                    '        <span class="yt-uix-button-content"></span>\n' +
-                    '    </a>\n' +
-                    '</li>';
-                button = string2HTML(button).querySelector('li');
+                    "<li id='subscription-playlist-icon'>\n" +
+                    "    <a id='subscription-playlist' title='" + userLang("SUB_PLST") + "' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>\n" +
+                    "        <span class='yt-uix-button-content'></span>\n" +
+                    "    </a>\n" +
+                    "</li>";
+                button = string2HTML(button).querySelector("li");
                 navMenu.insertBefore(button, navMenu.firstChild);
-                eventHandler(button, 'click', initSubPlaylist);
+                eventHandler(button, "click", initSubPlaylist);
             }
         }
         function playerReady(playerApi) {
             function playerState(state) {
                 if (parSets.fullBrs) {
-                    document.documentElement.classList[(state < 5 && state > 0) ? 'add' : 'remove']('part_fullbrowser');
+                    document.documentElement.classList[(state < 5 && state > 0) ? "add" : "remove"]("part_fullbrowser");
                 }
                 if (parSets.lightsOut) {
-                    document.documentElement.classList[(state < 5 && state > 0) ? 'add' : 'remove']('part_cinema_mode');
+                    document.documentElement.classList[(state < 5 && state > 0) ? "add" : "remove"]("part_cinema_mode");
                 }
             }
             function volumeChanged(event) {
-                set('volLev', event.volume);
+                set("volLev", event.volume);
             }
             function sizeChanged(event) {
-                set('theaterMode', event);
+                set("theaterMode", event);
             }
             function forceIdealAspect(event) {
                 var observer,
-                    moviePlayer = document.getElementById('movie_player');
-                if (moviePlayer && !moviePlayer.classList.contains('ideal-aspect')) {
-                    moviePlayer.classList.add('ideal-aspect');
+                    moviePlayer = document.getElementById("movie_player");
+                if (moviePlayer && !moviePlayer.classList.contains("ideal-aspect")) {
+                    moviePlayer.classList.add("ideal-aspect");
                 }
                 if (!event) {
                     observer = new window.MutationObserver(forceIdealAspect);
                     observer.observe(moviePlayer, {attributes: true});
                 }
             }
-            if ((typeof playerApi === 'object' || document.querySelector('link[href*="player-new"]')) && !document.getElementById('c4-player')) {
-                api = document.getElementById('movie_player');
-                eventHandler(api, 'onStateChange', playerState);
+            if ((typeof playerApi === "object" || document.querySelector("link[href*='player-new']")) && !document.getElementById("c4-player")) {
+                api = document.getElementById("movie_player");
+                eventHandler(api, "onStateChange", playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
-                    eventHandler(api, 'onVolumeChange', volumeChanged);
+                    eventHandler(api, "onVolumeChange", volumeChanged);
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
-                    eventHandler(api, 'SIZE_CLICKED', sizeChanged);
-                }
-                if (!parSets.VID_PLR_ATPL) {
-                    argsCleaner(window.ytplayer.config);
-                    api.cueVideoByPlayerVars(window.ytplayer.config.args);
-                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                } else {
-                    api.pauseVideo();
-                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                    api.playVideo();
+                    eventHandler(api, "SIZE_CLICKED", sizeChanged);
                 }
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
                 }
-                if (parSets.VID_PLR_CTRL_VIS && !document.querySelector('link[href*="player-new"]')) {
+                if (parSets.VID_PLR_CTRL_VIS && !document.querySelector("link[href*='player-new']")) {
                     forceIdealAspect();
                 }
             }
@@ -2466,11 +2459,14 @@
                 return function () {
                     var args = arguments;
                     argsCleaner(args[1]);
-                    if (args[0].id === 'upsell-video') {
+                    if (args[0].id === "upsell-video") {
                         return originalFunction.apply(this, args);
                     }
                     originalFunction.apply(this, args);
                     if (api) {
+                        if (!parSets.VID_PLR_ATPL) {
+                            api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                        }
                         api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
                 };
@@ -2478,7 +2474,7 @@
             function autoplayDetour(originalFunction) {
                 return function () {
                     var args = arguments;
-                    if (!args[1] || parSets.plApl || (!parSets.plApl && args[1].feature && args[1].feature !== 'autoplay')) {
+                    if (!args[1] || parSets.plApl || (!parSets.plApl && args[1].feature && args[1].feature !== "autoplay")) {
                         originalFunction.apply(this, arguments);
                     }
                 };
@@ -2486,20 +2482,20 @@
             function autoplayDetourFullScreen(originalFunction) {
                 return function () {
                     var nextButton,
-                        hasEnded    = api && !(Math.round(api.getCurrentTime()) < Math.floor(api.getDuration())),
-                        nextClicked = document.activeElement.classList.contains('ytp-button-next') || document.activeElement.classList.contains('ytp-next-button');
+                        hasEnded    = api && api.getCurrentTime && !(Math.round(api.getCurrentTime()) < Math.floor(api.getDuration())),
+                        nextClicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
                     if (!parSets.plApl && !nextClicked && hasEnded) {
-                        nextButton = document.getElementsByClassName('ytp-next-button')[0];
-                        if (nextButton && nextButton.getAttribute('aria-disabled') === 'true') {
+                        nextButton = document.getElementsByClassName("ytp-next-button")[0];
+                        if (nextButton && nextButton.getAttribute("aria-disabled") === "true") {
                             nextButton.onclick = api.nextVideo;
-                            eventHandler(nextButton, 'click', api.nextVideo);
-                            nextButton.setAttribute('aria-disabled', 'false');
+                            eventHandler(nextButton, "click", api.nextVideo);
+                            nextButton.setAttribute("aria-disabled", "false");
                         }
                         return false;
                     }
                     if (parSets.plApl || nextClicked || !hasEnded) {
                         if (nextClicked) {
-                            document.getElementById('movie_player').focus();
+                            document.getElementById("movie_player").focus();
                         }
                         return originalFunction.apply(this, arguments);
                     }
@@ -2512,21 +2508,21 @@
                         config = {args: {}},
                         args   = arguments;
                     function buildConfig(conf) {
-                        config.args[conf.split('=')[0]] = decodeURIComponent(conf.split('=')[1]).replace(/\+/g, ' ');
+                        config.args[conf.split("=")[0]] = decodeURIComponent(conf.split("=")[1]).replace(/\+/g, " ");
                     }
                     function revertConfig(conf) {
-                        patch[0].response.push(conf + '=' + encodeURIComponent(config.args[conf]).replace(/\%20/g, '+'));
+                        patch[0].response.push(conf + "=" + encodeURIComponent(config.args[conf]).replace(/\%20/g, "+"));
                     }
                     for (key in args[0]) {
                         if (args[0][key] !== undefined) {
                             patch[0][key] = args[0][key];
                         }
                     }
-                    patch[0].response.split('&').forEach(buildConfig);
+                    patch[0].response.split("&").forEach(buildConfig);
                     config = argsCleaner(config);
                     patch[0].response = [];
                     Object.keys(config.args).forEach(revertConfig);
-                    patch[0].response = patch[0].response.join('&');
+                    patch[0].response = patch[0].response.join("&");
                     patch[0].responseText = patch[0].response;
                     api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     originalFunction.apply(this, patch);
@@ -2537,11 +2533,11 @@
                     var self = this;
                     function firstLevel(fl) {
                         function secondLevel(sl) {
-                            if (typeof self[fl][sl] === 'function' && String(self[fl][sl]).split('onStatusFail').length > 1) {
+                            if (typeof self[fl][sl] === "function" && String(self[fl][sl]).split("onStatusFail").length > 1) {
                                 self[fl][sl] = fullscreenVideoChange(self[fl][sl]);
                             }
                         }
-                        if (typeof self[fl] === 'object' && self[fl]) {
+                        if (typeof self[fl] === "object" && self[fl]) {
                             Object.keys(Object.getPrototypeOf(self[fl])).forEach(secondLevel);
                         }
                     }
@@ -2556,11 +2552,11 @@
                         args = arguments;
                     function playerInstanceIterator(keys) {
                         function firstLevel(fl) {
-                            if (typeof playerInstance[keys][fl] === 'function' && String(playerInstance[keys][fl]).split('get_video_info').length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
+                            if (typeof playerInstance[keys][fl] === "function" && String(playerInstance[keys][fl]).split("get_video_info").length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
                                 playerInstance[keys][fl] = fsPointerDetour(playerInstance[keys][fl]);
                             }
                         }
-                        if (typeof playerInstance[keys] === 'object') {
+                        if (typeof playerInstance[keys] === "object") {
                             if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
                             } else if (playerInstance[keys]) {
@@ -2569,13 +2565,13 @@
                         }
                     }
                     args[1] = argsCleaner(args[1]);
-                    if (args[0].id === 'upsell-video') {
+                    if (args[0].id === "upsell-video") {
                         originalFunction.apply(this, args);
-                    } else if (typeof args[0] === 'object' || document.querySelector('link[href*="player-new"]')) {
+                    } else if (typeof args[0] === "object" || document.querySelector("link[href*='player-new']")) {
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
-                        moviePlayer = document.getElementById('movie_player');
-                        if (moviePlayer && !parSets.VID_PLR_ATPL && document.querySelector('link[href*="player-new"]')) {
+                        moviePlayer = document.getElementById("movie_player");
+                        if (moviePlayer && !parSets.VID_PLR_ATPL && document.querySelector("link[href*='player-new']")) {
                             moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
@@ -2583,20 +2579,20 @@
             }
             function ytIterator(keys) {
                 var str;
-                if (typeof window._yt_www[keys] === 'function') {
+                if (typeof window._yt_www[keys] === "function") {
                     str = String(window._yt_www[keys]);
-                    if (str.split('player-added').length > 1) {
+                    if (str.split("player-added").length > 1) {
                         window._yt_www[keys] = embedDetour(window._yt_www[keys]);
-                    } else if (str.split('window.spf.navigate').length > 1) {
+                    } else if (str.split("window.spf.navigate").length > 1) {
                         window._yt_www[keys] = autoplayDetour(window._yt_www[keys]);
                     }
                 }
             }
-            if (event && event.target && event.target.getAttribute('name') === 'www/base') {
+            if (event && event.target && event.target.getAttribute("name") === "www/base") {
                 window.yt.setConfig = baseDetour(window.yt.setConfig);
                 Object.keys(window._yt_www).some(ytIterator);
             }
-            if ((event && event.target && event.target.getAttribute('name') === 'html5player/html5player') || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
+            if ((event && event.target && event.target.getAttribute("name") === "html5player/html5player") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
                 window.html5Patched = true;
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
@@ -2612,33 +2608,31 @@
                 clickTitle,
                 masterList,
                 trashList  = [],
-                detailList = [],
-                blackList  = parSets.blacklist;
+                detailList = [];
             function initThumbMod(event) {
-                var observer,
-                    userList = parSets.blacklist;
+                var observer;
                 function initSidebarMode() {
-                    var sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ',left=' + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? '' : ',left=0',
-                        newSidebar   = window.open(event.getAttribute('data-link'), 'sidebarMode', 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
+                    var sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ",left=" + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? "" : ",left=0",
+                        newSidebar   = window.open(event.getAttribute("data-link"), "sidebarMode", "width=467,height=" + window.screen.availHeight + ",scrollbars=1" + sidebarAlign);
                     function snapFit() {
                         newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                     }
-                    newSidebar.addEventListener('readystatechange', snapFit, true);
+                    newSidebar.addEventListener("readystatechange", snapFit, true);
                     newSidebar.focus();
                 }
                 function initBlackList() {
-                    userList[event.getAttribute('data-ytid')] = event.getAttribute('data-user');
-                    set('blacklist', userList);
+                    parSets.blacklist[event.getAttribute("data-ytid")] = event.getAttribute("data-user");
+                    set("blacklist", parSets.blacklist);
                     thumbMod();
                 }
-                loadMore = document.getElementsByClassName('load-more-button')[0] || document.getElementById('watch-more-related');
-                clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
+                loadMore = document.getElementsByClassName("load-more-button")[0] || document.getElementById("watch-more-related");
+                clickTitle = document.getElementsByClassName("yt-uix-tile")[0];
                 while (clickTitle) {
-                    clickTitle.classList.remove('yt-uix-tile');
-                    clickTitle = document.getElementsByClassName('yt-uix-tile')[0];
+                    clickTitle.classList.remove("yt-uix-tile");
+                    clickTitle = document.getElementsByClassName("yt-uix-tile")[0];
                 }
-                if (loadMore && !loadMore.classList.contains('thumbMod')) {
-                    loadMore.classList.add('thumbMod');
+                if (loadMore && !loadMore.classList.contains("thumbMod")) {
+                    loadMore.classList.add("thumbMod");
                     observer = new window.MutationObserver(thumbMod);
                     observer.observe(loadMore, {
                         childList: true,
@@ -2649,9 +2643,9 @@
                 if (event) {
                     event.preventDefault();
                     event = event.target;
-                    if (event.className === 'sidebarmode yt-uix-tooltip') {
+                    if (event.className === "sidebarmode yt-uix-tooltip") {
                         initSidebarMode();
-                    } else if (event.className === 'blacklist yt-uix-tooltip') {
+                    } else if (event.className === "blacklist yt-uix-tooltip") {
                         initBlackList();
                     }
                 }
@@ -2659,22 +2653,22 @@
             function insertButtons(i) {
                 var button;
                 function createButton(type, details) {
-                    if (type === 'sidebarmode') {
-                        button = '<div title="' + userLang('SDBR_OPEN') + '" data-link="' + details.videolink + '" data-tooltip-text="' + userLang('SDBR_OPEN') + '" class="' + type + ' yt-uix-tooltip"></div>';
+                    if (type === "sidebarmode") {
+                        button = "<div title='" + userLang("SDBR_OPEN") + "' data-link='" + details.videolink + "' data-tooltip-text='" + userLang("SDBR_OPEN") + "' class='" + type + " yt-uix-tooltip'></div>";
                     } else {
-                        button = '<div title="' + userLang('BLCK_ADD') + '" data-user="' + details.username + '" data-ytid="' + details.youtubeid + '" data-tooltip-text="' + userLang('BLCK_ADD') + '" class="' + type + ' yt-uix-tooltip"></div>';
+                        button = "<div title='" + userLang("BLCK_ADD") + "' data-user='" + details.username + "' data-ytid='" + details.youtubeid + "' data-tooltip-text='" + userLang("BLCK_ADD") + "' class='" + type + " yt-uix-tooltip'></div>";
                     }
-                    return string2HTML(button).querySelector('div');
+                    return string2HTML(button).querySelector("div");
                 }
                 if (detailList[i]) {
-                    if (parSets.GEN_SDBR_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName('sidebarmode')[0]) {
-                        button = createButton('sidebarmode', detailList[i]);
-                        eventHandler(button, 'click', initThumbMod);
+                    if (parSets.GEN_SDBR_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName("sidebarmode")[0]) {
+                        button = createButton("sidebarmode", detailList[i]);
+                        eventHandler(button, "click", initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
-                    if (parSets.BLK_ON && window.location.href.split('/feed/subscriptions').length < 2 && !detailList[i].thumbfield.getElementsByClassName('blacklist')[0]) {
-                        button = createButton('blacklist', detailList[i]);
-                        eventHandler(button, 'click', initThumbMod);
+                    if (parSets.BLK_ON && window.location.href.split("/feed/subscriptions").length < 2 && !detailList[i].thumbfield.getElementsByClassName("blacklist")[0]) {
+                        button = createButton("blacklist", detailList[i]);
+                        eventHandler(button, "click", initThumbMod);
                         detailList[i].thumbfield.appendChild(button);
                     }
                 }
@@ -2682,27 +2676,27 @@
             function buildDetailList(i) {
                 var upNext;
                 if (i > -1 && masterList[i]) {
-                    infoField = masterList[i].getElementsByClassName('g-hovercard')[1] || masterList[i].getElementsByClassName('g-hovercard')[0];
-                    titleField = masterList[i].getElementsByClassName('yt-uix-tile-link')[0] || masterList[i].getElementsByClassName('yt-ui-ellipsis')[0] || masterList[i].getElementsByClassName('content-link')[0] || masterList[i].getElementsByTagName('a')[0];
-                    thumbField = masterList[i].getElementsByClassName('yt-lockup-thumbnail')[0] || masterList[i].getElementsByClassName('thumb-wrapper')[0] || masterList[i].getElementsByClassName('yt-pl-thumb')[0];
-                    userId = infoField && infoField.getAttribute('data-ytid');
+                    infoField = masterList[i].getElementsByClassName("g-hovercard")[1] || masterList[i].getElementsByClassName("g-hovercard")[0];
+                    titleField = masterList[i].getElementsByClassName("yt-uix-tile-link")[0] || masterList[i].getElementsByClassName("yt-ui-ellipsis")[0] || masterList[i].getElementsByClassName("content-link")[0] || masterList[i].getElementsByTagName("a")[0];
+                    thumbField = masterList[i].getElementsByClassName("yt-lockup-thumbnail")[0] || masterList[i].getElementsByClassName("thumb-wrapper")[0] || masterList[i].getElementsByClassName("yt-pl-thumb")[0];
+                    userId = infoField && infoField.getAttribute("data-ytid");
                     userName = infoField && infoField.textContent;
                     videoLink = titleField && titleField.href;
                     detailList[i] = undefined;
-                    if (userId && userId.split('UC').length < 2) {
-                        infoField = masterList[i].getElementsByClassName('g-hovercard')[0];
-                        userId = infoField && infoField.getAttribute('data-ytid');
+                    if (userId && userId.split("UC").length < 2) {
+                        infoField = masterList[i].getElementsByClassName("g-hovercard")[0];
+                        userId = infoField && infoField.getAttribute("data-ytid");
                         userName = infoField && infoField.textContent;
                     }
-                    if (blackList[userId]) {
-                        upNext = document.getElementsByClassName('watch-sidebar-head')[0] && document.getElementsByClassName('watch-sidebar-section')[0];
+                    if (parSets.blacklist[userId]) {
+                        upNext = document.getElementsByClassName("watch-sidebar-head")[0] && document.getElementsByClassName("watch-sidebar-section")[0];
                         if (upNext && upNext.contains(thumbField)) {
                             upNext.remove();
-                            document.getElementsByClassName('watch-sidebar-separation-line')[0].remove();
+                            document.getElementsByClassName("watch-sidebar-separation-line")[0].remove();
                         } else {
                             while (thumbField) {
                                 thumbField = thumbField.parentNode;
-                                if (thumbField.tagName === 'LI') {
+                                if (thumbField.tagName === "LI") {
                                     trashList.push(thumbField);
                                     break;
                                 }
@@ -2720,13 +2714,13 @@
             }
             function cleanList(trash) {
                 var i,
-                    emptyShelves = document.getElementsByClassName('feed-item-container');
+                    emptyShelves = document.getElementsByClassName("feed-item-container");
                 trashList[trash].remove();
                 if (emptyShelves.length > 0) {
                     i = emptyShelves.length;
                     while (i) {
                         i -= 1;
-                        if (emptyShelves[i].getElementsByTagName('li').length < 2) {
+                        if (emptyShelves[i].getElementsByTagName("li").length < 2) {
                             emptyShelves[i].remove();
                         }
                     }
@@ -2738,8 +2732,8 @@
                     masterList = list;
                 }
             }
-            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === '/' || window.location.pathname === '/results' || window.location.pathname === '/watch' || window.location.pathname === '/feed/music' || window.location.href.split('/feed/subscriptions').length > 1)) {
-                ['yt-lockup-tile', 'video-list-item', 'yt-shelf-grid-item'].forEach(getList);
+            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1)) {
+                ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item"].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
                     Object.keys(trashList).forEach(cleanList);
@@ -2749,11 +2743,11 @@
             }
         }
         function volumeWheel(event) {
-            var playerApi  = document.getElementById('player-api'),
+            var playerApi  = document.getElementById("player-api"),
                 direction  = event && (event.deltaY || event.wheelDeltaY),
-                currentVol = api && api.getVolume(),
-                playlistFS = document.getElementsByClassName('ytp-playlist-tray-tray')[0] || document.getElementsByClassName('ytp-playlist-menu')[0];
-            if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === 'player-api' || playerApi.contains(event.target))) {
+                currentVol = api && api.getVolume && api.getVolume(),
+                playlistFS = document.getElementsByClassName("ytp-playlist-tray-tray")[0] || document.getElementsByClassName("ytp-playlist-menu")[0];
+            if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === "player-api" || playerApi.contains(event.target))) {
                 event.preventDefault();
                 if (direction > 0 && currentVol > 0) {
                     api.setVolume(currentVol - 5);
@@ -2762,18 +2756,18 @@
                 }
             }
             if (!event && parSets.VID_VOL_WHEEL) {
-                eventHandler(window, 'wheel', volumeWheel);
+                eventHandler(window, "wheel", volumeWheel);
             }
         }
         function playlistControls() {
             var href  = window.location.href,
-                plBar = document.getElementById('watch-appbar-playlist');
+                plBar = document.getElementById("watch-appbar-playlist");
             function reverseControl() {
                 var temp,
-                    prev   = document.getElementsByClassName('prev-playlist-list-item')[0],
-                    next   = document.getElementsByClassName('next-playlist-list-item')[0],
-                    list   = document.getElementById('playlist-autoscroll-list'),
-                    videos = list.getElementsByTagName('li'),
+                    prev   = document.getElementsByClassName("prev-playlist-list-item")[0],
+                    next   = document.getElementsByClassName("next-playlist-list-item")[0],
+                    list   = document.getElementById("playlist-autoscroll-list"),
+                    videos = list.getElementsByTagName("li"),
                     length = videos.length;
                 while (length) {
                     length -= 1;
@@ -2782,75 +2776,75 @@
                 temp = prev.href;
                 prev.href = next.href;
                 next.href = temp;
-                list.scrollTop = document.getElementsByClassName('currently-playing')[0].offsetTop;
+                list.scrollTop = document.getElementsByClassName("currently-playing")[0].offsetTop;
                 if (api) {
                     api.updatePlaylist();
                 }
             }
             function reverseButton(event) {
                 event = isChrome ? event.target.parentNode : event.target;
-                event.classList.toggle('yt-uix-button-toggled');
-                set('plRev', (event.classList.contains('yt-uix-button-toggled')) ? window.yt.config_.LIST_ID : false);
+                event.classList.toggle("yt-uix-button-toggled");
+                set("plRev", (event.classList.contains("yt-uix-button-toggled")) ? window.yt.config_.LIST_ID : false);
                 reverseControl();
             }
             function autoplayButton(event) {
                 event = isChrome ? event.target.parentNode : event.target;
-                event.classList.toggle('yt-uix-button-toggled');
-                set('plApl', event.classList.contains('yt-uix-button-toggled'));
+                event.classList.toggle("yt-uix-button-toggled");
+                set("plApl", event.classList.contains("yt-uix-button-toggled"));
             }
             function createButton(type, label, boolean, call) {
-                var navCtrls = document.getElementsByClassName('playlist-nav-controls')[0],
+                var navCtrls = document.getElementsByClassName("playlist-nav-controls")[0],
                     button   = [
-                        '<button data-tooltip-text="' + label + '" class="yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' + (((boolean === true || href.split(boolean).length > 1) && ' yt-uix-button-toggled') || '') + '" type="button" title="' + label + '" id="' + type + '">\n',
-                        '    <span class="yt-uix-button-icon yt-uix-button-icon-watch-appbar-' + type + '-video-list"></span>\n',
-                        '</button>\n'
-                    ].join('');
-                plBar.className = plBar.className.replace('radio-playlist', '');
-                button = string2HTML(button).querySelector('button');
-                eventHandler(button, 'click', call);
+                        "<button data-tooltip-text='" + label + "' class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip" + (((boolean === true || href.split(boolean).length > 1) && " yt-uix-button-toggled") || '') + "'' type='button' title='" + label + "' id='" + type + "'>\n",
+                        "    <span class='yt-uix-button-icon yt-uix-button-icon-watch-appbar-" + type + "-video-list'></span>\n",
+                        "</button>\n"
+                    ].join("");
+                plBar.className = plBar.className.replace("radio-playlist", "");
+                button = string2HTML(button).querySelector("button");
+                eventHandler(button, "click", call);
                 navCtrls.appendChild(button);
             }
             if (plBar) {
-                if (document.readyState === 'complete' && href.split(parSets.plRev).length > 1) {
+                if (document.readyState === "complete" && href.split(parSets.plRev).length > 1) {
                     reverseControl();
                 }
-                if (parSets.VID_PLST_RVRS && !document.getElementById('reverse')) {
-                    createButton('reverse', userLang('PLST_RVRS'), parSets.plRev, reverseButton);
+                if (parSets.VID_PLST_RVRS && !document.getElementById("reverse")) {
+                    createButton("reverse", userLang("PLST_RVRS"), parSets.plRev, reverseButton);
                 }
-                if (parSets.VID_PLST_ATPL && !document.getElementById('autoplay')) {
-                    createButton('autoplay', userLang('PLST_AP'), parSets.plApl, autoplayButton);
+                if (parSets.VID_PLST_ATPL && !document.getElementById("autoplay")) {
+                    createButton("autoplay", userLang("PLST_AP"), parSets.plApl, autoplayButton);
                 }
             }
         }
         function advancedOptions() {
             var page         = document.documentElement,
-                header       = document.getElementById('watch-header'),
-                cnslBtn      = document.getElementById('console-button'),
-                cnslCont     = document.getElementById('advanced-options'),
-                controls     = document.getElementById('player-console'),
-                videoPlayer  = document.getElementsByTagName('video')[0],
+                header       = document.getElementById("watch-header"),
+                cnslBtn      = document.getElementById("console-button"),
+                cnslCont     = document.getElementById("advanced-options"),
+                controls     = document.getElementById("player-console"),
+                videoPlayer  = document.getElementsByTagName("video")[0],
                 storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
             function hookButtons() {
-                var autoPlay    = controls.querySelector('#autoplay-button'),
-                    loopButton  = controls.querySelector('#loop-button'),
-                    seekMap     = controls.querySelector('#seek-map'),
-                    saveThumb   = controls.querySelector('#save-thumbnail-button'),
-                    screenShot  = controls.querySelector('#screenshot-button'),
-                    sidebarMode = controls.querySelector('#sidebar-button'),
-                    fullBrowser = controls.querySelector('#fullbrowser-button'),
-                    cinemaMode  = controls.querySelector('#cinemamode-button');
+                var autoPlay    = controls.querySelector("#autoplay-button"),
+                    loopButton  = controls.querySelector("#loop-button"),
+                    seekMap     = controls.querySelector("#seek-map"),
+                    saveThumb   = controls.querySelector("#save-thumbnail-button"),
+                    screenShot  = controls.querySelector("#screenshot-button"),
+                    sidebarMode = controls.querySelector("#sidebar-button"),
+                    fullBrowser = controls.querySelector("#fullbrowser-button"),
+                    cinemaMode  = controls.querySelector("#cinemamode-button");
                 function togglePlay() {
-                    set('VID_PLR_ATPL', !parSets.VID_PLR_ATPL);
-                    autoPlay.classList[(parSets.VID_PLR_ATPL) ? 'add' : 'remove']('active');
+                    set("VID_PLR_ATPL", !parSets.VID_PLR_ATPL);
+                    autoPlay.classList[(parSets.VID_PLR_ATPL) ? "add" : "remove"]("active");
                 }
                 function toggleLoop(event) {
-                    videoPlayer = document.getElementsByTagName('video')[0];
+                    videoPlayer = document.getElementsByTagName("video")[0];
                     videoPlayer.loop = event ? !videoPlayer.loop : parSets.loopVid;
-                    loopButton.classList[(videoPlayer.loop) ? 'add' : 'remove']('active');
-                    set('loopVid', loopButton.classList.contains('active'));
+                    loopButton.classList[(videoPlayer.loop) ? "add" : "remove"]("active");
+                    set("loopVid", loopButton.classList.contains("active"));
                 }
                 function toggleMap() {
-                    var container = document.getElementById('seek-thumb-map') || false,
+                    var container = document.getElementById("seek-thumb-map") || false,
                         thumbs    = [],
                         thumbControls,
                         thumbsContainer,
@@ -2859,30 +2853,30 @@
                     storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
                     function centerThumb() {
                         var thumbJump;
-                        videoPlayer = document.getElementsByTagName('video')[0];
-                        thumbsContainer = document.getElementById('seek-thumbs');
-                        thumbJump = thumbsContainer.getElementsByTagName('span')[1];
-                        if (videoPlayer && videoPlayer.currentTime > 0 && !container.classList.contains('invisible')) {
-                            thumbsContainer.scrollLeft = (thumbJump.offsetWidth + 10) * (videoPlayer.currentTime / thumbJump.getAttribute('data-time-jump')) - (thumbsContainer.offsetWidth / 2) + ((thumbJump.offsetWidth + 10) / 2);
+                        videoPlayer = document.getElementsByTagName("video")[0];
+                        thumbsContainer = document.getElementById("seek-thumbs");
+                        thumbJump = thumbsContainer.getElementsByTagName("span")[1];
+                        if (videoPlayer && videoPlayer.currentTime > 0 && !container.classList.contains("invisible")) {
+                            thumbsContainer.scrollLeft = (thumbJump.offsetWidth + 10) * (videoPlayer.currentTime / thumbJump.getAttribute("data-time-jump")) - (thumbsContainer.offsetWidth / 2) + ((thumbJump.offsetWidth + 10) / 2);
                         } else {
                             thumbsContainer.scrollLeft = 0;
                         }
                     }
                     function clickManager(event) {
-                        var timeJump = event.target.getAttribute('data-time-jump'),
-                            quality  = event.target.className.split('quality').length;
+                        var timeJump = event.target.getAttribute("data-time-jump"),
+                            quality  = event.target.className.split("quality").length;
                         if (timeJump) {
-                            if (videoPlayer.src !== '') {
+                            if (videoPlayer.src !== "") {
                                 videoPlayer.currentTime = timeJump;
                             } else {
                                 window.yt.www.watch.player.seekTo(timeJump);
                             }
                         }
-                        if (quality > 1 && event.target.tagName === 'DIV') {
+                        if (quality > 1 && event.target.tagName === "DIV") {
                             container.className = event.target.className;
                             thumbsContainer.remove();
-                            thumbsContainer = '<div id="seek-thumbs">' + thumbs[event.target.className.replace('quality-', '')] + '</div>\n';
-                            thumbsContainer = string2HTML(thumbsContainer).querySelector('#seek-thumbs');
+                            thumbsContainer = "<div id='seek-thumbs'>" + thumbs[event.target.className.replace("quality-", "")] + "</div>\n";
+                            thumbsContainer = string2HTML(thumbsContainer).querySelector("#seek-thumbs");
                             container.appendChild(thumbsContainer);
                             centerThumb();
                         }
@@ -2890,13 +2884,13 @@
                     function removeOld() {
                         if (container) {
                             container.remove();
-                            seekMap.classList.remove('active');
+                            seekMap.classList.remove("active");
                         }
-                        eventHandler(container, 'click', clickManager);
-                        eventHandler(window, 'spfdone', removeOld, false, 'remove');
+                        eventHandler(container, "click", clickManager);
+                        eventHandler(window, "spfdone", removeOld, false, "remove");
                     }
                     function parseThumbs() {
-                        thumbControls = '<div id="seek-controls">\n';
+                        thumbControls = "<div id='seek-controls'>\n";
                         function matrixIterator(qualities, level) {
                             var i,
                                 currentBase,
@@ -2905,22 +2899,22 @@
                                 frameAmount = 0,
                                 gridX       = 0,
                                 gridY       = 0;
-                            if (qualities.split('storyboard').length < 2 && qualities.split('default').length < 2) {
-                                details = qualities.split('#');
-                                currentBase = base.replace('$L', level - 1).replace('$N', details[6]);
+                            if (qualities.split("storyboard").length < 2 && qualities.split("default").length < 2) {
+                                details = qualities.split("#");
+                                currentBase = base.replace("$L", level - 1).replace("$N", details[6]);
                                 thumbAmount = details[2] - 1;
                                 for (i = 0; i < thumbAmount; i += 1) {
                                     if (!thumbs[level - 1]) {
-                                        thumbs[level - 1] = '';
+                                        thumbs[level - 1] = "";
                                     }
                                     thumbs[level - 1] += [
-                                        '<span class="quality-' + (level - 1) + '"',
-                                        ' data-time-jump="' + ((i * details[5]) / 1000) + '"',
-                                        ' style="background-image: url(\'' + currentBase.replace('$M', frameAmount) + '?sigh=' + details[7] + '\');',
-                                        ' background-position: -' + (gridX * details[0]) + 'px -' + (gridY * details[1]) + 'px;',
-                                        ' width: ' + (details[0] - 2) + 'px; height: ' + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + 'px;">\n',
-                                        '    <div class="timer">' + timeConv((i * details[5]) / 1000) + '</div>\n',
-                                        '</span>\n'
+                                        "<span class='quality-" + (level - 1) + "'",
+                                        " data-time-jump='" + ((i * details[5]) / 1000) + "'",
+                                        " style=\"background-image: url('" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + "');",
+                                        " background-position: -" + (gridX * details[0]) + "px -" + (gridY * details[1]) + "px;",
+                                        " width: " + (details[0] - 2) + "px; height: " + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + "px;\">\n",
+                                        "    <div class='timer'>" + timeConv((i * details[5]) / 1000) + "</div>\n",
+                                        "</span>\n"
                                     ].join('');
                                     if (gridX === details[3] - 1 && gridY === details[4] - 1) {
                                         frameAmount += 1;
@@ -2932,52 +2926,52 @@
                                 }
                             }
                             if (level > 1) {
-                                thumbControls += '<div class="quality-' + (level - 1) + '">' + ((level < 3 && userLang('CNSL_SKMP_SMAL')) || (level < 4 && userLang('CNSL_SKMP_MED')) || (level < 5 && userLang('CNSL_SKMP_LRGE'))) + '</div>\n';
+                                thumbControls += "<div class='quality-" + (level - 1) + "'>" + ((level < 3 && userLang("CNSL_SKMP_SMAL")) || (level < 4 && userLang("CNSL_SKMP_MED")) || (level < 5 && userLang("CNSL_SKMP_LRGE"))) + "</div>\n";
                             }
                         }
                         matrix.forEach(matrixIterator);
-                        thumbControls += '</div>\n';
+                        thumbControls += "</div>\n";
                     }
                     if (storyBoard) {
-                        matrix = storyBoard && storyBoard.split('|');
+                        matrix = storyBoard && storyBoard.split("|");
                         base = matrix[0];
                         if (!container) {
-                            seekMap.classList.toggle('active');
+                            seekMap.classList.toggle("active");
                             parseThumbs();
                             container +=
-                                '<div id="seek-thumb-map" class="' + ((thumbs[2] && 'quality-2') || (thumbs[1] && 'quality-1')) + '">\n' +
+                                "<div id='seek-thumb-map' class='" + ((thumbs[2] && "quality-2") || (thumbs[1] && "quality-1")) + "''>\n" +
                                 thumbControls +
-                                '    <div id="seek-thumbs">' + (thumbs[2] || thumbs[1]) + '</div>\n' +
-                                '</div>';
-                            container = string2HTML(container).querySelector('#seek-thumb-map');
-                            document.getElementById('movie_player').appendChild(container);
+                                "    <div id='seek-thumbs'>" + (thumbs[2] || thumbs[1]) + "</div>\n" +
+                                "</div>";
+                            container = string2HTML(container).querySelector("#seek-thumb-map");
+                            document.getElementById("movie_player").appendChild(container);
                             centerThumb();
-                            eventHandler(container, 'click', clickManager);
-                            eventHandler(window, 'spfdone', removeOld);
+                            eventHandler(container, "click", clickManager);
+                            eventHandler(window, "spfdone", removeOld);
                         } else if (container.id) {
-                            seekMap.classList.toggle('active');
-                            container.classList.toggle('invisible');
+                            seekMap.classList.toggle("active");
+                            container.classList.toggle("invisible");
                             centerThumb();
                         }
                     }
                 }
                 function dlThumb() {
                     var args     = window.ytplayer.config.args,
-                        base     = (args.iurl_webp) ? '_webp' : '',
-                        thumbURL = args['iurlmaxres' + base] || args['iurlsd' + base] || args['iurl' + base];
+                        base     = (args.iurl_webp) ? "_webp" : "",
+                        thumbURL = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
                     window.open(thumbURL);
                 }
                 function saveSS() {
                     var width,
                         height,
                         aspectRatio,
-                        video     = document.getElementsByTagName('video')[0],
-                        container = document.getElementById('screenshot-result') || document.createElement('div'),
-                        canvas    = container.querySelector('canvas') || document.createElement('canvas'),
-                        close     = document.createElement('div'),
-                        context   = canvas.getContext('2d');
+                        video     = document.getElementsByTagName("video")[0],
+                        container = document.getElementById("screenshot-result") || document.createElement("div"),
+                        canvas    = container.querySelector("canvas") || document.createElement("canvas"),
+                        close     = document.createElement("div"),
+                        context   = canvas.getContext("2d");
                     function hideContainer() {
-                        container.classList.toggle('invisible');
+                        container.classList.toggle("invisible");
                     }
                     aspectRatio = video.videoWidth / video.videoHeight;
                     width = video.videoWidth;
@@ -2986,159 +2980,159 @@
                     canvas.height = height;
                     context.drawImage(video, 0, 0, width, height);
                     if (!container.id) {
-                        container.id = 'screenshot-result';
+                        container.id = "screenshot-result";
                         container.appendChild(canvas);
-                        close.id = 'close-screenshot';
-                        close.textContent = userLang('CNSL_SS_CLS');
-                        eventHandler(close, 'click', hideContainer);
+                        close.id = "close-screenshot";
+                        close.textContent = userLang("CNSL_SS_CLS");
+                        eventHandler(close, "click", hideContainer);
                         container.appendChild(close);
                         document.body.appendChild(container);
-                    } else if (container.id && container.classList.contains('invisible')) {
-                        container.classList.toggle('invisible');
+                    } else if (container.id && container.classList.contains("invisible")) {
+                        container.classList.toggle("invisible");
                     }
                 }
                 function openSidebar() {
-                    var sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ',left=' + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? '' : ',left=0',
-                        newSidebar   = window.open(window.location.href, 'sidebarMode', 'width=467,height=' + window.screen.availHeight + ',scrollbars=1' + sidebarAlign);
+                    var sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ",left=" + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? "" : ",left=0",
+                        newSidebar   = window.open(window.location.href, "sidebarMode", "width=467,height=" + window.screen.availHeight + ",scrollbars=1" + sidebarAlign);
                     function snapFit() {
                         newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                     }
-                    newSidebar.addEventListener('readystatechange', snapFit, true);
+                    newSidebar.addEventListener("readystatechange", snapFit, true);
                     newSidebar.focus();
                 }
                 function toggleFullBrowser(event) {
                     var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
                     function exitFullBrowser(key) {
-                        if (document.documentElement.classList.contains('part_fullbrowser') && (key.keyCode === 27 || key.key === 'Escape' || key.target.className.split('ytp-size').length > 1)) {
+                        if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || key.target.className.split("ytp-size").length > 1)) {
                             toggleFullBrowser(key);
-                            if (key.type === 'click') {
-                                eventHandler(document, 'click', exitFullBrowser, false, 'remove');
+                            if (key.type === "click") {
+                                eventHandler(document, "click", exitFullBrowser, false, "remove");
                                 key.target.click();
                             }
                         }
                     }
-                    eventHandler(document, 'keydown', exitFullBrowser);
-                    eventHandler(document, 'click', exitFullBrowser);
-                    set('fullBrs', event ? !parSets.fullBrs : true);
-                    fullBrowser.classList[(parSets.fullBrs) ? 'add' : 'remove']('active');
-                    if (event && (plrState || event.keyCode === 27 || event.key === 'Escape')) {
-                        document.documentElement.classList[(parSets.fullBrs) ? 'add' : 'remove']('part_fullbrowser');
+                    eventHandler(document, "keydown", exitFullBrowser);
+                    eventHandler(document, "click", exitFullBrowser);
+                    set("fullBrs", event ? !parSets.fullBrs : true);
+                    fullBrowser.classList[(parSets.fullBrs) ? "add" : "remove"]("active");
+                    if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
+                        document.documentElement.classList[(parSets.fullBrs) ? "add" : "remove"]("part_fullbrowser");
                     }
                 }
                 function toggleCinemaMode(event) {
                     var plrState = api && api.getPlayerState && api.getPlayerState() !== 5 && api.getPlayerState() !== -1 && api.getPlayerState() !== 0;
-                    set('lightsOut', event ? !parSets.lightsOut : true);
-                    cinemaMode.classList[(parSets.lightsOut) ? 'add' : 'remove']('active');
+                    set("lightsOut", event ? !parSets.lightsOut : true);
+                    cinemaMode.classList[(parSets.lightsOut) ? "add" : "remove"]("active");
                     if (event && plrState) {
-                        document.documentElement.classList[(parSets.lightsOut) ? 'add' : 'remove']('part_cinema_mode');
+                        document.documentElement.classList[(parSets.lightsOut) ? "add" : "remove"]("part_cinema_mode");
                     }
                 }
-                eventHandler(autoPlay, 'click', togglePlay);
-                eventHandler(loopButton, 'click', toggleLoop);
-                eventHandler(seekMap, 'click', toggleMap);
-                eventHandler(saveThumb, 'click', dlThumb);
-                eventHandler(screenShot, 'click', saveSS);
-                eventHandler(sidebarMode, 'click', openSidebar);
-                eventHandler(fullBrowser, 'click', toggleFullBrowser);
-                eventHandler(cinemaMode, 'click', toggleCinemaMode);
-                if (parSets.loopVid && !loopButton.classList.contains('active')) {
-                    loopButton.classList.add('active');
+                eventHandler(autoPlay, "click", togglePlay);
+                eventHandler(loopButton, "click", toggleLoop);
+                eventHandler(seekMap, "click", toggleMap);
+                eventHandler(saveThumb, "click", dlThumb);
+                eventHandler(screenShot, "click", saveSS);
+                eventHandler(sidebarMode, "click", openSidebar);
+                eventHandler(fullBrowser, "click", toggleFullBrowser);
+                eventHandler(cinemaMode, "click", toggleCinemaMode);
+                if (parSets.loopVid && !loopButton.classList.contains("active")) {
+                    loopButton.classList.add("active");
                     toggleLoop();
                 }
-                if (parSets.fullBrs && !fullBrowser.classList.contains('active')) {
-                    fullBrowser.classList.add('active');
+                if (parSets.fullBrs && !fullBrowser.classList.contains("active")) {
+                    fullBrowser.classList.add("active");
                     toggleFullBrowser();
                 }
-                if (parSets.lightsOut && !cinemaMode.classList.contains('active')) {
-                    cinemaMode.classList.add('active');
+                if (parSets.lightsOut && !cinemaMode.classList.contains("active")) {
+                    cinemaMode.classList.add("active");
                     toggleCinemaMode();
                 }
             }
             function toggleConsole() {
-                page.classList.toggle('player-console');
-                set('advOpts', page.classList.contains('player-console'));
+                page.classList.toggle("player-console");
+                set("advOpts", page.classList.contains("player-console"));
             }
-            if (window.location.pathname === '/watch' && header && !cnslBtn) {
-                cnslBtn = '<button id="console-button" title="' + userLang('ADV_OPTS') + '"></button>';
-                cnslBtn = string2HTML(cnslBtn).querySelector('#console-button');
-                eventHandler(cnslBtn, 'click', toggleConsole);
-                cnslCont = '<div id="advanced-options"></div>';
-                cnslCont = string2HTML(cnslCont).querySelector('#advanced-options');
+            if (window.location.pathname === "/watch" && header && !cnslBtn) {
+                cnslBtn = "<button id='console-button' title='" + userLang("ADV_OPTS") + "'></button>";
+                cnslBtn = string2HTML(cnslBtn).querySelector("#console-button");
+                eventHandler(cnslBtn, "click", toggleConsole);
+                cnslCont = "<div id='advanced-options'></div>";
+                cnslCont = string2HTML(cnslCont).querySelector("#advanced-options");
                 cnslCont.appendChild(cnslBtn);
                 header.appendChild(cnslCont);
                 if (controls) {
                     controls.remove();
                 }
                 controls = [
-                    '<div id="player-console">\n',
-                    '    <div id="autoplay-button" class="yt-uix-tooltip' + ((parSets.VID_PLR_ATPL) ? ' active' : '') + '" data-tooltip-text="' + userLang('CNSL_AP') + '"></div>\n',
-                    '    <div id="loop-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_RPT') + '"></div>\n',
-                    '    <div id="seek-map" class="yt-uix-tooltip" data-tooltip-text="' + (storyBoard ? userLang('CNSL_SKMP') : userLang('CNSL_SKMP_OFF')) + '"' + ((!storyBoard) ? 'style="opacity:0.2;"' : '') + '></div>\n',
-                    '    <div id="save-thumbnail-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SVTH') + '"></div>\n',
-                    '    <div id="screenshot-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SS') + '"></div>\n',
-                    '    <div id="sidebar-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_SDBR') + '"' + ((window.opener) ? ' style="display:none"' : '') + '></div>\n',
-                    '    <div id="fullbrowser-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_FLBR') + '"></div>\n',
-                    '    <div id="cinemamode-button" class="yt-uix-tooltip" data-tooltip-text="' + userLang('CNSL_CINM_MD') + '"></div>\n',
-                    '</div>\n'
-                ].join('');
-                controls = string2HTML(controls).querySelector('div');
+                    "<div id='player-console'>\n",
+                    "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL) ? " active" : "") + "' data-tooltip-text='" + userLang("CNSL_AP") + "''></div>\n",
+                    "    <div id='loop-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_RPT") + "'></div>\n",
+                    "    <div id='seek-map' class='yt-uix-tooltip' data-tooltip-text='" + (storyBoard ? userLang("CNSL_SKMP") : userLang("CNSL_SKMP_OFF")) + "'" + ((!storyBoard) ? "style='opacity:0.2;'" : "") + "></div>\n",
+                    "    <div id='save-thumbnail-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_SVTH") + "'></div>\n",
+                    "    <div id='screenshot-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_SS") + "''></div>\n",
+                    "    <div id='sidebar-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_SDBR") + "'" + ((window.opener) ? " style='display:none'" : "") + "></div>\n",
+                    "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_FLBR") + "'></div>\n",
+                    "    <div id='cinemamode-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_CINM_MD") + "'></div>\n",
+                    "</div>\n"
+                ].join("");
+                controls = string2HTML(controls).querySelector("div");
                 cnslCont.appendChild(controls);
                 hookButtons();
                 if (parSets.advOpts) {
-                    page.classList.add('player-console');
+                    page.classList.add("player-console");
                 }
             }
         }
         function generalChanges() {
             var logo,
                 channelLink,
-                autoplaybar = document.getElementsByClassName('autoplay-bar')[0],
-                description = document.getElementById('action-panel-details');
+                autoplaybar = document.getElementsByClassName("autoplay-bar")[0],
+                description = document.getElementById("action-panel-details");
             function linkIterator(link) {
-                if (link !== 'length' && channelLink[link].href.split('/').length < 6 && parSets.GEN_CHN_DFLT_PAGE !== 'default') {
-                    channelLink[link].href += '/' + parSets.GEN_CHN_DFLT_PAGE;
+                if (link !== "length" && channelLink[link].href.split("/").length < 6 && parSets.GEN_CHN_DFLT_PAGE !== "default") {
+                    channelLink[link].href += "/" + parSets.GEN_CHN_DFLT_PAGE;
                 }
             }
             if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
-                channelLink = document.querySelectorAll('[href*="/channel/"]');
+                channelLink = document.querySelectorAll("[href*='/channel/']");
                 Object.keys(channelLink).forEach(linkIterator);
-                channelLink = document.querySelectorAll('[href*="/user/"]');
+                channelLink = document.querySelectorAll("[href*='/user/']");
                 Object.keys(channelLink).forEach(linkIterator);
             }
             if (parSets.GEN_YT_LOGO_LINK && window.yt && window.yt.config_ && window.yt.config_.LOGGED_IN) {
-                logo = document.getElementById('logo-container');
-                if (logo && logo.href === window.location.origin + '/') {
-                    logo.href = '/feed/subscriptions';
+                logo = document.getElementById("logo-container");
+                if (logo && logo.href === window.location.origin + "/") {
+                    logo.href = "/feed/subscriptions";
                 }
             }
-            if (parSets.GEN_REM_APUN && window.location.pathname === '/watch' && autoplaybar) {
-                autoplaybar.removeAttribute('class');
-                document.getElementsByClassName('checkbox-on-off')[0].remove();
+            if (parSets.GEN_REM_APUN && window.location.pathname === "/watch" && autoplaybar) {
+                autoplaybar.removeAttribute("class");
+                document.getElementsByClassName("checkbox-on-off")[0].remove();
             }
-            if (parSets.VID_LAYT_AUTO_PNL && window.location.pathname === '/watch' && description) {
-                description.classList.remove('yt-uix-expander-collapsed');
+            if (parSets.VID_LAYT_AUTO_PNL && window.location.pathname === "/watch" && description) {
+                description.classList.remove("yt-uix-expander-collapsed");
             }
             if (parSets.GEN_SPF_OFF && window.spf && window.spf.dispose) {
                 window.spf.dispose();
             }
-            if (window.location.href.split('/channel/').length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
+            if (window.location.href.split("/channel/").length > 1 && document.documentElement.scrollTop + document.body.scrollTop > 266) {
                 document.documentElement.scrollTop = document.body.scrollTop = 0;
             }
-            if (document.querySelector('link[href*="player-new"]')) {
-                document.documentElement.classList.add('new_player');
+            if (document.querySelector("link[href*='player-new']")) {
+                document.documentElement.classList.add("new_player");
             }
         }
         function infiniteScroll() {
             var observer,
-                loadMore = document.getElementsByClassName('load-more-button')[0];
+                loadMore = document.getElementsByClassName("load-more-button")[0];
             if (loadMore && parSets.GEN_INF_SCRL) {
-                if (!loadMore.classList.contains('infiniteScroll')) {
-                    loadMore.classList.add('infiniteScroll');
+                if (!loadMore.classList.contains("infiniteScroll")) {
+                    loadMore.classList.add("infiniteScroll");
                     observer = new window.MutationObserver(infiniteScroll);
                     observer.observe(loadMore, {attributes: true});
-                } else if (!loadMore.classList.contains('scrolldetect')) {
-                    loadMore.classList.add('scrolldetect');
-                    loadMore.setAttribute('data-scrolldetect-callback', 'load-more-auto');
+                } else if (!loadMore.classList.contains("scrolldetect")) {
+                    loadMore.classList.add("scrolldetect");
+                    loadMore.setAttribute("data-scrolldetect-callback", "load-more-auto");
                 }
             }
         }
@@ -3159,15 +3153,15 @@
             clearOrphans();
         }
         function request(event) {
-            var listAfter   = event.detail.url.split('list=').length > 1,
-                videoAfter  = event.detail.url.split('/watch?').length > 1,
-                listBefore  = event.detail.previous.split('list=').length > 1,
-                videoBefore = event.detail.previous.split('/watch?').length > 1,
-                videoPlayer = document.getElementById('movie_player'),
+            var listAfter   = event.detail.url.split("list=").length > 1,
+                videoAfter  = event.detail.url.split("/watch?").length > 1,
+                listBefore  = event.detail.previous.split("list=").length > 1,
+                videoBefore = event.detail.previous.split("/watch?").length > 1,
+                videoPlayer = document.getElementById("movie_player"),
                 videoLoaded = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded;
-            document.documentElement.classList.remove('floater');
+            document.documentElement.classList.remove("floater");
             if (videoPlayer) {
-                videoPlayer.removeAttribute('style');
+                videoPlayer.removeAttribute("style");
                 if ((videoBefore && !videoAfter) || (videoAfter && (listAfter !== listBefore || !videoBefore))) {
                     if (videoLoaded) {
                         delete window.ytplayer.config.loaded;
@@ -3194,28 +3188,37 @@
                 }
             }
         }
+        function trimBlacklist() {
+            var obj = {};
+            function trimUID(key) {
+                obj[key.replace("UC", "")] = parSets.blacklist[key];
+            }
+            Object.keys(parSets.blacklist).forEach(trimUID);
+            console.info(obj);
+        }
         if (!parSets || Object.keys(parSets).length < 1) {
             parSets = defSets;
         } else {
             checkNewFeatures();
         }
         if (isChrome) {
-            eventHandler(document.documentElement, 'load', scriptExit, true);
+            eventHandler(document.documentElement, "load", scriptExit, true);
         } else {
-            eventHandler(window, 'afterscriptexecute', scriptExit);
+            eventHandler(window, "afterscriptexecute", scriptExit);
         }
-        eventHandler(window, 'message', updateSettings);
-        eventHandler(window, 'spfdone', initFunctions);
-        eventHandler(window, 'spfrequest', request);
-        eventHandler(window, 'readystatechange', initFunctions, true);
+        eventHandler(window, "message", updateSettings);
+        eventHandler(window, "spfdone", initFunctions);
+        eventHandler(window, "spfrequest", request);
+        eventHandler(window, "readystatechange", initFunctions, true);
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         window.matchMedia = false;
         initFunctions();
+        //trimBlacklist();
     }
     function updateSettings(event) {
         event = (event && event.particleSettings) || event || {};
         event.updateSettings = true;
-        window.postMessage(event, '*');
+        window.postMessage(event, "*");
     }
     function initParticle(event) {
         var inject;
@@ -3225,35 +3228,35 @@
             }
         }
         if (!event && userscript) {
-            event = JSON.parse(window.GM_getValue('particleSettings', '{}'));
+            event = JSON.parse(window.GM_getValue("particleSettings", "{}"));
         }
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
-            inject = document.createElement('style');
+            inject = document.createElement("style");
             inject.textContent = styleSheet;
             document.documentElement.appendChild(inject);
-            inject = document.createElement('script');
-            inject.textContent = '(' + String(particle).replace('parSets,', 'parSets = ' + event + ',') + '())';
+            inject = document.createElement("script");
+            inject.textContent = "(" + String(particle).replace("parSets,", "parSets = " + event + ",") + "())";
             document.documentElement.appendChild(inject);
             if (!userscript) {
                 if (window.chrome) {
                     window.chrome.storage.onChanged.addListener(filterChromeStorage);
                 } else {
-                    window.self.port.on('particleSettings', updateSettings);
+                    window.self.port.on("particleSettings", updateSettings);
                 }
             }
         }
     }
     function internalXHR(details) {
         details = details.data;
-        if (typeof details === 'object' && details.set) {
+        if (typeof details === "object" && details.set) {
             if (userscript) {
-                window.GM_setValue('particleSettings', JSON.stringify(details.set));
-                updateSettings(JSON.parse(window.GM_getValue('particleSettings', '{}')));
+                window.GM_setValue("particleSettings", JSON.stringify(details.set));
+                updateSettings(JSON.parse(window.GM_getValue("particleSettings", "{}")));
             } else if (window.chrome) {
-                window.chrome.storage.local.set({'particleSettings': details.set});
+                window.chrome.storage.local.set({"particleSettings": details.set});
             } else {
-                window.self.port.emit('particleSettings', details);
+                window.self.port.emit("particleSettings", details);
             }
         }
     }
@@ -3263,12 +3266,12 @@
     }
     if (!userscript) {
         if (window.chrome) {
-            window.chrome.storage.local.get('particleSettings', initParticle);
+            window.chrome.storage.local.get("particleSettings", initParticle);
         } else {
-            window.self.port.once('particleSettings', initParticle);
+            window.self.port.once("particleSettings", initParticle);
         }
     } else if (userscript) {
         initParticle();
     }
-    window.addEventListener('message', internalXHR);
+    window.addEventListener("message", internalXHR);
 }());
