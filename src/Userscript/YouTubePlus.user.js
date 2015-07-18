@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.3.6
+// @version     0.3.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -297,6 +297,10 @@
             '}\n',
             '#cinemamode-button{\n',
             '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASAQMAAABhHmxTAAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAABtJREFUeF5jOP/fAIz/MH8A4zPMBkAM5xMrDwBxrh9pPL0cKAAAAABJRU5ErkJggg==") no-repeat center;\n',
+            '    width: 20px;\n',
+            '}\n',
+            '#framestep-button{\n',
+            '    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAM1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADW5/q5AAAAEHRSTlMAACBGSE9VjI2Po8DGx+LzLWEZWQAAAHBJREFUeF5tkMsOxDAIA8mrSZommf//2mWL2gv1xWIkkI08AvMQzFObMFt6UaybW7tGQ/Fk9Qy5L854o8pV7Fa5qH+U9lJiKmsnRY0urzpN0SQrOMY41DIzCAAiA4bY4BF+8fu8D+Gj+kK+9vdz/At/GgQHo5EvyCQAAAAASUVORK5CYII=") no-repeat center;\n',
             '    width: 20px;\n',
             '}\n',
         //   end| Player console
@@ -1056,6 +1060,7 @@
     function particle() {
         var api,
             parSets,
+            playerInstance,
             events    = [],
             channelId = {},
             isChrome  = typeof window.chrome === "object",
@@ -1187,6 +1192,10 @@
                 CNSL_CINM_MD          : {
                     en     : "Cinema mode",
                     "pt-PT": "Modo cinema"
+                },
+                CNSL_FRME             : {
+                    en     : "Frame by frame",
+                    "pt-PT": "Quadro a quadro"
                 },
                 PLST_AP               : {
                     en     : "Autoplay",
@@ -2245,7 +2254,7 @@
                 if (parSets.BLK_ON && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
                     config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = clearRVS(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
                 }
-                if (window.location.pathname === "/watch" && window.ytplayer && window.ytplayer.config === null) {
+                if (window.ytplayer && window.ytplayer.config === null) {
                     window.ytplayer.config = config;
                 }
                 if (window.ytplayer && window.ytplayer.config) {
@@ -2548,7 +2557,6 @@
             function html5Detour(originalFunction) {
                 return function () {
                     var moviePlayer,
-                        playerInstance,
                         args = arguments;
                     function playerInstanceIterator(keys) {
                         function firstLevel(fl) {
@@ -2817,23 +2825,19 @@
             }
         }
         function advancedOptions() {
-            var page         = document.documentElement,
-                header       = document.getElementById("watch-header"),
-                cnslBtn      = document.getElementById("console-button"),
-                cnslCont     = document.getElementById("advanced-options"),
-                controls     = document.getElementById("player-console"),
-                videoPlayer  = document.getElementsByTagName("video")[0],
-                storyBoard   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
+            var page        = document.documentElement,
+                header      = document.getElementById("watch-header"),
+                cnslBtn     = document.getElementById("console-button"),
+                cnslCont    = document.getElementById("advanced-options"),
+                controls    = document.getElementById("player-console"),
+                videoPlayer = document.getElementsByTagName("video")[0],
+                storyBoard  = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
             function hookButtons() {
-                var autoPlay    = controls.querySelector("#autoplay-button"),
-                    loopButton  = controls.querySelector("#loop-button"),
-                    seekMap     = controls.querySelector("#seek-map"),
-                    saveThumb   = controls.querySelector("#save-thumbnail-button"),
-                    screenShot  = controls.querySelector("#screenshot-button"),
-                    sidebarMode = controls.querySelector("#sidebar-button"),
+                var loopButton  = controls.querySelector("#loop-button"),
                     fullBrowser = controls.querySelector("#fullbrowser-button"),
                     cinemaMode  = controls.querySelector("#cinemamode-button");
                 function togglePlay() {
+                    var autoPlay = document.getElementById("autoplay-button");
                     set("VID_PLR_ATPL", !parSets.VID_PLR_ATPL);
                     autoPlay.classList[(parSets.VID_PLR_ATPL) ? "add" : "remove"]("active");
                 }
@@ -2844,7 +2848,8 @@
                     set("loopVid", loopButton.classList.contains("active"));
                 }
                 function toggleMap() {
-                    var container = document.getElementById("seek-thumb-map") || false,
+                    var seekMap   = document.getElementById("seek-map"),
+                        container = document.getElementById("seek-thumb-map") || false,
                         thumbs    = [],
                         thumbControls,
                         thumbsContainer,
@@ -3027,14 +3032,62 @@
                         document.documentElement.classList[(parSets.lightsOut) ? "add" : "remove"]("part_cinema_mode");
                     }
                 }
-                eventHandler(autoPlay, "click", togglePlay);
-                eventHandler(loopButton, "click", toggleLoop);
-                eventHandler(seekMap, "click", toggleMap);
-                eventHandler(saveThumb, "click", dlThumb);
-                eventHandler(screenShot, "click", saveSS);
-                eventHandler(sidebarMode, "click", openSidebar);
-                eventHandler(fullBrowser, "click", toggleFullBrowser);
-                eventHandler(cinemaMode, "click", toggleCinemaMode);
+                function toggleFrames(event) {
+                    var pi,
+                        fps,
+                        frameStep = document.getElementById("framestep-button");
+                    function currentFps(keys) {
+                        if (typeof pi[keys] === "object" && pi[keys] && pi[keys].video && pi[keys].video.fps) {
+                            fps = pi[keys].video.fps;
+                        }
+                    }
+                    if (event.keyCode === 37 || event.keyCode === 39) {
+                        pi = playerInstance.getVideoData();
+                        Object.keys(pi).forEach(currentFps);
+                        fps = fps && ((event.keyCode === 37) ? -1 : 1) * fps;
+                        if (api && fps) {
+                            document.documentElement.focus();
+                            api.pauseVideo();
+                            api.seekBy(1 / fps);
+                        }
+                    } else if (event.type === "click" && event.target.id === "framestep-button") {
+                        frameStep.classList.toggle("active");
+                        if (frameStep.classList.contains("active")) {
+                            eventHandler(document, "keydown", toggleFrames);
+                            if (api) {
+                                api.pauseVideo();
+                            }
+                        } else {
+                            eventHandler(document, "keydown", toggleFrames, false, "remove");
+                        }
+                    }
+                    if (!frameStep || !frameStep.classList.contains("active")) {
+                        eventHandler(document, "keydown", toggleFrames, false, "remove");
+                        return;
+                    }
+                }
+                function handleToggles(event) {
+                    if (event.target.id === "autoplay-button") {
+                        togglePlay();
+                    } else if (event.target.id === "loop-button") {
+                        toggleLoop(event);
+                    } else if (event.target.id === "seek-map") {
+                        toggleMap();
+                    } else if (event.target.id === "save-thumbnail-button") {
+                        dlThumb();
+                    } else if (event.target.id === "screenshot-button") {
+                        saveSS();
+                    } else if (event.target.id === "sidebar-button") {
+                        openSidebar();
+                    } else if (event.target.id === "fullbrowser-button") {
+                        toggleFullBrowser(event);
+                    } else if (event.target.id === "cinemamode-button") {
+                        toggleCinemaMode(event);
+                    } else if (event.target.id === "framestep-button") {
+                        toggleFrames(event);
+                    }
+                }
+                eventHandler(cnslCont, "click", handleToggles);
                 if (parSets.loopVid && !loopButton.classList.contains("active")) {
                     loopButton.classList.add("active");
                     toggleLoop();
@@ -3073,6 +3126,7 @@
                     "    <div id='sidebar-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_SDBR") + "'" + ((window.opener) ? " style='display:none'" : "") + "></div>\n",
                     "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_FLBR") + "'></div>\n",
                     "    <div id='cinemamode-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_CINM_MD") + "'></div>\n",
+                    "    <div id='framestep-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_FRME") + "'></div>\n",
                     "</div>\n"
                 ].join("");
                 controls = string2HTML(controls).querySelector("div");
