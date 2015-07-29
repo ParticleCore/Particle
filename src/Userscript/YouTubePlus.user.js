@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.3.9
+// @version     0.4.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -777,7 +777,7 @@
             "}\n",
             "#P-sidebar-list > li.selected{\n",
             "    color: #FFF;\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "    background-color: #CC181E;\n",
             "}\n",
             "#P-content{\n",
@@ -792,12 +792,12 @@
             "    color: #333;\n",
             "    float: left;\n",
             "    font-size: 18px;\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "}\n",
             "#P-content h3{\n",
             "    color: #555;\n",
             "    font-size: 14px;\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "    margin: 30px 0 16px;\n",
             "}\n",
             "#P-content br{\n",
@@ -813,7 +813,7 @@
             "    overflow: initial;\n",
             "}\n",
             "#P-content div a{\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "    opacity: 0;\n",
             "}\n",
             "#P-content div:hover a, #P-content div a:not([title]){\n",
@@ -878,7 +878,7 @@
             "    cursor: pointer;\n",
             "    font-family: arial,sans-serif;\n",
             "    font-size: 11px;\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "    height: 26px;\n",
             "    margin-left: 5px;\n",
             "    padding: 0 2em 0 1em;\n",
@@ -904,7 +904,7 @@
             "    display: inline-block;\n",
             "    float: right;\n",
             "    font-size: 11px;\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "    height: 28px;\n",
             "    line-height: normal;\n",
             "    margin-right: 20px;\n",
@@ -1017,7 +1017,7 @@
             "    display: none;\n",
             "    height: 17px;\n",
             "    font-size: 10px;\n",
-            "    font-weight: bold;\n",
+            "    font-weight: 500;\n",
             "    position: absolute;\n",
             "    left: 0;\n",
             "    top: 0;\n",
@@ -1078,7 +1078,6 @@
                 VID_PLST_ATPL    : true,
                 VID_PLST_RVRS    : true,
                 VID_PLR_ANTS     : true,
-                VID_PLR_CC       : true,
                 VID_PLR_ALVIS    : true,
                 VID_PLR_ADS      : true,
                 VID_PLR_SIZE_MEM : true,
@@ -1486,8 +1485,8 @@
                     "pt-PT": "Desactivar reprodução DASH"
                 },
                 VID_PLR_CC            : {
-                    en     : "Disable subtitles",
-                    "pt-PT": "Desactivar legendas"
+                    en     : "Disable subtitles and CC",
+                    "pt-PT": "Desactivar legendas e CC"
                 },
                 VID_PLR_CTRL_VIS      : {
                     en     : "Hide player controls",
@@ -2140,13 +2139,15 @@
             function publishedTime() {
                 var watchTime = document.getElementsByClassName("watch-time-text")[0];
                 function getCHInfo(details) {
+                    var isLive;
                     details = details.target.responseText;
                     if (details) {
                         if (watchTime.textContent.split("·").length < 2) {
                             details = JSON.parse(details);
                             details = details.body && details.body.content && (details.body.content.html || details.body.content);
+                            isLive = details && details.match && details.match(/yt-badge-live/);
                             details = details && details.match && details.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
-                            if (details) {
+                            if (details && !isLive) {
                                 watchTime.textContent += " · " + details[1].split("</li><li>")[0];
                             }
                         }
@@ -2907,20 +2908,21 @@
                                 frameAmount = 0,
                                 gridX       = 0,
                                 gridY       = 0;
+                            level -= 1;
                             if (qualities.split("storyboard").length < 2 && qualities.split("default").length < 2) {
                                 details = qualities.split("#");
-                                currentBase = base.replace("$L", level - 1).replace("$N", details[6]);
+                                currentBase = base.replace("$L", level).replace("$N", details[6]);
                                 thumbAmount = details[2] - 1;
                                 for (i = 0; i < thumbAmount; i += 1) {
-                                    if (!thumbs[level - 1]) {
-                                        thumbs[level - 1] = "";
+                                    if (!thumbs[level]) {
+                                        thumbs[level] = "";
                                     }
-                                    thumbs[level - 1] += [
-                                        "<span class='quality-" + (level - 1) + "'",
+                                    thumbs[level] += [
+                                        "<span class='quality-" + (level) + "'",
                                         " data-time-jump='" + ((i * details[5]) / 1000) + "'",
-                                        " style=\"background-image: url('" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + "');",
+                                        " style='background-image: url(" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + ");",
                                         " background-position: -" + (gridX * details[0]) + "px -" + (gridY * details[1]) + "px;",
-                                        " width: " + (details[0] - 2) + "px; height: " + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + "px;\">\n",
+                                        " width: " + (details[0] - 2) + "px; height: " + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + "px;'>\n",
                                         "    <div class='timer'>" + timeConv((i * details[5]) / 1000) + "</div>\n",
                                         "</span>\n"
                                     ].join('');
@@ -2933,6 +2935,7 @@
                                     }
                                 }
                             }
+                            level += 1;
                             if (level > 1) {
                                 thumbControls += "<div class='quality-" + (level - 1) + "'>" + ((level < 3 && userLang("CNSL_SKMP_SMAL")) || (level < 4 && userLang("CNSL_SKMP_MED")) || (level < 5 && userLang("CNSL_SKMP_LRGE"))) + "</div>\n";
                             }
