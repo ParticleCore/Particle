@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.0
+// @version     0.4.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -786,6 +786,7 @@
             "    overflow: hidden;\n",
             "    padding-bottom: 40px;\n",
             "    padding-left: 15px;\n",
+            "    position: relative;\n",
             "    margin-bottom: 10px;\n",
             "}\n",
             "#P-content h2{\n",
@@ -878,7 +879,7 @@
             "    cursor: pointer;\n",
             "    font-family: arial,sans-serif;\n",
             "    font-size: 11px;\n",
-            "    font-weight: 500;\n",
+            "    font-weight: bold;\n",
             "    height: 26px;\n",
             "    margin-left: 5px;\n",
             "    padding: 0 2em 0 1em;\n",
@@ -894,7 +895,7 @@
             "    margin: 0;\n",
             "    padding: 24px 0 0;\n",
             "}\n",
-            ".P-save, .P-reset{\n",
+            ".P-save, .P-reset, .P-impexp{\n",
             "    background: #167AC6;\n",
             "    border-color: #167AC6;\n",
             "    border-radius: 2px;\n",
@@ -915,9 +916,18 @@
             "    white-space: nowrap;\n",
             "    word-wrap: normal;\n",
             "}\n",
-            ".P-reset{\n",
-            "    background: #F8F8F8;\n",
+            ".P-impexp{\n",
+            "    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAACVBMVEUzMzMAAADw8PAa0573AAAAA3RSTlMAzMwP69IHAAAAJklEQVR4XmMIDQ11YAhhYAxgCGGYGIJCMIaAZKFEAAODCE4CrAQAFhEMilFftXYAAAAASUVORK5CYII=) #FFF no-repeat center;\n",
+            "    border: 1px solid transparent;\n",
+            "    box-shadow: none;\n",
+            "    opacity: 0.5;\n",
+            "    padding: 0 11px;\n",
+            "}\n",
+            ".P-reset, .P-impexp:hover{\n",
+            "    background-color: #F8F8F8;\n",
             "    border: 1px solid #D3D3D3;\n",
+            "    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);\n",
+            "    opacity: 1;\n",
             "    color: #333;\n",
             "}\n",
             ".P-reset:hover{\n",
@@ -970,6 +980,13 @@
             "}\n",
             "#P-sidebar-list #HLP a:hover{\n",
             "    color: #1E1E1E;\n",
+            "}\n",
+            "#exp-cont{\n",
+            "    background-color: #FFF;\n",
+            "    bottom: 0;\n",
+            "    position: absolute !important;\n",
+            "    top: 80px;\n",
+            "    width: calc(100% - 30px);\n",
             "}\n",
             "#DNT, #HLP{\n",
             "    padding: 0 !important;\n",
@@ -1032,10 +1049,19 @@
             "#blacklist.edit .blacklist, #blacklist.edit #blacklist-edit, #blacklist:not(.edit) #blacklist-save, #blacklist:not(.edit) #blacklist-close, #blacklist:not(.edit) #blacklist-edit-list{\n",
             "    display: none;\n",
             "}\n",
-            "#blacklist-edit-list{\n",
+            "#blacklist-edit-list, #impexp-list{\n",
             "    font-family: Consolas, Lucida Console, monospace;\n",
             "    height: 200px;\n",
             "    width: calc(100% - 10px);\n",
+            "}\n",
+            "#impexp-save{\n",
+            "    margin-bottom: 10px;\n",
+            "}\n",
+            "#impexp-save span{\n",
+            "    pointer-events: none;\n",
+            "}\n",
+            "#impexp-list{\n",
+            "    height: calc(100% - 80px);\n",
             "}\n",
             "#P{\n",
             "    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAMAAABFjsb+AAAAk1BMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEGrSNAAAAMHRSTlMAAOy/fwv6+XxgQOiP5PYXbi/OT7Q135UdMAd3ndNaCY3YDvuaIbc50lV0CpMbojQR/p9JAAAAfElEQVR4XmXMRRLEMBRDQVN4mJkZ//1PNxqnspD9ll0lKc62tNaBif3bqh9b2tl1m6H4nDIi7d7CW+GcTJwrYWgwpC0MyWgcm2TTGayc19ZULRMoGVpvtmy+PLJ9kQRm8kPwdzydIWSXK4DsdgeQVY+nIkuz1xtA9vkC2H44qRgsX16KtQAAAABJRU5ErkJggg==) no-repeat 0 4px;\n",
@@ -1207,6 +1233,14 @@
                 HIDE_CMTS             : {
                     en     : "Hide comments",
                     "pt-PT": "Esconder comentários"
+                },
+                GLB_IMPR              : {
+                    en     : "Import/export settings",
+                    "pt-PT": "Importar/exportar definições"
+                },
+                GLB_IMPR_SAVE         : {
+                    en     : "Save and load",
+                    "pt-PT": "Guardar e carregar"
                 },
                 GLB_RSET              : {
                     en     : "Reset",
@@ -1661,6 +1695,9 @@
             time = zero(time / 86400) + ":" + zero(time % 86400 / 3600) + ":" + zero(time % 3600 / 60) + ":" + zero(time % 3600 % 60);
             return time.replace(/^0(0:(0(0:(0)?)?)?)?/, "");
         }
+        function removeEmptyLines(string) {
+            return (/\S/).test(string);
+        }
         function customStyles() {
             var classes,
                 plrApi   = document.getElementById("player-api"),
@@ -1731,7 +1768,7 @@
                 return;
             }
             function template() {
-                var custom = function () {
+                var blck  = function () {
                         var button = "",
                             list   = parSets && parSets.blacklist;
                         function buildList(ytid) {
@@ -1742,7 +1779,7 @@
                         }
                         return button;
                     },
-                    htEl   = {
+                    htEl  = {
                         info  : function (anchor) {
                             return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' title='" + userLang("FTR_DESC") + "' target='_blank'>?</a>";
                         },
@@ -1787,7 +1824,7 @@
                             return input + ">\n<label for='" + id + "'>" + userLang(id) + "</label>\n" + htEl.info(anchor) + "</div>";
                         }
                     },
-                    menus  = {
+                    menus = {
                         setMenu: [
                             "<div id='P-settings'>\n",
                             "    <div id='P-container'>\n",
@@ -1809,6 +1846,7 @@
                             "    <div class='P-header'>\n",
                             "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n",
                             "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n",
+                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n",
                             htEl.title("GEN_TTL", "h2"),
                             "    </div>\n",
                             "    <hr class='P-horz'>\n",
@@ -1845,6 +1883,7 @@
                             "    <div class='P-header'>\n",
                             "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n",
                             "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n",
+                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n",
                             htEl.title("VID_TTL", "h2"),
                             "    </div>\n",
                             "    <hr class='P-horz'>\n",
@@ -1913,6 +1952,7 @@
                             "    <div class='P-header'>\n",
                             "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n",
                             "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n",
+                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n",
                             htEl.title("BLK_TTL", "h2"),
                             "    </div>\n",
                             "    <hr class='P-horz'>\n",
@@ -1930,7 +1970,7 @@
                             "                <span class='yt-uix-button-content'>" + userLang("BLCK_CLSE") + "</span>\n",
                             "            </button>\n",
                             "        </div>\n",
-                            "        " + custom() + "\n",
+                            "        " + blck() + "\n",
                             "        <textarea id='blacklist-edit-list'></textarea>\n",
                             "    </div>\n",
                             "    <br>\n",
@@ -1968,10 +2008,30 @@
                 return menus;
             }
             function navigateSettings(event) {
-                function manageBlackList(target) {
-                    function removeEmptyLines(string) {
-                        return (/\S/).test(string);
+                function exportSettings(target) {
+                    var expCont = document.getElementById("exp-cont");
+                    if (target.classList.contains("P-impexp")) {
+                        if (expCont) {
+                            expCont.remove();
+                            return;
+                        }
+                        expCont = "<div id='exp-cont'>\n" +
+                            "   <button id='impexp-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
+                            "        <span class='yt-uix-button-content'>" + userLang("GLB_IMPR_SAVE") + "</span>\n" +
+                            "    </button>\n" +
+                            "   <textarea id='impexp-list'></textarea>" +
+                            "</div>";
+                        expCont = string2HTML(expCont).querySelector('#exp-cont');
+                        document.getElementById("P-content").appendChild(expCont);
+                        document.getElementById("impexp-list").value = JSON.stringify(parSets, undefined, 2);
+                    } else if (target.id === "impexp-save") {
+                        parSets = JSON.parse(document.getElementById("impexp-list").value);
+                        window.postMessage({set: parSets}, "*");
+                        document.getElementById("P").click();
+                        document.getElementById("P").click();
                     }
+                }
+                function manageBlackList(target) {
                     if (target.id === "blacklist-edit") {
                         document.getElementById("blacklist").classList.add("edit");
                         document.getElementById("blacklist-edit-list").value = JSON.stringify(parSets.blacklist).replace(/":"/g, '": "').replace(/","/g, '"\n"').replace('{"', '"').replace('"}', '"').replace("{}", "");
@@ -2029,8 +2089,7 @@
                         document.body.classList.add("show-guide-button-notification");
                         window.setTimeout(hideNotif, 2000);
                     }
-                }
-                if (event.target.classList.contains("P-save")) {
+                }if (event.target.classList.contains("P-save")) {
                     saveSettings();
                 } else if (event.target.classList.contains("P-reset")) {
                     parSets = defSets;
@@ -2039,6 +2098,8 @@
                     settingsButton.click();
                 } else if (event.target.classList.contains("close")) {
                     remBlackList();
+                } else if (event.target.classList.contains("P-impexp") || event.target.id === "impexp-save") {
+                    exportSettings(event.target);
                 } else if (event.target.id === "blacklist-edit" || event.target.id === "blacklist-save" || event.target.id === "blacklist-close") {
                     manageBlackList(event.target);
                 } else if (event.target.id === "P-container" || event.target.id === "P-settings") {
