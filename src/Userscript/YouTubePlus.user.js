@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.1
+// @version     0.4.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -921,7 +921,7 @@
             "    border: 1px solid transparent;\n",
             "    box-shadow: none;\n",
             "    opacity: 0.5;\n",
-            "    padding: 0 11px;\n",
+            "    padding: 0 13px;\n",
             "}\n",
             ".P-reset, .P-impexp:hover{\n",
             "    background-color: #F8F8F8;\n",
@@ -971,6 +971,10 @@
             "#P-settings option{\n",
             "    color: #000;\n",
             "    text-shadow: none;\n",
+            "}\n",
+            "#P-settings button::-moz-focus-inner{\n",
+            "    border: 0;\n",
+            "    padding: 0;\n",
             "}\n",
             "#P-sidebar-list a{\n",
             "    color: #808080;\n",
@@ -2089,7 +2093,8 @@
                         document.body.classList.add("show-guide-button-notification");
                         window.setTimeout(hideNotif, 2000);
                     }
-                }if (event.target.classList.contains("P-save")) {
+                }
+                if (event.target.classList.contains("P-save")) {
                     saveSettings();
                 } else if (event.target.classList.contains("P-reset")) {
                     parSets = defSets;
@@ -2979,7 +2984,7 @@
                                         thumbs[level] = "";
                                     }
                                     thumbs[level] += [
-                                        "<span class='quality-" + (level) + "'",
+                                        "<span class='quality-" + level + "'",
                                         " data-time-jump='" + ((i * details[5]) / 1000) + "'",
                                         " style='background-image: url(" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + ");",
                                         " background-position: -" + (gridX * details[0]) + "px -" + (gridY * details[1]) + "px;",
@@ -3218,22 +3223,31 @@
                 }
             }
         }
-        function generalChanges() {
-            var logo,
-                channelLink,
-                autoplaybar = document.getElementsByClassName("autoplay-bar")[0],
-                description = document.getElementById("action-panel-details");
+        function defaultChannelPage(event) {
+            var channelLink;
             function linkIterator(link) {
                 if (link !== "length" && channelLink[link].href.split("/").length < 6 && parSets.GEN_CHN_DFLT_PAGE !== "default") {
                     channelLink[link].href += "/" + parSets.GEN_CHN_DFLT_PAGE;
                 }
             }
-            if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
-                channelLink = document.querySelectorAll("[href*='/channel/']");
-                Object.keys(channelLink).forEach(linkIterator);
-                channelLink = document.querySelectorAll("[href*='/user/']");
-                Object.keys(channelLink).forEach(linkIterator);
+            if (event && event.target.tagName === "A" && !event.target.classList.contains("spf-link") && event.target.href.split(parSets.GEN_CHN_DFLT_PAGE).length < 2 && (event.target.href.split("/channel/").length > 1 || event.target.href.split("/user/").length > 1)) {
+                event.target.href += "/" + parSets.GEN_CHN_DFLT_PAGE;
+            } else if (!event) {
+                if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
+                    channelLink = document.querySelectorAll("[href*='/channel/']");
+                    Object.keys(channelLink).forEach(linkIterator);
+                    channelLink = document.querySelectorAll("[href*='/user/']");
+                    Object.keys(channelLink).forEach(linkIterator);
+                }
+                if (parSets.GEN_CHN_DFLT_PAGE !== "default") {
+                    eventHandler(document, "click", defaultChannelPage);
+                }
             }
+        }
+        function generalChanges() {
+            var logo,
+                autoplaybar = document.getElementsByClassName("autoplay-bar")[0],
+                description = document.getElementById("action-panel-details");
             if (parSets.GEN_YT_LOGO_LINK && window.yt && window.yt.config_ && window.yt.config_.LOGGED_IN) {
                 logo = document.getElementById("logo-container");
                 if (logo && logo.href === window.location.origin + "/") {
@@ -3284,6 +3298,7 @@
             thumbMod();
             enhancedDetails();
             commentsButton();
+            defaultChannelPage();
             generalChanges();
             clearOrphans();
         }
