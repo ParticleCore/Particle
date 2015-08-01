@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.2
+// @version     0.4.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -972,7 +972,7 @@
             "    color: #000;\n",
             "    text-shadow: none;\n",
             "}\n",
-            "#P-settings button::-moz-focus-inner{\n",
+            "#P::-moz-focus-inner, #P-settings button::-moz-focus-inner{\n",
             "    border: 0;\n",
             "    padding: 0;\n",
             "}\n",
@@ -1096,6 +1096,7 @@
             isChrome  = typeof window.chrome === "object",
             defSets   = {
                 GEN_BTTR_NTF     : true,
+                GEN_SUB_LIST     : true,
                 GEN_INF_SCRL     : true,
                 GEN_YT_LOGO_LINK : true,
                 GEN_CMPT_TTLS    : true,
@@ -1309,6 +1310,10 @@
                 GEN_YT_LOGO_LINK      : {
                     en     : "YouTube logo redirects to subscriptions",
                     "pt-PT": "Logotipo do Youtube redirecciona para as subscrições"
+                },
+                GEN_SUB_LIST          : {
+                    en     : "Enable subscription playlist",
+                    "pt-PT": "Activar lista de reprodução de subscrições"
                 },
                 GEN_REM_APUN          : {
                     en     : "Remove autoplay up next",
@@ -1857,6 +1862,7 @@
                             htEl.title("GEN_GEN", "h3"),
                             htEl.input("GEN_DSBL_ADS", "checkbox", null, null, "outside_ads"),
                             htEl.input("GEN_YT_LOGO_LINK", "checkbox", null, null, "logo_redirect"),
+                            htEl.input("GEN_SUB_LIST", "checkbox", null, null, "sub_playlist"),
                             htEl.input("GEN_INF_SCRL", "checkbox", null, null, "infinite_scroll"),
                             htEl.input("GEN_SDBR_ON", "checkbox", null, null, "sidebar_on"),
                             htEl.input("GEN_REM_APUN", "checkbox", null, null, "remove_autoplay"),
@@ -2308,8 +2314,10 @@
                 }
                 if (config.args.cc_load_policy && parSets.VID_PLR_CC) {
                     config.args.cc_load_policy = "0";
-                    delete config.args.ttsurl;
-                    delete config.args.caption_tracks;
+                    if (config.args.ttsurl) {
+                        delete config.args.ttsurl;
+                        delete config.args.caption_tracks;
+                    }
                 }
                 if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
                     delete config.args.ad3_module;
@@ -2469,7 +2477,7 @@
                 button = document.getElementById("subscription-playlist");
                 button.href = "/watch_videos?title=" + listTitle + "&video_ids=" + list;
             }
-            if (window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
+            if (parSets.GEN_SUB_LIST && window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
                 button =
                     "<li id='subscription-playlist-icon'>\n" +
                     "    <a id='subscription-playlist' title='" + userLang("SUB_PLST") + "' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>\n" +
@@ -3224,22 +3232,29 @@
             }
         }
         function defaultChannelPage(event) {
-            var channelLink;
+            var observer,
+                channelLink,
+                loadMore = document.getElementsByClassName("load-more-button")[0];
             function linkIterator(link) {
                 if (link !== "length" && channelLink[link].href.split("/").length < 6 && parSets.GEN_CHN_DFLT_PAGE !== "default") {
                     channelLink[link].href += "/" + parSets.GEN_CHN_DFLT_PAGE;
                 }
             }
-            if (event && event.target.tagName === "A" && !event.target.classList.contains("spf-link") && event.target.href.split(parSets.GEN_CHN_DFLT_PAGE).length < 2 && (event.target.href.split("/channel/").length > 1 || event.target.href.split("/user/").length > 1)) {
-                event.target.href += "/" + parSets.GEN_CHN_DFLT_PAGE;
-            } else if (!event) {
-                if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
-                    channelLink = document.querySelectorAll("[href*='/channel/']");
-                    Object.keys(channelLink).forEach(linkIterator);
-                    channelLink = document.querySelectorAll("[href*='/user/']");
-                    Object.keys(channelLink).forEach(linkIterator);
+            if (parSets.GEN_CHN_DFLT_PAGE !== "default") {
+                if (loadMore && !loadMore.classList.contains("defaultChannel")) {
+                    loadMore.classList.add("defaultChannel");
+                    observer = new window.MutationObserver(defaultChannelPage);
+                    observer.observe(loadMore, {attributes: true});
                 }
-                if (parSets.GEN_CHN_DFLT_PAGE !== "default") {
+                if (event && event.target && event.target.tagName === "A" && !event.target.classList.contains("spf-link") && event.target.href.split(parSets.GEN_CHN_DFLT_PAGE).length < 2 && (event.target.href.split("/channel/").length > 1 || event.target.href.split("/user/").length > 1)) {
+                    event.target.href += "/" + parSets.GEN_CHN_DFLT_PAGE;
+                } else if (!event || (event && event[0])) {
+                    if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
+                        channelLink = document.querySelectorAll("[href*='/channel/']");
+                        Object.keys(channelLink).forEach(linkIterator);
+                        channelLink = document.querySelectorAll("[href*='/user/']");
+                        Object.keys(channelLink).forEach(linkIterator);
+                    }
                     eventHandler(document, "click", defaultChannelPage);
                 }
             }
