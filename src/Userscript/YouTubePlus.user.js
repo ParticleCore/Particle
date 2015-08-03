@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.3
+// @version     0.4.4
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -14,8 +14,8 @@
 // ==/UserScript==
 (function () {
     "use strict";
-    var userscript  = typeof GM_info === "object",
-        styleSheet  = [
+    var userscript = typeof GM_info === "object",
+        styleSheet = [
         // start| Playlist spacer
             ".part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n",
             "    margin-left: 0 !important;\n",
@@ -1820,7 +1820,7 @@
                             Object.keys(list).forEach(keysIterator);
                             return radio + htEl.info(anchor) + '</div>';
                         },
-                        input : function (id, type, placeholder, size, anchor) {
+                        input : function (id, type, anchor, placeholder, size) {
                             var input = "<div><input id='" + id + "' type='" + type + "'";
                             if (placeholder) {
                                 input += " placeholder='" + placeholder + "' size='" + size + "'";
@@ -1860,13 +1860,13 @@
                             "    </div>\n",
                             "    <hr class='P-horz'>\n",
                             htEl.title("GEN_GEN", "h3"),
-                            htEl.input("GEN_DSBL_ADS", "checkbox", null, null, "outside_ads"),
-                            htEl.input("GEN_YT_LOGO_LINK", "checkbox", null, null, "logo_redirect"),
-                            htEl.input("GEN_SUB_LIST", "checkbox", null, null, "sub_playlist"),
-                            htEl.input("GEN_INF_SCRL", "checkbox", null, null, "infinite_scroll"),
-                            htEl.input("GEN_SDBR_ON", "checkbox", null, null, "sidebar_on"),
-                            htEl.input("GEN_REM_APUN", "checkbox", null, null, "remove_autoplay"),
-                            htEl.input("GEN_SPF_OFF", "checkbox", null, null, "spf_off"),
+                            htEl.input("GEN_DSBL_ADS", "checkbox", "outside_ads"),
+                            htEl.input("GEN_YT_LOGO_LINK", "checkbox", "logo_redirect"),
+                            htEl.input("GEN_SUB_LIST", "checkbox", "sub_playlist"),
+                            htEl.input("GEN_INF_SCRL", "checkbox", "infinite_scroll"),
+                            htEl.input("GEN_SDBR_ON", "checkbox", "sidebar_on"),
+                            htEl.input("GEN_REM_APUN", "checkbox", "remove_autoplay"),
+                            htEl.input("GEN_SPF_OFF", "checkbox", "spf_off"),
                             htEl.select("GEN_CHN_DFLT_PAGE", {
                                 "GEN_CHN_DFLT_PAGE_DFLT": "default",
                                 "GEN_CHN_DFLT_PAGE_VID" : "videos",
@@ -1876,16 +1876,16 @@
                                 "GEN_CHN_DFLT_PAGE_ABT" : "about"
                             }, "channel_page"),
                             htEl.title("GEN_LYT", "h3"),
-                            htEl.input("GEN_GRID_SUBS", "checkbox", null, null, "sub_grid"),
-                            htEl.input("GEN_GRID_SRCH", "checkbox", null, null, "search_grid"),
-                            htEl.input("GEN_BTTR_NTF", "checkbox", null, null, "blue_box"),
-                            htEl.input("GEN_DSB_HVRC", "checkbox", null, null, "hovercards_off"),
-                            htEl.input("GEN_CMPT_TTLS", "checkbox", null, null, "feed_titles"),
-                            htEl.input("GEN_BLUE_GLOW", "checkbox", null, null, "blue_glow"),
-                            htEl.input("GEN_HIDE_FTR", "checkbox", null, null, "hide_footer"),
-                            htEl.input("GEN_HDE_RECM_SDBR", "checkbox", null, null, "hide_recom_sidebar"),
-                            htEl.input("GEN_HDE_SRCH_SDBR", "checkbox", null, null, "hide_search_sidebar"),
-                            htEl.input("GEN_HDE_CHN_SDBR", "checkbox", null, null, "hide_channel_sidebar"),
+                            htEl.input("GEN_GRID_SUBS", "checkbox", "sub_grid"),
+                            htEl.input("GEN_GRID_SRCH", "checkbox", "search_grid"),
+                            htEl.input("GEN_BTTR_NTF", "checkbox", "blue_box"),
+                            htEl.input("GEN_DSB_HVRC", "checkbox", "hovercards_off"),
+                            htEl.input("GEN_CMPT_TTLS", "checkbox", "feed_titles"),
+                            htEl.input("GEN_BLUE_GLOW", "checkbox", "blue_glow"),
+                            htEl.input("GEN_HIDE_FTR", "checkbox", "hide_footer"),
+                            htEl.input("GEN_HDE_RECM_SDBR", "checkbox", "hide_recom_sidebar"),
+                            htEl.input("GEN_HDE_SRCH_SDBR", "checkbox", "hide_search_sidebar"),
+                            htEl.input("GEN_HDE_CHN_SDBR", "checkbox", "hide_channel_sidebar"),
                             "</div>\n"
                         ].join(""),
                         VID    : [
@@ -1898,17 +1898,17 @@
                             "    </div>\n",
                             "    <hr class='P-horz'>\n",
                             htEl.title("VID_PLR", "h3"),
-                            htEl.input("VID_PLR_ADS", "checkbox", null, null, "video_ads"),
-                            htEl.input("VID_SUB_ADS", "checkbox", null, null, "subs_ads_on"),
-                            htEl.input("VID_PLR_ALVIS", "checkbox", null, null, "floating_player"),
-                            htEl.input("VID_PLR_ATPL", "checkbox", null, null, "video_autoplay"),
-                            htEl.input("VID_PLR_CC", "checkbox", null, null, "subtitles_off"),
-                            htEl.input("VID_PLR_ANTS", "checkbox", null, null, "annotations_off"),
-                            htEl.input("VID_END_SHRE", "checkbox", null, null, "share_panel_off"),
-                            htEl.input("VID_PLR_VOL_MEM", "checkbox", null, null, "remember_volume"),
-                            htEl.input("VID_PLR_SIZE_MEM", "checkbox", null, null, "remember_mode"),
-                            htEl.input("VID_VOL_WHEEL", "checkbox", null, null, "wheel_volume"),
-                            htEl.input("VID_PLR_DASH", "checkbox", null, null, "dash_off"),
+                            htEl.input("VID_PLR_ADS", "checkbox", "video_ads"),
+                            htEl.input("VID_SUB_ADS", "checkbox", "subs_ads_on"),
+                            htEl.input("VID_PLR_ALVIS", "checkbox", "floating_player"),
+                            htEl.input("VID_PLR_ATPL", "checkbox", "video_autoplay"),
+                            htEl.input("VID_PLR_CC", "checkbox", "subtitles_off"),
+                            htEl.input("VID_PLR_ANTS", "checkbox", "annotations_off"),
+                            htEl.input("VID_END_SHRE", "checkbox", "share_panel_off"),
+                            htEl.input("VID_PLR_VOL_MEM", "checkbox", "remember_volume"),
+                            htEl.input("VID_PLR_SIZE_MEM", "checkbox", "remember_mode"),
+                            htEl.input("VID_VOL_WHEEL", "checkbox", "wheel_volume"),
+                            htEl.input("VID_PLR_DASH", "checkbox", "dash_off"),
                             htEl.select("VID_DFLT_QLTY", {
                                 "VID_DFLT_QLTY_AUTO": "auto",
                                 "VID_DFLT_QLTY_ORIG": "highres",
@@ -1921,10 +1921,10 @@
                                 "VID_DFLT_QLTY_TNY" : "tiny"
                             }, "default_quality"),
                             htEl.title("VID_PLR_LYT", "h3"),
-                            htEl.input("VID_PLR_CTRL_VIS", "checkbox", null, null, "hide_controls"),
-                            htEl.input("VID_PLR_DYN_SIZE", "checkbox", null, null, "dynamic_size_off"),
-                            htEl.input("VID_PLR_FIT", "checkbox", null, null, "fit_to_page"),
-                            htEl.input("VID_PLR_FIT_WDTH", "text", "1280px", 6, "fit_max_width"),
+                            htEl.input("VID_PLR_CTRL_VIS", "checkbox", "hide_controls"),
+                            htEl.input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off"),
+                            htEl.input("VID_PLR_FIT", "checkbox", "fit_to_page"),
+                            htEl.input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6),
                             "    <br>",
                             htEl.radio("VID_PROG_BAR_CLR", {
                                 "VID_PROG_BAR_CLR_RED": "red",
@@ -1935,9 +1935,9 @@
                                 "VID_CTRL_BAR_CLR_LGHT": "light"
                             }, "control_color"),
                             htEl.title("VID_PLST", "h3"),
-                            htEl.input("VID_PLST_SEP", "checkbox", null, null, "separate_playlist"),
-                            htEl.input("VID_PLST_ATPL", "checkbox", null, null, "playlist_autoplay"),
-                            htEl.input("VID_PLST_RVRS", "checkbox", null, null, "playlist_reverse"),
+                            htEl.input("VID_PLST_SEP", "checkbox", "separate_playlist"),
+                            htEl.input("VID_PLST_ATPL", "checkbox", "playlist_autoplay"),
+                            htEl.input("VID_PLST_RVRS", "checkbox", "playlist_reverse"),
                             htEl.title("VID_LAYT", "h3"),
                             htEl.select("VID_HIDE_COMS", {
                                 "VID_HIDE_COMS_SHOW": "0",
@@ -1949,12 +1949,12 @@
                                 "VID_SDBR_ALGN_LEFT" : "1",
                                 "VID_SDBR_ALGN_RIGHT": "2"
                             }, "sidebar_align"),
-                            htEl.input("VID_TTL_CMPT", "checkbox", null, null, "video_title"),
-                            htEl.input("VID_DESC_SHRT", "checkbox", null, null, "labelless_buttons"),
-                            htEl.input("VID_VID_CNT", "checkbox", null, null, "upload_counter"),
-                            htEl.input("VID_POST_TIME", "checkbox", null, null, "relative_upload_time"),
-                            htEl.input("VID_HIDE_DETLS", "checkbox", null, null, "hide_video_details"),
-                            htEl.input("VID_LAYT_AUTO_PNL", "checkbox", null, null, "expand_description"),
+                            htEl.input("VID_TTL_CMPT", "checkbox", "video_title"),
+                            htEl.input("VID_DESC_SHRT", "checkbox", "labelless_buttons"),
+                            htEl.input("VID_VID_CNT", "checkbox", "upload_counter"),
+                            htEl.input("VID_POST_TIME", "checkbox", "relative_upload_time"),
+                            htEl.input("VID_HIDE_DETLS", "checkbox", "hide_video_details"),
+                            htEl.input("VID_LAYT_AUTO_PNL", "checkbox", "expand_description"),
                             "</div>\n"
                         ].join(""),
                         BLK    : [
@@ -1967,7 +1967,7 @@
                             "    </div>\n",
                             "    <hr class='P-horz'>\n",
                             htEl.title("BLK_BLK", "h3"),
-                            htEl.input("BLK_ON", "checkbox", null, null, "blacklist_on"),
+                            htEl.input("BLK_ON", "checkbox", "blacklist_on"),
                             "    <div id='blacklist'>\n",
                             "        <div id='blacklist-controls'>\n",
                             "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n",
