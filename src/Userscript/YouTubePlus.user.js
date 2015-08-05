@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.4
+// @version     0.4.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -73,7 +73,7 @@
             "}\n",
             "html.content-snap-width-skinny-mode.floater:not([data-player-size='fullscreen']) #player #movie_player:not(.ytp-fullscreen){\n",
             "    margin-top: 0 !important;\n",
-            "    top: 50px !important;\n",
+            "    top: 51px !important;\n",
             "    transform: none;\n",
             "}\n",
             "#part_floaterui{\n",
@@ -531,11 +531,12 @@
             "    box-shadow: none;\n",
             "}\n",
             "#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n",
-            "    max-width: 100%;\n",
-            "    max-height: 100%;\n",
-            "    min-width: 100%;\n",
-            "    min-height: 100%;\n",
             "    left: initial !important;\n",
+            "    max-height: 100%;\n",
+            "    max-width: 100%;\n",
+            "    min-height: 100%;\n",
+            "    min-width: 100%;\n",
+            "    position: initial;\n",
             "    top: initial !important;\n",
             "}\n",
             ".search #content{\n",
@@ -543,13 +544,16 @@
             "    width: initial;\n",
             "}\n",
             ".ideal-aspect .html5-player-chrome{\n",
-            "    background: rgba(27,27,27,0.9) !important;\n",
+            "    background: rgba(27, 27, 27, .9) !important;\n",
             "}\n",
             ".ideal-aspect.light-theme .html5-player-chrome{\n",
-            "    background: rgba(204,204,204,0.9) !important;\n",
+            "    background: rgba(204, 204, 204, .9) !important;\n",
             "}\n",
             "#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n",
             "    transition: none !important;\n",
+            "}\n",
+            "html.content-snap-width-skinny-mode #masthead-positioner-height-offset{\n",
+            "    height: 51px;\n",
             "}\n",
             ".part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{\n",
             "    bottom: 0;\n",
@@ -580,7 +584,7 @@
             ".content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n",
             "   display: none !important;\n",
             "}\n",
-            ".new_player .html5-video-container{\n",
+            ".html5-video-container{\n",
             "   height: 100%;\n",
             "}\n",
         //   end| Enhancements
@@ -628,7 +632,7 @@
             ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n",
             "    height: 390px;\n",
             "}\n",
-            ".part_static_size:not(.content-snap-width-skinny-mode).new_player .watch-non-stage-mode .player-height{\n",
+            ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n",
             "    height: 360px;\n",
             "}\n",
             ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n",
@@ -655,9 +659,6 @@
             ".part_fit_theater .watch-stage-mode #player-api:before, .content-snap-width-skinny-mode #player-api:before{\n",
             "    content: '';\n",
             "    display: block;\n",
-            "    padding-top: calc(56.25% + 30px);\n",
-            "}\n",
-            ".part_fit_theater.new_player .watch-stage-mode #player-api:before, .content-snap-width-skinny-mode.new_player #player-api:before{\n",
             "    padding-top: calc(56.25%);\n",
             "}\n",
             ".part_fit_theater .watch-stage-mode #movie_player, .content-snap-width-skinny-mode #movie_player{\n",
@@ -680,43 +681,6 @@
             "    margin-top: 10px;\n",
             "}\n",
         //   end| Fit player in theater mode
-        // start| Hide player controls
-            ".part_hide_controls.part_fit_theater:not(.new_player) .watch-stage-mode #player-api:before, .part_hide_controls.content-snap-width-skinny-mode:not(.new_player) #player-api:before{\n",
-            "    padding-top: calc(56.25%);\n",
-            "}\n",
-            ".part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) .watch-non-stage-mode #watch7-sidebar{\n",
-            "    margin-top: -370px;\n",
-            "}\n",
-            ".part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater):not(.new_player) .watch-stage-mode #watch-appbar-playlist{\n",
-            "    top: 90px;\n",
-            "}\n",
-            "@media screen and (min-width:1320px) and (min-height:870px){\n",
-            "    .part_hide_controls:not(.content-snap-width-skinny-mode):not(.part_fit_theater):not(.new_player) .watch-stage-mode #watch-appbar-playlist{\n",
-            "        top: 330px;\n",
-            "    }\n",
-            "}\n",
-            "html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-non-stage-mode .player-height{\n",
-            "    height: 360px;\n",
-            "}\n",
-            "@media screen and (min-width:1294px) and (min-height:630px){\n",
-            "    html.part_hide_controls:not(.part_static_size):not(.new_player) #page.watch-non-stage-mode .player-height{\n",
-            "        height: 480px;\n",
-            "    }\n",
-            "}\n",
-            "@media screen and (min-width:1720px) and (min-height:980px){\n",
-            "    html.part_hide_controls:not(.part_static_size):not(.new_player) #page.watch-non-stage-mode .player-height{\n",
-            "        height: 720px;\n",
-            "    }\n",
-            "}\n",
-            "html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-stage-mode .player-height:not(.watch-playlist){\n",
-            "    height: 480px;\n",
-            "}\n",
-            "@media screen and (min-width:1320px) and (min-height:870px){\n",
-            "    html.part_hide_controls:not(.content-snap-width-skinny-mode):not(.new_player) #page.watch-stage-mode .player-height:not(.watch-playlist){\n",
-            "        height: 720px;\n",
-            "    }\n",
-            "}\n",
-        //   end| Hide player controls
         // start| Cinema mode
             "#movie_player:before, #masthead-positioner:before{\n",
             "    bottom: 0;\n",
@@ -1112,11 +1076,8 @@
                 VID_PLR_ALVIS    : true,
                 VID_PLR_ADS      : true,
                 VID_PLR_SIZE_MEM : true,
-                VID_PLR_CTRL_VIS : true,
                 VID_PLR_DYN_SIZE : true,
                 VID_PLR_FIT_WDTH : "1280px",
-                VID_PROG_BAR_CLR : "red",
-                VID_CTRL_BAR_CLR : "light",
                 VID_HIDE_COMS    : "1",
                 VID_POST_TIME    : true,
                 VID_VID_CNT      : true,
@@ -1423,30 +1384,6 @@
                     en     : "Autoplay videos",
                     "pt-PT": "Iniciar vídeos automáticamente"
                 },
-                VID_PROG_BAR_CLR      : {
-                    en     : "Progress bar color:",
-                    "pt-PT": "Cor da barra de progresso:"
-                },
-                VID_PROG_BAR_CLR_RED  : {
-                    en     : "Red",
-                    "pt-PT": "Vermelha"
-                },
-                VID_PROG_BAR_CLR_WHT  : {
-                    en     : "White",
-                    "pt-PT": "Branca"
-                },
-                VID_CTRL_BAR_CLR      : {
-                    en     : "Control bar color:",
-                    "pt-PT": "Cor da barra de controlos:"
-                },
-                VID_CTRL_BAR_CLR_DARK : {
-                    en     : "Dark",
-                    "pt-PT": "Escura"
-                },
-                VID_CTRL_BAR_CLR_LGHT : {
-                    en     : "Light",
-                    "pt-PT": "Clara"
-                },
                 VID_LAYT              : {
                     en     : "Layout",
                     "pt-PT": "Aparência"
@@ -1530,10 +1467,6 @@
                 VID_PLR_CC            : {
                     en     : "Disable subtitles and CC",
                     "pt-PT": "Desactivar legendas e CC"
-                },
-                VID_PLR_CTRL_VIS      : {
-                    en     : "Hide player controls",
-                    "pt-PT": "Esconder controlos do reproductor"
                 },
                 VID_PLR_FIT           : {
                     en     : "Fit to page in theater mode",
@@ -1725,7 +1658,6 @@
                     "VID_PLR_DYN_SIZE": "part_static_size",
                     "VID_HIDE_DETLS"  : "part_hide_details",
                     "VID_TTL_CMPT"    : "part_compact_title",
-                    "VID_PLR_CTRL_VIS": "part_hide_controls",
                     "VID_PLST_SEP"    : "part_playlist_spacer",
                     "VID_DESC_SHRT"   : "part_labelless_buttons"
                 };
@@ -1921,19 +1853,9 @@
                                 "VID_DFLT_QLTY_TNY" : "tiny"
                             }, "default_quality"),
                             htEl.title("VID_PLR_LYT", "h3"),
-                            htEl.input("VID_PLR_CTRL_VIS", "checkbox", "hide_controls"),
                             htEl.input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off"),
                             htEl.input("VID_PLR_FIT", "checkbox", "fit_to_page"),
                             htEl.input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6),
-                            "    <br>",
-                            htEl.radio("VID_PROG_BAR_CLR", {
-                                "VID_PROG_BAR_CLR_RED": "red",
-                                "VID_PROG_BAR_CLR_WHT": "white"
-                            }, "progress_color"),
-                            htEl.radio("VID_CTRL_BAR_CLR", {
-                                "VID_CTRL_BAR_CLR_DARK": "dark",
-                                "VID_CTRL_BAR_CLR_LGHT": "light"
-                            }, "control_color"),
                             htEl.title("VID_PLST", "h3"),
                             htEl.input("VID_PLST_SEP", "checkbox", "separate_playlist"),
                             htEl.input("VID_PLST_ATPL", "checkbox", "playlist_autoplay"),
@@ -2289,7 +2211,7 @@
                     var i = rvs.length;
                     while (i) {
                         i -= 1;
-                        if (rvs[i].replace(/\+/g, " ").split(parSets.blacklist[names]).length > 1) {
+                        if (decodeURIComponent(rvs[i]).replace(/\+/g, " ").split(parSets.blacklist[names]).length > 1) {
                             rvs.splice(i, 1);
                         }
                     }
@@ -2300,8 +2222,6 @@
             if (config.args.video_id) {
                 config.args.autohide = "2";
                 config.args.vq = parSets.VID_DFLT_QLTY;
-                config.args.theme = parSets.VID_CTRL_BAR_CLR;
-                config.args.color = parSets.VID_PROG_BAR_CLR;
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 if (!parSets.VID_PLR_ATPL) {
                     config.args.autoplay = "0";
@@ -2347,7 +2267,6 @@
                     minOffsetY,
                     activeMove,
                     skinny          = document.documentElement.classList.contains("content-snap-width-skinny-mode"),
-                    newPlayer       = document.querySelector("link[href*='player-new']"),
                     videoPlayer     = document.getElementById("movie_player"),
                     playerContainer = document.getElementById("player-api"),
                     containerSize   = playerContainer && playerContainer.getBoundingClientRect(),
@@ -2362,7 +2281,7 @@
                     }
                     sidebar = document.getElementById("watch7-sidebar");
                     sidebarSize = sidebar.getBoundingClientRect();
-                    height = ((!parSets.VID_PLR_CTRL_VIS && !newPlayer) ? 30 : 0) + ((skinny && containerSize.height) || (sidebarSize.width / (16 / 9)));
+                    height = (skinny && containerSize.height) || (sidebarSize.width / (16 / 9));
                     videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + "px";
                     videoPlayer.style.height = height + "px";
                     XBounds = parSets.floaterX > -1 && (parSets.floaterX + videoPlayer.offsetWidth) < document.documentElement.offsetWidth;
@@ -2489,7 +2408,7 @@
                 eventHandler(button, "click", initSubPlaylist);
             }
         }
-        function playerReady(playerApi) {
+        function playerReady() {
             function playerState(state) {
                 if (parSets.fullBrs) {
                     document.documentElement.classList[(state < 5 && state > 0) ? "add" : "remove"]("part_fullbrowser");
@@ -2504,18 +2423,7 @@
             function sizeChanged(event) {
                 set("theaterMode", event);
             }
-            function forceIdealAspect(event) {
-                var observer,
-                    moviePlayer = document.getElementById("movie_player");
-                if (moviePlayer && !moviePlayer.classList.contains("ideal-aspect")) {
-                    moviePlayer.classList.add("ideal-aspect");
-                }
-                if (!event) {
-                    observer = new window.MutationObserver(forceIdealAspect);
-                    observer.observe(moviePlayer, {attributes: true});
-                }
-            }
-            if ((typeof playerApi === "object" || document.querySelector("link[href*='player-new']")) && !document.getElementById("c4-player")) {
+            if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
                 eventHandler(api, "onStateChange", playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
@@ -2526,9 +2434,6 @@
                 }
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
-                }
-                if (parSets.VID_PLR_CTRL_VIS && !document.querySelector("link[href*='player-new']")) {
-                    forceIdealAspect();
                 }
             }
         }
@@ -2651,11 +2556,11 @@
                     args[1] = argsCleaner(args[1]);
                     if (args[0].id === "upsell-video") {
                         originalFunction.apply(this, args);
-                    } else if (typeof args[0] === "object" || document.querySelector("link[href*='player-new']")) {
+                    } else if (typeof args[0] === "object") {
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         moviePlayer = document.getElementById("movie_player");
-                        if (moviePlayer && !parSets.VID_PLR_ATPL && document.querySelector("link[href*='player-new']")) {
+                        if (moviePlayer && !parSets.VID_PLR_ATPL) {
                             moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
@@ -3281,9 +3186,6 @@
             }
             if (window.location.href.split("/channel/").length > 1 && document.body && document.documentElement.scrollTop + document.body.scrollTop > 266) {
                 document.documentElement.scrollTop = document.body.scrollTop = 0;
-            }
-            if (document.querySelector("link[href*='player-new']")) {
-                document.documentElement.classList.add("new_player");
             }
         }
         function infiniteScroll() {
