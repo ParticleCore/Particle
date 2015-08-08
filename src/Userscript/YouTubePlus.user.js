@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.5
+// @version     0.4.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -521,6 +521,9 @@
             "}\n",
             "#body-container{\n",
             "    position: relative;\n",
+            "}\n",
+            "#logo-container{\n",
+            "    height: 33px;\n",
             "}\n",
             ".branded-page-related-channels-item .yt-close{\n",
             "    z-index: 1;\n",
@@ -1468,6 +1471,10 @@
                     en     : "Disable subtitles and CC",
                     "pt-PT": "Desactivar legendas e CC"
                 },
+                VID_PLR_INFO          : {
+                    en     : "Enable info bar with watch later button",
+                    "pt-PT": "ACtivar barra de informação com o botão ver mais tarde"
+                },
                 VID_PLR_FIT           : {
                     en     : "Fit to page in theater mode",
                     "pt-PT": "Ajustar na página no modo cinema"
@@ -1853,6 +1860,7 @@
                                 "VID_DFLT_QLTY_TNY" : "tiny"
                             }, "default_quality"),
                             htEl.title("VID_PLR_LYT", "h3"),
+                            htEl.input("VID_PLR_INFO", "checkbox", "info_bar"),
                             htEl.input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off"),
                             htEl.input("VID_PLR_FIT", "checkbox", "fit_to_page"),
                             htEl.input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6),
@@ -2223,6 +2231,9 @@
                 config.args.autohide = "2";
                 config.args.vq = parSets.VID_DFLT_QLTY;
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
+                if (parSets.VID_PLR_INFO) {
+                    config.args.showinfo = "1";
+                }
                 if (!parSets.VID_PLR_ATPL) {
                     config.args.autoplay = "0";
                 }
