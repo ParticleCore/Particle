@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.7
+// @version     0.4.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -590,7 +590,7 @@
             ".html5-video-container{\n",
             "   height: 100%;\n",
             "}\n",
-            "#browse-items-primary .item-section > li > .yt-lockup-tile, #browse-items-primary .item-section > li > .multirow-shelf, .browse-list-item-container.feed-item-container.branded-page-box, .compact-shelf.branded-page-box, .c4-featured-content.branded-page-box{\n",
+            ".part_grid_subs #browse-items-primary .item-section > li > .yt-lockup-tile, .part_grid_subs #browse-items-primary .item-section > li > .multirow-shelf, .part_grid_subs .browse-list-item-container.feed-item-container.branded-page-box, .part_grid_subs .compact-shelf.branded-page-box, .part_grid_subs .c4-featured-content.branded-page-box{\n",
             "   width: initial;\n",
             "}\n",
         //   end| Enhancements
