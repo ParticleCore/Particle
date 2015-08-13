@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.8
+// @version     0.4.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2449,6 +2449,9 @@
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
                 }
+                if (parSets.loopVid) {
+                    document.getElementsByTagName("video")[0].loop = parSets.loopVid;
+                }
             }
         }
         function scriptExit(event) {
@@ -2840,8 +2843,12 @@
                 }
                 function toggleLoop(event) {
                     videoPlayer = document.getElementsByTagName("video")[0];
-                    videoPlayer.loop = event ? !videoPlayer.loop : parSets.loopVid;
-                    loopButton.classList[(videoPlayer.loop) ? "add" : "remove"]("active");
+                    if (videoPlayer) {
+                        videoPlayer.loop = event ? !parSets.loopVid : parSets.loopVid;
+                        if (event) {
+                            loopButton.classList[(!parSets.loopVid) ? "add" : "remove"]("active");
+                        }
+                    }
                     set("loopVid", loopButton.classList.contains("active"));
                 }
                 function toggleMap() {
