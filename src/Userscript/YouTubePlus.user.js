@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.0
+// @version     0.5.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2430,6 +2430,8 @@
         }
         function playerReady() {
             function alwaysActive(event) {
+                var x,
+                    y;
                 if (window.location.pathname !== "/watch") {
                     eventHandler(document.documentElement, "focus", alwaysActive, true, "remove");
                     eventHandler(document.documentElement, "click", alwaysActive, true, "remove");
@@ -2439,7 +2441,10 @@
                     return;
                 }
                 if (["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0) {
+                    x = window.scrollX;
+                    y = window.scrollY;
                     api.focus();
+                    window.scrollTo(x, y);
                 }
             }
             function playerState(state) {
