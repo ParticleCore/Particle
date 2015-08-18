@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.4.9
+// @version     0.5.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -487,7 +487,7 @@
             ".part_grid_search.part_compact_titles  #results .yt-lockup-title a{\n",
             "    white-space: nowrap;\n",
             "}\n",
-            ".part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges, .part_grid_subs .yt-lockup-badges, .part_grid_subs .yt-uix-livereminder, .part_grid_search .yt-uix-livereminder{\n",
+            ".part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges, .part_grid_subs .yt-lockup-badges, .part_grid_subs .yt-uix-livereminder, .part_grid_search .yt-uix-livereminder, .part_grid_search #results .exploratory-section, .part_grid_search #results .compact-shelf{\n",
             "    display: none;\n",
             "}\n",
             ".part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{\n",
@@ -498,9 +498,6 @@
             "}\n",
             ".part_grid_search .search .branded-page-v2-body{\n",
             "    overflow: hidden;\n",
-            "}\n",
-            ".part_grid_search #results .exploratory-section, .part_grid_search #results .compact-shelf{\n",
-            "    display: none;\n",
             "}\n",
             ".part_grid_search .webkit #results .yt-ui-ellipsis{\n",
             "    display: block;\n",
@@ -566,14 +563,11 @@
             "#footer-container{\n",
             "    max-width: initial;\n",
             "}\n",
-            ".content-snap-width-skinny-mode #theater-background{\n",
+            ".content-snap-width-skinny-mode #theater-background, .content-snap-width-skinny-mode #footer-container{\n",
             "    display: none;\n",
             "}\n",
             ".content-snap-width-skinny-mode #player-playlist{\n",
             "    margin-top: 10px;\n",
-            "}\n",
-            ".content-snap-width-skinny-mode #footer-container{\n",
-            "    display: none;\n",
             "}\n",
             ".content-snap-width-skinny-mode #player, .content-snap-width-skinny-mode #content, .content-snap-width-skinny-mode #watch-appbar-playlist{\n",
             "    top: 0 !important;\n",
@@ -592,6 +586,13 @@
             "}\n",
             ".part_grid_subs #browse-items-primary .item-section > li > .yt-lockup-tile, .part_grid_subs #browse-items-primary .item-section > li > .multirow-shelf, .part_grid_subs .browse-list-item-container.feed-item-container.branded-page-box, .part_grid_subs .compact-shelf.branded-page-box, .part_grid_subs .c4-featured-content.branded-page-box{\n",
             "   width: initial;\n",
+            "}\n",
+            ".ytp-thumbnail-overlay, .ytp-large-play-button{\n",
+            "   transition-delay: initial !important;\n",
+            "}\n",
+            "#movie_player .video-ads{\n",
+            "   position: absolute;\n",
+            "   top: 0;\n",
             "}\n",
         //   end| Enhancements
         // start| Improved notification button
@@ -1458,6 +1459,10 @@
                     en     : "Disable advertisements in the video page",
                     "pt-PT": "Desactivar publicidades na página de vídeo"
                 },
+                VID_PLR_ALACT           : {
+                    en     : "Player shortcuts always active",
+                    "pt-PT": "Atalhos do reproductor sempre activos"
+                },
                 VID_SUB_ADS           : {
                     en     : "Enable advertisements only in videos from subscribed channels",
                     "pt-PT": "Activar publicidades só para vídeos de canais subscritos"
@@ -1848,6 +1853,7 @@
                             htEl.input("VID_PLR_ANTS", "checkbox", "annotations_off"),
                             htEl.input("VID_END_SHRE", "checkbox", "share_panel_off"),
                             htEl.input("VID_PLR_VOL_MEM", "checkbox", "remember_volume"),
+                            htEl.input("VID_PLR_ALACT", "checkbox", "shortcuts_on"),
                             htEl.input("VID_PLR_SIZE_MEM", "checkbox", "remember_mode"),
                             htEl.input("VID_VOL_WHEEL", "checkbox", "wheel_volume"),
                             htEl.input("VID_PLR_DASH", "checkbox", "dash_off"),
@@ -2423,6 +2429,19 @@
             }
         }
         function playerReady() {
+            function alwaysActive(event) {
+                if (window.location.pathname !== "/watch") {
+                    eventHandler(document.documentElement, "focus", alwaysActive, true, "remove");
+                    eventHandler(document.documentElement, "click", alwaysActive, true, "remove");
+                    return;
+                }
+                if (event.target.tagName === "IFRAME" || event.target.classList.contains("yt-commentbox-text")) {
+                    return;
+                }
+                if (["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0) {
+                    api.focus();
+                }
+            }
             function playerState(state) {
                 if (parSets.fullBrs) {
                     document.documentElement.classList[(state < 5 && state > 0) ? "add" : "remove"]("part_fullbrowser");
@@ -2451,6 +2470,10 @@
                 }
                 if (parSets.loopVid) {
                     document.getElementsByTagName("video")[0].loop = parSets.loopVid;
+                }
+                if (parSets.VID_PLR_ALACT) {
+                    eventHandler(document.documentElement, "focus", alwaysActive, true);
+                    eventHandler(document.documentElement, "click", alwaysActive, true);
                 }
             }
         }
