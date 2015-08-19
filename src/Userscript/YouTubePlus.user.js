@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.1
+// @version     0.5.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -590,8 +590,7 @@
             ".ytp-thumbnail-overlay, .ytp-large-play-button{\n",
             "   transition-delay: initial !important;\n",
             "}\n",
-            "#movie_player .video-ads{\n",
-            "   position: absolute;\n",
+            "#movie_player .video-ads .ad-container:not(.ad-overlay){\n",
             "   top: 0;\n",
             "}\n",
         //   end| Enhancements
