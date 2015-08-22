@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.2
+// @version     0.5.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -2430,13 +2430,14 @@
         function playerReady() {
             function alwaysActive(event) {
                 var x,
-                    y;
+                    y,
+                    sets = document.getElementById("P-settings");
                 if (window.location.pathname !== "/watch") {
                     eventHandler(document.documentElement, "focus", alwaysActive, true, "remove");
                     eventHandler(document.documentElement, "click", alwaysActive, true, "remove");
                     return;
                 }
-                if (event.target.tagName === "IFRAME" || event.target.classList.contains("yt-commentbox-text")) {
+                if (event.target.tagName === "IFRAME" || event.target.classList.contains("yt-commentbox-text") || (sets && sets.contains(event.target))) {
                     return;
                 }
                 if (["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0) {
@@ -3075,7 +3076,7 @@
                             fps = pi[keys].video.fps;
                         }
                     }
-                    if (event) {
+                    if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.classList.contains("yt-commentbox-text")) {
                         if (event.shiftKey) {
                             event.target.blur();
                             document.getSelection().removeAllRanges();
