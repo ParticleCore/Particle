@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.4
+// @version     0.5.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -597,17 +597,10 @@
         //   end| Enhancements
         // start| Improved notification button
             ".part_notif_button #appbar-main-guide-notification-container{\n",
-            "    box-shadow: 0 1px 2px #eee inset;\n",
-            "    display: inline-block;\n",
             "    top: 1px !important;\n",
-            "    left: auto !important;\n",
-            "    margin-left: 79px !important;\n",
+            "    left: 100% !important;\n",
             "    opacity: 0;\n",
-            "    overflow: hidden !important;\n",
-            "    position: absolute !important;\n",
             "    visibility: hidden;\n",
-            "    width: auto;\n",
-            "    z-index: 1;\n",
             "}\n",
             ".part_notif_button #appbar-main-guide-notification-container .appbar-guide-notification{\n",
             "    height: 27px !important;\n",
