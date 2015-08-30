@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.6
+// @version     0.5.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -577,12 +577,6 @@
             "    max-width: 1003px;\n",
             "    width: initial;\n",
             "}\n",
-            ".ideal-aspect .html5-player-chrome{\n",
-            "    background: rgba(27, 27, 27, .9) !important;\n",
-            "}\n",
-            ".ideal-aspect.light-theme .html5-player-chrome{\n",
-            "    background: rgba(204, 204, 204, .9) !important;\n",
-            "}\n",
             "#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n",
             "    transition: none !important;\n",
             "}\n",
@@ -712,9 +706,6 @@
             "    }\n",
             "    .part_fit_theater .watch-stage-mode #watch-appbar-playlist{\n",
             "        transform: none !important;\n",
-            "    }\n",
-            "    .watch-wide #watch7-sidebar, .watch-wide #watch7-preview{\n",
-            "        margin-top: 10px !important;\n",
             "    }\n",
             "}\n",
             ".part_fit_theater .watch-stage-mode #placeholder-player{\n",
