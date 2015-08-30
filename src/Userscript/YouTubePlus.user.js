@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.5
+// @version     0.5.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -18,8 +18,10 @@
         cssSprite  = "https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png",
         styleSheet = [
         // start| Playlist spacer
-            ".part_playlist_spacer:not(.content-snap-width-skinny-mode) #watch-appbar-playlist{\n",
-            "    margin-left: 0 !important;\n",
+            "@media screen and (min-width: 640px){\n",
+            "    .part_playlist_spacer #watch-appbar-playlist{\n",
+            "        margin-left: 0 !important;\n",
+            "    }\n",
             "}\n",
         //   end| Playlist spacer
         // start| Ads visibility
@@ -60,7 +62,7 @@
             "}\n",
         //   end| Compact thumbnail titles
         // start| Floater player
-            "html.floater:not([data-player-size='fullscreen']):not(.content-snap-width-skinny-mode) #player #player-api{\n",
+            "html.floater:not([data-player-size='fullscreen']) #player #player-api{\n",
             "    left: initial !important;\n",
             "    margin: 0 auto !important;\n",
             "    transform: none;\n",
@@ -69,13 +71,51 @@
             "    box-shadow: 0 0 10px rgb(0, 0, 0);\n",
             "    position: fixed !important;\n",
             "}\n",
-            "html.floater:not([data-player-size='fullscreen']):not(.content-snap-width-skinny-mode) #player #movie_player:not(.ytp-fullscreen){\n",
+            "html.floater:not([data-player-size='fullscreen']) #player #movie_player:not(.ytp-fullscreen){\n",
             "    z-index: 10;\n",
             "}\n",
-            "html.content-snap-width-skinny-mode.floater:not([data-player-size='fullscreen']) #player #movie_player:not(.ytp-fullscreen){\n",
-            "    margin-top: 0 !important;\n",
-            "    top: 51px !important;\n",
-            "    transform: none;\n",
+            "@media screen and (max-width: 640px){\n",
+            "    #player-api{\n",
+            "        height: auto !important;\n",
+            "        left: 0 !important;\n",
+            "        margin: 0 auto !important;\n",
+            "        max-width: 1280px !important;\n",
+            "        position: relative !important;\n",
+            "        right: 0 !important;\n",
+            "        width: 100% !important;\n",
+            "    }\n",
+            "    #player-api:before{\n",
+            "        content: '';\n",
+            "        display: block;\n",
+            "        padding-top: calc(56.25%);\n",
+            "    }\n",
+            "    #player, #placeholder-player{\n",
+            "        margin-top: -10px !important;\n",
+            "    }\n",
+            "    #placeholder-player{\n",
+            "        display: none !important;\n",
+            "    }\n",
+            "    #movie_player {\n",
+            "        box-shadow: 0 0 10px #000;\n",
+            "        height: initial !important;\n",
+            "        position: fixed !important;\n",
+            "        top: 52px !important;\n",
+            "        width: 100% !important;\n",
+            "    }\n",
+            "    #movie_player:after {\n",
+            "        content: '';\n",
+            "        display: block;\n",
+            "        padding-top: 56.25%;\n",
+            "    }\n",
+            "   .watch-stage-mode #player, .watch-stage-mode #placeholder-player{\n",
+            "        margin-top: -10px;\n",
+            "    }\n",
+            "   .playlist-videos-list{\n",
+            "        max-height: 170px !important;\n",
+            "    }\n",
+            "   #content{\n",
+            "        margin-top: 10px !important;\n",
+            "    }\n",
             "}\n",
             "#part_floaterui{\n",
             "    font-size: 0;\n",
@@ -85,16 +125,16 @@
             "    position: absolute;\n",
             "    text-align: center;\n",
             "    top: 0;\n",
-            "    transition: opacity 0.25s cubic-bezier(0.0, 0.0, 0.2, 1);\n",
+            "    transition: opacity .25s cubic-bezier(0.0, 0.0, 0.2, 1);\n",
             "    width: 100%;\n",
             "    z-index: 1000;\n",
             "}\n",
-            ".floater:not([data-player-size='fullscreen']):not(.content-snap-width-skinny-mode) #movie_player:not(.ytp-fullscreen):hover #part_floaterui{\n",
+            ".floater:not([data-player-size='fullscreen']) #movie_player:not(.ytp-fullscreen):hover #part_floaterui{\n",
             "    opacity: 1;\n",
             "    pointer-events: initial;\n",
             "}\n",
             "#part_floaterui:after{\n",
-            "    box-shadow: inset 0 120px 90px -90px rgba(8, 8, 8, 0.8);\n",
+            "    box-shadow: inset 0 120px 90px -90px rgba(8, 8, 8, .8);\n",
             "    content: '';\n",
             "    height: 120px;\n",
             "    left: 0;\n",
@@ -137,8 +177,10 @@
             "    padding-bottom: 0;\n",
             "    padding-top: 0;\n",
             "}\n",
-            ".content-snap-width-skinny-mode.part_hide_comments #P-show-comments{\n",
-            "    display: none;\n",
+            "@media screen and (max-width: 640px){\n",
+            "   .part_hide_comments #P-show-comments{\n",
+            "      display: none;\n",
+            "   }\n",
             "}\n",
             ".part_hide_comments #P-show-comments button{\n",
             "    border-top: none;\n",
@@ -171,7 +213,7 @@
             "    background: url(" + cssSprite + ") 2px -19px;\n",
             "    display: block;\n",
             "    height: 100%;\n",
-            "    opacity: 0.4;\n",
+            "    opacity: .4;\n",
             "    width: 20px;\n",
             "}\n",
             "#blacklist-import, #blacklist-export{\n",
@@ -226,7 +268,7 @@
             "    background: url(" + cssSprite + ") -22px -16px;\n",
             "    cursor: pointer;\n",
             "    height: 20px;\n",
-            "    opacity: 0.5;\n",
+            "    opacity: .5;\n",
             "    position: absolute;\n",
             "    top: 0;\n",
             "    right: 0;\n",
@@ -234,7 +276,7 @@
             "    z-index: 1;\n",
             "}\n",
             "#console-button:hover{\n",
-            "    opacity: 0.8;\n",
+            "    opacity: .8;\n",
             "}\n",
             "#player-console{\n",
             "    background: inherit;\n",
@@ -251,7 +293,7 @@
             "#player-console > div{\n",
             "    cursor: pointer;\n",
             "    height: 30px;\n",
-            "    opacity: 0.4;\n",
+            "    opacity: .4;\n",
             "    padding: 0 4px;\n",
             "    position: relative;\n",
             "}\n",
@@ -263,10 +305,10 @@
             "    width: 100%;\n",
             "}\n",
             "#player-console > div.active{\n",
-            "    opacity: 0.8 !important;\n",
+            "    opacity: .8 !important;\n",
             "}\n",
             "#player-console > div:hover{\n",
-            "    opacity: 0.6;\n",
+            "    opacity: .6;\n",
             "}\n",
             "#autoplay-button{\n",
             "    background: url(" + cssSprite + ") 4px -19px;\n",
@@ -318,7 +360,7 @@
             "    -webkit-user-select: none;\n",
             "}\n",
             "#seek-controls{\n",
-            "    background: rgba(0, 0, 0, 0.8);\n",
+            "    background: rgba(0, 0, 0, .8);\n",
             "    border-top-left-radius: 5px;\n",
             "    border-top-right-radius: 5px;\n",
             "    bottom: 100%;\n",
@@ -329,7 +371,7 @@
             "    transform: translateX(-50%);\n",
             "}\n",
             "#seek-controls > div{\n",
-            "    color: rgba(255,255,255, 0.4);\n",
+            "    color: rgba(255,255,255, .4);\n",
             "    cursor: pointer;\n",
             "    font-size: 10px;\n",
             "    display: inline;\n",
@@ -337,13 +379,13 @@
             "    margin: 5px;\n",
             "}\n",
             ".quality-1 .quality-1, .quality-2 .quality-2, .quality-3 .quality-3{\n",
-            "    color: rgba(255,255,255, 0.7) !important;\n",
+            "    color: rgba(255,255,255, .7) !important;\n",
             "}\n",
             "#seek-controls > div:hover{\n",
             "    color: #F1F1F1 !important;\n",
             "}\n",
             "#seek-thumbs{\n",
-            "    background: rgba(0, 0, 0, 0.8);\n",
+            "    background: rgba(0, 0, 0, .8);\n",
             "    overflow: auto;\n",
             "}\n",
             "#seek-thumbs span{\n",
@@ -378,7 +420,7 @@
             "    width: 100%;\n",
             "}\n",
             "#close-screenshot{\n",
-            "    background: rgba(0, 0, 0, 0.5);\n",
+            "    background: rgba(0, 0, 0, .5);\n",
             "    border-top-left-radius: 5px;\n",
             "    color: #F1F1F1;\n",
             "    cursor: pointer;\n",
@@ -390,7 +432,7 @@
             "    bottom: 0;\n",
             "}\n",
             "#close-screenshot:hover{\n",
-            "    background: rgba(0, 0, 0, 0.8);\n",
+            "    background: rgba(0, 0, 0, .8);\n",
             "}\n",
         //   end| Screenshot window
         // start| Sidebar mode
@@ -531,15 +573,6 @@
             "    border-right: 1px solid #E8E8E8;\n",
             "    box-shadow: none;\n",
             "}\n",
-            "#movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n",
-            "    left: initial !important;\n",
-            "    max-height: 100%;\n",
-            "    max-width: 100%;\n",
-            "    min-height: 100%;\n",
-            "    min-width: 100%;\n",
-            "    position: initial;\n",
-            "    top: initial !important;\n",
-            "}\n",
             ".search #content{\n",
             "    max-width: 1003px;\n",
             "    width: initial;\n",
@@ -553,9 +586,6 @@
             "#theater-background, #watch7-sidebar, #watch-appbar-playlist{\n",
             "    transition: none !important;\n",
             "}\n",
-            "html.content-snap-width-skinny-mode #masthead-positioner-height-offset{\n",
-            "    height: 51px;\n",
-            "}\n",
             ".part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{\n",
             "    bottom: 0;\n",
             "    height: initial !important;\n",
@@ -564,23 +594,35 @@
             "#footer-container{\n",
             "    max-width: initial;\n",
             "}\n",
-            ".content-snap-width-skinny-mode #theater-background, .content-snap-width-skinny-mode #footer-container{\n",
-            "    display: none;\n",
+            "@media screen and (min-width: 640px){\n",
+            "    #movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{\n",
+            "        left: initial !important;\n",
+            "        max-height: 100%;\n",
+            "        max-width: 100%;\n",
+            "        min-height: 100%;\n",
+            "        min-width: 100%;\n",
+            "        position: initial;\n",
+            "        top: initial !important;\n",
+            "    }\n",
             "}\n",
-            ".content-snap-width-skinny-mode #player-playlist{\n",
-            "    margin-top: 10px;\n",
-            "}\n",
-            ".content-snap-width-skinny-mode #player, .content-snap-width-skinny-mode #content, .content-snap-width-skinny-mode #watch-appbar-playlist{\n",
-            "    top: 0 !important;\n",
-            "}\n",
-            ".content-snap-width-skinny-mode #player-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n",
-            "    margin-bottom: 0;\n",
+            "@media screen and (max-width: 640px){\n",
+            "    #theater-background, #footer-container{\n",
+            "        display: none;\n",
+            "    }\n",
+            "    #player-playlist{\n",
+            "        margin-top: 10px;\n",
+            "    }\n",
+            "    #watch-appbar-playlist{\n",
+            "        margin-left: auto !important;\n",
+            "        top: 0 !important;\n",
+            "        transform: initial !important;\n",
+            "    }\n",
+            "    #player-playlist .watch-playlist{\n",
+            "        height: 270px !important;\n",
+            "    }\n",
             "}\n",
             "#page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{\n",
             "   min-width: 0;\n",
-            "}\n",
-            ".content-snap-width-skinny-mode .ytp-size-toggle-large, .content-snap-width-skinny-mode .ytp-size-toggle-small{\n",
-            "   display: none !important;\n",
             "}\n",
             ".html5-video-container{\n",
             "   height: 100%;\n",
@@ -618,36 +660,32 @@
             ".part_notif_button .show-guide-button-notification #appbar-guide-button{\n",
             "    opacity: 1 !important;\n",
             "}\n",
-            ".part_notif_button #yt-masthead #logo-container span.content-region{\n",
-            "    left: initial;\n",
-            "    padding: 1px 0 0 3px;\n",
-            "    position: absolute;\n",
-            "    top: initial;\n",
-            "}\n",
         //   end| Improved notification button
         // start| Static normal mode
-            ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-width, .part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-content{\n",
-            "    width: 640px;\n",
-            "}\n",
-            ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n",
-            "    height: 390px;\n",
-            "}\n",
-            ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode .player-height{\n",
-            "    height: 360px;\n",
-            "}\n",
-            ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch7-sidebar{\n",
-            "    margin-left: 650px;\n",
-            "    top: 0;\n",
-            "}\n",
-            ".part_static_size:not(.content-snap-width-skinny-mode) .watch.watch-non-stage-mode #content.content-alignment, .part_static_size:not(.content-snap-width-skinny-mode) .watch.watch-non-stage-mode #player.content-alignment{\n",
-            "    max-width: 1066px;\n",
-            "}\n",
-            ".part_static_size:not(.content-snap-width-skinny-mode) .watch-non-stage-mode #watch-appbar-playlist{\n",
-            "    left: 650px;\n",
+            "@media screen and (min-width: 640px){\n",
+            "    .part_static_size .watch-non-stage-mode .player-width, .part_static_size .watch-non-stage-mode #watch7-content{\n",
+            "        width: 640px;\n",
+            "    }\n",
+            "    .part_static_size .watch-non-stage-mode .player-height{\n",
+            "        height: 390px;\n",
+            "    }\n",
+            "    .part_static_size .watch-non-stage-mode .player-height{\n",
+            "        height: 360px;\n",
+            "    }\n",
+            "    .part_static_size .watch-non-stage-mode #watch7-sidebar{\n",
+            "        margin-left: 650px;\n",
+            "        top: 0;\n",
+            "    }\n",
+            "    .part_static_size .watch.watch-non-stage-mode #content.content-alignment, .part_static_size .watch.watch-non-stage-mode #player.content-alignment{\n",
+            "        max-width: 1066px;\n",
+            "    }\n",
+            "    .part_static_size .watch-non-stage-mode #watch-appbar-playlist{\n",
+            "        left: 650px;\n",
+            "    }\n",
             "}\n",
         //   end| Static normal mode
         // start| Fit player in theater mode
-            ".part_fit_theater .watch-stage-mode #player-api, .content-snap-width-skinny-mode #player-api{\n",
+            ".part_fit_theater .watch-stage-mode #player-api{\n",
             "    height: auto !important;\n",
             "    left: 0 !important;\n",
             "    margin: 0 auto !important;\n",
@@ -656,28 +694,33 @@
             "    right: 0;\n",
             "    width: 100%;\n",
             "}\n",
-            ".part_fit_theater .watch-stage-mode #player-api:before, .content-snap-width-skinny-mode #player-api:before{\n",
+            ".part_fit_theater .watch-stage-mode #player-api:before{\n",
             "    content: '';\n",
             "    display: block;\n",
             "    padding-top: calc(56.25%);\n",
             "}\n",
-            ".part_fit_theater .watch-stage-mode #movie_player, .content-snap-width-skinny-mode #movie_player{\n",
-            "    bottom: 0;\n",
-            "    left: 0;\n",
-            "    position: absolute;\n",
-            "    right: 0;\n",
-            "    top: 0;\n",
+            "@media screen and (min-width: 640px){\n",
+            "    .part_fit_theater .watch-stage-mode #movie_player{\n",
+            "        bottom: 0;\n",
+            "        left: 0;\n",
+            "        position: absolute;\n",
+            "        right: 0;\n",
+            "        top: 0;\n",
+            "    }\n",
+            "    .part_fit_theater .watch-stage-mode #watch-appbar-playlist{\n",
+            "        top: 10px;\n",
+            "    }\n",
+            "    .part_fit_theater .watch-stage-mode #watch-appbar-playlist{\n",
+            "        transform: none !important;\n",
+            "    }\n",
+            "    .watch-wide #watch7-sidebar, .watch-wide #watch7-preview{\n",
+            "        margin-top: 10px !important;\n",
+            "    }\n",
             "}\n",
-            ".part_fit_theater .watch-stage-mode #placeholder-player, .content-snap-width-skinny-mode #placeholder-player{\n",
+            ".part_fit_theater .watch-stage-mode #placeholder-player{\n",
             "    display: none;\n",
             "}\n",
-            ".part_fit_theater .watch-stage-mode #watch-appbar-playlist{\n",
-            "    top: 10px;\n",
-            "}\n",
-            ".part_fit_theater .watch-stage-mode #watch-appbar-playlist, .content-snap-width-skinny-mode #watch-appbar-playlist{\n",
-            "    transform: none !important;\n",
-            "}\n",
-            ".part_fit_theater .watch-stage-mode #content, .content-snap-width-skinny-mode #content{\n",
+            ".part_fit_theater .watch-stage-mode #content{\n",
             "    margin-top: 10px;\n",
             "}\n",
         //   end| Fit player in theater mode
@@ -694,7 +737,7 @@
             "    z-index: 1;\n",
             "}\n",
             ".part_cinema_mode #movie_player:before, .part_cinema_mode #masthead-positioner:before{\n",
-            "    background-color: rgba(0, 0, 0, 0.9);\n",
+            "    background-color: rgba(0, 0, 0, .9);\n",
             "}\n",
             ".part_cinema_mode .html5-video-player{\n",
             "    overflow: initial;\n",
@@ -717,7 +760,7 @@
             "    padding-left: 230px;\n",
             "}\n",
             "#P-sidebar, #P-content{\n",
-            "    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n",
+            "    box-shadow: 0 1px 2px rgba(0, 0, 0, .1);\n",
             "    box-sizing: border-box;\n",
             "}\n",
             "#P-sidebar{\n",
@@ -863,7 +906,7 @@
             "    background: #167AC6;\n",
             "    border-color: #167AC6;\n",
             "    border-radius: 2px;\n",
-            "    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);\n",
+            "    box-shadow: 0 1px 0 rgba(0, 0, 0, .05);\n",
             "    color: #fff;\n",
             "    cursor: pointer;\n",
             "    display: inline-block;\n",
@@ -884,13 +927,13 @@
             "    background: url(" + cssSprite + ") -22px 6px;\n",
             "    border: 1px solid transparent;\n",
             "    box-shadow: none;\n",
-            "    opacity: 0.5;\n",
+            "    opacity: .5;\n",
             "    padding: 0 13px;\n",
             "}\n",
             ".P-reset, .P-impexp:hover{\n",
             "    background-color: #F8F8F8;\n",
             "    border: 1px solid #D3D3D3;\n",
-            "    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);\n",
+            "    box-shadow: 0 1px 0 rgba(0, 0, 0, .05);\n",
             "    opacity: 1;\n",
             "    color: #333;\n",
             "}\n",
@@ -1036,15 +1079,17 @@
             "    cursor: pointer;\n",
             "    height: 28px;\n",
             "    margin-right: 10px;\n",
-            "    opacity: 0.55;\n",
+            "    opacity: .55;\n",
             "    vertical-align: middle;\n",
             "    width: 19px;\n",
             "}\n",
-            ".content-snap-width-skinny-mode #P{\n",
-            "    display: none;\n",
+            "@media screen and (max-width: 640px){\n",
+            "    #P{\n",
+            "        display: none;\n",
+            "    }\n",
             "}\n",
             "#P:hover{\n",
-            "    opacity: 0.85;\n",
+            "    opacity: .85;\n",
             "}\n",
             ".P-hide{\n",
             "    display: none;\n",
@@ -1092,431 +1137,431 @@
                 blacklist        : {}
             },
             lang      = {
-                ADV_OPTS              : {
+                ADV_OPTS: {
                     en     : "Advanced options",
                     "pt-PT": "Opções avançadas"
                 },
-                SUB_PLST              : {
+                SUB_PLST: {
                     en     : "Play recent uploads",
                     "pt-PT": "Reproduzir vídeos recentes"
                 },
-                GEN_SDBR_ON           : {
+                GEN_SDBR_ON: {
                     en     : "Enable sidebar mode",
                     "pt-PT": "Activar modo barra lateral"
                 },
-                SDBR_OPEN             : {
+                SDBR_OPEN: {
                     en     : "Open in sidebar",
                     "pt-PT": "Abrir barra lateral"
                 },
-                BLCK_ADD              : {
+                BLCK_ADD: {
                     en     : "Add to blacklist",
                     "pt-PT": "Adicionar à lista negra"
                 },
-                BLCK_EDIT             : {
+                BLCK_EDIT: {
                     en     : "Edit",
                     "pt-PT": "Editar"
                 },
-                BLCK_SAVE             : {
+                BLCK_SAVE: {
                     en     : "Save",
                     "pt-PT": "Guardar"
                 },
-                BLCK_CLSE             : {
+                BLCK_CLSE: {
                     en     : "Close",
                     "pt-PT": "Fechar"
                 },
-                CNSL_CNSL             : {
+                CNSL_CNSL: {
                     en     : "Console",
                     "pt-PT": "Consola"
                 },
-                CNSL_AP               : {
+                CNSL_AP: {
                     en     : "Autoplay",
                     "pt-PT": "Início automático"
                 },
-                CNSL_RPT              : {
+                CNSL_RPT: {
                     en     : "Repeat video",
                     "pt-PT": "Repetir vídeo"
                 },
-                CNSL_SKMP             : {
+                CNSL_SKMP: {
                     en     : "Seek map",
                     "pt-PT": "Mapa de procura"
                 },
-                CNSL_SKMP_OFF         : {
+                CNSL_SKMP_OFF: {
                     en     : "No thumbs found",
                     "pt-PT": "Não existem imagens"
                 },
-                CNSL_SKMP_SMAL        : {
+                CNSL_SKMP_SMAL: {
                     en     : "SMALL",
                     "pt-PT": "PEQUENO"
                 },
-                CNSL_SKMP_MED         : {
+                CNSL_SKMP_MED: {
                     en     : "MEDIUM",
                     "pt-PT": "MÉDIO"
                 },
-                CNSL_SKMP_LRGE        : {
+                CNSL_SKMP_LRGE: {
                     en     : "LARGE",
                     "pt-PT": "GRANDE"
                 },
-                CNSL_SVTH             : {
+                CNSL_SVTH: {
                     en     : "Open thumbnail",
                     "pt-PT": "Abrir imagem de fundo"
                 },
-                CNSL_SS               : {
+                CNSL_SS: {
                     en     : "Take screenshot",
                     "pt-PT": "Capturar imagem"
                 },
-                CNSL_SS_CLS           : {
+                CNSL_SS_CLS: {
                     en     : "CLOSE",
                     "pt-PT": "FECHAR"
                 },
-                CNSL_SDBR             : {
+                CNSL_SDBR: {
                     en     : "Sidebar mode",
                     "pt-PT": "Modo barra lateral"
                 },
-                CNSL_FLBR             : {
+                CNSL_FLBR: {
                     en     : "Fullbrowser mode",
                     "pt-PT": "Modo navegador inteiro"
                 },
-                CNSL_CINM_MD          : {
+                CNSL_CINM_MD: {
                     en     : "Cinema mode",
                     "pt-PT": "Modo cinema"
                 },
-                CNSL_FRME             : {
+                CNSL_FRME: {
                     en     : "Frame by frame",
                     "pt-PT": "Quadro a quadro"
                 },
-                PLST_AP               : {
+                PLST_AP: {
                     en     : "Autoplay",
                     "pt-PT": "Início automático"
                 },
-                PLST_RVRS             : {
+                PLST_RVRS: {
                     en     : "Reverse",
                     "pt-PT": "Inverter"
                 },
-                SHOW_CMTS             : {
+                SHOW_CMTS: {
                     en     : "Show comments",
                     "pt-PT": "Mostrar comentários"
                 },
-                HIDE_CMTS             : {
+                HIDE_CMTS: {
                     en     : "Hide comments",
                     "pt-PT": "Esconder comentários"
                 },
-                GLB_IMPR              : {
+                GLB_IMPR: {
                     en     : "Import/export settings",
                     "pt-PT": "Importar/exportar definições"
                 },
-                GLB_IMPR_SAVE         : {
+                GLB_IMPR_SAVE: {
                     en     : "Save and load",
                     "pt-PT": "Guardar e carregar"
                 },
-                GLB_RSET              : {
+                GLB_RSET: {
                     en     : "Reset",
                     "pt-PT": "Repor"
                 },
-                GLB_SVE               : {
+                GLB_SVE: {
                     en     : "Save",
                     "pt-PT": "Guardar"
                 },
-                FTR_DESC              : {
+                FTR_DESC: {
                     en     : "Find out what this does",
                     "pt-PT": "Descubra o que isto faz"
                 },
-                GEN                   : {
+                GEN: {
                     en     : "General",
                     "pt-PT": "Geral"
                 },
-                VID                   : {
+                VID: {
                     en     : "Video",
                     "pt-PT": "Vídeo"
                 },
-                CHN                   : {
+                CHN: {
                     en     : "Channels",
                     "pt-PT": "Canais"
                 },
-                BLK                   : {
+                BLK: {
                     en     : "Blacklist",
                     "pt-PT": "Lista negra"
                 },
-                ABT                   : {
+                ABT: {
                     en     : "About",
                     "pt-PT": "Sobre"
                 },
-                HLP                   : {
+                HLP: {
                     en     : "Help",
                     "pt-PT": "Ajuda"
                 },
-                DNT                   : {
+                DNT: {
                     en     : "Donate",
                     "pt-PT": "Doação"
                 },
-                GEN_TTL               : {
+                GEN_TTL: {
                     en     : "General settings",
                     "pt-PT": "Definições gerais"
                 },
-                GEN_GEN               : {
+                GEN_GEN: {
                     en     : "General",
                     "pt-PT": "Geral"
                 },
-                GEN_LYT               : {
+                GEN_LYT: {
                     en     : "Layout",
                     "pt-PT": "Aparência"
                 },
-                GEN_DSBL_ADS          : {
+                GEN_DSBL_ADS: {
                     en     : "Disable advertisements outside the video page",
                     "pt-PT": "Desactivar publicidades fora da página de vídeo"
                 },
-                GEN_INF_SCRL          : {
+                GEN_INF_SCRL: {
                     en     : "Enable infinite scroll in feeds",
                     "pt-PT": "Activar scroll infinito em feeds"
                 },
-                GEN_YT_LOGO_LINK      : {
+                GEN_YT_LOGO_LINK: {
                     en     : "YouTube logo redirects to subscriptions",
                     "pt-PT": "Logotipo do Youtube redirecciona para as subscrições"
                 },
-                GEN_SUB_LIST          : {
+                GEN_SUB_LIST: {
                     en     : "Enable subscription playlist",
                     "pt-PT": "Activar lista de reprodução de subscrições"
                 },
-                GEN_REM_APUN          : {
+                GEN_REM_APUN: {
                     en     : "Remove autoplay up next",
                     "pt-PT": "Remover reprodução automática do vídeo a seguir"
                 },
-                GEN_SPF_OFF           : {
+                GEN_SPF_OFF: {
                     en     : "Disable SPF",
                     "pt-PT": "Desactivar SPF"
                 },
-                GEN_HIDE_FTR          : {
+                GEN_HIDE_FTR: {
                     en     : "Hide footer",
                     "pt-PT": "Esconder rodapé"
                 },
-                GEN_BLUE_GLOW         : {
+                GEN_BLUE_GLOW: {
                     en     : "Remove blue glow around clicked buttons",
                     "pt-PT": "Retirar brilho azul em torno dos botões clicados"
                 },
-                GEN_HDE_RECM_SDBR     : {
+                GEN_HDE_RECM_SDBR: {
                     en     : "Hide recommended channels sidebar",
                     "pt-PT": "Esconder barra lateral de canais recomendados"
                 },
-                GEN_HDE_SRCH_SDBR     : {
+                GEN_HDE_SRCH_SDBR: {
                     en     : "Hide search results sidebar",
                     "pt-PT": "Esconder barra lateral nos resultados de pesquisa"
                 },
-                GEN_HDE_CHN_SDBR      : {
+                GEN_HDE_CHN_SDBR: {
                     en     : "Hide channel sidebar",
                     "pt-PT": "Esconder barra lateral dos canais"
                 },
-                GEN_CMPT_TTLS         : {
+                GEN_CMPT_TTLS: {
                     en     : "Compact titles in feeds",
                     "pt-PT": "Títulos compactos nas listas"
                 },
-                GEN_DSB_HVRC          : {
+                GEN_DSB_HVRC: {
                     en     : "Disable hovercards",
                     "pt-PT": "Desactivar hovercards"
                 },
-                GEN_BTTR_NTF          : {
+                GEN_BTTR_NTF: {
                     en     : "Improved blue notification box",
                     "pt-PT": "Caixa de notificação azul melhorada"
                 },
-                GEN_GRID_SUBS         : {
+                GEN_GRID_SUBS: {
                     en     : "Grid layout in subscriptions",
                     "pt-PT": "Subscrições em formato grelha"
                 },
-                GEN_GRID_SRCH         : {
+                GEN_GRID_SRCH: {
                     en     : "Grid layout in search results",
                     "pt-PT": "Resultados de pesquisa em formato grelha"
                 },
-                VID_TTL               : {
+                VID_TTL: {
                     en     : "Video settings",
                     "pt-PT": "Definições de vídeo"
                 },
-                VID_PLR               : {
+                VID_PLR: {
                     en     : "Player settings",
                     "pt-PT": "Definições do reproductor"
                 },
-                VID_PLR_LYT           : {
+                VID_PLR_LYT: {
                     en     : "Player layout",
                     "pt-PT": "Aspecto do reproductor"
                 },
-                VID_DFLT_QLTY         : {
+                VID_DFLT_QLTY: {
                     en     : "Default video quality:",
                     "pt-PT": "Qualidade de vídeo padrão:"
                 },
-                VID_DFLT_QLTY_AUTO    : {
+                VID_DFLT_QLTY_AUTO: {
                     en     : "Auto",
                     "pt-PT": "Auto"
                 },
-                VID_DFLT_QLTY_TNY     : {
+                VID_DFLT_QLTY_TNY: {
                     en: "144p"
                 },
-                VID_DFLT_QLTY_SML     : {
+                VID_DFLT_QLTY_SML: {
                     en: "240p"
                 },
-                VID_DFLT_QLTY_MDM     : {
+                VID_DFLT_QLTY_MDM: {
                     en: "360p"
                 },
-                VID_DFLT_QLTY_LRG     : {
+                VID_DFLT_QLTY_LRG: {
                     en: "480p"
                 },
-                VID_DFLT_QLTY_720     : {
+                VID_DFLT_QLTY_720: {
                     en: "720p"
                 },
-                VID_DFLT_QLTY_1080    : {
+                VID_DFLT_QLTY_1080: {
                     en: "1080p"
                 },
-                VID_DFLT_QLTY_1440    : {
+                VID_DFLT_QLTY_1440: {
                     en: "1440p"
                 },
-                VID_DFLT_QLTY_ORIG    : {
+                VID_DFLT_QLTY_ORIG: {
                     en: "2160p"
                 },
-                VID_PLR_ALVIS         : {
+                VID_PLR_ALVIS: {
                     en     : "Player always visible when reading comments",
                     "pt-PT": "Reproductor sempre visível ao ler os comentários"
                 },
-                VID_PLR_ALVIS_MOVE    : {
+                VID_PLR_ALVIS_MOVE: {
                     en     : "Move",
                     "pt-PT": "Mover"
                 },
-                VID_PLR_ALVIS_RST     : {
+                VID_PLR_ALVIS_RST: {
                     en     : "Reset position",
                     "pt-PT": "Repôr posição"
                 },
-                VID_PLR_ATPL          : {
+                VID_PLR_ATPL: {
                     en     : "Autoplay videos",
                     "pt-PT": "Iniciar vídeos automáticamente"
                 },
-                VID_LAYT              : {
+                VID_LAYT: {
                     en     : "Layout",
                     "pt-PT": "Aparência"
                 },
-                VID_VID_CNT           : {
+                VID_VID_CNT: {
                     en     : "Show link with number of uploaded videos",
                     "pt-PT": "Mostrar link com número de vídeos carregados"
                 },
-                VID_POST_TIME         : {
+                VID_POST_TIME: {
                     en     : "Show how long the video has been published",
                     "pt-PT": "Mostrar há quanto tempo o vídeo foi publicado"
                 },
-                VID_HIDE_DETLS        : {
+                VID_HIDE_DETLS: {
                     en     : "Hide video details",
                     "pt-PT": "Esconder detalhes do vídeo"
                 },
-                VID_HIDE_COMS         : {
+                VID_HIDE_COMS: {
                     en     : "Comment section",
                     "pt-PT": "Secção de comentários"
                 },
-                VID_HIDE_COMS_SHOW    : {
+                VID_HIDE_COMS_SHOW: {
                     en     : "Show",
                     "pt-PT": "Mostrar"
                 },
-                VID_HIDE_COMS_HIDE    : {
+                VID_HIDE_COMS_HIDE: {
                     en     : "Hide",
                     "pt-PT": "Esconder"
                 },
-                VID_HIDE_COMS_REM     : {
+                VID_HIDE_COMS_REM: {
                     en     : "Remove",
                     "pt-PT": "Remover"
                 },
-                VID_END_SHRE          : {
+                VID_END_SHRE: {
                     en     : "Disable share panel when video ends",
                     "pt-PT": "Desactivar painel de partilha quando o video acaba"
                 },
-                VID_PLST              : {
+                VID_PLST: {
                     en     : "Playlists",
                     "pt-PT": "Listas"
                 },
-                VID_PLST_SEP          : {
+                VID_PLST_SEP: {
                     en     : "Separate playlist from player",
                     "pt-PT": "Separar lista de reprodução do reproductor"
                 },
-                VID_PLST_ATPL         : {
+                VID_PLST_ATPL: {
                     en     : "Enable playlist autoplay control",
                     "pt-PT": "Activar controlo de início automático das listas"
                 },
-                VID_PLST_RVRS         : {
+                VID_PLST_RVRS: {
                     en     : "Enable reverse playlist control",
                     "pt-PT": "Activar controlo de inversão das listas"
                 },
-                VID_PLR_SIZE_MEM      : {
+                VID_PLR_SIZE_MEM: {
                     en     : "Memorize player mode",
                     "pt-PT": "Memorizar tamanho do reproductor"
                 },
-                VID_VOL_WHEEL         : {
+                VID_VOL_WHEEL: {
                     en     : "Change volume with mouse wheel",
                     "pt-PT": "Alterar nível de som com a roda do rato"
                 },
-                VID_PLR_VOL_MEM       : {
+                VID_PLR_VOL_MEM: {
                     en     : "Memorize audio volume",
                     "pt-PT": "Memorizar volume de audio"
                 },
-                VID_PLR_ADS           : {
+                VID_PLR_ADS: {
                     en     : "Disable advertisements in the video page",
                     "pt-PT": "Desactivar publicidades na página de vídeo"
                 },
-                VID_PLR_ALACT           : {
+                VID_PLR_ALACT: {
                     en     : "Player shortcuts always active",
                     "pt-PT": "Atalhos do reproductor sempre activos"
                 },
-                VID_SUB_ADS           : {
+                VID_SUB_ADS: {
                     en     : "Enable advertisements only in videos from subscribed channels",
                     "pt-PT": "Activar publicidades só para vídeos de canais subscritos"
                 },
-                VID_PLR_ANTS          : {
+                VID_PLR_ANTS: {
                     en     : "Disable annotations",
                     "pt-PT": "Desactivar notas"
                 },
-                VID_PLR_DASH          : {
+                VID_PLR_DASH: {
                     en     : "Disable DASH playback",
                     "pt-PT": "Desactivar reprodução DASH"
                 },
-                VID_PLR_CC            : {
+                VID_PLR_CC: {
                     en     : "Disable subtitles and CC",
                     "pt-PT": "Desactivar legendas e CC"
                 },
-                VID_PLR_INFO          : {
+                VID_PLR_INFO: {
                     en     : "Enable info bar with watch later button",
                     "pt-PT": "ACtivar barra de informação com o botão ver mais tarde"
                 },
-                VID_PLR_FIT           : {
+                VID_PLR_FIT: {
                     en     : "Fit to page in theater mode",
                     "pt-PT": "Ajustar na página no modo cinema"
                 },
-                VID_PLR_FIT_WDTH      : {
+                VID_PLR_FIT_WDTH: {
                     en     : "Fit to page max width:",
                     "pt-PT": "Largura máxima do ajuste na página:"
                 },
-                VID_PLR_DYN_SIZE      : {
+                VID_PLR_DYN_SIZE: {
                     en     : "Disable dynamic player size in default view",
                     "pt-PT": "Desactivar tamanho dinâmico do reproductor na vista predefinida"
                 },
-                VID_DESC_SHRT         : {
+                VID_DESC_SHRT: {
                     en     : "Short video description buttons",
                     "pt-PT": "Botões curtos na descrição do vídeo"
                 },
-                VID_TTL_CMPT          : {
+                VID_TTL_CMPT: {
                     en     : "Compact title in video description",
                     "pt-PT": "Título compacto na descrição do vídeo"
                 },
-                VID_SDBR_ALGN         : {
+                VID_SDBR_ALGN: {
                     en     : "Sidebar mode alignment",
                     "pt-PT": "Alinhar modo barra lateral"
                 },
-                VID_SDBR_ALGN_NONE    : {
+                VID_SDBR_ALGN_NONE: {
                     en     : "None",
                     "pt-PT": "Nenhum"
                 },
-                VID_SDBR_ALGN_LEFT    : {
+                VID_SDBR_ALGN_LEFT: {
                     en     : "Left",
                     "pt-PT": "Esquerda"
                 },
-                VID_SDBR_ALGN_RIGHT   : {
+                VID_SDBR_ALGN_RIGHT: {
                     en     : "Right",
                     "pt-PT": "Direita"
                 },
-                VID_LAYT_AUTO_PNL     : {
+                VID_LAYT_AUTO_PNL: {
                     en     : "Auto expand video description",
                     "pt-PT": "Automáticamente mostrar mais na descrição do vídeo"
                 },
-                GEN_CHN_DFLT_PAGE     : {
+                GEN_CHN_DFLT_PAGE: {
                     en     : "Default channel page:",
                     "pt-PT": "Página de canal predefinida:"
                 },
@@ -1524,15 +1569,15 @@
                     en     : "Default",
                     "pt-PT": "Padrão"
                 },
-                GEN_CHN_DFLT_PAGE_VID : {
+                GEN_CHN_DFLT_PAGE_VID: {
                     en     : "Videos",
                     "pt-PT": "Vídeos"
                 },
-                GEN_CHN_DFLT_PAGE_PL  : {
+                GEN_CHN_DFLT_PAGE_PL: {
                     en     : "Playlists",
                     "pt-PT": "Listas de reprodução"
                 },
-                GEN_CHN_DFLT_PAGE_CHN : {
+                GEN_CHN_DFLT_PAGE_CHN: {
                     en     : "Channels",
                     "pt-PT": "Canais"
                 },
@@ -1540,53 +1585,53 @@
                     en     : "Discussion",
                     "pt-PT": "Discussão"
                 },
-                GEN_CHN_DFLT_PAGE_ABT : {
+                GEN_CHN_DFLT_PAGE_ABT: {
                     en     : "About",
                     "pt-PT": "Acerca de"
                 },
-                BLK_TTL               : {
+                BLK_TTL: {
                     en     : "Blacklist settings",
                     "pt-PT": "Definições da lista negra"
                 },
-                BLK_BLK               : {
+                BLK_BLK: {
                     en     : "Blacklist",
                     "pt-PT": "Lista negra"
                 },
-                BLK_ON                : {
+                BLK_ON: {
                     en     : "Enable blacklist",
                     "pt-PT": "Activar lista negra"
                 },
-                ABT_TTL               : {
+                ABT_TTL: {
                     en     : "Information and useful links",
                     "pt-PT": "Informação e ligações úteis"
                 },
-                ABT_THKS              : {
+                ABT_THKS: {
                     en     : "Thanks to:",
                     "pt-PT": "Agradecimentos a:"
                 },
-                ABT_THKS_YEPPHA       : {
+                ABT_THKS_YEPPHA: {
                     en     : ", who's work inspired the creation of this project, without whom none of this would exist today.",
                     "pt-PT": ", cujo trabalho inspirou a criação deste projecto, sem ele nada disto existiria hoje."
                 },
-                ABT_THKS_USERSCRIPT   : {
+                ABT_THKS_USERSCRIPT: {
                     en     : " for making the task of developing and shipping third party software incredibly easier.",
                     "pt-PT": " por tornarem o processo de produção e publicação de software bastante fácil."
                 },
-                ABT_THKS_STACKOV      : {
+                ABT_THKS_STACKOV: {
                     en     : " for all of its priceless information which greatly contributes for software development.",
                     "pt-PT": " por toda a informação valiosa que contém e que contribui bastante para a criação de software."
                 },
-                ABT_INFO              : {
+                ABT_INFO: {
                     en     : "Official pages",
                     "pt-PT": "Páginas oficiais"
                 },
-                ABT_LNK_GHB           : {
+                ABT_LNK_GHB: {
                     en: "GitHub"
                 },
-                ABT_LNK_GRFK          : {
+                ABT_LNK_GRFK: {
                     en: "Greasy Fork"
                 },
-                ABT_LNK_OPNU          : {
+                ABT_LNK_OPNU: {
                     en: "OpenUserJS"
                 }
             };
@@ -2279,13 +2324,12 @@
                     minOffsetX,
                     minOffsetY,
                     activeMove,
-                    skinny          = document.documentElement.classList.contains("content-snap-width-skinny-mode"),
                     videoPlayer     = document.getElementById("movie_player"),
                     playerContainer = document.getElementById("player-api"),
                     containerSize   = playerContainer && playerContainer.getBoundingClientRect(),
                     sidebar         = document.getElementById("watch7-sidebar"),
                     sidebarSize     = sidebar && sidebar.getBoundingClientRect(),
-                    outOfSight      = containerSize.bottom < (((skinny && containerSize.height - 2) || (containerSize.height / 2)) + 51),
+                    outOfSight      = containerSize.bottom < ((containerSize.height / 2) + 51),
                     isFloater       = document.documentElement.classList.contains("floater"),
                     floaterUI       = document.getElementById("part_floaterui");
                 function updatePos() {
@@ -2294,14 +2338,14 @@
                     }
                     sidebar = document.getElementById("watch7-sidebar");
                     sidebarSize = sidebar.getBoundingClientRect();
-                    height = (skinny && containerSize.height) || (sidebarSize.width / (16 / 9));
-                    videoPlayer.style.width = (skinny && containerSize.width) || sidebarSize.width + "px";
+                    height = ((sidebarSize.width > 299 && sidebarSize.width) || 300) / (16 / 9);
+                    videoPlayer.style.width = ((sidebarSize.width > 299 && sidebarSize.width) || 300) + "px";
                     videoPlayer.style.height = height + "px";
                     XBounds = parSets.floaterX > -1 && (parSets.floaterX + videoPlayer.offsetWidth) < document.documentElement.offsetWidth;
                     YBounds = parSets.floaterY > 50 && (parSets.floaterY + videoPlayer.offsetHeight) < document.documentElement.offsetHeight;
-                    if (!parSets.customFloater || skinny) {
+                    if (!parSets.customFloater) {
                         videoPlayer.style.top = "calc(50% - " + (height / 2) + "px)";
-                        videoPlayer.style.left = ((skinny && "0") || sidebarSize.left) + "px";
+                        videoPlayer.style.left = sidebarSize.left + "px";
                     } else {
                         videoPlayer.style.top = ((YBounds && parSets.floaterY) || (parSets.floaterY < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + "px";
                         videoPlayer.style.left = ((XBounds && parSets.floaterX) || (parSets.floaterX < 1 && "0") || (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) + "px";
@@ -2431,7 +2475,7 @@
                     eventHandler(document.documentElement, "click", alwaysActive, true, "remove");
                     return;
                 }
-                if (event.target.tagName === "IFRAME" || event.target.classList.contains("yt-commentbox-text") || (sets && sets.contains(event.target))) {
+                if (event.target.tagName === "IFRAME" || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target))) {
                     return;
                 }
                 if (["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0) {
@@ -3070,7 +3114,7 @@
                             fps = pi[keys].video.fps;
                         }
                     }
-                    if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.classList.contains("yt-commentbox-text")) {
+                    if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
                         if (event.shiftKey) {
                             event.target.blur();
                             document.getSelection().removeAllRanges();
@@ -3226,9 +3270,6 @@
             }
             if (parSets.GEN_SPF_OFF && window.spf && window.spf.dispose) {
                 window.spf.dispose();
-            }
-            if (window.location.href.split("/channel/").length > 1 && document.body && document.documentElement.scrollTop + document.body.scrollTop > 266) {
-                document.documentElement.scrollTop = document.body.scrollTop = 0;
             }
         }
         function infiniteScroll() {
