@@ -133,13 +133,13 @@
         width: 22px;
     }
     #part_floaterui_move{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 -284px;
+        background: url(/Particle/images/sprite.png) 0 -284px;
     }
     #part_floaterui_reset{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 -308px;
+        background: url(/Particle/images/sprite.png) 0 -308px;
     }
     #part_floaterui_scrolltop{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 -332px;
+        background: url(/Particle/images/sprite.png) 0 -332px;
         position: absolute;
         right: 0;
     }
@@ -198,7 +198,7 @@
         opacity: 1;
     }
     #subscription-playlist span{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 2px -19px;
+        background: url(/Particle/images/sprite.png) 2px -19px;
         display: block;
         height: 100%;
         opacity: .4;
@@ -214,12 +214,12 @@
         color: #666666;
     }
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -65px;
+        background: url(/Particle/images/sprite.png) 5px -65px;
         height: 24px;
         width: 24px;
     }
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -45px;
+        background: url(/Particle/images/sprite.png) 5px -45px;
         height: 24px;
         width: 24px;
     }
@@ -253,7 +253,7 @@
         z-index: initial;
     }
     #console-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -22px -16px;
+        background: url(/Particle/images/sprite.png) -22px -16px;
         cursor: pointer;
         height: 20px;
         opacity: .5;
@@ -299,39 +299,39 @@
         opacity: .6;
     }
     #autoplay-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -19px;
+        background: url(/Particle/images/sprite.png) 4px -19px;
         width: 16px;
     }
     #save-thumbnail-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -230px;
+        background: url(/Particle/images/sprite.png) 4px -230px;
         width: 24px;
     }
     #seek-map{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -86px;
+        background: url(/Particle/images/sprite.png) 4px -86px;
         width: 18px;
     }
     #screenshot-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -158px;
+        background: url(/Particle/images/sprite.png) 4px -158px;
         width: 22px;
     }
     #sidebar-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -110px;
+        background: url(/Particle/images/sprite.png) 4px -110px;
         width: 22px;
     }
     #loop-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -182px;
+        background: url(/Particle/images/sprite.png) 4px -182px;
         width: 20px;
     }
     #fullbrowser-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -134px;
+        background: url(/Particle/images/sprite.png) 4px -134px;
         width: 20px;
     }
     #cinemamode-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -206px;
+        background: url(/Particle/images/sprite.png) 4px -206px;
         width: 20px;
     }
     #framestep-button{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -254px;
+        background: url(/Particle/images/sprite.png) 5px -254px;
         width: 20px;
     }
 /*   end| Player console */
@@ -425,7 +425,7 @@
 /*   end| Screenshot window */
 /* start| Sidebar mode */
     .yt-pl-thumb .sidebarmode, .thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{
-        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -24px -72px;
+        background: #FFF url(/Particle/images/sprite.png) -24px -72px;
         bottom: 0;
         color: #666;
         cursor: pointer;
@@ -440,7 +440,7 @@
 /*   end| Sidebar mode */
 /* start| Thumb buttons */
     .yt-pl-thumb .blacklist, .thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{
-        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -24px -57px;
+        background: #FFF url(/Particle/images/sprite.png) -24px -57px;
         color: #666;
         cursor: pointer;
         display: none;
@@ -853,10 +853,10 @@
         display: inline-block;
     }
     #P-content input[type='checkbox']:checked + label:before{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -26px -90px;
+        background: url(/Particle/images/sprite.png) -26px -90px;
     }
     #P-content input[type='radio']:checked + label:before{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -26px -106px;
+        background: url(/Particle/images/sprite.png) -26px -106px;
     }
     #P-content select{
         background-image: linear-gradient(#FCFCFC, #F8F8F8);
@@ -903,7 +903,7 @@
         word-wrap: normal;
     }
     .P-impexp{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -22px 6px;
+        background: url(/Particle/images/sprite.png) -22px 6px;
         border: 1px solid transparent;
         box-shadow: none;
         opacity: .5;
@@ -988,7 +988,7 @@
         color: #F1F1F1;
     }
     #DNT:hover:after{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -28px -37px;
+        background: url(/Particle/images/sprite.png) -28px -37px;
         content: '';
         height: 18px;
         margin-top: -9px;
@@ -1015,7 +1015,7 @@
         position: relative;
     }
     #blacklist .blacklist .close{
-        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -25px -58px;
+        background: #FFF url(/Particle/images/sprite.png) -25px -58px;
         border: 1px solid #C6C6C6;
         border-left: none;
         border-top: none;
@@ -1054,7 +1054,7 @@
         height: calc(100% - 80px);
     }
     #P{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 4px;
+        background: url(/Particle/images/sprite.png) 0 4px;
         cursor: pointer;
         height: 28px;
         margin-right: 10px;
