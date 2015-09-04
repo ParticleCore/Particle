@@ -917,7 +917,10 @@
         color: #666;
         margin-right: 0;
     }
-    .P-reset, .P-impexp:hover, .P-implang:hover{
+    .P-impexp:hover, .P-implang:hover{
+        opacity: 1;
+    }
+    .P-reset{
         background-color: #F8F8F8;
         border: 1px solid #D3D3D3;
         box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
