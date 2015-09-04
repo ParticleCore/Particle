@@ -33,6 +33,7 @@
     "GLB_IMPR_SAVE"         : "Save and load",
     "GLB_RSET"              : "Reset",
     "GLB_SVE"               : "Save",
+    "GLB_SVE_SETS"          : "Settings saved",
     "FTR_DESC"              : "Find out what this does",
     "GEN"                   : "General",
     "VID"                   : "Video",
