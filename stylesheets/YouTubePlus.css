@@ -905,7 +905,7 @@
         white-space: nowrap;
         word-wrap: normal;
     }
-    .P-impexp{
+    .P-impexp, .P-implang{
         background: url(/Particle/images/sprite.png) -22px 6px;
         border: 1px solid transparent;
         box-shadow: none;
@@ -914,8 +914,10 @@
     }
     .P-implang{
         background: none;
+        color: #666;
+        margin-right: 0;
     }
-    .P-reset, .P-impexp:hover, , .P-implang:hover{
+    .P-reset, .P-impexp:hover, .P-implang:hover{
         background-color: #F8F8F8;
         border: 1px solid #D3D3D3;
         box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
