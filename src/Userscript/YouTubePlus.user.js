@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.8
+// @version     0.5.9
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -23,540 +23,169 @@
             channelId = {},
             isChrome  = typeof window.chrome === "object",
             defSets   = {
-                GEN_BTTR_NTF     : true,
-                GEN_SUB_LIST     : true,
-                GEN_INF_SCRL     : true,
-                GEN_BLUE_GLOW    : true,
-                GEN_SDBR_ON      : true,
-                VID_END_SHRE     : true,
-                VID_DFLT_QLTY    : "auto",
-                VID_PLST_SEP     : true,
-                VID_PLST_ATPL    : true,
-                VID_PLST_RVRS    : true,
-                VID_PLR_ALVIS    : true,
-                VID_PLR_SIZE_MEM : true,
-                VID_PLR_DYN_SIZE : true,
-                VID_PLR_FIT_WDTH : "1280px",
-                VID_HIDE_COMS    : "1",
-                VID_POST_TIME    : true,
-                VID_VID_CNT      : true,
-                VID_DESC_SHRT    : true,
-                VID_SDBR_ALGN    : "1",
-                BLK_ON           : true,
-                volLev           : 50,
-                plApl            : false,
-                plRev            : false,
-                advOpts          : true,
-                blacklist        : {}
+                GEN_BTTR_NTF    : true,
+                GEN_SUB_LIST    : true,
+                GEN_INF_SCRL    : true,
+                GEN_BLUE_GLOW   : true,
+                GEN_SDBR_ON     : true,
+                VID_END_SHRE    : true,
+                VID_DFLT_QLTY   : "auto",
+                VID_PLST_SEP    : true,
+                VID_PLST_ATPL   : true,
+                VID_PLST_RVRS   : true,
+                VID_PLR_ALVIS   : true,
+                VID_PLR_SIZE_MEM: true,
+                VID_PLR_FIT_WDTH: "1280px",
+                VID_HIDE_COMS   : "1",
+                VID_POST_TIME   : true,
+                VID_VID_CNT     : true,
+                VID_DESC_SHRT   : true,
+                VID_SDBR_ALGN   : "1",
+                BLK_ON          : true,
+                volLev          : 50,
+                plApl           : false,
+                plRev           : false,
+                advOpts         : true,
+                blacklist       : {},
+                extLang         : {}
             },
-            lang      = {
-                ADV_OPTS: {
-                    "en_US": "Advanced options",
-                    "pt-PT": "Opções avançadas"
-                },
-                SUB_PLST: {
-                    "en_US": "Play recent uploads",
-                    "pt-PT": "Reproduzir vídeos recentes"
-                },
-                GEN_SDBR_ON: {
-                    "en_US": "Enable sidebar mode",
-                    "pt-PT": "Activar modo barra lateral"
-                },
-                SDBR_OPEN: {
-                    "en_US": "Open in sidebar",
-                    "pt-PT": "Abrir barra lateral"
-                },
-                BLCK_ADD: {
-                    "en_US": "Add to blacklist",
-                    "pt-PT": "Adicionar à lista negra"
-                },
-                BLCK_EDIT: {
-                    "en_US": "Edit",
-                    "pt-PT": "Editar"
-                },
-                BLCK_SAVE: {
-                    "en_US": "Save",
-                    "pt-PT": "Guardar"
-                },
-                BLCK_CLSE: {
-                    "en_US": "Close",
-                    "pt-PT": "Fechar"
-                },
-                CNSL_CNSL: {
-                    "en_US": "Console",
-                    "pt-PT": "Consola"
-                },
-                CNSL_AP: {
-                    "en_US": "Autoplay",
-                    "pt-PT": "Início automático"
-                },
-                CNSL_RPT: {
-                    "en_US": "Repeat video",
-                    "pt-PT": "Repetir vídeo"
-                },
-                CNSL_SKMP: {
-                    "en_US": "Seek map",
-                    "pt-PT": "Mapa de procura"
-                },
-                CNSL_SKMP_OFF: {
-                    "en_US": "No thumbs found",
-                    "pt-PT": "Não existem imagens"
-                },
-                CNSL_SKMP_SMAL: {
-                    "en_US": "SMALL",
-                    "pt-PT": "PEQUENO"
-                },
-                CNSL_SKMP_MED: {
-                    "en_US": "MEDIUM",
-                    "pt-PT": "MÉDIO"
-                },
-                CNSL_SKMP_LRGE: {
-                    "en_US": "LARGE",
-                    "pt-PT": "GRANDE"
-                },
-                CNSL_SVTH: {
-                    "en_US": "Open thumbnail",
-                    "pt-PT": "Abrir imagem de fundo"
-                },
-                CNSL_SS: {
-                    "en_US": "Take screenshot",
-                    "pt-PT": "Capturar imagem"
-                },
-                CNSL_SS_CLS: {
-                    "en_US": "CLOSE",
-                    "pt-PT": "FECHAR"
-                },
-                CNSL_SDBR: {
-                    "en_US": "Sidebar mode",
-                    "pt-PT": "Modo barra lateral"
-                },
-                CNSL_FLBR: {
-                    "en_US": "Fullbrowser mode",
-                    "pt-PT": "Modo navegador inteiro"
-                },
-                CNSL_CINM_MD: {
-                    "en_US": "Cinema mode",
-                    "pt-PT": "Modo cinema"
-                },
-                CNSL_FRME: {
-                    "en_US": "Frame by frame",
-                    "pt-PT": "Quadro a quadro"
-                },
-                PLST_AP: {
-                    "en_US": "Autoplay",
-                    "pt-PT": "Início automático"
-                },
-                PLST_RVRS: {
-                    "en_US": "Reverse",
-                    "pt-PT": "Inverter"
-                },
-                SHOW_CMTS: {
-                    "en_US": "Show comments",
-                    "pt-PT": "Mostrar comentários"
-                },
-                HIDE_CMTS: {
-                    "en_US": "Hide comments",
-                    "pt-PT": "Esconder comentários"
-                },
-                GLB_IMPR: {
-                    "en_US": "Import/export settings",
-                    "pt-PT": "Importar/exportar definições"
-                },
-                GLB_IMPR_SAVE: {
-                    "en_US": "Save and load",
-                    "pt-PT": "Guardar e carregar"
-                },
-                GLB_RSET: {
-                    "en_US": "Reset",
-                    "pt-PT": "Repor"
-                },
-                GLB_SVE: {
-                    "en_US": "Save",
-                    "pt-PT": "Guardar"
-                },
-                FTR_DESC: {
-                    "en_US": "Find out what this does",
-                    "pt-PT": "Descubra o que isto faz"
-                },
-                GEN: {
-                    "en_US": "General",
-                    "pt-PT": "Geral"
-                },
-                VID: {
-                    "en_US": "Video",
-                    "pt-PT": "Vídeo"
-                },
-                CHN: {
-                    "en_US": "Channels",
-                    "pt-PT": "Canais"
-                },
-                BLK: {
-                    "en_US": "Blacklist",
-                    "pt-PT": "Lista negra"
-                },
-                ABT: {
-                    "en_US": "About",
-                    "pt-PT": "Sobre"
-                },
-                HLP: {
-                    "en_US": "Help",
-                    "pt-PT": "Ajuda"
-                },
-                DNT: {
-                    "en_US": "Donate",
-                    "pt-PT": "Doação"
-                },
-                GEN_TTL: {
-                    "en_US": "General settings",
-                    "pt-PT": "Definições gerais"
-                },
-                GEN_GEN: {
-                    "en_US": "General",
-                    "pt-PT": "Geral"
-                },
-                GEN_LYT: {
-                    "en_US": "Layout",
-                    "pt-PT": "Aparência"
-                },
-                GEN_DSBL_ADS: {
-                    "en_US": "Disable advertisements outside the video page",
-                    "pt-PT": "Desactivar publicidades fora da página de vídeo"
-                },
-                GEN_INF_SCRL: {
-                    "en_US": "Enable infinite scroll in feeds",
-                    "pt-PT": "Activar scroll infinito em feeds"
-                },
-                GEN_YT_LOGO_LINK: {
-                    "en_US": "YouTube logo redirects to subscriptions",
-                    "pt-PT": "Logotipo do Youtube redirecciona para as subscrições"
-                },
-                GEN_SUB_LIST: {
-                    "en_US": "Enable subscription playlist",
-                    "pt-PT": "Activar lista de reprodução de subscrições"
-                },
-                GEN_REM_APUN: {
-                    "en_US": "Remove autoplay up next",
-                    "pt-PT": "Remover reprodução automática do vídeo a seguir"
-                },
-                GEN_SPF_OFF: {
-                    "en_US": "Disable SPF",
-                    "pt-PT": "Desactivar SPF"
-                },
-                GEN_HIDE_FTR: {
-                    "en_US": "Hide footer",
-                    "pt-PT": "Esconder rodapé"
-                },
-                GEN_BLUE_GLOW: {
-                    "en_US": "Remove blue glow around clicked buttons",
-                    "pt-PT": "Retirar brilho azul em torno dos botões clicados"
-                },
-                GEN_HDE_RECM_SDBR: {
-                    "en_US": "Hide recommended channels sidebar",
-                    "pt-PT": "Esconder barra lateral de canais recomendados"
-                },
-                GEN_HDE_SRCH_SDBR: {
-                    "en_US": "Hide search results sidebar",
-                    "pt-PT": "Esconder barra lateral nos resultados de pesquisa"
-                },
-                GEN_HDE_CHN_SDBR: {
-                    "en_US": "Hide channel sidebar",
-                    "pt-PT": "Esconder barra lateral dos canais"
-                },
-                GEN_CMPT_TTLS: {
-                    "en_US": "Compact titles in feeds",
-                    "pt-PT": "Títulos compactos nas listas"
-                },
-                GEN_DSB_HVRC: {
-                    "en_US": "Disable hovercards",
-                    "pt-PT": "Desactivar hovercards"
-                },
-                GEN_BTTR_NTF: {
-                    "en_US": "Improved blue notification box",
-                    "pt-PT": "Caixa de notificação azul melhorada"
-                },
-                GEN_GRID_SUBS: {
-                    "en_US": "Grid layout in subscriptions",
-                    "pt-PT": "Subscrições em formato grelha"
-                },
-                GEN_GRID_SRCH: {
-                    "en_US": "Grid layout in search results",
-                    "pt-PT": "Resultados de pesquisa em formato grelha"
-                },
-                VID_TTL: {
-                    "en_US": "Video settings",
-                    "pt-PT": "Definições de vídeo"
-                },
-                VID_PLR: {
-                    "en_US": "Player settings",
-                    "pt-PT": "Definições do reproductor"
-                },
-                VID_PLR_LYT: {
-                    "en_US": "Player layout",
-                    "pt-PT": "Aspecto do reproductor"
-                },
-                VID_DFLT_QLTY: {
-                    "en_US": "Default video quality:",
-                    "pt-PT": "Qualidade de vídeo padrão:"
-                },
-                VID_DFLT_QLTY_AUTO: {
-                    "en_US": "Auto",
-                    "pt-PT": "Auto"
-                },
-                VID_DFLT_QLTY_TNY: {
-                    "en_US": "144p"
-                },
-                VID_DFLT_QLTY_SML: {
-                    "en_US": "240p"
-                },
-                VID_DFLT_QLTY_MDM: {
-                    "en_US": "360p"
-                },
-                VID_DFLT_QLTY_LRG: {
-                    "en_US": "480p"
-                },
-                VID_DFLT_QLTY_720: {
-                    "en_US": "720p"
-                },
-                VID_DFLT_QLTY_1080: {
-                    "en_US": "1080p"
-                },
-                VID_DFLT_QLTY_1440: {
-                    "en_US": "1440p"
-                },
-                VID_DFLT_QLTY_2160: {
-                    "en_US": "2160p (4k)"
-                },
-                VID_DFLT_QLTY_2880: {
-                    "en_US": "2880p (5k)"
-                },
-                VID_DFLT_QLTY_ORIG: {
-                    "en_US": "4320p (8k)"
-                },
-                VID_PLR_ALVIS: {
-                    "en_US": "Player always visible when reading comments",
-                    "pt-PT": "Reproductor sempre visível ao ler os comentários"
-                },
-                VID_PLR_ALVIS_MOVE: {
-                    "en_US": "Move",
-                    "pt-PT": "Mover"
-                },
-                VID_PLR_ALVIS_RST: {
-                    "en_US": "Reset position",
-                    "pt-PT": "Repôr posição"
-                },
-                VID_PLR_ALVIS_SCRL_TOP: {
-                    "en_US": "Go to top",
-                    "pt-PT": "Ir para o topo"
-                },
-                VID_PLR_ATPL: {
-                    "en_US": "Autoplay videos",
-                    "pt-PT": "Iniciar vídeos automáticamente"
-                },
-                VID_LAYT: {
-                    "en_US": "Layout",
-                    "pt-PT": "Aparência"
-                },
-                VID_VID_CNT: {
-                    "en_US": "Show link with number of uploaded videos",
-                    "pt-PT": "Mostrar link com número de vídeos carregados"
-                },
-                VID_POST_TIME: {
-                    "en_US": "Show how long the video has been published",
-                    "pt-PT": "Mostrar há quanto tempo o vídeo foi publicado"
-                },
-                VID_HIDE_DETLS: {
-                    "en_US": "Hide video details",
-                    "pt-PT": "Esconder detalhes do vídeo"
-                },
-                VID_HIDE_COMS: {
-                    "en_US": "Comment section",
-                    "pt-PT": "Secção de comentários"
-                },
-                VID_HIDE_COMS_SHOW: {
-                    "en_US": "Show",
-                    "pt-PT": "Mostrar"
-                },
-                VID_HIDE_COMS_HIDE: {
-                    "en_US": "Hide",
-                    "pt-PT": "Esconder"
-                },
-                VID_HIDE_COMS_REM: {
-                    "en_US": "Remove",
-                    "pt-PT": "Remover"
-                },
-                VID_END_SHRE: {
-                    "en_US": "Disable share panel when video ends",
-                    "pt-PT": "Desactivar painel de partilha quando o video acaba"
-                },
-                VID_PLST: {
-                    "en_US": "Playlists",
-                    "pt-PT": "Listas"
-                },
-                VID_PLST_SEP: {
-                    "en_US": "Separate playlist from player",
-                    "pt-PT": "Separar lista de reprodução do reproductor"
-                },
-                VID_PLST_ATPL: {
-                    "en_US": "Enable playlist autoplay control",
-                    "pt-PT": "Activar controlo de início automático das listas"
-                },
-                VID_PLST_RVRS: {
-                    "en_US": "Enable reverse playlist control",
-                    "pt-PT": "Activar controlo de inversão das listas"
-                },
-                VID_PLR_SIZE_MEM: {
-                    "en_US": "Memorize player mode",
-                    "pt-PT": "Memorizar tamanho do reproductor"
-                },
-                VID_VOL_WHEEL: {
-                    "en_US": "Change volume with mouse wheel",
-                    "pt-PT": "Alterar nível de som com a roda do rato"
-                },
-                VID_PLR_VOL_MEM: {
-                    "en_US": "Memorize audio volume",
-                    "pt-PT": "Memorizar volume de audio"
-                },
-                VID_PLR_ADS: {
-                    "en_US": "Disable advertisements in the video page",
-                    "pt-PT": "Desactivar publicidades na página de vídeo"
-                },
-                VID_PLR_ALACT: {
-                    "en_US": "Player shortcuts always active",
-                    "pt-PT": "Atalhos do reproductor sempre activos"
-                },
-                VID_SUB_ADS: {
-                    "en_US": "Enable advertisements only in videos from subscribed channels",
-                    "pt-PT": "Activar publicidades só para vídeos de canais subscritos"
-                },
-                VID_PLR_ANTS: {
-                    "en_US": "Disable annotations",
-                    "pt-PT": "Desactivar notas"
-                },
-                VID_PLR_DASH: {
-                    "en_US": "Disable DASH playback",
-                    "pt-PT": "Desactivar reprodução DASH"
-                },
-                VID_PLR_CC: {
-                    "en_US": "Disable subtitles and CC",
-                    "pt-PT": "Desactivar legendas e CC"
-                },
-                VID_PLR_INFO: {
-                    "en_US": "Enable info bar with watch later button",
-                    "pt-PT": "ACtivar barra de informação com o botão ver mais tarde"
-                },
-                VID_PLR_FIT: {
-                    "en_US": "Fit to page in theater mode",
-                    "pt-PT": "Ajustar na página no modo cinema"
-                },
-                VID_PLR_FIT_WDTH: {
-                    "en_US": "Fit to page max width:",
-                    "pt-PT": "Largura máxima do ajuste na página:"
-                },
-                VID_PLR_DYN_SIZE: {
-                    "en_US": "Disable dynamic player size in default view",
-                    "pt-PT": "Desactivar tamanho dinâmico do reproductor na vista predefinida"
-                },
-                VID_DESC_SHRT: {
-                    "en_US": "Short video description buttons",
-                    "pt-PT": "Botões curtos na descrição do vídeo"
-                },
-                VID_TTL_CMPT: {
-                    "en_US": "Compact title in video description",
-                    "pt-PT": "Título compacto na descrição do vídeo"
-                },
-                VID_SDBR_ALGN: {
-                    "en_US": "Sidebar mode alignment",
-                    "pt-PT": "Alinhar modo barra lateral"
-                },
-                VID_SDBR_ALGN_NONE: {
-                    "en_US": "None",
-                    "pt-PT": "Nenhum"
-                },
-                VID_SDBR_ALGN_LEFT: {
-                    "en_US": "Left",
-                    "pt-PT": "Esquerda"
-                },
-                VID_SDBR_ALGN_RIGHT: {
-                    "en_US": "Right",
-                    "pt-PT": "Direita"
-                },
-                VID_LAYT_AUTO_PNL: {
-                    "en_US": "Auto expand video description",
-                    "pt-PT": "Automáticamente mostrar mais na descrição do vídeo"
-                },
-                GEN_CHN_DFLT_PAGE: {
-                    "en_US": "Default channel page:",
-                    "pt-PT": "Página de canal predefinida:"
-                },
-                GEN_CHN_DFLT_PAGE_DFLT: {
-                    "en_US": "Default",
-                    "pt-PT": "Padrão"
-                },
-                GEN_CHN_DFLT_PAGE_VID: {
-                    "en_US": "Videos",
-                    "pt-PT": "Vídeos"
-                },
-                GEN_CHN_DFLT_PAGE_PL: {
-                    "en_US": "Playlists",
-                    "pt-PT": "Listas de reprodução"
-                },
-                GEN_CHN_DFLT_PAGE_CHN: {
-                    "en_US": "Channels",
-                    "pt-PT": "Canais"
-                },
-                GEN_CHN_DFLT_PAGE_DISC: {
-                    "en_US": "Discussion",
-                    "pt-PT": "Discussão"
-                },
-                GEN_CHN_DFLT_PAGE_ABT: {
-                    "en_US": "About",
-                    "pt-PT": "Acerca de"
-                },
-                BLK_TTL: {
-                    "en_US": "Blacklist settings",
-                    "pt-PT": "Definições da lista negra"
-                },
-                BLK_BLK: {
-                    "en_US": "Blacklist",
-                    "pt-PT": "Lista negra"
-                },
-                BLK_ON: {
-                    "en_US": "Enable blacklist",
-                    "pt-PT": "Activar lista negra"
-                },
-                ABT_TTL: {
-                    "en_US": "Information and useful links",
-                    "pt-PT": "Informação e ligações úteis"
-                },
-                ABT_THKS: {
-                    "en_US": "Thanks to:",
-                    "pt-PT": "Agradecimentos a:"
-                },
-                ABT_THKS_YEPPHA: {
-                    "en_US": ", who's work inspired the creation of this project, without whom none of this would exist today.",
-                    "pt-PT": ", cujo trabalho inspirou a criação deste projecto, sem ele nada disto existiria hoje."
-                },
-                ABT_THKS_USERSCRIPT: {
-                    "en_US": " for making the task of developing and shipping third party software incredibly easier.",
-                    "pt-PT": " por tornarem o processo de produção e publicação de software bastante fácil."
-                },
-                ABT_THKS_STACKOV: {
-                    "en_US": " for all of its priceless information which greatly contributes for software development.",
-                    "pt-PT": " por toda a informação valiosa que contém e que contribui bastante para a criação de software."
-                },
-                ABT_INFO: {
-                    "en_US": "Official pages",
-                    "pt-PT": "Páginas oficiais"
-                },
-                ABT_LNK_GHB: {
-                    "en_US": "GitHub"
-                },
-                ABT_LNK_GRFK: {
-                    "en_US": "Greasy Fork"
-                },
-                ABT_LNK_OPNU: {
-                    "en_US": "OpenUserJS"
-                }
+            language  = {
+                YTSETS                : "YouTube+ settings",
+                ADV_OPTS              : "Advanced options",
+                SUB_PLST              : "Play recent uploads",
+                GEN_SDBR_ON           : "Enable sidebar mode",
+                SDBR_OPEN             : "Open in sidebar",
+                BLCK_ADD              : "Add to blacklist",
+                BLCK_EDIT             : "Edit",
+                BLCK_SAVE             : "Save",
+                BLCK_CLSE             : "Close",
+                CNSL_CNSL             : "Console",
+                CNSL_AP               : "Autoplay",
+                CNSL_RPT              : "Repeat video",
+                CNSL_SKMP             : "Seek map",
+                CNSL_SKMP_OFF         : "No thumbs found",
+                CNSL_SKMP_SMAL        : "SMALL",
+                CNSL_SKMP_MED         : "MEDIUM",
+                CNSL_SKMP_LRGE        : "LARGE",
+                CNSL_SVTH             : "Open thumbnail",
+                CNSL_SS               : "Take screenshot",
+                CNSL_SS_CLS           : "CLOSE",
+                CNSL_SDBR             : "Sidebar mode",
+                CNSL_FLBR             : "Fullbrowser mode",
+                CNSL_CINM_MD          : "Cinema mode",
+                CNSL_FRME             : "Frame by frame",
+                PLST_AP               : "Autoplay",
+                PLST_RVRS             : "Reverse",
+                SHOW_CMTS             : "Show comments",
+                HIDE_CMTS             : "Hide comments",
+                GLB_IMPR              : "Import/export settings",
+                GLB_LOCL_LANG         : "Click to edit YT+ language",
+                GLB_LOCL_LANG_CSTM    : "Local",
+                GLB_IMPR_SAVE         : "Save and load",
+                GLB_RSET              : "Reset",
+                GLB_SVE               : "Save",
+                GLB_SVE_SETS          : "Settings saved",
+                FTR_DESC              : "Find out what this does",
+                GEN                   : "General",
+                VID                   : "Video",
+                CHN                   : "Channels",
+                BLK                   : "Blacklist",
+                ABT                   : "About",
+                HLP                   : "Help",
+                DNT                   : "Donate",
+                GEN_TTL               : "General settings",
+                GEN_GEN               : "General",
+                GEN_LYT               : "Layout",
+                GEN_LOCL_LANG         : "Use modified YT+ language",
+                GEN_DSBL_ADS          : "Disable advertisements outside the video page",
+                GEN_INF_SCRL          : "Enable infinite scroll in feeds",
+                GEN_YT_LOGO_LINK      : "YouTube logo redirects to subscriptions",
+                GEN_SUB_LIST          : "Enable subscription playlist",
+                GEN_REM_APUN          : "Remove autoplay up next",
+                GEN_SPF_OFF           : "Disable SPF",
+                GEN_HIDE_FTR          : "Hide footer",
+                GEN_BLUE_GLOW         : "Remove blue glow around clicked buttons",
+                GEN_HDE_RECM_SDBR     : "Hide recommended channels sidebar",
+                GEN_HDE_SRCH_SDBR     : "Hide search results sidebar",
+                GEN_HDE_CHN_SDBR      : "Hide channel sidebar",
+                GEN_CMPT_TTLS         : "Compact titles in feeds",
+                GEN_DSB_HVRC          : "Disable hovercards",
+                GEN_BTTR_NTF          : "Improved blue notification box",
+                GEN_GRID_SUBS         : "Grid layout in subscriptions",
+                GEN_GRID_SRCH         : "Grid layout in search results",
+                VID_TTL               : "Video settings",
+                VID_PLR               : "Player settings",
+                VID_PLR_LYT           : "Player layout",
+                VID_DFLT_QLTY         : "Default video quality:",
+                VID_DFLT_QLTY_AUTO    : "Auto",
+                VID_DFLT_QLTY_TNY     : "144p",
+                VID_DFLT_QLTY_SML     : "240p",
+                VID_DFLT_QLTY_MDM     : "360p",
+                VID_DFLT_QLTY_LRG     : "480p",
+                VID_DFLT_QLTY_720     : "720p",
+                VID_DFLT_QLTY_1080    : "1080p",
+                VID_DFLT_QLTY_1440    : "1440p",
+                VID_DFLT_QLTY_2160    : "2160p (4k)",
+                VID_DFLT_QLTY_2880    : "2880p (5k)",
+                VID_DFLT_QLTY_ORIG    : "4320p (8k)",
+                VID_PLR_ALVIS         : "Player always visible when reading comments",
+                VID_PLR_ALVIS_MOVE    : "Move",
+                VID_PLR_ALVIS_RST     : "Reset position",
+                VID_PLR_ALVIS_SCRL_TOP: "Go to top",
+                VID_PLR_ATPL          : "Autoplay videos",
+                VID_LAYT              : "Layout",
+                VID_VID_CNT           : "Show link with number of uploaded videos",
+                VID_POST_TIME         : "Show how long the video has been published",
+                VID_HIDE_DETLS        : "Hide video details",
+                VID_HIDE_COMS         : "Comment section",
+                VID_HIDE_COMS_SHOW    : "Show",
+                VID_HIDE_COMS_HIDE    : "Hide",
+                VID_HIDE_COMS_REM     : "Remove",
+                VID_END_SHRE          : "Disable share panel when video ends",
+                VID_PLST              : "Playlists",
+                VID_PLST_SEP          : "Separate playlist from player",
+                VID_PLST_ATPL         : "Enable playlist autoplay control",
+                VID_PLST_RVRS         : "Enable reverse playlist control",
+                VID_PLR_SIZE_MEM      : "Memorize player mode",
+                VID_VOL_WHEEL         : "Change volume with mouse wheel",
+                VID_PLR_VOL_MEM       : "Memorize audio volume",
+                VID_PLR_ADS           : "Disable advertisements in the video page",
+                VID_PLR_ALACT         : "Player shortcuts always active",
+                VID_SUB_ADS           : "Enable advertisements only in videos from subscribed channels",
+                VID_PLR_ANTS          : "Disable annotations",
+                VID_PLR_DASH          : "Disable DASH playback",
+                VID_PLR_CC            : "Disable subtitles and CC",
+                VID_PLR_INFO          : "Enable info bar with watch later button",
+                VID_PLR_FIT           : "Fit to page in theater mode",
+                VID_PLR_FIT_WDTH      : "Fit to page max width:",
+                VID_PLR_DYN_SIZE      : "Disable dynamic player size in default view",
+                VID_DESC_SHRT         : "Short video description buttons",
+                VID_TTL_CMPT          : "Compact title in video description",
+                VID_SDBR_ALGN         : "Sidebar mode alignment",
+                VID_SDBR_ALGN_NONE    : "None",
+                VID_SDBR_ALGN_LEFT    : "Left",
+                VID_SDBR_ALGN_RIGHT   : "Right",
+                VID_LAYT_AUTO_PNL     : "Auto expand video description",
+                GEN_CHN_DFLT_PAGE     : "Default channel page:",
+                GEN_CHN_DFLT_PAGE_DFLT: "Default",
+                GEN_CHN_DFLT_PAGE_VID : "Videos",
+                GEN_CHN_DFLT_PAGE_PL  : "Playlists",
+                GEN_CHN_DFLT_PAGE_CHN : "Channels",
+                GEN_CHN_DFLT_PAGE_DISC: "Discussion",
+                GEN_CHN_DFLT_PAGE_ABT : "About",
+                BLK_TTL               : "Blacklist settings",
+                BLK_BLK               : "Blacklist",
+                BLK_ON                : "Enable blacklist",
+                ABT_TTL               : "Information and useful links",
+                ABT_THKS              : "Thanks to:",
+                ABT_THKS_YEPPHA       : ", who's work inspired the creation of this project, without whom none of this would exist today.",
+                ABT_THKS_USERSCRIPT   : " for making the task of developing and shipping third party software incredibly easier.",
+                ABT_THKS_STACKOV      : " for all of its priceless information which greatly contributes for software development.",
+                ABT_INFO              : "Official pages",
+                ABT_LNK_GHB           : "GitHub",
+                ABT_LNK_GRFK          : "Greasy Fork",
+                ABT_LNK_OPNU          : "OpenUserJS",
+                LOCALE                : "English (US)"
             };
         function string2HTML(string) {
             return document.createRange().createContextualFragment(string).firstChild;
@@ -593,18 +222,71 @@
                 }
             }
         }
-        function userLang(label) {
-            var ytlang = (window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE) || "en_US";
-            if (lang[label][ytlang]) {
-                return lang[label][ytlang];
-            }
-            return lang[label]["en_US"];
-        }
-        function localXHR(details) {
+        function localXHR(method, url, call, setRequestHeader) {
             var request = new XMLHttpRequest();
-            request.addEventListener("load", details.call);
-            request.open(details.method, details.url, true);
+            request.addEventListener("load", call);
+            request.open(method, url, true);
+            if (setRequestHeader) {
+                request.setRequestHeader(setRequestHeader[0], setRequestHeader[1]);
+            }
             request.send();
+        }
+        function userLang(label) {
+            var ytlang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
+            function getLanguage(data) {
+                delete language.fetching;
+                if (data.target.readyState === 4 && data.target.status === 200) {
+                    parSets.extLang[ytlang] = JSON.parse(data.target.response);
+                    parSets.extLang[ytlang].lastMod = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
+                }
+                parSets.extLang.nextCheck = new Date().getTime() + 86400000;
+                set("extLang", parSets.extLang);
+            }
+            function checkModified(data) {
+                delete language.fetching;
+                if (data.target.readyState === 4 && data.target.status === 200) {
+                    language.fetching = true;
+                    localXHR(
+                        "GET",
+                        "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/" + ytlang + ".json",
+                        getLanguage,
+                        ["Accept", "application/vnd.github.raw"]
+                    );
+                }
+            }
+            if (parSets.GEN_LOCL_LANG && parSets.localLang && parSets.localLang[label]) {
+                if (JSON.stringify(parSets.extLang) !== "{}") {
+                    parSets.extLang = {};
+                    set("extLang", parSets.extLang);
+                }
+                return parSets.localLang[label];
+            }
+            if (!parSets.GEN_LOCL_LANG && ytlang && ytlang !== "en_US") {
+                if (parSets.extLang[ytlang] && parSets.extLang[ytlang][label]) {
+                    if (!language.fetching && parSets.extLang.nextCheck && parSets.extLang.nextCheck <= new Date().getTime()) {
+                        language.fetching = true;
+                        localXHR(
+                            "HEAD",
+                            "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/" + ytlang + ".json",
+                            checkModified,
+                            ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]
+                        );
+                        parSets.extLang.nextCheck = new Date().getTime() + 86400000;
+                        set("extLang", parSets.extLang);
+                    }
+                    return parSets.extLang[ytlang][label];
+                }
+                if (!parSets.extLang[ytlang] && !language.fetching && (!parSets.extLang.nextCheck || parSets.extLang.nextCheck <= new Date().getTime())) {
+                    language.fetching = true;
+                    localXHR(
+                        "GET",
+                        "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/" + ytlang + ".json",
+                        getLanguage,
+                        ["Accept", "application/vnd.github.raw"]
+                    );
+                }
+            }
+            return language[label];
         }
         function timeConv(time) {
             function zero(trim) {
@@ -623,19 +305,19 @@
                 sidebar  = document.getElementsByClassName("branded-page-v2-secondary-col")[0],
                 adverts  = parSets.GEN_DSBL_ADS && (document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)")),
                 setsList = {
-                    "GEN_DSBL_ADS"    : "part_no_ads",
-                    "GEN_BLUE_GLOW"   : "part_dsbl_glow",
-                    "GEN_HIDE_FTR"    : "part_hide_footer",
-                    "GEN_BTTR_NTF"    : "part_notif_button",
-                    "GEN_GRID_SUBS"   : "part_grid_subs",
-                    "GEN_GRID_SRCH"   : "part_grid_search",
-                    "GEN_CMPT_TTLS"   : "part_compact_titles",
-                    "VID_PLR_FIT"     : "part_fit_theater",
-                    "VID_PLR_DYN_SIZE": "part_static_size",
-                    "VID_HIDE_DETLS"  : "part_hide_details",
-                    "VID_TTL_CMPT"    : "part_compact_title",
-                    "VID_PLST_SEP"    : "part_playlist_spacer",
-                    "VID_DESC_SHRT"   : "part_labelless_buttons"
+                    GEN_DSBL_ADS    : "part_no_ads",
+                    GEN_BLUE_GLOW   : "part_dsbl_glow",
+                    GEN_HIDE_FTR    : "part_hide_footer",
+                    GEN_BTTR_NTF    : "part_notif_button",
+                    GEN_GRID_SUBS   : "part_grid_subs",
+                    GEN_GRID_SRCH   : "part_grid_search",
+                    GEN_CMPT_TTLS   : "part_compact_titles",
+                    VID_PLR_FIT     : "part_fit_theater",
+                    VID_PLR_DYN_SIZE: "part_static_size",
+                    VID_HIDE_DETLS  : "part_hide_details",
+                    VID_TTL_CMPT    : "part_compact_title",
+                    VID_PLST_SEP    : "part_playlist_spacer",
+                    VID_DESC_SHRT   : "part_labelless_buttons"
                 };
             while (adverts) {
                 adverts.remove();
@@ -684,258 +366,264 @@
             if (document.getElementById("P")) {
                 return;
             }
-            function template() {
-                var blck  = function () {
-                        var button = "",
-                            list   = parSets && parSets.blacklist;
-                        function buildList(ytid) {
-                            button += "<div class='blacklist' data-ytid='" + ytid + "''><button class='close'></button><a href='/channel/" + ytid + "' target='_blank'>" + list[ytid] + "</a></div>\n";
+            function template(section) {
+                var htEl = {
+                    head  : function (menu) {
+                        var lang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
+                        if (parSets.GEN_LOCL_LANG && parSets.localLang) {
+                            lang = userLang("GLB_LOCL_LANG_CSTM");
+                        } else if (!parSets.GEN_LOCL_LANG && lang && lang !== "en_US" && parSets.extLang[lang]) {
+                            lang = parSets.extLang[lang].LOCALE;
+                        } else {
+                            lang = language.LOCALE;
                         }
-                        if (list && Object.keys(list).length > 0) {
-                            Object.keys(list).forEach(buildList);
-                        }
-                        return button;
+                        return "<div id='P-content'>\n" +
+                            "    <div class='P-header'>\n" +
+                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n" +
+                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n" +
+                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n" +
+                            "        <button class='P-implang' title='" + userLang("GLB_LOCL_LANG") + "'>" + lang + "</button>\n" +
+                            htEl.title(menu, "h2") +
+                            "    </div>\n";
                     },
-                    htEl  = {
-                        info  : function (anchor) {
-                            return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' title='" + userLang("FTR_DESC") + "' target='_blank'>?</a>";
-                        },
-                        title : function (content, tag) {
-                            return "<" + tag + ">" + userLang(content) + "</" + tag + ">\n";
-                        },
-                        select: function (id, list, anchor) {
-                            var select = "<div><label for='" + id + "'>" + userLang(id) + "</label>\n" +
-                                "<div class='P-select'><select id='" + id + "'>\n";
-                            function keysIterator(keys) {
-                                select += "<option";
-                                if (parSets && parSets[id] === list[keys]) {
-                                    select += " selected='true'";
-                                }
-                                select += " value='" + list[keys] + "'>" + userLang(keys) + "</option>\n";
-                            }
-                            Object.keys(list).forEach(keysIterator);
-                            return select + "</select></div>\n" + htEl.info(anchor) + "</div>";
-                        },
-                        radio : function (name, list, anchor) {
-                            var radio = "<div><label>" + userLang(name) + "</label>\n";
-                            function keysIterator(keys) {
-                                radio += "<input id='" + keys + "' name='" + name + "' value='" + list[keys] + "' type='radio'";
-                                if (parSets && parSets[name] === list[keys]) {
-                                    radio += " checked='true'";
-                                }
-                                radio += ">\n<label for='" + keys + "'>" + userLang(keys) + "</label>\n";
-                            }
-                            Object.keys(list).forEach(keysIterator);
-                            return radio + htEl.info(anchor) + '</div>';
-                        },
-                        input : function (id, type, anchor, placeholder, size) {
-                            var input = "<div><input id='" + id + "' type='" + type + "'";
-                            if (placeholder) {
-                                input += " placeholder='" + placeholder + "' size='" + size + "'";
-                                if (parSets && typeof parSets[id] === 'string') {
-                                    input += " value='" + (parSets && parSets[id]) + "'";
-                                }
-                            } else if (parSets && parSets[id] === true) {
-                                input += " checked='true'";
-                            }
-                            return input + ">\n<label for='" + id + "'>" + userLang(id) + "</label>\n" + htEl.info(anchor) + "</div>";
-                        }
+                    info  : function (anchor) {
+                        return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' title='" + userLang("FTR_DESC") + "' target='_blank'>?</a>";
                     },
-                    menus = {
-                        setMenu:
-                            "<div id='P-settings'>\n" +
-                            "    <div id='P-container'>\n" +
-                            "        <div id='P-sidebar'>\n" +
-                            "            <ul id='P-sidebar-list'>\n" +
-                            "                <li id='GEN' class='selected'>" + userLang("GEN") + "</li>\n" +
-                            "                <li id='VID'>" + userLang("VID") + "</li>\n" +
-                            "                <li id='BLK'>" + userLang("BLK") + "</li>\n" +
-                            "                <li id='ABT'>" + userLang("ABT") + "</li>\n" +
-                            "                <li id='HLP'><a target='_blank' href='https://github.com/ParticleCore/Particle/wiki'>" + userLang("HLP") + "</a></li>\n" +
-                            "                <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW'>" + userLang("DNT") + "</a></li>\n" +
-                            "            </ul>\n" +
-                            "        </div>\n" +
-                            "    </div>\n" +
-                            "</div>\n",
-                        GEN    :
-                            "<div id='P-content'>\n" +
-                            "    <div class='P-header'>\n" +
-                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n" +
-                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n" +
-                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n" +
-                            htEl.title("GEN_TTL", "h2") +
-                            "    </div>\n" +
-                            "    <hr class='P-horz'>\n" +
-                            htEl.title("GEN_GEN", "h3") +
-                            htEl.input("GEN_DSBL_ADS", "checkbox", "outside_ads") +
-                            htEl.input("GEN_YT_LOGO_LINK", "checkbox", "logo_redirect") +
-                            htEl.input("GEN_SUB_LIST", "checkbox", "sub_playlist") +
-                            htEl.input("GEN_INF_SCRL", "checkbox", "infinite_scroll") +
-                            htEl.input("GEN_SDBR_ON", "checkbox", "sidebar_on") +
-                            htEl.input("GEN_REM_APUN", "checkbox", "remove_autoplay") +
-                            htEl.input("GEN_SPF_OFF", "checkbox", "spf_off") +
-                            htEl.select("GEN_CHN_DFLT_PAGE", {
-                                "GEN_CHN_DFLT_PAGE_DFLT": "default",
-                                "GEN_CHN_DFLT_PAGE_VID" : "videos",
-                                "GEN_CHN_DFLT_PAGE_PL"  : "playlists",
-                                "GEN_CHN_DFLT_PAGE_CHN" : "channels",
-                                "GEN_CHN_DFLT_PAGE_DISC": "discussion",
-                                "GEN_CHN_DFLT_PAGE_ABT" : "about"
-                            }, "channel_page") +
-                            htEl.title("GEN_LYT", "h3") +
-                            htEl.input("GEN_GRID_SUBS", "checkbox", "sub_grid") +
-                            htEl.input("GEN_GRID_SRCH", "checkbox", "search_grid") +
-                            htEl.input("GEN_BTTR_NTF", "checkbox", "blue_box") +
-                            htEl.input("GEN_DSB_HVRC", "checkbox", "hovercards_off") +
-                            htEl.input("GEN_CMPT_TTLS", "checkbox", "feed_titles") +
-                            htEl.input("GEN_BLUE_GLOW", "checkbox", "blue_glow") +
-                            htEl.input("GEN_HIDE_FTR", "checkbox", "hide_footer") +
-                            htEl.input("GEN_HDE_RECM_SDBR", "checkbox", "hide_recom_sidebar") +
-                            htEl.input("GEN_HDE_SRCH_SDBR", "checkbox", "hide_search_sidebar") +
-                            htEl.input("GEN_HDE_CHN_SDBR", "checkbox", "hide_channel_sidebar") +
-                            "</div>\n",
-                        VID    :
-                            "<div id='P-content'>\n" +
-                            "    <div class='P-header'>\n" +
-                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n" +
-                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n" +
-                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n" +
-                            htEl.title("VID_TTL", "h2") +
-                            "    </div>\n" +
-                            "    <hr class='P-horz'>\n" +
-                            htEl.title("VID_PLR", "h3") +
-                            htEl.input("VID_PLR_ADS", "checkbox", "video_ads") +
-                            htEl.input("VID_SUB_ADS", "checkbox", "subs_ads_on") +
-                            htEl.input("VID_PLR_ALVIS", "checkbox", "floating_player") +
-                            htEl.input("VID_PLR_ATPL", "checkbox", "video_autoplay") +
-                            htEl.input("VID_PLR_CC", "checkbox", "subtitles_off") +
-                            htEl.input("VID_PLR_ANTS", "checkbox", "annotations_off") +
-                            htEl.input("VID_END_SHRE", "checkbox", "share_panel_off") +
-                            htEl.input("VID_PLR_VOL_MEM", "checkbox", "remember_volume") +
-                            htEl.input("VID_PLR_ALACT", "checkbox", "shortcuts_on") +
-                            htEl.input("VID_PLR_SIZE_MEM", "checkbox", "remember_mode") +
-                            htEl.input("VID_VOL_WHEEL", "checkbox", "wheel_volume") +
-                            htEl.input("VID_PLR_DASH", "checkbox", "dash_off") +
-                            htEl.select("VID_DFLT_QLTY", {
-                                "VID_DFLT_QLTY_AUTO": "auto",
-                                "VID_DFLT_QLTY_ORIG": "highres",
-                                "VID_DFLT_QLTY_2880": "hd2880",
-                                "VID_DFLT_QLTY_2160": "hd2160",
-                                "VID_DFLT_QLTY_1440": "hd1440",
-                                "VID_DFLT_QLTY_1080": "hd1080",
-                                "VID_DFLT_QLTY_720" : "hd720",
-                                "VID_DFLT_QLTY_LRG" : "large",
-                                "VID_DFLT_QLTY_MDM" : "medium",
-                                "VID_DFLT_QLTY_SML" : "small",
-                                "VID_DFLT_QLTY_TNY" : "tiny"
-                            }, "default_quality") +
-                            htEl.title("VID_PLR_LYT", "h3") +
-                            htEl.input("VID_PLR_INFO", "checkbox", "info_bar") +
-                            htEl.input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off") +
-                            htEl.input("VID_PLR_FIT", "checkbox", "fit_to_page") +
-                            htEl.input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6) +
-                            htEl.title("VID_PLST", "h3") +
-                            htEl.input("VID_PLST_SEP", "checkbox", "separate_playlist") +
-                            htEl.input("VID_PLST_ATPL", "checkbox", "playlist_autoplay") +
-                            htEl.input("VID_PLST_RVRS", "checkbox", "playlist_reverse") +
-                            htEl.title("VID_LAYT", "h3") +
-                            htEl.select("VID_HIDE_COMS", {
-                                "VID_HIDE_COMS_SHOW": "0",
-                                "VID_HIDE_COMS_HIDE": "1",
-                                "VID_HIDE_COMS_REM" : "2"
-                            }, "comments") +
-                            htEl.select("VID_SDBR_ALGN", {
-                                "VID_SDBR_ALGN_NONE" : "0",
-                                "VID_SDBR_ALGN_LEFT" : "1",
-                                "VID_SDBR_ALGN_RIGHT": "2"
-                            }, "sidebar_align") +
-                            htEl.input("VID_TTL_CMPT", "checkbox", "video_title") +
-                            htEl.input("VID_DESC_SHRT", "checkbox", "labelless_buttons") +
-                            htEl.input("VID_VID_CNT", "checkbox", "upload_counter") +
-                            htEl.input("VID_POST_TIME", "checkbox", "relative_upload_time") +
-                            htEl.input("VID_HIDE_DETLS", "checkbox", "hide_video_details") +
-                            htEl.input("VID_LAYT_AUTO_PNL", "checkbox", "expand_description") +
-                            "</div>\n",
-                        BLK    :
-                            "<div id='P-content'>\n" +
-                            "    <div class='P-header'>\n" +
-                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n" +
-                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n" +
-                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n" +
-                            htEl.title("BLK_TTL", "h2") +
-                            "    </div>\n" +
-                            "    <hr class='P-horz'>\n" +
-                            htEl.title("BLK_BLK", "h3") +
-                            htEl.input("BLK_ON", "checkbox", "blacklist_on") +
-                            "    <div id='blacklist'>\n" +
-                            "        <div id='blacklist-controls'>\n" +
-                            "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                            "                <span class='yt-uix-button-content'>" + userLang("BLCK_EDIT") + "</span>\n" +
-                            "            </button>\n" +
-                            "            <button id='blacklist-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                            "                <span class='yt-uix-button-content'>" + userLang("BLCK_SAVE") + "</span>\n" +
-                            "            </button>\n" +
-                            "            <button id='blacklist-close' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                            "                <span class='yt-uix-button-content'>" + userLang("BLCK_CLSE") + "</span>\n" +
-                            "            </button>\n" +
-                            "        </div>\n" +
-                            "        " + blck() + "\n" +
-                            "        <textarea id='blacklist-edit-list'></textarea>\n" +
-                            "    </div>\n" +
-                            "    <br>\n" +
-                            "</div>\n",
-                        ABT    :
-                            "<div id='P-content'>\n" +
-                            "    <div class='P-header'>\n" +
-                            htEl.title("ABT_TTL", "h2") +
-                            "    </div>\n" +
-                            "    <hr class='P-horz'>\n" +
-                            htEl.title("ABT_THKS", "h3") +
-                            "    <div>\n" +
-                            "        <a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a>" + userLang("ABT_THKS_YEPPHA") + "\n" +
-                            "    </div>\n" +
-                            "    <div>\n" +
-                            "        <a target='_blank' href='http://www.greasespot.net/'>Greasemonkey</a> + <a href='http://tampermonkey.net/'>Tampermonkey</a>" + userLang("ABT_THKS_USERSCRIPT") + "\n" +
-                            "    </div>\n" +
-                            "    <div>\n" +
-                            "        <a target='_blank' href='http://stackoverflow.com/'>Stack Overflow</a>" + userLang("ABT_THKS_STACKOV") + "\n" +
-                            "    </div>\n" +
-                            htEl.title("ABT_INFO", "h3") +
-                            "    <div>\n" +
-                            "        <a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a>\n" +
-                            "    </div>\n" +
-                            "    <div>\n" +
-                            "        <a target='_blank' href='https://greasyfork.org/en/users/8223-particlecore'>Greasy Fork</a>\n" +
-                            "    </div>\n" +
-                            "    <div>\n" +
-                            "        <a target='_blank' href='http://openuserjs.org/scripts/ParticleCore/'>OpenUserJS</a>\n" +
-                            "    </div>\n" +
-                            "</div>\n"
-                    };
-                return menus;
+                    title : function (content, tag) {
+                        return "<" + tag + ">" + userLang(content) + "</" + tag + ">\n";
+                    },
+                    select: function (id, list, anchor) {
+                        var select = "<div><label for='" + id + "'>" + userLang(id) + "</label>\n" +
+                            "<div class='P-select'><select id='" + id + "'>\n";
+                        function keysIterator(keys) {
+                            select += "<option";
+                            if (parSets && parSets[id] === list[keys]) {
+                                select += " selected='true'";
+                            }
+                            select += " value='" + list[keys] + "'>" + userLang(keys) + "</option>\n";
+                        }
+                        Object.keys(list).forEach(keysIterator);
+                        return select + "</select></div>\n" + htEl.info(anchor) + "</div>";
+                    },
+                    radio : function (name, list, anchor) {
+                        var radio = "<div><label>" + userLang(name) + "</label>\n";
+                        function keysIterator(keys) {
+                            radio += "<input id='" + keys + "' name='" + name + "' value='" + list[keys] + "' type='radio'";
+                            if (parSets && parSets[name] === list[keys]) {
+                                radio += " checked='true'";
+                            }
+                            radio += ">\n<label for='" + keys + "'>" + userLang(keys) + "</label>\n";
+                        }
+                        Object.keys(list).forEach(keysIterator);
+                        return radio + htEl.info(anchor) + '</div>';
+                    },
+                    input : function (id, type, anchor, placeholder, size) {
+                        var input = "<div><input id='" + id + "' type='" + type + "'";
+                        if (placeholder) {
+                            input += " placeholder='" + placeholder + "' size='" + size + "'";
+                            if (parSets && typeof parSets[id] === 'string') {
+                                input += " value='" + (parSets && parSets[id]) + "'";
+                            }
+                        } else if (parSets && parSets[id] === true) {
+                            input += " checked='true'";
+                        }
+                        return input + ">\n<label for='" + id + "'>" + userLang(id) + "</label>\n" + htEl.info(anchor) + "</div>";
+                    }
+                };
+                function blck() {
+                    var button = "",
+                        list   = parSets && parSets.blacklist;
+                    function buildList(ytid) {
+                        button += "<div class='blacklist' data-ytid='" + ytid + "''><button class='close'></button><a href='/channel/" + ytid + "' target='_blank'>" + list[ytid] + "</a></div>\n";
+                    }
+                    if (list && Object.keys(list).length > 0) {
+                        Object.keys(list).forEach(buildList);
+                    }
+                    return button;
+                }
+                switch (section) {
+                case "MEN":
+                    return "<div id='P-settings'>\n" +
+                        "    <div id='P-container'>\n" +
+                        "        <div id='P-sidebar'>\n" +
+                        "            <ul id='P-sidebar-list'>\n" +
+                        "                <li id='GEN' class='selected'>" + userLang("GEN") + "</li>\n" +
+                        "                <li id='VID'>" + userLang("VID") + "</li>\n" +
+                        "                <li id='BLK'>" + userLang("BLK") + "</li>\n" +
+                        "                <li id='ABT'>" + userLang("ABT") + "</li>\n" +
+                        "                <li id='HLP'><a target='_blank' href='https://github.com/ParticleCore/Particle/wiki'>" + userLang("HLP") + "</a></li>\n" +
+                        "                <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW'>" + userLang("DNT") + "</a></li>\n" +
+                        "            </ul>\n" +
+                        "        </div>\n" +
+                        "    </div>\n" +
+                        "</div>\n";
+                case "GEN":
+                    return htEl.head("GEN_TTL") +
+                        "    <hr class='P-horz'>\n" +
+                        htEl.title("GEN_GEN", "h3") +
+                        htEl.input("GEN_LOCL_LANG", "checkbox", "custom_lang") +
+                        htEl.input("GEN_DSBL_ADS", "checkbox", "outside_ads") +
+                        htEl.input("GEN_YT_LOGO_LINK", "checkbox", "logo_redirect") +
+                        htEl.input("GEN_SUB_LIST", "checkbox", "sub_playlist") +
+                        htEl.input("GEN_INF_SCRL", "checkbox", "infinite_scroll") +
+                        htEl.input("GEN_SDBR_ON", "checkbox", "sidebar_on") +
+                        htEl.input("GEN_REM_APUN", "checkbox", "remove_autoplay") +
+                        htEl.input("GEN_SPF_OFF", "checkbox", "spf_off") +
+                        htEl.select("GEN_CHN_DFLT_PAGE", {
+                            GEN_CHN_DFLT_PAGE_DFLT: "default",
+                            GEN_CHN_DFLT_PAGE_VID : "videos",
+                            GEN_CHN_DFLT_PAGE_PL  : "playlists",
+                            GEN_CHN_DFLT_PAGE_CHN : "channels",
+                            GEN_CHN_DFLT_PAGE_DISC: "discussion",
+                            GEN_CHN_DFLT_PAGE_ABT : "about"
+                        }, "channel_page") +
+                        htEl.title("GEN_LYT", "h3") +
+                        htEl.input("GEN_GRID_SUBS", "checkbox", "sub_grid") +
+                        htEl.input("GEN_GRID_SRCH", "checkbox", "search_grid") +
+                        htEl.input("GEN_BTTR_NTF", "checkbox", "blue_box") +
+                        htEl.input("GEN_DSB_HVRC", "checkbox", "hovercards_off") +
+                        htEl.input("GEN_CMPT_TTLS", "checkbox", "feed_titles") +
+                        htEl.input("GEN_BLUE_GLOW", "checkbox", "blue_glow") +
+                        htEl.input("GEN_HIDE_FTR", "checkbox", "hide_footer") +
+                        htEl.input("GEN_HDE_RECM_SDBR", "checkbox", "hide_recom_sidebar") +
+                        htEl.input("GEN_HDE_SRCH_SDBR", "checkbox", "hide_search_sidebar") +
+                        htEl.input("GEN_HDE_CHN_SDBR", "checkbox", "hide_channel_sidebar") +
+                        "</div>\n";
+                case "VID":
+                    return htEl.head("VID_TTL") +
+                        "    <hr class='P-horz'>\n" +
+                        htEl.title("VID_PLR", "h3") +
+                        htEl.input("VID_PLR_ADS", "checkbox", "video_ads") +
+                        htEl.input("VID_SUB_ADS", "checkbox", "subs_ads_on") +
+                        htEl.input("VID_PLR_ALVIS", "checkbox", "floating_player") +
+                        htEl.input("VID_PLR_ATPL", "checkbox", "video_autoplay") +
+                        htEl.input("VID_PLR_CC", "checkbox", "subtitles_off") +
+                        htEl.input("VID_PLR_ANTS", "checkbox", "annotations_off") +
+                        htEl.input("VID_END_SHRE", "checkbox", "share_panel_off") +
+                        htEl.input("VID_PLR_VOL_MEM", "checkbox", "remember_volume") +
+                        htEl.input("VID_PLR_ALACT", "checkbox", "shortcuts_on") +
+                        htEl.input("VID_PLR_SIZE_MEM", "checkbox", "remember_mode") +
+                        htEl.input("VID_VOL_WHEEL", "checkbox", "wheel_volume") +
+                        htEl.input("VID_PLR_DASH", "checkbox", "dash_off") +
+                        htEl.select("VID_DFLT_QLTY", {
+                            VID_DFLT_QLTY_AUTO: "auto",
+                            VID_DFLT_QLTY_ORIG: "highres",
+                            VID_DFLT_QLTY_2880: "hd2880",
+                            VID_DFLT_QLTY_2160: "hd2160",
+                            VID_DFLT_QLTY_1440: "hd1440",
+                            VID_DFLT_QLTY_1080: "hd1080",
+                            VID_DFLT_QLTY_720 : "hd720",
+                            VID_DFLT_QLTY_LRG : "large",
+                            VID_DFLT_QLTY_MDM : "medium",
+                            VID_DFLT_QLTY_SML : "small",
+                            VID_DFLT_QLTY_TNY : "tiny"
+                        }, "default_quality") +
+                        htEl.title("VID_PLR_LYT", "h3") +
+                        htEl.input("VID_PLR_INFO", "checkbox", "info_bar") +
+                        htEl.input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off") +
+                        htEl.input("VID_PLR_FIT", "checkbox", "fit_to_page") +
+                        htEl.input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6) +
+                        htEl.title("VID_PLST", "h3") +
+                        htEl.input("VID_PLST_SEP", "checkbox", "separate_playlist") +
+                        htEl.input("VID_PLST_ATPL", "checkbox", "playlist_autoplay") +
+                        htEl.input("VID_PLST_RVRS", "checkbox", "playlist_reverse") +
+                        htEl.title("VID_LAYT", "h3") +
+                        htEl.select("VID_HIDE_COMS", {
+                            VID_HIDE_COMS_SHOW: "0",
+                            VID_HIDE_COMS_HIDE: "1",
+                            VID_HIDE_COMS_REM : "2"
+                        }, "comments") +
+                        htEl.select("VID_SDBR_ALGN", {
+                            VID_SDBR_ALGN_NONE : "0",
+                            VID_SDBR_ALGN_LEFT : "1",
+                            VID_SDBR_ALGN_RIGHT: "2"
+                        }, "sidebar_align") +
+                        htEl.input("VID_TTL_CMPT", "checkbox", "video_title") +
+                        htEl.input("VID_DESC_SHRT", "checkbox", "labelless_buttons") +
+                        htEl.input("VID_VID_CNT", "checkbox", "upload_counter") +
+                        htEl.input("VID_POST_TIME", "checkbox", "relative_upload_time") +
+                        htEl.input("VID_HIDE_DETLS", "checkbox", "hide_video_details") +
+                        htEl.input("VID_LAYT_AUTO_PNL", "checkbox", "expand_description") +
+                        "</div>\n";
+                case "BLK":
+                    return htEl.head("BLK_TTL") +
+                        "    <hr class='P-horz'>\n" +
+                        htEl.title("BLK_BLK", "h3") +
+                        htEl.input("BLK_ON", "checkbox", "blacklist_on") +
+                        "    <div id='blacklist'>\n" +
+                        "        <div id='blacklist-controls'>\n" +
+                        "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
+                        "                <span class='yt-uix-button-content'>" + userLang("BLCK_EDIT") + "</span>\n" +
+                        "            </button>\n" +
+                        "            <button id='blacklist-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
+                        "                <span class='yt-uix-button-content'>" + userLang("BLCK_SAVE") + "</span>\n" +
+                        "            </button>\n" +
+                        "            <button id='blacklist-close' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
+                        "                <span class='yt-uix-button-content'>" + userLang("BLCK_CLSE") + "</span>\n" +
+                        "            </button>\n" +
+                        "        </div>\n" +
+                        "        " + blck() + "\n" +
+                        "        <textarea id='blacklist-edit-list'></textarea>\n" +
+                        "    </div>\n" +
+                        "    <br>\n" +
+                        "</div>\n";
+                case "ABT":
+                    return "<div id='P-content'>\n" +
+                        "    <div class='P-header'>\n" +
+                        htEl.title("ABT_TTL", "h2") +
+                        "    </div>\n" +
+                        "    <hr class='P-horz'>\n" +
+                        htEl.title("ABT_THKS", "h3") +
+                        "    <div>\n" +
+                        "        <a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a>" + userLang("ABT_THKS_YEPPHA") + "\n" +
+                        "    </div>\n" +
+                        "    <div>\n" +
+                        "        <a target='_blank' href='http://www.greasespot.net/'>Greasemonkey</a> + <a href='http://tampermonkey.net/'>Tampermonkey</a>" + userLang("ABT_THKS_USERSCRIPT") + "\n" +
+                        "    </div>\n" +
+                        "    <div>\n" +
+                        "        <a target='_blank' href='http://stackoverflow.com/'>Stack Overflow</a>" + userLang("ABT_THKS_STACKOV") + "\n" +
+                        "    </div>\n" +
+                        htEl.title("ABT_INFO", "h3") +
+                        "    <div>\n" +
+                        "        <a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a>\n" +
+                        "    </div>\n" +
+                        "    <div>\n" +
+                        "        <a target='_blank' href='https://greasyfork.org/en/users/8223-particlecore'>Greasy Fork</a>\n" +
+                        "    </div>\n" +
+                        "    <div>\n" +
+                        "        <a target='_blank' href='http://openuserjs.org/scripts/ParticleCore/'>OpenUserJS</a>\n" +
+                        "    </div>\n" +
+                        "</div>\n";
+                }
             }
             function navigateSettings(event) {
                 function exportSettings(target) {
                     var expCont = document.getElementById("exp-cont");
-                    if (target.classList.contains("P-impexp")) {
+                    if (target.classList.contains("P-impexp") || target.classList.contains("P-implang")) {
                         if (expCont) {
                             expCont.remove();
                             return;
                         }
                         expCont = "<div id='exp-cont'>\n" +
-                            "   <button id='impexp-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
+                            "   <button id='" + ((target.classList.contains("P-impexp") && "impexp-save") || "implang-save") + "' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
                             "        <span class='yt-uix-button-content'>" + userLang("GLB_IMPR_SAVE") + "</span>\n" +
                             "    </button>\n" +
                             "   <textarea id='impexp-list'></textarea>" +
                             "</div>";
                         expCont = string2HTML(expCont);
                         document.getElementById("P-content").appendChild(expCont);
-                        document.getElementById("impexp-list").value = JSON.stringify(parSets, undefined, 2);
-                    } else if (target.id === "impexp-save") {
-                        parSets = JSON.parse(document.getElementById("impexp-list").value);
-                        window.postMessage({set: parSets}, "*");
-                        document.getElementById("P").click();
-                        document.getElementById("P").click();
+                        document.getElementById("impexp-list").value = JSON.stringify((target.classList.contains("P-impexp") && parSets) || parSets.localLang || language, undefined, 2);
+                    } else if (target.id === "impexp-save" || target.id === "implang-save") {
+                        if (target.id === "implang-save") {
+                            parSets.localLang = JSON.parse(document.getElementById("impexp-list").value);
+                            set("localLang", parSets.localLang);
+                            window.location.reload();
+                        } else {
+                            parSets = JSON.parse(document.getElementById("impexp-list").value);
+                            window.postMessage({set: parSets}, "*");
+                            document.getElementById("P").click();
+                            document.getElementById("P").click();
+                        }
                     }
                 }
                 function manageBlackList(target) {
@@ -991,7 +679,7 @@
                             notification = string2HTML(notification);
                             document.getElementsByClassName("yt-masthead-logo-container")[0].appendChild(notification);
                         }
-                        document.getElementsByClassName("appbar-guide-notification-text-content")[0].textContent = "Settings saved";
+                        document.getElementsByClassName("appbar-guide-notification-text-content")[0].textContent = userLang("GLB_SVE_SETS");
                         document.body.classList.add("show-guide-button-notification");
                         window.setTimeout(hideNotif, 2000);
                     }
@@ -1005,7 +693,7 @@
                     settingsButton.click();
                 } else if (event.target.classList.contains("close")) {
                     remBlackList();
-                } else if (event.target.classList.contains("P-impexp") || event.target.id === "impexp-save") {
+                } else if (event.target.classList.contains("P-impexp") || event.target.id === "impexp-save" || event.target.classList.contains("P-implang") || event.target.id === "implang-save") {
                     exportSettings(event.target);
                 } else if (event.target.id === "blacklist-edit" || event.target.id === "blacklist-save" || event.target.id === "blacklist-close") {
                     manageBlackList(event.target);
@@ -1016,7 +704,7 @@
                     saveSettings("no-notification");
                     document.getElementById("P-content").remove();
                     pContainer = document.getElementById("P-container");
-                    pContent = string2HTML(template()[event.target.id]);
+                    pContent = string2HTML(template(event.target.id));
                     pContainer.appendChild(pContent);
                     event.target.parentNode.getElementsByClassName("selected")[0].removeAttribute("class");
                     event.target.className = "selected";
@@ -1031,8 +719,8 @@
                 } else {
                     bodyContainer = document.getElementById("body-container");
                     pageContainer = document.getElementById("page-container");
-                    pWrapper = string2HTML(template().setMenu);
-                    pWrapper.appendChild(string2HTML(template().GEN));
+                    pWrapper = string2HTML(template("MEN"));
+                    pWrapper.appendChild(string2HTML(template("GEN")));
                     bodyContainer.insertBefore(pWrapper, pageContainer);
                     eventHandler(pWrapper, "click", navigateSettings);
                 }
@@ -1043,7 +731,7 @@
             if (buttonsSection && !document.getElementById("P")) {
                 settingsButton = document.createElement("button");
                 settingsButton.id = "P";
-                settingsButton.title = "YouTube+ settings";
+                settingsButton.title = userLang("YTSETS");
                 eventHandler(settingsButton, "click", settingsTemplate);
                 if (buttonNotif) {
                     buttonsSection.insertBefore(settingsButton, buttonNotif);
@@ -1096,11 +784,11 @@
                         link.textContent = channelId[user.getAttribute("data-ytid")];
                         videoCounter();
                     } else {
-                        localXHR({
-                            method: "GET",
-                            url: "/playlist?spf=navigate&list=" + user.getAttribute("data-ytid").replace("UC", "UU"),
-                            call: getPLInfo
-                        });
+                        localXHR(
+                            "GET",
+                            "/playlist?spf=navigate&list=" + user.getAttribute("data-ytid").replace("UC", "UU"),
+                            getPLInfo
+                        );
                     }
                 }
             }
@@ -1122,11 +810,11 @@
                     }
                 }
                 if (watchTime && window.ytplayer && window.ytplayer.config) {
-                    localXHR({
-                        method: "GET",
-                        url: "/channel/" + window.ytplayer.config.args.ucid + "/search?query='" + window.ytplayer.config.args.video_id + "'&spf=navigate",
-                        call: getCHInfo
-                    });
+                    localXHR(
+                        "GET",
+                        "/channel/" + window.ytplayer.config.args.ucid + "/search?query='" + window.ytplayer.config.args.video_id + "'&spf=navigate",
+                        getCHInfo
+                    );
                 }
             }
             if (window.location.pathname === "/watch") {
@@ -1195,8 +883,19 @@
             }
             if (config.args.video_id) {
                 config.args.autohide = "2";
-                config.args.vq = parSets.VID_DFLT_QLTY;
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
+                config.args.vq = parSets.VID_DFLT_QLTY;
+                if (parSets.VID_DFLT_QLTY !== "auto") {
+                    try {
+                        if (!window.localStorage["yt-player-quality"] || window.localStorage["yt-player-quality"].split(parSets.VID_DFLT_QLTY).length < 2) {
+                            window.localStorage["yt-player-quality"] = JSON.stringify({
+                                "data": parSets.VID_DFLT_QLTY,
+                                "expiration": new Date().getTime() + 86400000,
+                                "creation": new Date().getTime()
+                            });
+                        }
+                    } catch (ignore) {}
+                }
                 if (parSets.VID_PLR_INFO) {
                     config.args.showinfo = "1";
                 }
