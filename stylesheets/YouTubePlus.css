@@ -884,7 +884,7 @@
         margin: 0;
         padding: 24px 0 0;
     }
-    .P-save, .P-reset, .P-impexp{
+    .P-save, .P-reset, .P-impexp, .P-implang{
         background: #167AC6;
         border-color: #167AC6;
         border-radius: 2px;
@@ -912,7 +912,10 @@
         opacity: .5;
         padding: 0 13px;
     }
-    .P-reset, .P-impexp:hover{
+    .P-implang{
+        background: none;
+    }
+    .P-reset, .P-impexp:hover, , .P-implang:hover{
         background-color: #F8F8F8;
         border: 1px solid #D3D3D3;
         box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
