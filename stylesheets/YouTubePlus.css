@@ -1052,10 +1052,10 @@
         height: 200px;
         width: calc(100% - 10px);
     }
-    #impexp-save{
+    #impexp-save, #implang-save{
         margin-bottom: 10px;
     }
-    #impexp-save span{
+    #impexp-save span, #implang-save span{
         pointer-events: none;
     }
     #impexp-list{
