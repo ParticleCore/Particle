@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.5.9
+// @version     0.6.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -188,7 +188,7 @@
                 LOCALE                : "English (US)"
             };
         function string2HTML(string) {
-            return document.createRange().createContextualFragment(string).firstChild;
+            return new window.DOMParser().parseFromString(string, "text/html").all[3];
         }
         function set(setting, newValue) {
             parSets[setting] = newValue;
