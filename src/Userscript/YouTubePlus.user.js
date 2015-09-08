@@ -1,5 +1,5 @@
-﻿// ==UserScript==
-// @version     0.6.0
+// ==UserScript==
+// @version     0.6.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -46,8 +46,7 @@
                 plApl           : false,
                 plRev           : false,
                 advOpts         : true,
-                blacklist       : {},
-                extLang         : {}
+                blacklist       : {}
             },
             language  = {
                 YTSETS                : "YouTube+ settings",
@@ -188,7 +187,14 @@
                 LOCALE                : "English (US)"
             };
         function string2HTML(string) {
-            return new window.DOMParser().parseFromString(string, "text/html").all[3];
+            var scripts,
+                holder = document.createElement("div");
+            holder.innerHTML = string;
+            scripts = holder.getElementsByTagName("script");
+            while (scripts.length) {
+                scripts[scripts.length - 1].remove();
+            }
+            return holder.firstChild;
         }
         function set(setting, newValue) {
             parSets[setting] = newValue;
@@ -253,6 +259,10 @@
                         ["Accept", "application/vnd.github.raw"]
                     );
                 }
+            }
+            if (!parSets.extLang) {
+                parSets.extLang = {};
+                set("extLang", parSets.extLang);
             }
             if (parSets.GEN_LOCL_LANG && parSets.localLang && parSets.localLang[label]) {
                 if (JSON.stringify(parSets.extLang) !== "{}") {
@@ -358,8 +368,7 @@
             }
         }
         function settingsMenu() {
-            var pContent,
-                pContainer,
+            var pContainer,
                 buttonNotif,
                 buttonsSection,
                 settingsButton;
@@ -367,78 +376,72 @@
                 return;
             }
             function template(section) {
-                var htEl = {
-                    head  : function (menu) {
-                        var lang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
-                        if (parSets.GEN_LOCL_LANG && parSets.localLang) {
-                            lang = userLang("GLB_LOCL_LANG_CSTM");
-                        } else if (!parSets.GEN_LOCL_LANG && lang && lang !== "en_US" && parSets.extLang[lang]) {
-                            lang = parSets.extLang[lang].LOCALE;
-                        } else {
-                            lang = language.LOCALE;
-                        }
-                        return "<div id='P-content'>\n" +
-                            "    <div class='P-header'>\n" +
-                            "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n" +
-                            "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n" +
-                            "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n" +
-                            "        <button class='P-implang' title='" + userLang("GLB_LOCL_LANG") + "'>" + lang + "</button>\n" +
-                            htEl.title(menu, "h2") +
-                            "    </div>\n";
-                    },
-                    info  : function (anchor) {
-                        return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' title='" + userLang("FTR_DESC") + "' target='_blank'>?</a>";
-                    },
-                    title : function (content, tag) {
-                        return "<" + tag + ">" + userLang(content) + "</" + tag + ">\n";
-                    },
-                    select: function (id, list, anchor) {
-                        var select = "<div><label for='" + id + "'>" + userLang(id) + "</label>\n" +
-                            "<div class='P-select'><select id='" + id + "'>\n";
-                        function keysIterator(keys) {
-                            select += "<option";
-                            if (parSets && parSets[id] === list[keys]) {
-                                select += " selected='true'";
-                            }
-                            select += " value='" + list[keys] + "'>" + userLang(keys) + "</option>\n";
-                        }
-                        Object.keys(list).forEach(keysIterator);
-                        return select + "</select></div>\n" + htEl.info(anchor) + "</div>";
-                    },
-                    radio : function (name, list, anchor) {
-                        var radio = "<div><label>" + userLang(name) + "</label>\n";
-                        function keysIterator(keys) {
-                            radio += "<input id='" + keys + "' name='" + name + "' value='" + list[keys] + "' type='radio'";
-                            if (parSets && parSets[name] === list[keys]) {
-                                radio += " checked='true'";
-                            }
-                            radio += ">\n<label for='" + keys + "'>" + userLang(keys) + "</label>\n";
-                        }
-                        Object.keys(list).forEach(keysIterator);
-                        return radio + htEl.info(anchor) + '</div>';
-                    },
-                    input : function (id, type, anchor, placeholder, size) {
-                        var input = "<div><input id='" + id + "' type='" + type + "'";
-                        if (placeholder) {
-                            input += " placeholder='" + placeholder + "' size='" + size + "'";
-                            if (parSets && typeof parSets[id] === 'string') {
-                                input += " value='" + (parSets && parSets[id]) + "'";
-                            }
-                        } else if (parSets && parSets[id] === true) {
-                            input += " checked='true'";
-                        }
-                        return input + ">\n<label for='" + id + "'>" + userLang(id) + "</label>\n" + htEl.info(anchor) + "</div>";
+                function title(content, tag) {
+                    return "<" + tag + ">" + userLang(content) + "</" + tag + ">\n";
+                }
+                function head(menu) {
+                    var lang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
+                    if (parSets.GEN_LOCL_LANG && parSets.localLang) {
+                        lang = userLang("GLB_LOCL_LANG_CSTM");
+                    } else if (!parSets.GEN_LOCL_LANG && lang && lang !== "en_US" && parSets.extLang[lang]) {
+                        lang = parSets.extLang[lang].LOCALE;
+                    } else {
+                        lang = language.LOCALE;
                     }
-                };
+                    return "<div id='P-content'>\n" +
+                        "    <div class='P-header'>\n" +
+                        "        <button class='P-save'>" + userLang("GLB_SVE") + "</button>\n" +
+                        "        <button class='P-reset'>" + userLang("GLB_RSET") + "</button>\n" +
+                        "        <button class='P-impexp' title='" + userLang("GLB_IMPR") + "'></button>\n" +
+                        "        <button class='P-implang' title='" + userLang("GLB_LOCL_LANG") + "'>" + lang + "</button>\n" +
+                        title(menu, "h2") +
+                        "    </div>\n";
+                }
+                function info(anchor) {
+                    return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' title='" + userLang("FTR_DESC") + "' target='_blank'>?</a>";
+                }
+                function selec(id, list, anchor) {
+                    var select = "<div><label for='" + id + "'>" + userLang(id) + "</label>\n" +
+                        "<div class='P-select'><select id='" + id + "'>\n";
+                    function keysIterator(keys) {
+                        select += "<option";
+                        if (parSets && parSets[id] === list[keys]) {
+                            select += " selected='true'";
+                        }
+                        select += " value='" + list[keys] + "'>" + userLang(keys) + "</option>\n";
+                    }
+                    Object.keys(list).forEach(keysIterator);
+                    return select + "</select></div>\n" + info(anchor) + "</div>";
+                }
+                function input(id, type, anchor, placeholder, size) {
+                    var inp = "<div><input id='" + id + "' type='" + type + "'";
+                    if (placeholder) {
+                        inp += " placeholder='" + placeholder + "' size='" + size + "'";
+                        if (parSets && typeof parSets[id] === 'string') {
+                            inp += " value='" + (parSets && parSets[id]) + "'";
+                        }
+                    } else if (parSets && parSets[id] === true) {
+                        inp += " checked='true'";
+                    }
+                    return inp + ">\n<label for='" + id + "'>" + userLang(id) + "</label>\n" + info(anchor) + "</div>";
+                }
                 function blck() {
-                    var button = "",
-                        list   = parSets && parSets.blacklist;
-                    function buildList(ytid) {
-                        button += "<div class='blacklist' data-ytid='" + ytid + "''><button class='close'></button><a href='/channel/" + ytid + "' target='_blank'>" + list[ytid] + "</a></div>\n";
+                    var button    = "",
+                        sortAlpha = [],
+                        list      = parSets && parSets.blacklist;
+                    function buildList(obj) {
+                        button += "<div class='blacklist' data-ytid='" + Object.keys(obj)[0] + "''><button class='close'></button><a href='/channel/" + Object.keys(obj)[0] + "' target='_blank'>" + obj[Object.keys(obj)[0]] + "</a></div>\n";
                     }
-                    if (list && Object.keys(list).length > 0) {
-                        Object.keys(list).forEach(buildList);
+                    function sortArray(previous, next) {
+                        return previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
                     }
+                    function fillArray(ytid) {
+                        var obj = {};
+                        obj[ytid] = list[ytid];
+                        sortAlpha.push(obj);
+                    }
+                    Object.keys(list).forEach(fillArray);
+                    sortAlpha.sort(sortArray).forEach(buildList);
                     return button;
                 }
                 switch (section) {
@@ -458,18 +461,18 @@
                         "    </div>\n" +
                         "</div>\n";
                 case "GEN":
-                    return htEl.head("GEN_TTL") +
+                    return head("GEN_TTL") +
                         "    <hr class='P-horz'>\n" +
-                        htEl.title("GEN_GEN", "h3") +
-                        htEl.input("GEN_LOCL_LANG", "checkbox", "custom_lang") +
-                        htEl.input("GEN_DSBL_ADS", "checkbox", "outside_ads") +
-                        htEl.input("GEN_YT_LOGO_LINK", "checkbox", "logo_redirect") +
-                        htEl.input("GEN_SUB_LIST", "checkbox", "sub_playlist") +
-                        htEl.input("GEN_INF_SCRL", "checkbox", "infinite_scroll") +
-                        htEl.input("GEN_SDBR_ON", "checkbox", "sidebar_on") +
-                        htEl.input("GEN_REM_APUN", "checkbox", "remove_autoplay") +
-                        htEl.input("GEN_SPF_OFF", "checkbox", "spf_off") +
-                        htEl.select("GEN_CHN_DFLT_PAGE", {
+                        title("GEN_GEN", "h3") +
+                        input("GEN_LOCL_LANG", "checkbox", "custom_lang") +
+                        input("GEN_DSBL_ADS", "checkbox", "outside_ads") +
+                        input("GEN_YT_LOGO_LINK", "checkbox", "logo_redirect") +
+                        input("GEN_SUB_LIST", "checkbox", "sub_playlist") +
+                        input("GEN_INF_SCRL", "checkbox", "infinite_scroll") +
+                        input("GEN_SDBR_ON", "checkbox", "sidebar_on") +
+                        input("GEN_REM_APUN", "checkbox", "remove_autoplay") +
+                        input("GEN_SPF_OFF", "checkbox", "spf_off") +
+                        selec("GEN_CHN_DFLT_PAGE", {
                             GEN_CHN_DFLT_PAGE_DFLT: "default",
                             GEN_CHN_DFLT_PAGE_VID : "videos",
                             GEN_CHN_DFLT_PAGE_PL  : "playlists",
@@ -477,35 +480,35 @@
                             GEN_CHN_DFLT_PAGE_DISC: "discussion",
                             GEN_CHN_DFLT_PAGE_ABT : "about"
                         }, "channel_page") +
-                        htEl.title("GEN_LYT", "h3") +
-                        htEl.input("GEN_GRID_SUBS", "checkbox", "sub_grid") +
-                        htEl.input("GEN_GRID_SRCH", "checkbox", "search_grid") +
-                        htEl.input("GEN_BTTR_NTF", "checkbox", "blue_box") +
-                        htEl.input("GEN_DSB_HVRC", "checkbox", "hovercards_off") +
-                        htEl.input("GEN_CMPT_TTLS", "checkbox", "feed_titles") +
-                        htEl.input("GEN_BLUE_GLOW", "checkbox", "blue_glow") +
-                        htEl.input("GEN_HIDE_FTR", "checkbox", "hide_footer") +
-                        htEl.input("GEN_HDE_RECM_SDBR", "checkbox", "hide_recom_sidebar") +
-                        htEl.input("GEN_HDE_SRCH_SDBR", "checkbox", "hide_search_sidebar") +
-                        htEl.input("GEN_HDE_CHN_SDBR", "checkbox", "hide_channel_sidebar") +
+                        title("GEN_LYT", "h3") +
+                        input("GEN_GRID_SUBS", "checkbox", "sub_grid") +
+                        input("GEN_GRID_SRCH", "checkbox", "search_grid") +
+                        input("GEN_BTTR_NTF", "checkbox", "blue_box") +
+                        input("GEN_DSB_HVRC", "checkbox", "hovercards_off") +
+                        input("GEN_CMPT_TTLS", "checkbox", "feed_titles") +
+                        input("GEN_BLUE_GLOW", "checkbox", "blue_glow") +
+                        input("GEN_HIDE_FTR", "checkbox", "hide_footer") +
+                        input("GEN_HDE_RECM_SDBR", "checkbox", "hide_recom_sidebar") +
+                        input("GEN_HDE_SRCH_SDBR", "checkbox", "hide_search_sidebar") +
+                        input("GEN_HDE_CHN_SDBR", "checkbox", "hide_channel_sidebar") +
                         "</div>\n";
                 case "VID":
-                    return htEl.head("VID_TTL") +
+                    return head("VID_TTL") +
                         "    <hr class='P-horz'>\n" +
-                        htEl.title("VID_PLR", "h3") +
-                        htEl.input("VID_PLR_ADS", "checkbox", "video_ads") +
-                        htEl.input("VID_SUB_ADS", "checkbox", "subs_ads_on") +
-                        htEl.input("VID_PLR_ALVIS", "checkbox", "floating_player") +
-                        htEl.input("VID_PLR_ATPL", "checkbox", "video_autoplay") +
-                        htEl.input("VID_PLR_CC", "checkbox", "subtitles_off") +
-                        htEl.input("VID_PLR_ANTS", "checkbox", "annotations_off") +
-                        htEl.input("VID_END_SHRE", "checkbox", "share_panel_off") +
-                        htEl.input("VID_PLR_VOL_MEM", "checkbox", "remember_volume") +
-                        htEl.input("VID_PLR_ALACT", "checkbox", "shortcuts_on") +
-                        htEl.input("VID_PLR_SIZE_MEM", "checkbox", "remember_mode") +
-                        htEl.input("VID_VOL_WHEEL", "checkbox", "wheel_volume") +
-                        htEl.input("VID_PLR_DASH", "checkbox", "dash_off") +
-                        htEl.select("VID_DFLT_QLTY", {
+                        title("VID_PLR", "h3") +
+                        input("VID_PLR_ADS", "checkbox", "video_ads") +
+                        input("VID_SUB_ADS", "checkbox", "subs_ads_on") +
+                        input("VID_PLR_ALVIS", "checkbox", "floating_player") +
+                        input("VID_PLR_ATPL", "checkbox", "video_autoplay") +
+                        input("VID_PLR_CC", "checkbox", "subtitles_off") +
+                        input("VID_PLR_ANTS", "checkbox", "annotations_off") +
+                        input("VID_END_SHRE", "checkbox", "share_panel_off") +
+                        input("VID_PLR_VOL_MEM", "checkbox", "remember_volume") +
+                        input("VID_PLR_ALACT", "checkbox", "shortcuts_on") +
+                        input("VID_PLR_SIZE_MEM", "checkbox", "remember_mode") +
+                        input("VID_VOL_WHEEL", "checkbox", "wheel_volume") +
+                        input("VID_PLR_DASH", "checkbox", "dash_off") +
+                        selec("VID_DFLT_QLTY", {
                             VID_DFLT_QLTY_AUTO: "auto",
                             VID_DFLT_QLTY_ORIG: "highres",
                             VID_DFLT_QLTY_2880: "hd2880",
@@ -518,38 +521,38 @@
                             VID_DFLT_QLTY_SML : "small",
                             VID_DFLT_QLTY_TNY : "tiny"
                         }, "default_quality") +
-                        htEl.title("VID_PLR_LYT", "h3") +
-                        htEl.input("VID_PLR_INFO", "checkbox", "info_bar") +
-                        htEl.input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off") +
-                        htEl.input("VID_PLR_FIT", "checkbox", "fit_to_page") +
-                        htEl.input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6) +
-                        htEl.title("VID_PLST", "h3") +
-                        htEl.input("VID_PLST_SEP", "checkbox", "separate_playlist") +
-                        htEl.input("VID_PLST_ATPL", "checkbox", "playlist_autoplay") +
-                        htEl.input("VID_PLST_RVRS", "checkbox", "playlist_reverse") +
-                        htEl.title("VID_LAYT", "h3") +
-                        htEl.select("VID_HIDE_COMS", {
+                        title("VID_PLR_LYT", "h3") +
+                        input("VID_PLR_INFO", "checkbox", "info_bar") +
+                        input("VID_PLR_DYN_SIZE", "checkbox", "dynamic_size_off") +
+                        input("VID_PLR_FIT", "checkbox", "fit_to_page") +
+                        input("VID_PLR_FIT_WDTH", "text", "fit_max_width", "1280px", 6) +
+                        title("VID_PLST", "h3") +
+                        input("VID_PLST_SEP", "checkbox", "separate_playlist") +
+                        input("VID_PLST_ATPL", "checkbox", "playlist_autoplay") +
+                        input("VID_PLST_RVRS", "checkbox", "playlist_reverse") +
+                        title("VID_LAYT", "h3") +
+                        selec("VID_HIDE_COMS", {
                             VID_HIDE_COMS_SHOW: "0",
                             VID_HIDE_COMS_HIDE: "1",
                             VID_HIDE_COMS_REM : "2"
                         }, "comments") +
-                        htEl.select("VID_SDBR_ALGN", {
+                        selec("VID_SDBR_ALGN", {
                             VID_SDBR_ALGN_NONE : "0",
                             VID_SDBR_ALGN_LEFT : "1",
                             VID_SDBR_ALGN_RIGHT: "2"
                         }, "sidebar_align") +
-                        htEl.input("VID_TTL_CMPT", "checkbox", "video_title") +
-                        htEl.input("VID_DESC_SHRT", "checkbox", "labelless_buttons") +
-                        htEl.input("VID_VID_CNT", "checkbox", "upload_counter") +
-                        htEl.input("VID_POST_TIME", "checkbox", "relative_upload_time") +
-                        htEl.input("VID_HIDE_DETLS", "checkbox", "hide_video_details") +
-                        htEl.input("VID_LAYT_AUTO_PNL", "checkbox", "expand_description") +
+                        input("VID_TTL_CMPT", "checkbox", "video_title") +
+                        input("VID_DESC_SHRT", "checkbox", "labelless_buttons") +
+                        input("VID_VID_CNT", "checkbox", "upload_counter") +
+                        input("VID_POST_TIME", "checkbox", "relative_upload_time") +
+                        input("VID_HIDE_DETLS", "checkbox", "hide_video_details") +
+                        input("VID_LAYT_AUTO_PNL", "checkbox", "expand_description") +
                         "</div>\n";
                 case "BLK":
-                    return htEl.head("BLK_TTL") +
+                    return head("BLK_TTL") +
                         "    <hr class='P-horz'>\n" +
-                        htEl.title("BLK_BLK", "h3") +
-                        htEl.input("BLK_ON", "checkbox", "blacklist_on") +
+                        title("BLK_BLK", "h3") +
+                        input("BLK_ON", "checkbox", "blacklist_on") +
                         "    <div id='blacklist'>\n" +
                         "        <div id='blacklist-controls'>\n" +
                         "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
@@ -570,10 +573,10 @@
                 case "ABT":
                     return "<div id='P-content'>\n" +
                         "    <div class='P-header'>\n" +
-                        htEl.title("ABT_TTL", "h2") +
+                        title("ABT_TTL", "h2") +
                         "    </div>\n" +
                         "    <hr class='P-horz'>\n" +
-                        htEl.title("ABT_THKS", "h3") +
+                        title("ABT_THKS", "h3") +
                         "    <div>\n" +
                         "        <a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a>" + userLang("ABT_THKS_YEPPHA") + "\n" +
                         "    </div>\n" +
@@ -583,7 +586,7 @@
                         "    <div>\n" +
                         "        <a target='_blank' href='http://stackoverflow.com/'>Stack Overflow</a>" + userLang("ABT_THKS_STACKOV") + "\n" +
                         "    </div>\n" +
-                        htEl.title("ABT_INFO", "h3") +
+                        title("ABT_INFO", "h3") +
                         "    <div>\n" +
                         "        <a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a>\n" +
                         "    </div>\n" +
@@ -604,13 +607,12 @@
                             expCont.remove();
                             return;
                         }
-                        expCont = "<div id='exp-cont'>\n" +
+                        expCont = string2HTML("<div id='exp-cont'>\n" +
                             "   <button id='" + ((target.classList.contains("P-impexp") && "impexp-save") || "implang-save") + "' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
                             "        <span class='yt-uix-button-content'>" + userLang("GLB_IMPR_SAVE") + "</span>\n" +
                             "    </button>\n" +
                             "   <textarea id='impexp-list'></textarea>" +
-                            "</div>";
-                        expCont = string2HTML(expCont);
+                            "</div>\n");
                         document.getElementById("P-content").appendChild(expCont);
                         document.getElementById("impexp-list").value = JSON.stringify((target.classList.contains("P-impexp") && parSets) || parSets.localLang || language, undefined, 2);
                     } else if (target.id === "impexp-save" || target.id === "implang-save") {
@@ -667,16 +669,14 @@
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
                             notification.remove();
-                            notification =
-                                "<div id='appbar-main-guide-notification-container'>\n" +
+                            notification = string2HTML("<div id='appbar-main-guide-notification-container'>\n" +
                                 "    <div class='appbar-guide-notification' role='alert'>\n" +
                                 "        <span class='appbar-guide-notification-content-wrapper yt-valign'>\n" +
                                 "            <span class='appbar-guide-notification-icon yt-sprite'></span>\n" +
                                 "            <span class='appbar-guide-notification-text-content'></span>\n" +
                                 "        </span>\n" +
                                 "    </div>\n" +
-                                "</div>\n";
-                            notification = string2HTML(notification);
+                                "</div>\n");
                             document.getElementsByClassName("yt-masthead-logo-container")[0].appendChild(notification);
                         }
                         document.getElementsByClassName("appbar-guide-notification-text-content")[0].textContent = userLang("GLB_SVE_SETS");
@@ -704,8 +704,7 @@
                     saveSettings("no-notification");
                     document.getElementById("P-content").remove();
                     pContainer = document.getElementById("P-container");
-                    pContent = string2HTML(template(event.target.id));
-                    pContainer.appendChild(pContent);
+                    pContainer.appendChild(string2HTML(template(event.target.id)));
                     event.target.parentNode.getElementsByClassName("selected")[0].removeAttribute("class");
                     event.target.className = "selected";
                 }
@@ -834,11 +833,9 @@
                 wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show")) ? "HIDE_CMTS" : "SHOW_CMTS");
             }
             if (comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
-                wrapper =
-                    "<div id='P-show-comments' class='yt-card'>\n" +
+                wrapper = string2HTML("<div id='P-show-comments' class='yt-card'>\n" +
                     "    <button class='yt-uix-button yt-uix-button-expander'>" + userLang("SHOW_CMTS") + "</button>\n" +
-                    "</div>\n";
-                wrapper = string2HTML(wrapper);
+                    "</div>\n");
                 eventHandler(wrapper, "click", showComments);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
@@ -1022,13 +1019,11 @@
                 }
                 if (videoPlayer) {
                     if (!floaterUI) {
-                        floaterUI =
-                            "<div id='part_floaterui'>\n" +
+                        floaterUI = string2HTML("<div id='part_floaterui'>\n" +
                             "    <button id='part_floaterui_move' title='" + userLang("VID_PLR_ALVIS_MOVE") + "'></button>\n" +
                             "    <button id='part_floaterui_reset' title='" + userLang("VID_PLR_ALVIS_RST") + "'></button>\n" +
                             "    <button id='part_floaterui_scrolltop' title='" + userLang("VID_PLR_ALVIS_SCRL_TOP") + "'></button>\n" +
-                            "</div>\n";
-                        floaterUI = string2HTML(floaterUI);
+                            "</div>\n");
                         eventHandler(document, "mousemove", customFloaterPosition);
                         eventHandler(document, "mouseup", customFloaterPosition);
                         eventHandler(document, "mousedown", floaterControl);
@@ -1074,13 +1069,11 @@
                 button.href = "/watch_videos?title=" + listTitle + "&video_ids=" + list;
             }
             if (parSets.GEN_SUB_LIST && window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
-                button =
-                    "<li id='subscription-playlist-icon'>\n" +
+                button = string2HTML("<li id='subscription-playlist-icon'>\n" +
                     "    <a id='subscription-playlist' title='" + userLang("SUB_PLST") + "' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>\n" +
                     "        <span class='yt-uix-button-content'></span>\n" +
                     "    </a>\n" +
-                    "</li>";
-                button = string2HTML(button);
+                    "</li>");
                 navMenu.insertBefore(button, navMenu.firstChild);
                 eventHandler(button, "click", initSubPlaylist);
             }
@@ -1298,7 +1291,7 @@
                 titleField,
                 thumbField,
                 clickTitle,
-                masterList,
+                masterList = [],
                 trashList  = [],
                 detailList = [];
             function initThumbMod(event) {
@@ -1419,13 +1412,18 @@
                 }
             }
             function getList(list) {
+                var i;
                 list = document.getElementsByClassName(list);
                 if (list.length > 0) {
-                    masterList = list;
+                    i = list.length;
+                    while (i) {
+                        i -= 1;
+                        masterList.push(list[i]);
+                    }
                 }
             }
             if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1)) {
-                ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item"].forEach(getList);
+                ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item", "expanded-shelf-content-item-wrapper"].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
                     Object.keys(trashList).forEach(cleanList);
@@ -1488,12 +1486,10 @@
             }
             function createButton(type, label, bool, call) {
                 var navCtrls = document.getElementsByClassName("playlist-nav-controls")[0],
-                    button   =
-                        "<button data-tooltip-text='" + label + "' class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip" + (((bool === true || href.split(bool).length > 1) && " yt-uix-button-toggled") || '') + "'' type='button' title='" + label + "' id='" + type + "'>\n" +
+                    button   = string2HTML("<button data-tooltip-text='" + label + "' class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip" + (((bool === true || href.split(bool).length > 1) && " yt-uix-button-toggled") || '') + "'' type='button' title='" + label + "' id='" + type + "'>\n" +
                         "    <span class='yt-uix-button-icon yt-uix-button-icon-watch-appbar-" + type + "-video-list'></span>\n" +
-                        "</button>\n";
+                        "</button>\n");
                 plBar.className = plBar.className.replace("radio-playlist", "");
-                button = string2HTML(button);
                 eventHandler(button, "click", call);
                 navCtrls.appendChild(button);
             }
@@ -1571,8 +1567,7 @@
                         if (quality > 1 && event.target.tagName === "DIV") {
                             container.className = event.target.className;
                             thumbsContainer.remove();
-                            thumbsContainer = "<div id='seek-thumbs'>" + thumbs[event.target.className.replace("quality-", "")] + "</div>\n";
-                            thumbsContainer = string2HTML(thumbsContainer);
+                            thumbsContainer = string2HTML("<div id='seek-thumbs'>" + thumbs[event.target.className.replace("quality-", "")] + "</div>\n");
                             container.appendChild(thumbsContainer);
                             centerThumb();
                         }
@@ -1604,15 +1599,14 @@
                                     if (!thumbs[level]) {
                                         thumbs[level] = "";
                                     }
-                                    thumbs[level] += [
-                                        "<span class='quality-" + level + "'",
-                                        " data-time-jump='" + ((i * details[5]) / 1000) + "'",
-                                        " style='background-image: url(" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + ");",
-                                        " background-position: -" + (gridX * details[0]) + "px -" + (gridY * details[1]) + "px;",
-                                        " width: " + (details[0] - 2) + "px; height: " + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + "px;'>\n",
-                                        "    <div class='timer'>" + timeConv((i * details[5]) / 1000) + "</div>\n",
-                                        "</span>\n"
-                                    ].join('');
+                                    thumbs[level] +=
+                                        "<span class='quality-" + level + "'" +
+                                        " data-time-jump='" + ((i * details[5]) / 1000) + "'" +
+                                        " style='background-image: url(" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + ");" +
+                                        " background-position: -" + (gridX * details[0]) + "px -" + (gridY * details[1]) + "px;" +
+                                        " width: " + (details[0] - 2) + "px; height: " + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + "px;'>\n" +
+                                        "    <div class='timer'>" + timeConv((i * details[5]) / 1000) + "</div>\n" +
+                                        "</span>\n";
                                     if (gridX === details[3] - 1 && gridY === details[4] - 1) {
                                         frameAmount += 1;
                                         gridY = gridX = 0;
@@ -1636,12 +1630,10 @@
                         if (!container) {
                             seekMap.classList.toggle("active");
                             parseThumbs();
-                            container =
-                                "<div id='seek-thumb-map' class='" + ((thumbs[2] && "quality-2") || (thumbs[1] && "quality-1")) + "''>\n" +
+                            container = string2HTML("<div id='seek-thumb-map' class='" + ((thumbs[2] && "quality-2") || (thumbs[1] && "quality-1")) + "''>\n" +
                                 thumbControls +
                                 "    <div id='seek-thumbs'>" + (thumbs[2] || thumbs[1]) + "</div>\n" +
-                                "</div>";
-                            container = string2HTML(container);
+                                "</div>\n");
                             document.getElementById("movie_player").appendChild(container);
                             centerThumb();
                             eventHandler(container, "click", clickManager);
@@ -1813,18 +1805,15 @@
                 set("advOpts", document.documentElement.classList.contains("player-console"));
             }
             if (window.location.pathname === "/watch" && header && !cnslBtn) {
-                cnslBtn = "<button id='console-button' title='" + userLang("ADV_OPTS") + "'></button>";
-                cnslBtn = string2HTML(cnslBtn);
+                cnslBtn = string2HTML("<button id='console-button' title='" + userLang("ADV_OPTS") + "'></button>");
                 eventHandler(cnslBtn, "click", toggleConsole);
-                cnslCont = "<div id='advanced-options'></div>";
-                cnslCont = string2HTML(cnslCont);
+                cnslCont = string2HTML("<div id='advanced-options'></div>");
                 cnslCont.appendChild(cnslBtn);
                 header.appendChild(cnslCont);
                 if (controls) {
                     controls.remove();
                 }
-                controls =
-                    "<div id='player-console'>\n" +
+                controls = string2HTML("<div id='player-console'>\n" +
                     "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL) ? " active" : "") + "' data-tooltip-text='" + userLang("CNSL_AP") + "''></div>\n" +
                     "    <div id='loop-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_RPT") + "'></div>\n" +
                     "    <div id='seek-map' class='yt-uix-tooltip' data-tooltip-text='" + (storyBoard ? userLang("CNSL_SKMP") : userLang("CNSL_SKMP_OFF")) + "'" + ((!storyBoard) ? "style='opacity:0.2;'" : "") + "></div>\n" +
@@ -1834,8 +1823,7 @@
                     "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_FLBR") + "'></div>\n" +
                     "    <div id='cinemamode-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_CINM_MD") + "'></div>\n" +
                     "    <div id='framestep-button' class='yt-uix-tooltip' data-tooltip-text='" + userLang("CNSL_FRME") + "'></div>\n" +
-                    "</div>\n";
-                controls = string2HTML(controls);
+                    "</div>\n");
                 cnslCont.appendChild(controls);
                 hookButtons();
                 if (parSets.advOpts) {
