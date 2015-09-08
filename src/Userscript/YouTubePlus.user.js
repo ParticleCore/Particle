@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     0.6.1
+// @version     0.6.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -260,6 +260,11 @@
                     );
                 }
             }
+            function sanitize(string) {
+                var holder = document.createElement("div");
+                holder.innerHTML = string;
+                return holder.textContent;
+            }
             if (!parSets.extLang) {
                 parSets.extLang = {};
                 set("extLang", parSets.extLang);
@@ -284,7 +289,7 @@
                         parSets.extLang.nextCheck = new Date().getTime() + 86400000;
                         set("extLang", parSets.extLang);
                     }
-                    return parSets.extLang[ytlang][label];
+                    return sanitize(parSets.extLang[ytlang][label]);
                 }
                 if (!parSets.extLang[ytlang] && !language.fetching && (!parSets.extLang.nextCheck || parSets.extLang.nextCheck <= new Date().getTime())) {
                     language.fetching = true;
