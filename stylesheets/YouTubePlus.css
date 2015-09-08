@@ -607,7 +607,7 @@
         }
     }
     #page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{
-       min-width: 0;
+       min-width: 0 !important;
     }
     .html5-video-container{
        height: 100%;
