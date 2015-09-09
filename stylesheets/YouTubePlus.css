@@ -1064,7 +1064,7 @@
     #impexp-list{
         height: calc(100% - 80px);
     }
-    #P{
+    #yt-masthead #P{
         background: url(/Particle/images/sprite.png) 0 4px;
         cursor: pointer;
         height: 28px;
@@ -1074,11 +1074,11 @@
         width: 19px;
     }
     @media screen and (max-width: 640px){
-        #P{
+        #yt-masthead #P{
             display: none;
         }
     }
-    #P:hover{
+    #yt-masthead #P:hover{
         opacity: .85;
     }
     .P-hide{
