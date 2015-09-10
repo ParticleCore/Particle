@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     0.6.2
+// @version     0.6.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -187,14 +187,7 @@
                 LOCALE                : "English (US)"
             };
         function string2HTML(string) {
-            var scripts,
-                holder = document.createElement("div");
-            holder.innerHTML = string;
-            scripts = holder.getElementsByTagName("script");
-            while (scripts.length) {
-                scripts[scripts.length - 1].remove();
-            }
-            return holder.firstChild;
+            return new window.DOMParser().parseFromString(string, "text/html").all[3];
         }
         function set(setting, newValue) {
             parSets[setting] = newValue;
@@ -238,7 +231,8 @@
             request.send();
         }
         function userLang(label) {
-            var ytlang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
+            var ytlang  = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE,
+                urlBase = "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/";
             function getLanguage(data) {
                 delete language.fetching;
                 if (data.target.readyState === 4 && data.target.status === 200) {
@@ -254,16 +248,11 @@
                     language.fetching = true;
                     localXHR(
                         "GET",
-                        "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/" + ytlang + ".json",
+                        urlBase + ytlang + ".json",
                         getLanguage,
                         ["Accept", "application/vnd.github.raw"]
                     );
                 }
-            }
-            function sanitize(string) {
-                var holder = document.createElement("div");
-                holder.innerHTML = string;
-                return holder.textContent;
             }
             if (!parSets.extLang) {
                 parSets.extLang = {};
@@ -282,20 +271,20 @@
                         language.fetching = true;
                         localXHR(
                             "HEAD",
-                            "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/" + ytlang + ".json",
+                            urlBase + ytlang + ".json",
                             checkModified,
                             ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]
                         );
                         parSets.extLang.nextCheck = new Date().getTime() + 86400000;
                         set("extLang", parSets.extLang);
                     }
-                    return sanitize(parSets.extLang[ytlang][label]);
+                    return parSets.extLang[ytlang][label];
                 }
                 if (!parSets.extLang[ytlang] && !language.fetching && (!parSets.extLang.nextCheck || parSets.extLang.nextCheck <= new Date().getTime())) {
                     language.fetching = true;
                     localXHR(
                         "GET",
-                        "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/" + ytlang + ".json",
+                        urlBase + ytlang + ".json",
                         getLanguage,
                         ["Accept", "application/vnd.github.raw"]
                     );
@@ -309,9 +298,6 @@
             }
             time = zero(time / 86400) + ":" + zero(time % 86400 / 3600) + ":" + zero(time % 3600 / 60) + ":" + zero(time % 3600 % 60);
             return time.replace(/^0(0:(0(0:(0)?)?)?)?/, "");
-        }
-        function removeEmptyLines(string) {
-            return (/\S/).test(string);
         }
         function customStyles() {
             var classes,
@@ -376,8 +362,8 @@
             var pContainer,
                 buttonNotif,
                 buttonsSection,
-                settingsButton;
-            if (document.getElementById("P")) {
+                settingsButton = document.getElementById("P");
+            if (settingsButton) {
                 return;
             }
             function template(section) {
@@ -636,9 +622,9 @@
                 function manageBlackList(target) {
                     if (target.id === "blacklist-edit") {
                         document.getElementById("blacklist").classList.add("edit");
-                        document.getElementById("blacklist-edit-list").value = JSON.stringify(parSets.blacklist).replace(/":"/g, '": "').replace(/","/g, '"\n"').replace('{"', '"').replace('"}', '"').replace("{}", "");
+                        document.getElementById("blacklist-edit-list").value = JSON.stringify(parSets.blacklist, undefined, 2);
                     } else if (target.id === "blacklist-save") {
-                        set("blacklist", JSON.parse("{" + document.getElementById("blacklist-edit-list").value.split("\n").filter(removeEmptyLines).join(",") + "}"));
+                        set("blacklist", JSON.parse(document.getElementById("blacklist-edit-list").value));
                     } else if (target.id === "blacklist-close") {
                         document.getElementById("BLK").click();
                     }
