@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     0.6.4
+// @version     0.6.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -61,11 +61,6 @@
                 CNSL_CNSL             : "Console",
                 CNSL_AP               : "Autoplay",
                 CNSL_RPT              : "Repeat video",
-                CNSL_SKMP             : "Seek map",
-                CNSL_SKMP_OFF         : "No thumbs found",
-                CNSL_SKMP_SMAL        : "SMALL",
-                CNSL_SKMP_MED         : "MEDIUM",
-                CNSL_SKMP_LRGE        : "LARGE",
                 CNSL_SVTH             : "Open thumbnail",
                 CNSL_SS               : "Take screenshot",
                 CNSL_SS_CLS           : "CLOSE",
@@ -305,20 +300,13 @@
                 }
             }
             container.innerHTML = string;
-            ytplabel  = container.querySelectorAll("[ytplus]");
+            ytplabel = container.querySelectorAll("[ytplus]");
             i = ytplabel.length;
             while (i) {
                 i -= 1;
                 ytplabel[i].getAttribute("ytplus").split("&").forEach(addLocale);
             }
             return container.firstChild;
-        }
-        function timeConv(time) {
-            function zero(trim) {
-                return ("0" + Math.floor(trim)).slice(-2);
-            }
-            time = zero(time / 86400) + ":" + zero(time % 86400 / 3600) + ":" + zero(time % 3600 / 60) + ":" + zero(time % 3600 % 60);
-            return time.replace(/^0(0:(0(0:(0)?)?)?)?/, "");
         }
         function customStyles() {
             var classes,
@@ -389,39 +377,30 @@
             }
             function template(section) {
                 function title(content, tag) {
-                    return "<" + tag + " ytplus='tnd|" + content + "'></" + tag + ">\n";
+                    return "<" + tag + " ytplus='tnd|" + content + "'></" + tag + ">";
                 }
                 function head(menu) {
-                    var lang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
-                    if (parSets.GEN_LOCL_LANG && parSets.localLang) {
-                        lang = "GLB_LOCL_LANG_CSTM";
-                    } else {
-                        lang = "LOCALE";
-                    }
-                    return "<div id='P-content'>\n" +
-                        "    <div class='P-header'>\n" +
-                        "        <button class='P-save' ytplus='tnd|GLB_SVE'></button>\n" +
-                        "        <button class='P-reset' ytplus='tnd|GLB_RSET'></button>\n" +
-                        "        <button class='P-impexp' ytplus='ttl|GLB_IMPR'></button>\n" +
-                        "        <button class='P-implang' ytplus='ttl|GLB_LOCL_LANG&tnd|" + lang + "'></button>\n" +
+                    return "<div id='P-content'>" +
+                        "    <div class='P-header'>" +
+                        "        <button class='P-save' ytplus='tnd|GLB_SVE'></button>" +
+                        "        <button class='P-reset' ytplus='tnd|GLB_RSET'></button>" +
+                        "        <button class='P-impexp' ytplus='ttl|GLB_IMPR'></button>" +
+                        "        <button class='P-implang' ytplus='ttl|GLB_LOCL_LANG&tnd|" + ((parSets.GEN_LOCL_LANG && parSets.localLang && "GLB_LOCL_LANG_CSTM") || "LOCALE") + "'></button>" +
                         title(menu, "h2") +
-                        "    </div>\n";
-                }
-                function info(anchor) {
-                    return "<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' ytplus='ttl|FTR_DESC' target='_blank'>?</a>";
+                        "    </div>";
                 }
                 function selec(id, list, anchor) {
-                    var select = "<div><label for='" + id + "' ytplus='tnd|" + id + "'></label>\n" +
-                        "<div class='P-select'><select id='" + id + "'>\n";
+                    var select = "<div><label for='" + id + "' ytplus='tnd|" + id + "'></label>" +
+                        "<div class='P-select'><select id='" + id + "'>";
                     function keysIterator(keys) {
                         select += "<option";
                         if (parSets && parSets[id] === list[keys]) {
                             select += " selected='true'";
                         }
-                        select += " value='" + list[keys] + "' ytplus='tnd|" + keys + "'></option>\n";
+                        select += " value='" + list[keys] + "' ytplus='tnd|" + keys + "'></option>";
                     }
                     Object.keys(list).forEach(keysIterator);
-                    return select + "</select></div>\n" + info(anchor) + "</div>";
+                    return select + "</select></div>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' ytplus='ttl|FTR_DESC' target='_blank'>?</a></div>";
                 }
                 function input(id, type, anchor, placeholder, size) {
                     var inp = "<div><input id='" + id + "' type='" + type + "'";
@@ -433,14 +412,14 @@
                     } else if (parSets && parSets[id] === true) {
                         inp += " checked='true'";
                     }
-                    return inp + ">\n<label for='" + id + "' ytplus='tnd|" + id + "'></label>\n" + info(anchor) + "</div>";
+                    return inp + "><label for='" + id + "' ytplus='tnd|" + id + "'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#" + anchor + "' ytplus='ttl|FTR_DESC' target='_blank'>?</a></div>";
                 }
                 function blck() {
                     var button    = "",
                         sortAlpha = [],
                         list      = parSets && parSets.blacklist;
                     function buildList(obj) {
-                        button += "<div class='blacklist' data-ytid='" + Object.keys(obj)[0] + "''><button class='close'></button><a href='/channel/" + Object.keys(obj)[0] + "' target='_blank'>" + obj[Object.keys(obj)[0]] + "</a></div>\n";
+                        button += "<div class='blacklist' data-ytid='" + Object.keys(obj)[0] + "'><button class='close'></button><a href='/channel/" + Object.keys(obj)[0] + "' target='_blank'>" + obj[Object.keys(obj)[0]] + "</a></div>\n";
                     }
                     function sortArray(previous, next) {
                         return previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
@@ -456,23 +435,23 @@
                 }
                 switch (section) {
                 case "MEN":
-                    return "<div id='P-settings'>\n" +
-                        "    <div id='P-container'>\n" +
-                        "        <div id='P-sidebar'>\n" +
-                        "            <ul id='P-sidebar-list'>\n" +
-                        "                <li id='GEN' class='selected' ytplus='tnd|GEN'></li>\n" +
-                        "                <li id='VID' ytplus='tnd|VID'></li>\n" +
-                        "                <li id='BLK' ytplus='tnd|BLK'></li>\n" +
-                        "                <li id='ABT' ytplus='tnd|ABT'></li>\n" +
-                        "                <li id='HLP'><a target='_blank' href='https://github.com/ParticleCore/Particle/wiki' ytplus='tnd|HLP'></a></li>\n" +
-                        "                <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW' ytplus='tnd|DNT'></a></li>\n" +
-                        "            </ul>\n" +
-                        "        </div>\n" +
-                        "    </div>\n" +
-                        "</div>\n";
+                    return "<div id='P-settings'>" +
+                        "    <div id='P-container'>" +
+                        "        <div id='P-sidebar'>" +
+                        "            <ul id='P-sidebar-list'>" +
+                        "                <li id='GEN' class='selected' ytplus='tnd|GEN'></li>" +
+                        "                <li id='VID' ytplus='tnd|VID'></li>" +
+                        "                <li id='BLK' ytplus='tnd|BLK'></li>" +
+                        "                <li id='ABT' ytplus='tnd|ABT'></li>" +
+                        "                <li id='HLP'><a target='_blank' href='https://github.com/ParticleCore/Particle/wiki' ytplus='tnd|HLP'></a></li>" +
+                        "                <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW' ytplus='tnd|DNT'></a></li>" +
+                        "            </ul>" +
+                        "        </div>" +
+                        "    </div>" +
+                        "</div>";
                 case "GEN":
                     return head("GEN_TTL") +
-                        "    <hr class='P-horz'>\n" +
+                        "    <hr class='P-horz'>" +
                         title("GEN_GEN", "h3") +
                         input("GEN_LOCL_LANG", "checkbox", "custom_lang") +
                         input("GEN_DSBL_ADS", "checkbox", "outside_ads") +
@@ -501,10 +480,10 @@
                         input("GEN_HDE_RECM_SDBR", "checkbox", "hide_recom_sidebar") +
                         input("GEN_HDE_SRCH_SDBR", "checkbox", "hide_search_sidebar") +
                         input("GEN_HDE_CHN_SDBR", "checkbox", "hide_channel_sidebar") +
-                        "</div>\n";
+                        "</div>";
                 case "VID":
                     return head("VID_TTL") +
-                        "    <hr class='P-horz'>\n" +
+                        "    <hr class='P-horz'>" +
                         title("VID_PLR", "h3") +
                         input("VID_PLR_ADS", "checkbox", "video_ads") +
                         input("VID_SUB_ADS", "checkbox", "subs_ads_on") +
@@ -557,56 +536,56 @@
                         input("VID_POST_TIME", "checkbox", "relative_upload_time") +
                         input("VID_HIDE_DETLS", "checkbox", "hide_video_details") +
                         input("VID_LAYT_AUTO_PNL", "checkbox", "expand_description") +
-                        "</div>\n";
+                        "</div>";
                 case "BLK":
                     return head("BLK_TTL") +
-                        "    <hr class='P-horz'>\n" +
+                        "    <hr class='P-horz'>" +
                         title("BLK_BLK", "h3") +
                         input("BLK_ON", "checkbox", "blacklist_on") +
-                        "    <div id='blacklist'>\n" +
-                        "        <div id='blacklist-controls'>\n" +
-                        "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                        "                <span class='yt-uix-button-content' ytplus='tnd|BLCK_EDIT'></span>\n" +
-                        "            </button>\n" +
-                        "            <button id='blacklist-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                        "                <span class='yt-uix-button-content' ytplus='tnd|BLCK_SAVE'></span>\n" +
-                        "            </button>\n" +
-                        "            <button id='blacklist-close' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                        "                <span class='yt-uix-button-content' ytplus='tnd|BLCK_CLSE'></span>\n" +
-                        "            </button>\n" +
-                        "        </div>\n" +
-                        "        " + blck() + "\n" +
-                        "        <textarea id='blacklist-edit-list'></textarea>\n" +
-                        "    </div>\n" +
-                        "    <br>\n" +
-                        "</div>\n";
+                        "    <div id='blacklist'>" +
+                        "        <div id='blacklist-controls'>" +
+                        "            <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>" +
+                        "                <span class='yt-uix-button-content' ytplus='tnd|BLCK_EDIT'></span>" +
+                        "            </button>" +
+                        "            <button id='blacklist-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>" +
+                        "                <span class='yt-uix-button-content' ytplus='tnd|BLCK_SAVE'></span>" +
+                        "            </button>" +
+                        "            <button id='blacklist-close' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>" +
+                        "                <span class='yt-uix-button-content' ytplus='tnd|BLCK_CLSE'></span>" +
+                        "            </button>" +
+                        "        </div>" +
+                        blck() +
+                        "        <textarea id='blacklist-edit-list'></textarea>" +
+                        "    </div>" +
+                        "    <br>" +
+                        "</div>";
                 case "ABT":
-                    return "<div id='P-content'>\n" +
-                        "    <div class='P-header'>\n" +
+                    return "<div id='P-content'>" +
+                        "    <div class='P-header'>" +
                         title("ABT_TTL", "h2") +
-                        "    </div>\n" +
-                        "    <hr class='P-horz'>\n" +
+                        "    </div>" +
+                        "    <hr class='P-horz'>" +
                         title("ABT_THKS", "h3") +
-                        "    <div>\n" +
-                        "        <a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a><span ytplus='tnd|ABT_THKS_YEPPHA'></span>\n" +
-                        "    </div>\n" +
-                        "    <div>\n" +
-                        "        <a target='_blank' href='http://www.greasespot.net/'>Greasemonkey</a> + <a href='http://tampermonkey.net/'>Tampermonkey</a><span ytplus='tnd|ABT_THKS_USERSCRIPT'></span>\n" +
-                        "    </div>\n" +
-                        "    <div>\n" +
-                        "        <a target='_blank' href='http://stackoverflow.com/'>Stack Overflow</a><span ytplus='tnd|ABT_THKS_STACKOV'></span>\n" +
-                        "    </div>\n" +
+                        "    <div>" +
+                        "        <a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a><span ytplus='tnd|ABT_THKS_YEPPHA'></span>" +
+                        "    </div>" +
+                        "    <div>" +
+                        "        <a target='_blank' href='http://www.greasespot.net/'>Greasemonkey</a> + <a href='http://tampermonkey.net/'>Tampermonkey</a><span ytplus='tnd|ABT_THKS_USERSCRIPT'></span>" +
+                        "    </div>" +
+                        "    <div>" +
+                        "        <a target='_blank' href='http://stackoverflow.com/'>Stack Overflow</a><span ytplus='tnd|ABT_THKS_STACKOV'></span>" +
+                        "    </div>" +
                         title("ABT_INFO", "h3") +
-                        "    <div>\n" +
-                        "        <a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a>\n" +
-                        "    </div>\n" +
-                        "    <div>\n" +
-                        "        <a target='_blank' href='https://greasyfork.org/en/users/8223-particlecore'>Greasy Fork</a>\n" +
-                        "    </div>\n" +
-                        "    <div>\n" +
-                        "        <a target='_blank' href='http://openuserjs.org/scripts/ParticleCore/'>OpenUserJS</a>\n" +
-                        "    </div>\n" +
-                        "</div>\n";
+                        "    <div>" +
+                        "        <a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a>" +
+                        "    </div>" +
+                        "    <div>" +
+                        "        <a target='_blank' href='https://greasyfork.org/en/users/8223-particlecore'>Greasy Fork</a>" +
+                        "    </div>" +
+                        "    <div>" +
+                        "        <a target='_blank' href='http://openuserjs.org/scripts/ParticleCore/'>OpenUserJS</a>" +
+                        "    </div>" +
+                        "</div>";
                 }
             }
             function navigateSettings(event) {
@@ -617,12 +596,12 @@
                             expCont.remove();
                             return;
                         }
-                        expCont = string2HTML("<div id='exp-cont'>\n" +
-                            "   <button id='" + ((target.classList.contains("P-impexp") && "impexp-save") || "implang-save") + "' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>\n" +
-                            "        <span class='yt-uix-button-content' ytplus='tnd|GLB_IMPR_SAVE'></span>\n" +
-                            "    </button>\n" +
+                        expCont = string2HTML("<div id='exp-cont'>" +
+                            "   <button id='" + ((target.classList.contains("P-impexp") && "impexp-save") || "implang-save") + "' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>" +
+                            "        <span class='yt-uix-button-content' ytplus='tnd|GLB_IMPR_SAVE'></span>" +
+                            "    </button>" +
                             "   <textarea id='impexp-list'></textarea>" +
-                            "</div>\n");
+                            "</div>");
                         document.getElementById("P-content").appendChild(expCont);
                         document.getElementById("impexp-list").value = JSON.stringify((target.classList.contains("P-impexp") && parSets) || parSets.localLang || language, undefined, 2);
                     } else if (target.id === "impexp-save" || target.id === "implang-save") {
@@ -679,14 +658,14 @@
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
                             notification.remove();
-                            notification = string2HTML("<div id='appbar-main-guide-notification-container'>\n" +
-                                "    <div class='appbar-guide-notification' role='alert'>\n" +
-                                "        <span class='appbar-guide-notification-content-wrapper yt-valign'>\n" +
-                                "            <span class='appbar-guide-notification-icon yt-sprite'></span>\n" +
-                                "            <span class='appbar-guide-notification-text-content'></span>\n" +
-                                "        </span>\n" +
-                                "    </div>\n" +
-                                "</div>\n");
+                            notification = string2HTML("<div id='appbar-main-guide-notification-container'>" +
+                                "    <div class='appbar-guide-notification' role='alert'>" +
+                                "        <span class='appbar-guide-notification-content-wrapper yt-valign'>" +
+                                "            <span class='appbar-guide-notification-icon yt-sprite'></span>" +
+                                "            <span class='appbar-guide-notification-text-content'></span>" +
+                                "        </span>" +
+                                "    </div>" +
+                                "</div>");
                             document.getElementsByClassName("yt-masthead-logo-container")[0].appendChild(notification);
                         }
                         document.getElementsByClassName("appbar-guide-notification-text-content")[0].textContent = userLang("GLB_SVE_SETS");
@@ -733,7 +712,7 @@
                     bodyContainer.insertBefore(pWrapper, pageContainer);
                     eventHandler(pWrapper, "click", navigateSettings);
                 }
-                document[isChrome ? "body" : "documentElement"].scrollTop = 0;
+                document[(isChrome && "body") || "documentElement"].scrollTop = 0;
             }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
             buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
@@ -840,12 +819,12 @@
                 comments = document.getElementById("watch-discussion");
             function showComments() {
                 comments.classList.toggle("show");
-                wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show")) ? "HIDE_CMTS" : "SHOW_CMTS");
+                wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show") && "HIDE_CMTS") || "SHOW_CMTS");
             }
             if (comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
-                wrapper = string2HTML("<div id='P-show-comments' class='yt-card'>\n" +
-                    "    <button class='yt-uix-button yt-uix-button-expander' ytplus='tnd|SHOW_CMTS'></button>\n" +
-                    "</div>\n");
+                wrapper = string2HTML("<div id='P-show-comments' class='yt-card'>" +
+                    "    <button class='yt-uix-button yt-uix-button-expander' ytplus='tnd|SHOW_CMTS'></button>" +
+                    "</div>");
                 eventHandler(wrapper, "click", showComments);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
@@ -875,18 +854,23 @@
         }
         function argsCleaner(config) {
             function clearRVS(rvs) {
+                var i,
+                    author,
+                    newrvs = [];
                 rvs = rvs.split(",");
-                function blacklistMatch(names) {
-                    var i = rvs.length;
-                    while (i) {
-                        i -= 1;
-                        if (decodeURIComponent(rvs[i]).replace(/\+/g, " ").split(parSets.blacklist[names]).length > 1) {
-                            rvs.splice(i, 1);
-                        }
+                i = rvs.length;
+                while (i) {
+                    i -= 1;
+                    author = false;
+                    if (rvs[i].split("author").length > 1) {
+                        author = rvs[i].split(/\=|&/g);
+                        author = decodeURIComponent(author[author.indexOf("author") + 1]).replace(/\+/g, " ");
+                    }
+                    if (!author || JSON.stringify(parSets.blacklist).split(author).length < 2) {
+                        newrvs.unshift(rvs[i]);
                     }
                 }
-                Object.keys(parSets.blacklist).forEach(blacklistMatch);
-                return rvs.join(",");
+                return newrvs.join(",");
             }
             if (config.args.video_id) {
                 config.args.autohide = "2";
@@ -1007,7 +991,7 @@
                 }
                 function floaterControl(event) {
                     if (event.target.id === "part_floaterui_scrolltop") {
-                        document[isChrome ? "body" : "documentElement"].scrollTop = 0;
+                        document[(isChrome && "body") || "documentElement"].scrollTop = 0;
                     } else if (event.target.id === "part_floaterui_reset") {
                         set("customFloater", false);
                         updatePos();
@@ -1029,11 +1013,11 @@
                 }
                 if (videoPlayer) {
                     if (!floaterUI) {
-                        floaterUI = string2HTML("<div id='part_floaterui'>\n" +
-                            "    <button id='part_floaterui_move' ytplus='ttl|VID_PLR_ALVIS_MOVE'></button>\n" +
-                            "    <button id='part_floaterui_reset' ytplus='ttl|VID_PLR_ALVIS_RST'></button>\n" +
-                            "    <button id='part_floaterui_scrolltop' ytplus='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>\n" +
-                            "</div>\n");
+                        floaterUI = string2HTML("<div id='part_floaterui'>" +
+                            "    <button id='part_floaterui_move' ytplus='ttl|VID_PLR_ALVIS_MOVE'></button>" +
+                            "    <button id='part_floaterui_reset' ytplus='ttl|VID_PLR_ALVIS_RST'></button>" +
+                            "    <button id='part_floaterui_scrolltop' ytplus='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>" +
+                            "</div>");
                         eventHandler(document, "mousemove", customFloaterPosition);
                         eventHandler(document, "mouseup", customFloaterPosition);
                         eventHandler(document, "mousedown", floaterControl);
@@ -1079,10 +1063,10 @@
                 button.href = "/watch_videos?title=" + listTitle + "&video_ids=" + list;
             }
             if (parSets.GEN_SUB_LIST && window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
-                button = string2HTML("<li id='subscription-playlist-icon'>\n" +
-                    "    <a id='subscription-playlist' ytplus='ttl|SUB_PLST' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>\n" +
-                    "        <span class='yt-uix-button-content'></span>\n" +
-                    "    </a>\n" +
+                button = string2HTML("<li id='subscription-playlist-icon'>" +
+                    "    <a id='subscription-playlist' ytplus='ttl|SUB_PLST' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>" +
+                    "        <span class='yt-uix-button-content'></span>" +
+                    "    </a>" +
                     "</li>");
                 navMenu.insertBefore(button, navMenu.firstChild);
                 eventHandler(button, "click", initSubPlaylist);
@@ -1110,10 +1094,10 @@
             }
             function playerState(state) {
                 if (parSets.fullBrs) {
-                    document.documentElement.classList[(state < 5 && state > 0) ? "add" : "remove"]("part_fullbrowser");
+                    document.documentElement.classList[(state < 5 && state > 0 && "add") || "remove"]("part_fullbrowser");
                 }
                 if (parSets.lightsOut) {
-                    document.documentElement.classList[(state < 5 && state > 0) ? "add" : "remove"]("part_cinema_mode");
+                    document.documentElement.classList[(state < 5 && state > 0 && "add") || "remove"]("part_cinema_mode");
                 }
             }
             function volumeChanged(event) {
@@ -1496,9 +1480,9 @@
             }
             function createButton(type, label, bool, call) {
                 var navCtrls = document.getElementsByClassName("playlist-nav-controls")[0],
-                    button   = string2HTML("<button ytplus='ttp|" + label + "&ttl|" + label + "' class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip" + (((bool === true || href.split(bool).length > 1) && " yt-uix-button-toggled") || '') + "'' type='button' id='" + type + "'>\n" +
-                        "    <span class='yt-uix-button-icon yt-uix-button-icon-watch-appbar-" + type + "-video-list'></span>\n" +
-                        "</button>\n");
+                    button   = string2HTML("<button ytplus='ttp|" + label + "&ttl|" + label + "' class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip" + (((bool === true || href.split(bool).length > 1) && " yt-uix-button-toggled") || '') + "'' type='button' id='" + type + "'>" +
+                        "    <span class='yt-uix-button-icon yt-uix-button-icon-watch-appbar-" + type + "-video-list'></span>" +
+                        "</button>");
                 plBar.className = plBar.className.replace("radio-playlist", "");
                 eventHandler(button, "click", call);
                 navCtrls.appendChild(button);
@@ -1520,144 +1504,29 @@
                 cnslBtn     = document.getElementById("console-button"),
                 cnslCont    = document.getElementById("advanced-options"),
                 controls    = document.getElementById("player-console"),
-                videoPlayer = document.getElementsByTagName("video")[0],
-                storyBoard  = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
+                videoPlayer = document.getElementsByTagName("video")[0];
             function hookButtons() {
                 var loopButton  = controls.querySelector("#loop-button"),
                     fullBrowser = controls.querySelector("#fullbrowser-button"),
                     cinemaMode  = controls.querySelector("#cinemamode-button"),
                     frameStep   = controls.querySelector("#framestep-button");
                 function togglePlay() {
-                    var autoPlay = document.getElementById("autoplay-button");
                     set("VID_PLR_ATPL", !parSets.VID_PLR_ATPL);
-                    autoPlay.classList[(parSets.VID_PLR_ATPL) ? "add" : "remove"]("active");
+                    document.getElementById("autoplay-button").classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("active");
                 }
                 function toggleLoop(event) {
                     videoPlayer = document.getElementsByTagName("video")[0];
                     if (videoPlayer) {
                         videoPlayer.loop = event ? !parSets.loopVid : parSets.loopVid;
                         if (event) {
-                            loopButton.classList[(!parSets.loopVid) ? "add" : "remove"]("active");
+                            loopButton.classList[(!parSets.loopVid && "add") || "remove"]("active");
                         }
                     }
                     set("loopVid", loopButton.classList.contains("active"));
                 }
-                function toggleMap() {
-                    var seekMap   = document.getElementById("seek-map"),
-                        container = document.getElementById("seek-thumb-map") || false,
-                        thumbs    = [],
-                        thumbControls,
-                        thumbsContainer,
-                        matrix,
-                        base;
-                    storyBoard = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.storyboard_spec;
-                    function centerThumb() {
-                        var thumbJump;
-                        videoPlayer = document.getElementsByTagName("video")[0];
-                        thumbsContainer = document.getElementById("seek-thumbs");
-                        thumbJump = thumbsContainer && thumbsContainer.getElementsByTagName("span")[1];
-                        if (thumbJump) {
-                            if (videoPlayer && videoPlayer.currentTime > 0 && !container.classList.contains("invisible")) {
-                                thumbsContainer.scrollLeft = (thumbJump.offsetWidth + 10) * (videoPlayer.currentTime / thumbJump.getAttribute("data-time-jump")) - (thumbsContainer.offsetWidth / 2) + ((thumbJump.offsetWidth + 10) / 2);
-                            } else {
-                                thumbsContainer.scrollLeft = 0;
-                            }
-                        }
-                    }
-                    function clickManager(event) {
-                        var timeJump = event.target.getAttribute("data-time-jump"),
-                            quality  = event.target.className.split("quality").length;
-                        if (timeJump) {
-                            if (videoPlayer.src !== "") {
-                                videoPlayer.currentTime = timeJump;
-                            } else {
-                                window.yt.www.watch.player.seekTo(timeJump);
-                            }
-                        }
-                        if (quality > 1 && event.target.tagName === "DIV") {
-                            container.className = event.target.className;
-                            thumbsContainer.remove();
-                            thumbsContainer = string2HTML("<div id='seek-thumbs'>" + thumbs[event.target.className.replace("quality-", "")] + "</div>\n");
-                            container.appendChild(thumbsContainer);
-                            centerThumb();
-                        }
-                    }
-                    function removeOld() {
-                        if (container) {
-                            container.remove();
-                            seekMap.classList.remove("active");
-                        }
-                        eventHandler(container, "click", clickManager);
-                        eventHandler(window, "spfdone", removeOld, false, "remove");
-                    }
-                    function parseThumbs() {
-                        thumbControls = "<div id='seek-controls'>\n";
-                        function matrixIterator(qualities, level) {
-                            var i,
-                                currentBase,
-                                details,
-                                thumbAmount,
-                                frameAmount = 0,
-                                gridX       = 0,
-                                gridY       = 0;
-                            level -= 1;
-                            if (qualities.split("storyboard").length < 2 && qualities.split("default").length < 2) {
-                                details = qualities.split("#");
-                                currentBase = base.replace("$L", level).replace("$N", details[6]);
-                                thumbAmount = details[2] - 1;
-                                for (i = 0; i < thumbAmount; i += 1) {
-                                    if (!thumbs[level]) {
-                                        thumbs[level] = "";
-                                    }
-                                    thumbs[level] +=
-                                        "<span class='quality-" + level + "'" +
-                                        " data-time-jump='" + ((i * details[5]) / 1000) + "'" +
-                                        " style='background-image: url(" + currentBase.replace('$M', frameAmount) + "?sigh=" + details[7] + ");" +
-                                        " background-position: -" + (gridX * details[0]) + "px -" + (gridY * details[1]) + "px;" +
-                                        " width: " + (details[0] - 2) + "px; height: " + ((details[1] % 2 === 0) ? details[1] : details[1] - 1) + "px;'>\n" +
-                                        "    <div class='timer'>" + timeConv((i * details[5]) / 1000) + "</div>\n" +
-                                        "</span>\n";
-                                    if (gridX === details[3] - 1 && gridY === details[4] - 1) {
-                                        frameAmount += 1;
-                                        gridY = gridX = 0;
-                                    } else {
-                                        gridY = (gridX === details[3] - 1) ? gridY + 1 : gridY;
-                                        gridX = (gridX === details[3] - 1) ? 0 : gridX + 1;
-                                    }
-                                }
-                            }
-                            level += 1;
-                            if (level > 1) {
-                                thumbControls += "<div class='quality-" + (level - 1) + "' ytplus='tnd|" + ((level < 3 && "CNSL_SKMP_SMAL") || (level < 4 && "CNSL_SKMP_MED") || (level < 5 && "CNSL_SKMP_LRGE")) + "'></div>\n";
-                            }
-                        }
-                        matrix.forEach(matrixIterator);
-                        thumbControls += "</div>\n";
-                    }
-                    if (storyBoard) {
-                        matrix = storyBoard && storyBoard.split("|");
-                        base = matrix[0];
-                        if (!container) {
-                            seekMap.classList.toggle("active");
-                            parseThumbs();
-                            container = string2HTML("<div id='seek-thumb-map' class='" + ((thumbs[2] && "quality-2") || (thumbs[1] && "quality-1")) + "''>\n" +
-                                thumbControls +
-                                "    <div id='seek-thumbs'>" + (thumbs[2] || thumbs[1]) + "</div>\n" +
-                                "</div>\n");
-                            document.getElementById("movie_player").appendChild(container);
-                            centerThumb();
-                            eventHandler(container, "click", clickManager);
-                            eventHandler(window, "spfdone", removeOld);
-                        } else if (container.id) {
-                            seekMap.classList.toggle("active");
-                            container.classList.toggle("invisible");
-                            centerThumb();
-                        }
-                    }
-                }
                 function dlThumb() {
                     var args     = window.ytplayer.config.args,
-                        base     = (args.iurl_webp) ? "_webp" : "",
+                        base     = (args.iurl_webp && "_webp") || "",
                         thumbURL = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
                     window.open(thumbURL);
                 }
@@ -1715,17 +1584,17 @@
                     eventHandler(document, "keydown", exitFullBrowser);
                     eventHandler(document, "click", exitFullBrowser);
                     set("fullBrs", event ? !parSets.fullBrs : true);
-                    fullBrowser.classList[(parSets.fullBrs) ? "add" : "remove"]("active");
+                    fullBrowser.classList[(parSets.fullBrs && "add") || "remove"]("active");
                     if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
-                        document.documentElement.classList[(parSets.fullBrs) ? "add" : "remove"]("part_fullbrowser");
+                        document.documentElement.classList[(parSets.fullBrs && "add") || "remove"]("part_fullbrowser");
                     }
                 }
                 function toggleCinemaMode(event) {
                     var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
                     set("lightsOut", event ? !parSets.lightsOut : true);
-                    cinemaMode.classList[(parSets.lightsOut) ? "add" : "remove"]("active");
+                    cinemaMode.classList[(parSets.lightsOut && "add") || "remove"]("active");
                     if (event && plrState) {
-                        document.documentElement.classList[(parSets.lightsOut) ? "add" : "remove"]("part_cinema_mode");
+                        document.documentElement.classList[(parSets.lightsOut && "add") || "remove"]("part_cinema_mode");
                     }
                 }
                 function toggleFrames(event) {
@@ -1752,7 +1621,7 @@
                             }
                         } else if (event.type === "click" && event.target.id === "framestep-button") {
                             set("frameStep", !parSets.frameStep);
-                            frameStep.classList[(parSets.frameStep) ? "add" : "remove"]("active");
+                            frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
                         }
                     }
                     if (frameStep && frameStep.classList.contains("active")) {
@@ -1764,32 +1633,21 @@
                 function handleToggles(event) {
                     switch (event.target.id) {
                     case "autoplay-button":
-                        togglePlay();
-                        break;
+                        return togglePlay();
                     case "loop-button":
-                        toggleLoop(event);
-                        break;
-                    case "seek-map":
-                        toggleMap();
-                        break;
+                        return toggleLoop(event);
                     case "save-thumbnail-button":
-                        dlThumb();
-                        break;
+                        return dlThumb();
                     case "screenshot-button":
-                        saveSS();
-                        break;
+                        return saveSS();
                     case "sidebar-button":
-                        openSidebar();
-                        break;
+                        return openSidebar();
                     case "fullbrowser-button":
-                        toggleFullBrowser(event);
-                        break;
+                        return toggleFullBrowser(event);
                     case "cinemamode-button":
-                        toggleCinemaMode(event);
-                        break;
+                        return toggleCinemaMode(event);
                     case "framestep-button":
-                        toggleFrames(event);
-                        break;
+                        return toggleFrames(event);
                     }
                 }
                 eventHandler(cnslCont, "click", handleToggles);
@@ -1823,17 +1681,16 @@
                 if (controls) {
                     controls.remove();
                 }
-                controls = string2HTML("<div id='player-console'>\n" +
-                    "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL) ? " active" : "") + "' ytplus='ttp|CNSL_AP''></div>\n" +
-                    "    <div id='loop-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_RPT'></div>\n" +
-                    "    <div id='seek-map' class='yt-uix-tooltip' ytplus='ttp|" + (storyBoard ? "CNSL_SKMP" : "CNSL_SKMP_OFF") + "'" + ((!storyBoard) ? "style='opacity:0.2;'" : "") + "></div>\n" +
-                    "    <div id='save-thumbnail-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_SVTH'></div>\n" +
-                    "    <div id='screenshot-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_SS''></div>\n" +
-                    "    <div id='sidebar-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_SDBR'" + ((window.opener) ? " style='display:none'" : "") + "></div>\n" +
-                    "    <div id='fullbrowser-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_FLBR'></div>\n" +
-                    "    <div id='cinemamode-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_CINM_MD'></div>\n" +
-                    "    <div id='framestep-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_FRME'></div>\n" +
-                    "</div>\n");
+                controls = string2HTML("<div id='player-console'>" +
+                    "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL && " active") || "") + "' ytplus='ttp|CNSL_AP''></div>" +
+                    "    <div id='loop-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_RPT'></div>" +
+                    "    <div id='save-thumbnail-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_SVTH'></div>" +
+                    "    <div id='screenshot-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_SS''></div>" +
+                    "    <div id='sidebar-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_SDBR'" + ((window.opener && " style='display:none'") || "") + "></div>" +
+                    "    <div id='fullbrowser-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_FLBR'></div>" +
+                    "    <div id='cinemamode-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_CINM_MD'></div>" +
+                    "    <div id='framestep-button' class='yt-uix-tooltip' ytplus='ttp|CNSL_FRME'></div>" +
+                    "</div>");
                 cnslCont.appendChild(controls);
                 hookButtons();
                 if (parSets.advOpts) {
