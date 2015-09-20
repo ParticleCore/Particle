@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     0.6.5
+// @version     0.6.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -818,6 +818,9 @@
             var wrapper,
                 comments = document.getElementById("watch-discussion");
             function showComments() {
+                if (comments.lazyload) {
+                    window.spf.load(comments.lazyload[0], comments.lazyload[1]);
+                }
                 comments.classList.toggle("show");
                 wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show") && "HIDE_CMTS") || "SHOW_CMTS");
             }
@@ -1082,7 +1085,7 @@
                     eventHandler(document.documentElement, "click", alwaysActive, true, "remove");
                     return;
                 }
-                if (event.target.tagName === "IFRAME" || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target))) {
+                if (event.target.tagName === "IFRAME" || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
                     return;
                 }
                 if (["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0) {
@@ -1128,6 +1131,17 @@
             }
         }
         function scriptExit(event) {
+            function commentsLoad(originalFunction) {
+                return function () {
+                    var args     = arguments,
+                        comments = document.getElementById("watch-discussion");
+                    if (comments && !comments.lazyload && !comments.classList.contains("show") && args[0].split("comments").length > 1) {
+                        comments.lazyload = args;
+                    } else {
+                        return originalFunction.apply(this, args);
+                    }
+                };
+            }
             function baseDetour(originalFunction) {
                 return function () {
                     originalFunction.apply(this, arguments);
@@ -1274,6 +1288,9 @@
             if ((event && event.target && event.target.getAttribute("name") === "html5player/html5player") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
                 window.html5Patched = true;
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
+            }
+            if (event && event.target && event.target.getAttribute("name") === "spf/spf") {
+                window.spf.load = commentsLoad(window.spf.load);
             }
         }
         function thumbMod() {
