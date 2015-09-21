@@ -2,7 +2,7 @@
     "title": "YouTube Plus",
     "name": "particle",
     "id": "particle@particlecore.github.io",
-    "version": "0.6.6",
+    "version": "0.6.7",
     "description": "YouTube with more freedom",
     "main": "main.js",
     "author": "Yonez",
@@ -21,5 +21,5 @@
         "value": "{}",
         "hidden": true
     }],
-    "updateURL": "https://raw.githubusercontent.com/ParticleCore/Particle/firefox-update.rdf"
+    "updateURL": "https://github.com/ParticleCore/Particle/raw/master/bin/update.rdf"
 }

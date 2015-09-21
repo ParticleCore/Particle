@@ -5,13 +5,13 @@
         <em:type>2</em:type>
         <em:bootstrap>true</em:bootstrap>
         <em:unpack>false</em:unpack>
-        <em:version>0.6.6</em:version>
+        <em:version>0.6.7</em:version>
         <em:name>YouTube Plus</em:name>
         <em:description>YouTube with more freedom</em:description>
         <em:creator>Yonez</em:creator>
         <em:optionsURL>data:text/xml,&lt;placeholder/&gt;</em:optionsURL>
         <em:optionsType>2</em:optionsType>
-        <em:updateURL>https://raw.githubusercontent.com/ParticleCore/Particle/firefox-update.rdf</em:updateURL>
+        <em:updateURL>https://github.com/ParticleCore/Particle/raw/master/bin/update.rdf</em:updateURL>
 
         <em:targetApplication>
             <Description>
