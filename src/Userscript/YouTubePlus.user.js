@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version     0.6.6
+// @version     0.6.7
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1135,7 +1135,7 @@
                 return function () {
                     var args     = arguments,
                         comments = document.getElementById("watch-discussion");
-                    if (comments && !comments.lazyload && !comments.classList.contains("show") && args[0].split("comments").length > 1) {
+                    if (comments && !comments.lazyload && parSets.VID_HIDE_COMS === "1" && !comments.classList.contains("show") && args[0].split("comments").length > 1) {
                         comments.lazyload = args;
                     } else {
                         return originalFunction.apply(this, args);
