@@ -1,0 +1,1088 @@
+/* start| Playlist spacer */
+    @media screen and (min-width: 640px){
+        .part_playlist_spacer #watch-appbar-playlist{
+            margin-left: 0 !important;
+        }
+    }
+/*   end| Playlist spacer */
+/* start| Ads visibility */
+    .part_no_ads #header, .part_no_ads #feed-pyv-container, .part_no_ads .video-list-item:not(.related-list-item), .part_no_ads .pyv-afc-ads-container, .part_no_ads .ad-div{
+        display: none;
+    }
+/*   end| Ads visibility */
+/* start| Hide video details */
+    .part_hide_details #action-panel-details{
+        display: none;
+    }
+/*   end| Hide video details */
+/* start| Disable blue glow */
+    .part_dsbl_glow .yt-uix-button:focus, .part_dsbl_glow .yt-uix-button:focus:hover{
+        box-shadow: initial !important;
+    }
+/*   end| Disable blue glow */
+/* start| Hide footer */
+    .part_hide_footer #footer-container{
+        display: none;
+    }
+    .part_hide_footer #body-container{
+        padding-bottom: initial;
+    }
+/*   end| Hide footer */
+/* start| Compact video title */
+    .part_compact_title #watch7-headline #eow-title{
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+/*   end| Compact video title */
+/* start| Compact thumbnail titles */
+    .part_compact_titles .feed-item-container .yt-ui-ellipsis, .part_compact_titles .yt-shelf-grid-item .yt-ui-ellipsis{
+        white-space: nowrap !important;
+        display: inherit !important;
+    }
+/*   end| Compact thumbnail titles */
+/* start| Floater player */
+    html.floater:not([data-player-size='fullscreen']) #player #player-api{
+        left: initial !important;
+        margin: 0 auto !important;
+        transform: none;
+    }
+    html.floater:not([data-player-size='fullscreen']) #player #movie_player:not(.ytp-fullscreen){
+        box-shadow: 0 0 10px rgb(0, 0, 0);
+        position: fixed !important;
+    }
+    html.floater:not([data-player-size='fullscreen']) #player #movie_player:not(.ytp-fullscreen){
+        z-index: 10;
+    }
+    @media screen and (max-width: 640px){
+        #player-api{
+            height: auto !important;
+            left: 0 !important;
+            margin: 0 auto !important;
+            max-width: 1280px !important;
+            position: relative !important;
+            right: 0 !important;
+            width: 100% !important;
+        }
+        #player-api:before{
+            content: '';
+            display: block;
+            padding-top: 56.25%;
+        }
+        #player, #placeholder-player{
+            margin-top: -10px !important;
+        }
+        #placeholder-player{
+            display: none !important;
+        }
+        #movie_player {
+            box-shadow: 0 0 10px #000;
+            height: initial !important;
+            position: fixed !important;
+            top: 52px !important;
+            width: 100% !important;
+        }
+        #movie_player:after {
+            content: '';
+            display: block;
+            padding-top: 56.25%;
+        }
+       .watch-stage-mode #player, .watch-stage-mode #placeholder-player{
+            margin-top: -10px;
+        }
+       .playlist-videos-list{
+            max-height: 170px !important;
+        }
+       #content{
+            margin-top: 10px !important;
+        }
+    }
+    #part_floaterui{
+        font-size: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        text-align: center;
+        top: 0;
+        transition: opacity .25s cubic-bezier(0, 0, .2, 1);
+        width: 100%;
+        z-index: 1000;
+    }
+    #part_floaterui:after{
+        box-shadow: inset 0 120px 90px -90px rgba(8, 8, 8, .8);
+        content: '';
+        height: 120px;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        z-index: -1;
+    }
+    @media screen and (min-width: 640px){
+        .floater:not([data-player-size='fullscreen']) #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
+            opacity: 1;
+            pointer-events: initial;
+        }
+    }
+    #part_floaterui > button{
+        cursor: pointer;
+        height: 22px;
+        margin: 5px;
+        width: 22px;
+    }
+    #part_floaterui_move{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 -284px;
+    }
+    #part_floaterui_reset{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 -308px;
+    }
+    #part_floaterui_scrolltop{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 -332px;
+        position: absolute;
+        right: 0;
+    }
+/*   end| Floater player */
+/* start| Labelless video buttons */
+    .part_labelless_buttons #watch8-secondary-actions{
+        left: 0 !important;
+    }
+    .part_labelless_buttons #watch8-secondary-actions .yt-uix-button-content{
+        display: none;
+    }
+    .part_labelless_buttons #watch8-secondary-actions button{
+        padding: 0;
+    }
+/*   end| Labelless video buttons */
+/* start| Hide comments */
+    .part_hide_comments #watch-discussion:not(.show){
+        height: 0;
+        margin-bottom: 0;
+        margin-top: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding-bottom: 0;
+        padding-top: 0;
+    }
+    @media screen and (max-width: 640px){
+       .part_hide_comments #P-show-comments{
+          display: none;
+       }
+    }
+    .part_hide_comments #P-show-comments button{
+        border-top: none;
+        padding-top: 2px;
+    }
+/*   end| Hide comments */
+/* start| Custom styles */
+    #body #uploaded-videos{
+        color: #666;
+        display: initial;
+        font-size: 11px;
+        font-weight: initial;
+        overflow: initial;
+        vertical-align: initial;
+    }
+    .yt-user-info > span{
+        color: #666;
+        font-size: 11px;
+    }
+    .invisible{
+        display: none;
+    }
+    #subscription-playlist-icon{
+        margin-right: -20px;
+    }
+    #subscription-playlist:hover span{
+        opacity: 1;
+    }
+    #subscription-playlist span{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 2px -19px;
+        display: block;
+        height: 100%;
+        opacity: .4;
+        width: 20px;
+    }
+    #blacklist-import, #blacklist-export{
+        margin-top: 10px;
+    }
+    #blacklist a{
+        font-weight: normal !important;
+    }
+    #blacklist a:not(:hover){
+        color: #666666;
+    }
+    #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -65px;
+        height: 24px;
+        width: 24px;
+    }
+    #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -45px;
+        height: 24px;
+        width: 24px;
+    }
+/*   end| Custom styles */
+/* start| Player console */
+    #watch-header{
+        position: relative;
+    }
+    .part_fullbrowser div#movie_player.playing-mode, .part_fullbrowser div#movie_player.paused-mode{
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+    }
+    .part_fullbrowser body{
+        overflow: hidden;
+    }
+    .part_fullbrowser #masthead-positioner{
+        z-index: initial;
+    }
+    #advanced-options{
+        background: inherit;
+        min-height: 20px;
+        min-width: 25px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .part_fullbrowser #advanced-options{
+        z-index: initial;
+    }
+    #console-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -22px -16px;
+        cursor: pointer;
+        height: 20px;
+        opacity: .5;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 25px;
+        z-index: 1;
+    }
+    #console-button:hover{
+        opacity: .8;
+    }
+    #player-console{
+        background: inherit;
+        display: none;
+        font-size: 0;
+        position: relative;
+        right: 2px;
+        top: 17px;
+        text-align: center;
+    }
+    .player-console #player-console{
+        display: block;
+    }
+    #player-console > div{
+        cursor: pointer;
+        height: 30px;
+        opacity: .4;
+        padding: 0 4px;
+        position: relative;
+    }
+    #player-console:before{
+        background: inherit;
+        content: '';
+        height: 100%;
+        position: absolute;
+        width: 100%;
+    }
+    #player-console > div.active{
+        opacity: .8 !important;
+    }
+    #player-console > div:hover{
+        opacity: .6;
+    }
+    #autoplay-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -19px;
+        width: 16px;
+    }
+    #save-thumbnail-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -230px;
+        width: 24px;
+    }
+    #seek-map{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -86px;
+        width: 18px;
+    }
+    #screenshot-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -158px;
+        width: 22px;
+    }
+    #sidebar-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -110px;
+        width: 22px;
+    }
+    #loop-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -182px;
+        width: 20px;
+    }
+    #fullbrowser-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -134px;
+        width: 20px;
+    }
+    #cinemamode-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -206px;
+        width: 20px;
+    }
+    #framestep-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -254px;
+        width: 20px;
+    }
+/*   end| Player console */
+/* start| Seek thumbs */
+    #seek-thumb-map{
+        font-size: 0;
+        overflow: auto;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        white-space: nowrap;
+        z-index: 940;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+    }
+    #seek-controls{
+        background: rgba(0, 0, 0, .8);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        bottom: 100%;
+        display: inline-block;
+        left: 50%;
+        padding: 5px 5px 0;
+        position: relative;
+        transform: translateX(-50%);
+    }
+    #seek-controls > div{
+        color: rgba(255,255,255, .4);
+        cursor: pointer;
+        font-size: 10px;
+        display: inline;
+        font-size: 10px;
+        margin: 5px;
+    }
+    .quality-1 .quality-1, .quality-2 .quality-2, .quality-3 .quality-3{
+        color: rgba(255,255,255, .7) !important;
+    }
+    #seek-controls > div:hover{
+        color: #F1F1F1 !important;
+    }
+    #seek-thumbs{
+        background: rgba(0, 0, 0, .8);
+        overflow: auto;
+    }
+    #seek-thumbs span{
+        display: inline-block;
+        margin: 10px 5px 20px;
+        position: relative;
+    }
+    #seek-thumbs .timer{
+        font-size: 11px;
+        line-height: 20px;
+        position: absolute;
+        text-align: center;
+        top: 100%;
+        width: 100%;
+    }
+/*   end| Seek thumbs */
+/* start| Screenshot window */
+    #screenshot-result{
+        bottom: 15px;
+        box-shadow: 0 0 15px #000000;
+        font-size: 0;
+        margin: 5px;
+        max-height: calc(100% - 90px);
+        max-width: 420px;
+        overflow: hidden;
+        position: fixed;
+        right: 15px;
+        width: 30%;
+        z-index: 1000;
+    }
+    #screenshot-result > canvas{
+        width: 100%;
+    }
+    #close-screenshot{
+        background: rgba(0, 0, 0, .5);
+        border-top-left-radius: 5px;
+        color: #F1F1F1;
+        cursor: pointer;
+        font-size: 10px;
+        padding: 5px;
+        position: absolute;
+        right: 0;
+        text-transform: uppercase;
+        bottom: 0;
+    }
+    #close-screenshot:hover{
+        background: rgba(0, 0, 0, .8);
+    }
+/*   end| Screenshot window */
+/* start| Sidebar mode */
+    .yt-pl-thumb .sidebarmode, .thumb-wrapper .sidebarmode, .yt-lockup-thumbnail .sidebarmode{
+        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -24px -72px;
+        bottom: 0;
+        color: #666;
+        cursor: pointer;
+        display: none;
+        font-size: 12px;
+        height: 17px;
+        left: 0;
+        line-height: 1;
+        position: absolute;
+        width: 17px;
+    }
+/*   end| Sidebar mode */
+/* start| Thumb buttons */
+    .yt-pl-thumb .blacklist, .thumb-wrapper .blacklist, .yt-lockup-thumbnail .blacklist{
+        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -24px -57px;
+        color: #666;
+        cursor: pointer;
+        display: none;
+        font-size: 12px;
+        height: 17px;
+        line-height: 1;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 17px;
+    }
+    .thumb-wrapper:hover .blacklist, .yt-lockup-thumbnail:hover .blacklist, .yt-pl-thumb:hover .blacklist, .yt-pl-thumb:hover .sidebarmode, .thumb-wrapper:hover .sidebarmode, .yt-lockup-thumbnail:hover .sidebarmode{
+        display: initial;
+    }
+/*   end| Thumb buttons */
+/* start| Grid layout */
+    .part_grid_subs .feed-item-container .branded-page-module-title, .part_grid_subs .feed-item-container .yt-lockup-description, .part_grid_search #results .yt-lockup-description{
+        display: none !important;
+        height: 0 !important;
+    }
+    .part_grid_subs div#browse-items-primary, .part_grid_search #results {
+        font-size: 0;
+        margin-right: -15px;
+        padding: 15px;
+        padding-right: 0;
+    }
+    .part_grid_subs div#browse-items-primary .section-list > li, .part_grid_search #results .item-section > li{
+        display: inline-block;
+        margin-bottom: 20px;
+        margin-right: 10px;
+        vertical-align: top;
+        width: 196px;
+        word-wrap: break-word;
+    }
+    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{
+        margin-bottom: initial;
+        margin-right: initial;
+    }
+    .part_grid_subs div#browse-items-primary .item-section .feed-item-container, .part_grid_search #results .item-section > li .yt-lockup{
+        border: initial;
+        padding: initial;
+    }
+    .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{
+        left: initial;
+        opacity: 0;
+        position: absolute;
+        right: -9px !important;
+        width: 20px;
+    }
+    .part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{
+        opacity: 1;
+    }
+    .part_grid_subs .shelf-item .shelf-title-table{
+        position: absolute;
+        top: 110px;
+        z-index: 1;
+    }
+    .part_grid_subs .shelf-title-table ul, .part_grid_subs .shelf-title-table iframe{
+        left: initial !important;
+        right: 20px !important;
+    }
+    .part_grid_subs div#browse-items-primary .yt-lockup-thumbnail, .part_grid_search #results .yt-lockup-thumbnail{
+        float: initial !important;
+    }
+    .part_grid_subs div#browse-items-primary .yt-lockup-meta, .part_grid_subs div#browse-items-primary .yt-lockup-byline, .part_grid_search #results .yt-lockup-meta{
+        font-size: 11px;
+        max-width: 196px;
+    }
+    .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal, .part_grid_search #results .yt-lockup-title{
+        font-size: 13px;
+        margin-top: 4px;
+        margin-bottom: 1px;
+        max-width: 176px;
+    }
+    .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
+        white-space: nowrap;
+    }
+    .part_grid_search #results .yt-lockup-playlist-items, .part_grid_search #results .yt-lockup-badges, .part_grid_subs .yt-lockup-badges, .part_grid_subs .yt-uix-livereminder, .part_grid_search .yt-uix-livereminder, .part_grid_search #results .exploratory-section, .part_grid_search #results .compact-shelf{
+        display: none;
+    }
+    .part_grid_subs .yt-lockup-meta-info > li, .part_grid_search .yt-lockup-meta-info > li{
+        display: inline;
+    }
+    .part_grid_search #results .item-section{
+        float: left;
+    }
+    .part_grid_search .search .branded-page-v2-body{
+        overflow: hidden;
+    }
+    .part_grid_search .webkit #results .yt-ui-ellipsis{
+        display: block;
+    }
+/*   end| Grid layout */
+/* start| Enhancements */
+    :focus{
+        outline: none;
+    }
+    :-moz-focus-inner{
+        border: 0;
+    }
+    input[type='checkbox'], input[type='radio']{
+        opacity: 0;
+    }
+    .signin-container{
+        margin-right: 10px;
+    }
+    #body-container{
+        position: relative;
+    }
+    #logo-container{
+        height: 33px;
+    }
+    .branded-page-related-channels-item .yt-close{
+        z-index: 1;
+    }
+    .show-guide #appbar-guide-menu{
+        border-bottom: 1px solid #E8E8E8;
+        border-right: 1px solid #E8E8E8;
+        box-shadow: none;
+    }
+    .search #content{
+        max-width: 1003px;
+        width: initial;
+    }
+    #theater-background, #watch7-sidebar, #watch-appbar-playlist{
+        transition: none !important;
+    }
+    .part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{
+        bottom: 0;
+        height: initial !important;
+        top: 0;
+    }
+    #footer-container{
+        max-width: initial;
+    }
+    #player-unavailable:not(.hid) + #player-api{
+        display: none;
+    }
+    @media screen and (min-width: 640px){
+        #movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{
+            left: initial !important;
+            max-height: 100%;
+            max-width: 100%;
+            min-height: 100%;
+            min-width: 100%;
+            position: initial;
+            top: initial !important;
+        }
+    }
+    @media screen and (max-width: 640px){
+        #theater-background, #footer-container{
+            display: none;
+        }
+        #player-playlist{
+            margin-top: 10px;
+        }
+        #watch-appbar-playlist{
+            margin-left: auto !important;
+            top: 0 !important;
+            transform: initial !important;
+        }
+        #player-playlist .watch-playlist{
+            height: 270px !important;
+        }
+    }
+    #page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{
+       min-width: 0 !important;
+    }
+    .html5-video-container{
+       height: 100%;
+    }
+    .part_grid_subs #browse-items-primary .item-section > li > .yt-lockup-tile, .part_grid_subs #browse-items-primary .item-section > li > .multirow-shelf, .part_grid_subs .browse-list-item-container.feed-item-container.branded-page-box, .part_grid_subs .compact-shelf.branded-page-box, .part_grid_subs .c4-featured-content.branded-page-box{
+       width: initial;
+    }
+    .ytp-thumbnail-overlay, .ytp-large-play-button{
+       transition-delay: initial !important;
+    }
+    #movie_player .video-ads .ad-container:not(.ad-overlay){
+       top: 0;
+    }
+/*   end| Enhancements */
+/* start| Improved notification button */
+    .part_notif_button #appbar-main-guide-notification-container{
+        top: 1px !important;
+        left: 100% !important;
+        opacity: 0;
+        visibility: hidden;
+    }
+    .part_notif_button #appbar-main-guide-notification-container .appbar-guide-notification{
+        height: 27px !important;
+    }
+    .part_notif_button .show-guide-button-notification #appbar-main-guide-notification-container{
+        visibility: visible;
+        opacity: 1;
+    }
+    .part_notif_button #appbar-main-guide-notification-container{
+        transition: visibility .3s linear .1s, opacity .3s linear .1s;
+    }
+    .part_notif_button #appbar-guide-button-notification-check{
+        display: none !important;
+    }
+    .part_notif_button .show-guide-button-notification #appbar-guide-button{
+        opacity: 1 !important;
+    }
+/*   end| Improved notification button */
+/* start| Static normal mode */
+    @media screen and (min-width: 640px){
+        .part_static_size .watch-non-stage-mode .player-width, .part_static_size .watch-non-stage-mode #watch7-content{
+            width: 640px;
+        }
+        .part_static_size .watch-non-stage-mode .player-height{
+            height: 390px;
+        }
+        .part_static_size .watch-non-stage-mode .player-height{
+            height: 360px;
+        }
+        .part_static_size .watch-non-stage-mode #watch7-sidebar{
+            margin-left: 650px;
+            top: 0;
+        }
+        .part_static_size .watch.watch-non-stage-mode #content.content-alignment, .part_static_size .watch.watch-non-stage-mode #player.content-alignment{
+            max-width: 1066px;
+        }
+        .part_static_size .watch-non-stage-mode #watch-appbar-playlist{
+            left: 650px;
+        }
+    }
+/*   end| Static normal mode */
+/* start| Fit player in theater mode */
+    .part_fit_theater .watch-stage-mode #player-api, .part_fit_theater .watch-stage-mode #player-unavailable{
+        height: auto !important;
+        left: 0 !important;
+        margin: 0 auto !important;
+        max-width: 1280px;
+        position: relative;
+        right: 0;
+        width: 100%;
+    }
+    .part_fit_theater .watch-stage-mode #player-api:before, .part_fit_theater .watch-stage-mode #player-unavailable:before{
+        content: '';
+        display: block;
+        padding-top: 56.25%;
+    }
+    @media screen and (min-width: 640px){
+        .part_fit_theater .watch-stage-mode #movie_player{
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .part_fit_theater .watch-stage-mode #watch-appbar-playlist{
+            top: 10px;
+        }
+        .part_fit_theater .watch-stage-mode #watch-appbar-playlist{
+            transform: none !important;
+        }
+    }
+    .part_fit_theater .watch-stage-mode #placeholder-player{
+        display: none;
+    }
+    .part_fit_theater .watch-stage-mode #content{
+        margin-top: 10px;
+    }
+/*   end| Fit player in theater mode */
+/* start| Cinema mode */
+    #movie_player:before, #masthead-positioner:before{
+        bottom: 0;
+        content: '';
+        left: 0;
+        pointer-events: none;
+        position: fixed;
+        right: 0;
+        top: 0;
+        transition: background-color 1s;
+        z-index: 1;
+    }
+    .part_cinema_mode #movie_player:before, .part_cinema_mode #masthead-positioner:before{
+        background-color: rgba(0, 0, 0, .9);
+    }
+    .part_cinema_mode .html5-video-player{
+        overflow: initial;
+    }
+/*   end| Cinema mode */
+/* start| Particle settings */
+    #P-settings{
+        background: #f1f1f1;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        right: 0;
+        z-index: 1000;
+    }
+    #P-container{
+        margin: 10px auto 0;
+        max-width: 1262px;
+    }
+    .guide-pinned.show-guide .guide-pinning-enabled #P-container{
+        padding-left: 230px;
+    }
+    #P-sidebar, #P-content{
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+        box-sizing: border-box;
+    }
+    #P-sidebar{
+        background: #1e1e1e;
+        color: grey;
+        float: left;
+        width: 195px;
+        margin-right: 10px;
+        padding: 10px 0;
+    }
+    #P-sidebar-list > li{
+        color: grey;
+        padding: 0 21px;
+        cursor: pointer;
+        font-size: 11px;
+        line-height: 24px;
+    }
+    #P-sidebar-list > li:hover{
+        color: #1e1e1e;
+        background: #f6f6f6;
+    }
+    #P-sidebar-list > li.selected{
+        color: #FFF;
+        font-weight: 500;
+        background-color: #CC181E;
+    }
+    #P-content{
+        background: #FFF;
+        color: #666;
+        overflow: hidden;
+        padding-bottom: 40px;
+        padding-left: 15px;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    #P-content h2{
+        color: #333;
+        float: left;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 20px;
+    }
+    #P-content h3{
+        color: #555;
+        font-size: 14px;
+        font-weight: 500;
+        margin: 30px 0 16px;
+    }
+    #P-content br{
+        clear: both;
+    }
+    #P-content div{
+        display: block;
+        line-height: 26px;
+        overflow: hidden;
+        position: relative;
+    }
+    #P-content div:first-child{
+        overflow: initial;
+    }
+    #P-content div a{
+        font-weight: 500;
+        opacity: 0;
+    }
+    #P-content div:hover a, #P-content div a:not([title]){
+        opacity: 1;
+    }
+    #P-content label{
+        line-height: 26px;
+    }
+    #P-content input{
+        display: none;
+        margin-left: 25px;
+    }
+    #P-content input + label{
+        position: relative;
+        margin-left: 25px;
+    }
+    #P-content input + label:before{
+        cursor: pointer;
+        border: 1px solid #c6c6c6;
+        content: '';
+        left: -25px;
+        height: 14px;
+        position: absolute;
+        top: 5px;
+        width: 14px;
+    }
+    #P-content input:checked + label:before{
+        border: 1px solid #36649c;
+    }
+    #P-content input[type='text']{
+        position: relative;
+        display: initial;
+        margin-left: 5px;
+    }
+    #P-content input[type='text'] + label{
+        float: left;
+        margin-left: 0;
+    }
+    #P-content input[type='text'] + label:before{
+        display: none;
+    }
+    #P-content input[type='radio'] + label{
+        display: inline-block;
+    }
+    #P-content input[type='radio'] + label:before{
+        border-radius: 50%;
+        left: -20px;
+    }
+    #P-content input[type='checkbox'] + label{
+        display: inline-block;
+    }
+    #P-content input[type='checkbox']:checked + label:before{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -26px -90px;
+    }
+    #P-content input[type='radio']:checked + label:before{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -26px -106px;
+    }
+    #P-content select{
+        background-image: linear-gradient(#FCFCFC, #F8F8F8);
+        border: 1px solid #d3d3d3;
+        color: #333 !important;
+        cursor: pointer;
+        font-family: arial,sans-serif;
+        font-size: 11px;
+        font-weight: bold;
+        height: 26px;
+        margin-left: 5px;
+        padding: 0 2em 0 1em;
+        text-shadow: none;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+    }
+    #P-content select option{
+        padding: 0 1em;
+    }
+    .P-header{
+        height: 20px;
+        margin: 0;
+        padding: 24px 0 0;
+    }
+    .P-save, .P-reset, .P-impexp, .P-implang{
+        background: #167AC6;
+        border-color: #167AC6;
+        border-radius: 2px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        float: right;
+        font-size: 11px;
+        font-weight: 500;
+        height: 28px;
+        line-height: normal;
+        margin-right: 20px;
+        margin-top: -5px;
+        outline: 0 none;
+        padding: 0 20px;
+        vertical-align: middle;
+        white-space: nowrap;
+        word-wrap: normal;
+    }
+    .P-impexp, .P-implang{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -22px 6px;
+        border: 1px solid transparent;
+        box-shadow: none;
+        opacity: .5;
+        padding: 0 13px;
+    }
+    .P-implang{
+        background: none;
+        color: #666;
+        margin-right: 0;
+    }
+    .P-impexp:hover, .P-implang:hover{
+        opacity: 1;
+    }
+    .P-reset{
+        background-color: #F8F8F8;
+        border: 1px solid #D3D3D3;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
+        opacity: 1;
+        color: #333;
+    }
+    .P-reset:hover{
+        background: #F0F0F0;
+        border-color: #C6C6C6;
+    }
+    .P-reset:active{
+        background: #E9E9E9;
+    }
+    .P-save:hover{
+        background: #126DB3;
+    }
+    .P-save:active{
+        background: #095B99;
+    }
+    .P-horz{
+        border-bottom: 0 none;
+        border-top: 1px solid #e2e2e2;
+        height: 0;
+        margin: 20px 0 0 -15px;
+        position: relative;
+    }
+    #P-settings select{
+        color: transparent !important;
+        text-shadow: 0 0 0 #333;
+    }
+    #P-settings .P-select{
+        display: inline;
+        position: relative;
+    }
+    #P-settings .P-select:after{
+        content: '';
+        border: 1px solid transparent;
+        border-width: 4px 4px 0;
+        border-top-color: #666;
+        pointer-events: none;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+    }
+    #P-settings option{
+        color: #000;
+        text-shadow: none;
+    }
+    #P::-moz-focus-inner, #P-settings button::-moz-focus-inner{
+        border: 0;
+        padding: 0;
+    }
+    #P-sidebar-list a{
+        color: #808080;
+        display: block;
+        padding: 0 21px;
+        text-decoration: none;
+    }
+    #P-sidebar-list #HLP a:hover{
+        color: #1E1E1E;
+    }
+    #exp-cont{
+        background-color: #FFF;
+        bottom: 0;
+        position: absolute !important;
+        top: 80px;
+        width: calc(100% - 30px);
+    }
+    #DNT, #HLP{
+        padding: 0 !important;
+    }
+    #DNT{
+        position: relative;
+    }
+    #DNT:hover a{
+        color: #F1F1F1;
+    }
+    #DNT:hover:after{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -28px -37px;
+        content: '';
+        height: 18px;
+        margin-top: -9px;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        width: 15px;
+    }
+    #DNT:hover{
+        background: linear-gradient(to right, #167AC6 50%, #F6F6F6) !important;
+    }
+    #blacklist{
+        margin: 10px 15px 0 0;
+    }
+    #blacklist-controls{
+        margin-bottom: 10px;
+    }
+    #blacklist .blacklist{
+        border: 1px solid #C6C6C6;
+        cursor: default;
+        display: inline-block;
+        overflow: hidden !important;
+        padding: 0 10px;
+        position: relative;
+    }
+    #blacklist .blacklist .close{
+        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -25px -58px;
+        border: 1px solid #C6C6C6;
+        border-left: none;
+        border-top: none;
+        color: #666;
+        cursor: pointer;
+        display: none;
+        height: 17px;
+        font-size: 10px;
+        font-weight: 500;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 17px;
+    }
+    #blacklist .blacklist:hover .close{
+        display: initial;
+    }
+    #blacklist-edit span, #blacklist-save span, #blacklist-close span{
+        pointer-events: none;
+    }
+    #blacklist.edit .blacklist, #blacklist.edit #blacklist-edit, #blacklist:not(.edit) #blacklist-save, #blacklist:not(.edit) #blacklist-close, #blacklist:not(.edit) #blacklist-edit-list{
+        display: none;
+    }
+    #blacklist-edit-list, #impexp-list{
+        font-family: Consolas, Lucida Console, monospace;
+        height: 200px;
+        width: calc(100% - 10px);
+    }
+    #impexp-save, #implang-save{
+        margin-bottom: 10px;
+    }
+    #impexp-save span, #implang-save span{
+        pointer-events: none;
+    }
+    #impexp-list{
+        height: calc(100% - 80px);
+    }
+    #yt-masthead #P{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 0 4px;
+        cursor: pointer;
+        height: 28px;
+        margin-right: 10px;
+        opacity: .55;
+        vertical-align: middle;
+        width: 19px;
+    }
+    @media screen and (max-width: 640px){
+        #yt-masthead #P{
+            display: none;
+        }
+    }
+    #yt-masthead #P:hover{
+        opacity: .85;
+    }
+    .P-hide{
+        display: none;
+    }
+/*   end| Particle settings */

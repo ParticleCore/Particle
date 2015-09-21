@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+    <Description about="urn:mozilla:extension:particle@particlecore.github.io">
+        <em:updates>
+            <Seq>
+                <li>
+                    <Description>
+                        <em:version>0.6.7</em:version>
+                        <em:targetApplication>
+                            <Description>
+                                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                                <em:minVersion>38.0</em:minVersion>
+                                <em:maxVersion>44.0</em:maxVersion>
+                                <em:updateLink>https://github.com/ParticleCore/Particle/raw/master/dist/YouTubePlus.xpi</em:updateLink>
+                            </Description>
+                        </em:targetApplication>
+                    </Description>
+                </li>
+            </Seq>
+        </em:updates>
+    </Description>
+</RDF>
