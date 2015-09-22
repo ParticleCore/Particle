@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
-        <em:id>particle@particlecore.github.io</em:id>
+        <em:id>unlisted-particle@particlecore.github.io</em:id>
         <em:type>2</em:type>
         <em:bootstrap>true</em:bootstrap>
         <em:unpack>false</em:unpack>
-        <em:version>0.6.7</em:version>
+        <em:version>0.6.8</em:version>
         <em:name>YouTube Plus</em:name>
         <em:description>YouTube with more freedom</em:description>
         <em:creator>Yonez</em:creator>

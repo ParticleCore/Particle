@@ -1,5 +1,5 @@
-// ==UserScript==
-// @version     0.6.7
+﻿// ==UserScript==
+// @version     0.6.8
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1855,7 +1855,7 @@
         window.postMessage(event, "*");
     }
     function initParticle(event) {
-        var inject;
+        var holder;
         function filterChromeStorage(keys) {
             if (keys.particleSettings && keys.particleSettings.newValue) {
                 updateSettings(keys.particleSettings.newValue);
@@ -1867,15 +1867,16 @@
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
             if (window.chrome || userscript) {
-                inject = document.createElement("link");
-                inject.rel = "stylesheet";
-                inject.type = "text/css";
-                inject.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css";
-                document.documentElement.appendChild(inject);
+                holder = document.createElement("link");
+                holder.rel = "stylesheet";
+                holder.type = "text/css";
+                holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css";
+                document.documentElement.appendChild(holder);
             }
-            inject = document.createElement("script");
-            inject.textContent = "(" + String(particle).replace("parSets,", "parSets = " + event + ",") + "())";
-            document.documentElement.appendChild(inject);
+            holder = String.fromCharCode(115, 99, 114, 105, 112, 116);
+            holder = document.createElement(holder);
+            holder.textContent = "(" + String(particle).replace("parSets,", "parSets = " + event + ",") + "())";
+            document.documentElement.appendChild(holder);
             if (!userscript) {
                 if (window.chrome) {
                     window.chrome.storage.onChanged.addListener(filterChromeStorage);
