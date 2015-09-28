@@ -9,7 +9,7 @@ function settingsHandler(worker) {
     function settingsGate(event) {
         if (event.set && typeof event.set === "object") {
             simpleStorage.storage.particleSettings = event.set;
-            simplePrefs.prefs["parSets"] = (simplePrefs.prefs["parSets"] > "0" && "0") || "1";
+            simplePrefs.prefs.parSets = (simplePrefs.prefs.parSets > "0" && "0") || "1";
         }
     }
     function detachGhosts() {

@@ -214,12 +214,12 @@
         color: #666666;
     }
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -65px;
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -66px;
         height: 24px;
         width: 24px;
     }
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -45px;
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -46px;
         height: 24px;
         width: 24px;
     }
@@ -579,17 +579,6 @@
     #player-unavailable:not(.hid) + #player-api{
         display: none;
     }
-    @media screen and (min-width: 640px){
-        #movie_player:not(.ended-mode) .html5-progress-bar, #movie_player:not(.ended-mode) video{
-            left: initial !important;
-            max-height: 100%;
-            max-width: 100%;
-            min-height: 100%;
-            min-width: 100%;
-            position: initial;
-            top: initial !important;
-        }
-    }
     @media screen and (max-width: 640px){
         #theater-background, #footer-container{
             display: none;
@@ -608,9 +597,6 @@
     }
     #page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{
        min-width: 0 !important;
-    }
-    .html5-video-container{
-       height: 100%;
     }
     .part_grid_subs #browse-items-primary .item-section > li > .yt-lockup-tile, .part_grid_subs #browse-items-primary .item-section > li > .multirow-shelf, .part_grid_subs .browse-list-item-container.feed-item-container.branded-page-box, .part_grid_subs .compact-shelf.branded-page-box, .part_grid_subs .c4-featured-content.branded-page-box{
        width: initial;
