@@ -709,6 +709,8 @@
         right: 0;
         top: 0;
         transition: background-color 1s;
+    }
+    #masthead-positioner:before{
         z-index: 1;
     }
     .part_cinema_mode #movie_player:before, .part_cinema_mode #masthead-positioner:before{
