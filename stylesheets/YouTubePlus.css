@@ -604,7 +604,7 @@
         display: block;
         padding-top: 56.25%;
     }
-    .html5-video-container video{
+    #movie_player:not(.ended-mode) .html5-video-container video{
         height: 100% !important;
         left: 0 !important;
         top: 0 !important;
