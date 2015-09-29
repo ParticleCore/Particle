@@ -596,7 +596,13 @@
         }
     }
     .html5-video-container{
-        position: initial !important;
+        position: absolute;
+        width: 100%;
+    }
+    .html5-video-container:after{
+        content: '';
+        display: block;
+        padding-top: 56.25%;
     }
     .html5-video-container video{
         height: 100% !important;
@@ -709,6 +715,8 @@
         right: 0;
         top: 0;
         transition: background-color 1s;
+    }
+    #masthead-positioner:before{
         z-index: 1;
     }
     .part_cinema_mode #movie_player:before, .part_cinema_mode #masthead-positioner:before{
