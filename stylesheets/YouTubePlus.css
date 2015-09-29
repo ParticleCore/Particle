@@ -596,6 +596,7 @@
         }
     }
     .html5-video-container{
+        height: 100%;
         position: absolute;
         width: 100%;
     }
