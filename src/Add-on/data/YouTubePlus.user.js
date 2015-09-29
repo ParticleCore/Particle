@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.6.9
+// @version     0.7.0
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -815,7 +815,6 @@
                 var link,
                     span,
                     user,
-                    verified,
                     name = document.getElementsByClassName("yt-user-info")[0];
                 function videoCounter() {
                     link.href = window.location.origin + "/channel/" + user.getAttribute("data-ytid") + "/videos";
@@ -823,13 +822,6 @@
                     span.textContent = " · ";
                     name.appendChild(span);
                     name.appendChild(link);
-                    verified = document.getElementsByClassName("yt-channel-title-icon-verified")[0];
-                    if (verified) {
-                        user.className += " yt-uix-tooltip";
-                        user.setAttribute("data-tooltip-text", verified.getAttribute("data-tooltip-text"));
-                        user.style.color = "#167ac6";
-                        verified.remove();
-                    }
                 }
                 function getPLInfo(details) {
                     details = details.target.responseText;
@@ -960,7 +952,6 @@
                 return newrvs.join(",");
             }
             if (config.args.video_id) {
-                config.args.autohide = "2";
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
                 if (parSets.VID_DFLT_QLTY !== "auto") {
@@ -1163,6 +1154,7 @@
             }
         }
         function playerReady() {
+            var video;
             function alwaysActive(event) {
                 var x,
                     y,
@@ -1196,8 +1188,15 @@
             function sizeChanged(event) {
                 set("theaterMode", event);
             }
+            function cueVideo(event) {
+                if (!event.target.initiated) {
+                    event.target.initiated = true;
+                    api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                }
+            }
             if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
+                video = document.getElementsByTagName("video")[0];
                 eventHandler(api, "onStateChange", playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
                     eventHandler(api, "onVolumeChange", volumeChanged);
@@ -1209,11 +1208,14 @@
                     api.setVolume(parSets.volLev);
                 }
                 if (parSets.loopVid) {
-                    document.getElementsByTagName("video")[0].loop = parSets.loopVid;
+                    video.loop = parSets.loopVid;
                 }
                 if (parSets.VID_PLR_ALACT) {
                     eventHandler(document.documentElement, "focus", alwaysActive, true);
                     eventHandler(document.documentElement, "mouseup", alwaysActive, true);
+                }
+                if (!parSets.VID_PLR_ATPL) {
+                    eventHandler(video, "emptied", cueVideo);
                 }
             }
         }
@@ -1246,7 +1248,7 @@
                     originalFunction.apply(this, args);
                     if (api) {
                         if (!parSets.VID_PLR_ATPL) {
-                            api.stopVideo();
+                            api.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                         api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
@@ -1352,7 +1354,7 @@
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         moviePlayer = document.getElementById("movie_player");
                         if (moviePlayer && !parSets.VID_PLR_ATPL) {
-                            moviePlayer.stopVideo();
+                            moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
                 };
@@ -1979,8 +1981,7 @@
                 holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css";
                 document.documentElement.appendChild(holder);
             }
-            holder = String.fromCharCode(99, 114, 101, 97, 116, 101, 69, 108, 101, 109, 101, 110, 116);
-            holder = document[holder](String.fromCharCode(115, 99, 114, 105, 112, 116));
+            holder = document.createElement("script");
             holder.textContent = hold;
             document.documentElement.appendChild(holder);
             if (!userscript) {
