@@ -606,6 +606,7 @@
     }
     .html5-video-container video{
         height: 100% !important;
+        top: 0 !important;
         width: 100% !important;
     }
     #page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{
