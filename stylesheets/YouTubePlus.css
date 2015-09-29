@@ -595,6 +595,13 @@
             height: 270px !important;
         }
     }
+    .html5-video-container{
+        position: initial !important;
+    }
+    .html5-video-container video{
+        height: 100% !important;
+        width: 100% !important;
+    }
     #page.watch .content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .yt-base-gutter, .watch #content.content-alignment, .watch.watch-non-stage-mode #player.content-alignment, .watch.watch-stage-mode #player-playlist.watch-player-playlist{
        min-width: 0 !important;
     }
