@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.7.1
+// @version     0.7.2
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -1200,6 +1200,7 @@
                     event.target.initiated = true;
                     api.cueVideoByPlayerVars(window.ytplayer.config.args);
                     eventHandler([video, "emptied", cueVideo, false, "remove"]);
+                    eventHandler([video, "play", cueVideo, false, "remove"]);
                 }
             }
             if (!document.getElementById("c4-player")) {
@@ -1224,6 +1225,7 @@
                 }
                 if (!parSets.VID_PLR_ATPL) {
                     eventHandler([video, "emptied", cueVideo]);
+                    eventHandler([video, "play", cueVideo]);
                 }
             }
         }
