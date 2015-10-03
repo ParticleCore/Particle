@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.7.0
+// @version     0.7.1
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -17,11 +17,11 @@
     var userscript = typeof GM_info === "object";
     function particle() {
         var api,
-            parSets,
             playerInstance,
-            events    = [],
+            events    = {},
             channelId = {},
             isChrome  = typeof window.chrome === "object",
+            parSets   = JSON.parse(document.documentElement.getAttribute("parSets")),
             defSets   = {
                 GEN_BTTR_NTF    : true,
                 GEN_SUB_LIST    : true,
@@ -185,31 +185,31 @@
             parSets[setting] = newValue;
             window.postMessage({set: parSets}, "*");
         }
-        function eventHandler(target, event, call, capture, type) {
-            if (target.events && target.events[event] && target.events[event][call.name]) {
-                target.removeEventListener(event, target.events[event][call.name], !!capture);
-                delete target.events[event][call.name];
-                if (JSON.stringify(target.events[event]) === "{}") {
-                    delete target.events[event];
+        function eventHandler(event) {
+            var i,
+                keys,
+                type       = event[1] || event.type,
+                target     = event[0] || event.target,
+                listener   = event[2],
+                useCapture = !!event[3];
+            if (Array.isArray(event)) {
+                if (event[4] && events[type] && events[type][listener.name]) {
+                    delete events[type][listener.name];
+                    if (Object.keys(events[type]).length === 0) {
+                        target.removeEventListener(type, eventHandler, useCapture);
+                        delete events[type];
+                    }
+                } else if (!event[4]) {
+                    target.addEventListener(type, eventHandler, useCapture);
+                    events[type] = events[type] || {};
+                    events[type][listener.name] = listener;
                 }
-            }
-            if (!type) {
-                target.addEventListener(event, call, !!capture);
-                target.events = target.events || {};
-                target.events[event] = target.events[event] || {};
-                target.events[event][call.name] = call;
-                if (events.indexOf(target) < 0 && (String(target)).split("HTML").length > 1) {
-                    events.push(target);
-                }
-            }
-        }
-        function clearOrphans() {
-            var i = events.length;
-            while (i) {
-                i -= 1;
-                if (!document.contains(events[i])) {
-                    events[i].remove();
-                    events.splice(i, 1);
+            } else if (events[type]) {
+                keys = Object.keys(events[type]);
+                i = keys.length;
+                while (i) {
+                    i -= 1;
+                    events[type][keys[i]](event);
                 }
             }
         }
@@ -780,21 +780,23 @@
                     event.target.className = "selected";
                 }
             }
-            function settingsTemplate() {
+            function settingsTemplate(event) {
                 var bodyContainer,
                     pageContainer,
                     pWrapper = document.getElementById("P-settings");
-                if (pWrapper) {
-                    pWrapper.remove();
-                } else {
-                    bodyContainer = document.getElementById("body-container");
-                    pageContainer = document.getElementById("page-container");
-                    pWrapper = template("MEN");
-                    pWrapper.getElementById("P-container").appendChild(template("GEN"));
-                    bodyContainer.insertBefore(pWrapper, pageContainer);
-                    eventHandler(document.getElementById("P-settings"), "click", navigateSettings);
+                if (event.target.id === "P") {
+                    if (pWrapper) {
+                        pWrapper.remove();
+                    } else {
+                        bodyContainer = document.getElementById("body-container");
+                        pageContainer = document.getElementById("page-container");
+                        pWrapper = template("MEN");
+                        pWrapper.getElementById("P-container").appendChild(template("GEN"));
+                        bodyContainer.insertBefore(pWrapper, pageContainer);
+                        eventHandler([document, "click", navigateSettings]);
+                    }
+                    document[(isChrome && "body") || "documentElement"].scrollTop = 0;
                 }
-                document[(isChrome && "body") || "documentElement"].scrollTop = 0;
             }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
             buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
@@ -802,7 +804,7 @@
                 settingsButton = document.createElement("button");
                 settingsButton.id = "P";
                 settingsButton.setAttribute("title", userLang("YTSETS"));
-                eventHandler(settingsButton, "click", settingsTemplate);
+                eventHandler([document, "click", settingsTemplate]);
                 if (buttonNotif) {
                     buttonsSection.insertBefore(settingsButton, buttonNotif);
                 } else {
@@ -848,7 +850,7 @@
                     } else {
                         localXHR(
                             "GET",
-                            "/playlist?spf=navigate&list=" + user.getAttribute("data-ytid").replace("UC", "UU"),
+                            "/playlist?spf=true&list=" + user.getAttribute("data-ytid").replace("UC", "UU"),
                             getPLInfo
                         );
                     }
@@ -871,10 +873,11 @@
                         }
                     }
                 }
-                if (watchTime && window.ytplayer && window.ytplayer.config) {
+                if (watchTime && !watchTime.fetching && window.ytplayer && window.ytplayer.config) {
+                    watchTime.fetching = true;
                     localXHR(
                         "GET",
-                        "/channel/" + window.ytplayer.config.args.ucid + "/search?query='" + window.ytplayer.config.args.video_id + "'&spf=navigate",
+                        "/channel/" + window.ytplayer.config.args.ucid + "/search?query=%22" + window.ytplayer.config.args.video_id + "%22&spf=true",
                         getCHInfo
                     );
                 }
@@ -891,12 +894,14 @@
         function commentsButton() {
             var wrapper,
                 comments = document.getElementById("watch-discussion");
-            function showComments() {
-                if (comments.lazyload) {
-                    window.spf.load(comments.lazyload[0], comments.lazyload[1]);
+            function showComments(event) {
+                if (event.target.parentNode.id === "P-show-comments") {
+                    if (comments.lazyload) {
+                        window.spf.load(comments.lazyload[0], comments.lazyload[1]);
+                    }
+                    comments.classList.toggle("show");
+                    wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show") && "HIDE_CMTS") || "SHOW_CMTS");
                 }
-                comments.classList.toggle("show");
-                wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show") && "HIDE_CMTS") || "SHOW_CMTS");
             }
             if (comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
                 wrapper = document.createElement("template");
@@ -904,7 +909,7 @@
                     "    <button class='yt-uix-button yt-uix-button-expander' ytplus='tnd|SHOW_CMTS'></button>" +
                     "</div>";
                 wrapper = setLocale(wrapper.content).firstChild;
-                eventHandler(wrapper, "click", showComments);
+                eventHandler([document, "click", showComments]);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
         }
@@ -968,7 +973,7 @@
                 if (config.args.cc_load_policy && parSets.VID_PLR_CC) {
                     config.args.cc_load_policy = "0";
                     try {
-                        localStorage["yt-html5-player-modules::subtitlesModuleData::module-enabled"] = false;
+                        window.localStorage["yt-html5-player-modules::subtitlesModuleData::module-enabled"] = false;
                     } catch (ignore) {}
                 }
                 if (parSets.VID_PLR_INFO) {
@@ -1020,7 +1025,7 @@
                     floaterUI       = document.getElementById("part_floaterui");
                 function updatePos() {
                     if (!document.documentElement.classList.contains("floater")) {
-                        return eventHandler(window, "resize", updatePos, false, "remove");
+                        return eventHandler([window, "resize", updatePos, false, "remove"]);
                     }
                     sidebar = document.getElementById("watch7-sidebar");
                     sidebarSize = sidebar.getBoundingClientRect();
@@ -1062,8 +1067,8 @@
                         oldPosX = event.clientX;
                         oldPosY = event.clientY;
                     } else if (!document.getElementById("part_floaterui")) {
-                        eventHandler(document, "mousemove", customFloaterPosition, false, "remove");
-                        eventHandler(document, "mouseup", customFloaterPosition, false, "remove");
+                        eventHandler([document, "mousemove", customFloaterPosition, false, "remove"]);
+                        eventHandler([document, "mouseup", customFloaterPosition, false, "remove"]);
                     }
                 }
                 function floaterControl(event) {
@@ -1081,11 +1086,11 @@
                         minOffsetY = Math.abs(event.clientY - videoPlayer.offsetTop) + 51;
                         customFloaterPosition(event);
                     } else if (!document.getElementById("part_floaterui")) {
-                        eventHandler(document, "mousedown", floaterControl, false, "remove");
+                        eventHandler([document, "mousedown", floaterControl, false, "remove"]);
                     }
                 }
                 if (!sidebar) {
-                    eventHandler(window, "scroll", initFloater, false, "remove");
+                    eventHandler([window, "scroll", initFloater, false, "remove"]);
                     return;
                 }
                 if (videoPlayer) {
@@ -1097,27 +1102,27 @@
                             "    <button id='part_floaterui_scrolltop' ytplus='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>" +
                             "</div>";
                         floaterUI = setLocale(floaterUI.content).firstChild;
-                        eventHandler(document, "mousemove", customFloaterPosition);
-                        eventHandler(document, "mouseup", customFloaterPosition);
-                        eventHandler(document, "mousedown", floaterControl);
+                        eventHandler([document, "mousemove", customFloaterPosition]);
+                        eventHandler([document, "mouseup", customFloaterPosition]);
+                        eventHandler([document, "mousedown", floaterControl]);
                         videoPlayer.appendChild(floaterUI);
                     }
                     if (outOfSight && !isFloater) {
                         document.documentElement.classList.add("floater");
-                        eventHandler(window, "resize", updatePos);
+                        eventHandler([window, "resize", updatePos]);
                         updatePos();
                     } else if (!outOfSight && isFloater) {
                         document.documentElement.classList.remove("floater");
-                        eventHandler(window, "resize", updatePos, false, "remove");
+                        eventHandler([window, "resize", updatePos, false, "remove"]);
                         videoPlayer.removeAttribute("style");
                     }
                 }
             }
             if (parSets.VID_PLR_ALVIS) {
                 if (window.location.pathname === "/watch") {
-                    eventHandler(window, "scroll", initFloater);
+                    eventHandler([window, "scroll", initFloater]);
                 } else if (window.location.pathname !== "/watch") {
-                    eventHandler(window, "scroll", initFloater, false, "remove");
+                    eventHandler([window, "scroll", initFloater, false, "remove"]);
                 }
             }
         }
@@ -1128,18 +1133,20 @@
                 navMenu   = document.getElementById("channel-navigation-menu"),
                 listTitle = document.getElementsByClassName("appbar-nav-menu")[0],
                 videoList = document.getElementsByClassName("addto-watch-later-button");
-            function initSubPlaylist() {
-                i = videoList.length;
-                while (i) {
-                    i -= 1;
-                    if (i > -1) {
-                        list.push(videoList[i].getAttribute("data-video-ids"));
+            function initSubPlaylist(event) {
+                if (event.target.parentNode.id === "subscription-playlist") {
+                    i = videoList.length;
+                    while (i) {
+                        i -= 1;
+                        if (i > -1) {
+                            list.push(videoList[i].getAttribute("data-video-ids"));
+                        }
                     }
+                    list.reverse().join("%2C");
+                    listTitle = listTitle && listTitle.getElementsByClassName("epic-nav-item-heading")[0].textContent.trim();
+                    button = document.getElementById("subscription-playlist");
+                    button.href = "/watch_videos?title=" + listTitle + "&video_ids=" + list;
                 }
-                list.reverse().join("%2C");
-                listTitle = listTitle && listTitle.getElementsByClassName("epic-nav-item-heading")[0].textContent.trim();
-                button = document.getElementById("subscription-playlist");
-                button.href = "/watch_videos?title=" + listTitle + "&video_ids=" + list;
             }
             if (parSets.GEN_SUB_LIST && window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
                 button = document.createElement("template");
@@ -1150,7 +1157,7 @@
                     "</li>";
                 button = setLocale(button.content).firstChild;
                 navMenu.insertBefore(button, navMenu.firstChild);
-                eventHandler(button, "click", initSubPlaylist);
+                eventHandler([document, "click", initSubPlaylist]);
             }
         }
         function playerReady() {
@@ -1160,8 +1167,8 @@
                     y,
                     sets = document.getElementById("P-settings");
                 if (window.location.pathname !== "/watch") {
-                    eventHandler(document.documentElement, "focus", alwaysActive, true, "remove");
-                    eventHandler(document.documentElement, "click", alwaysActive, true, "remove");
+                    eventHandler([document.documentElement, "focus", alwaysActive, true, "remove"]);
+                    eventHandler([document.documentElement, "mouseup", alwaysActive, true, "remove"]);
                     return;
                 }
                 if (event.target.tagName === "IFRAME" || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
@@ -1174,12 +1181,12 @@
                     window.scrollTo(x, y);
                 }
             }
-            function playerState(state) {
+            function playerState(event) {
                 if (parSets.fullBrs) {
-                    document.documentElement.classList[(state < 5 && state > 0 && "add") || "remove"]("part_fullbrowser");
+                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_fullbrowser");
                 }
                 if (parSets.lightsOut) {
-                    document.documentElement.classList[(state < 5 && state > 0 && "add") || "remove"]("part_cinema_mode");
+                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_cinema_mode");
                 }
             }
             function volumeChanged(event) {
@@ -1189,20 +1196,21 @@
                 set("theaterMode", event);
             }
             function cueVideo(event) {
-                if (!event.target.initiated) {
+                if (event.target.tagName === "VIDEO" && !event.target.initiated) {
                     event.target.initiated = true;
                     api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                    eventHandler([video, "emptied", cueVideo, false, "remove"]);
                 }
             }
             if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
                 video = document.getElementsByTagName("video")[0];
-                eventHandler(api, "onStateChange", playerState);
+                api.addEventListener("onStateChange", playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
-                    eventHandler(api, "onVolumeChange", volumeChanged);
+                    api.addEventListener("onVolumeChange", volumeChanged);
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
-                    eventHandler(api, "SIZE_CLICKED", sizeChanged);
+                    api.addEventListener("SIZE_CLICKED", sizeChanged);
                 }
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
@@ -1211,11 +1219,11 @@
                     video.loop = parSets.loopVid;
                 }
                 if (parSets.VID_PLR_ALACT) {
-                    eventHandler(document.documentElement, "focus", alwaysActive, true);
-                    eventHandler(document.documentElement, "mouseup", alwaysActive, true);
+                    eventHandler([document.documentElement, "focus", alwaysActive, true]);
+                    eventHandler([document.documentElement, "mouseup", alwaysActive, true]);
                 }
                 if (!parSets.VID_PLR_ATPL) {
-                    eventHandler(video, "emptied", cueVideo);
+                    eventHandler([video, "emptied", cueVideo]);
                 }
             }
         }
@@ -1242,16 +1250,7 @@
                 return function () {
                     var args = arguments;
                     argsCleaner(args[1]);
-                    if (args[0].id === "upsell-video") {
-                        return originalFunction.apply(this, args);
-                    }
-                    originalFunction.apply(this, args);
-                    if (api) {
-                        if (!parSets.VID_PLR_ATPL) {
-                            api.cueVideoByPlayerVars(window.ytplayer.config.args);
-                        }
-                        api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                    }
+                    return originalFunction.apply(this, args);
                 };
             }
             function autoplayDetour(originalFunction) {
@@ -1271,7 +1270,7 @@
                         nextButton = document.getElementsByClassName("ytp-next-button")[0];
                         if (nextButton && nextButton.getAttribute("aria-disabled") === "true") {
                             nextButton.onclick = api.nextVideo;
-                            eventHandler(nextButton, "click", api.nextVideo);
+                            eventHandler(document, "click", api.nextVideo);
                             nextButton.setAttribute("aria-disabled", "false");
                         }
                         return false;
@@ -1330,8 +1329,7 @@
             }
             function html5Detour(originalFunction) {
                 return function () {
-                    var moviePlayer,
-                        args = arguments;
+                    var args = arguments;
                     function playerInstanceIterator(keys) {
                         function firstLevel(fl) {
                             if (typeof playerInstance[keys][fl] === "function" && String(playerInstance[keys][fl]).split("get_video_info").length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
@@ -1348,14 +1346,11 @@
                     }
                     args[1] = argsCleaner(args[1]);
                     if (args[0].id === "upsell-video") {
-                        originalFunction.apply(this, args);
+                        return originalFunction.apply(this, args);
                     } else if (typeof args[0] === "object") {
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
-                        moviePlayer = document.getElementById("movie_player");
-                        if (moviePlayer && !parSets.VID_PLR_ATPL) {
-                            moviePlayer.cueVideoByPlayerVars(window.ytplayer.config.args);
-                        }
+                        return playerInstance;
                     }
                 };
             }
@@ -1425,12 +1420,12 @@
                         attributeOldValue: true
                     });
                 }
-                if (event) {
+                if (event && (event.target.className === "yt-uix-tooltip sidebarmode" || event.target.className === "yt-uix-tooltip blacklist")) {
                     event.preventDefault();
                     event = event.target;
                     if (event.className === "yt-uix-tooltip sidebarmode") {
                         initSidebarMode();
-                    } else if (event.className === "yt-uix-tooltip blacklist") {
+                    } else {
                         initBlackList();
                     }
                 }
@@ -1454,12 +1449,12 @@
                 if (detailList[i]) {
                     if (parSets.GEN_SDBR_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName("sidebarmode")[0]) {
                         button = createButton("sidebarmode", detailList[i]);
-                        eventHandler(button, "click", initThumbMod);
+                        eventHandler([document, "click", initThumbMod]);
                         detailList[i].thumbfield.appendChild(button);
                     }
                     if (parSets.BLK_ON && window.location.href.split("/feed/subscriptions").length < 2 && !detailList[i].thumbfield.getElementsByClassName("blacklist")[0]) {
                         button = createButton("blacklist", detailList[i]);
-                        eventHandler(button, "click", initThumbMod);
+                        eventHandler([document, "click", initThumbMod]);
                         detailList[i].thumbfield.appendChild(button);
                     }
                 }
@@ -1552,9 +1547,9 @@
                 }
             }
             if (!event && parSets.VID_VOL_WHEEL) {
-                eventHandler(window, "wheel", volumeWheel);
+                eventHandler([document, "wheel", volumeWheel]);
             } else if (window.location.pathname !== "/watch") {
-                eventHandler(window, "wheel", volumeWheel, false, "remove");
+                eventHandler([document, "wheel", volumeWheel, false, "remove"]);
             }
         }
         function playlistControls() {
@@ -1580,15 +1575,19 @@
                 }
             }
             function reverseButton(event) {
-                event = isChrome ? event.target.parentNode : event.target;
-                event.classList.toggle("yt-uix-button-toggled");
-                set("plRev", (event.classList.contains("yt-uix-button-toggled")) ? window.yt.config_.LIST_ID : false);
-                reverseControl();
+                if (event.target.id === "reverse") {
+                    event = isChrome ? event.target.parentNode : event.target;
+                    event.classList.toggle("yt-uix-button-toggled");
+                    set("plRev", (event.classList.contains("yt-uix-button-toggled")) ? window.yt.config_.LIST_ID : false);
+                    reverseControl();
+                }
             }
             function autoplayButton(event) {
-                event = isChrome ? event.target.parentNode : event.target;
-                event.classList.toggle("yt-uix-button-toggled");
-                set("plApl", event.classList.contains("yt-uix-button-toggled"));
+                if (event.target.id === "autoplay") {
+                    event = isChrome ? event.target.parentNode : event.target;
+                    event.classList.toggle("yt-uix-button-toggled");
+                    set("plApl", event.classList.contains("yt-uix-button-toggled"));
+                }
             }
             function createButton(type, label, bool, call) {
                 var navCtrls = document.getElementsByClassName("playlist-nav-controls")[0],
@@ -1601,7 +1600,7 @@
                 button.content.firstChild.classList.add("yt-uix-button-icon-watch-appbar-" + type + "-video-list");
                 button = setLocale(button.content).firstChild;
                 plBar.className = plBar.className.replace("radio-playlist", "");
-                eventHandler(button, "click", call);
+                eventHandler([document, "click", call]);
                 navCtrls.appendChild(button);
             }
             if (plBar) {
@@ -1656,8 +1655,10 @@
                         canvas    = container.querySelector("canvas") || document.createElement("canvas"),
                         close     = document.createElement("div"),
                         context   = canvas.getContext("2d");
-                    function hideContainer() {
-                        container.classList.toggle("invisible");
+                    function hideContainer(event) {
+                        if (event.target.id === "close-screenshot") {
+                            container.classList.toggle("invisible");
+                        }
                     }
                     aspectRatio = video.videoWidth / video.videoHeight;
                     width = video.videoWidth;
@@ -1670,7 +1671,7 @@
                         container.appendChild(canvas);
                         close.id = "close-screenshot";
                         close.textContent = userLang("CNSL_SS_CLS");
-                        eventHandler(close, "click", hideContainer);
+                        eventHandler([document, "click", hideContainer]);
                         container.appendChild(close);
                         document.body.appendChild(container);
                     } else if (container.id && container.classList.contains("invisible")) {
@@ -1692,14 +1693,14 @@
                         if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || key.target.className.split("ytp-size").length > 1)) {
                             toggleFullBrowser(key);
                             if (key.type === "click") {
-                                eventHandler(document, "keydown", exitFullBrowser, false, "remove");
-                                eventHandler(document, "click", exitFullBrowser, false, "remove");
+                                eventHandler([document, "keydown", exitFullBrowser, false, "remove"]);
+                                eventHandler([document, "click", exitFullBrowser, false, "remove"]);
                                 key.target.click();
                             }
                         }
                     }
-                    eventHandler(document, "keydown", exitFullBrowser);
-                    eventHandler(document, "click", exitFullBrowser);
+                    eventHandler([document, "keydown", exitFullBrowser]);
+                    eventHandler([document, "click", exitFullBrowser]);
                     set("fullBrs", event ? !parSets.fullBrs : true);
                     fullBrowser.classList[(parSets.fullBrs && "add") || "remove"]("active");
                     if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
@@ -1742,9 +1743,9 @@
                         }
                     }
                     if (frameStep && frameStep.classList.contains("active")) {
-                        eventHandler(document, "keydown", toggleFrames);
+                        eventHandler([document, "keydown", toggleFrames]);
                     } else if (!frameStep || !frameStep.classList.contains("active")) {
-                        eventHandler(document, "keydown", toggleFrames, false, "remove");
+                        eventHandler([document, "keydown", toggleFrames, false, "remove"]);
                     }
                 }
                 function handleToggles(event) {
@@ -1767,7 +1768,7 @@
                         return toggleFrames(event);
                     }
                 }
-                eventHandler(cnslCont, "click", handleToggles);
+                eventHandler([document, "click", handleToggles]);
                 if (parSets.loopVid && !loopButton.classList.contains("active")) {
                     loopButton.classList.add("active");
                     toggleLoop();
@@ -1785,15 +1786,17 @@
                     toggleFrames();
                 }
             }
-            function toggleConsole() {
-                document.documentElement.classList.toggle("player-console");
-                set("advOpts", document.documentElement.classList.contains("player-console"));
+            function toggleConsole(event) {
+                if (event.target.id === "console-button") {
+                    document.documentElement.classList.toggle("player-console");
+                    set("advOpts", document.documentElement.classList.contains("player-console"));
+                }
             }
             if (window.location.pathname === "/watch" && header && !cnslBtn) {
                 cnslBtn = document.createElement("template");
                 cnslBtn.innerHTML = "<button id='console-button' ytplus='ttl|ADV_OPTS'></button>";
                 cnslBtn = setLocale(cnslBtn.content).firstChild;
-                eventHandler(cnslBtn, "click", toggleConsole);
+                eventHandler([document, "click", toggleConsole]);
                 cnslCont = document.createElement("template");
                 cnslCont.innerHTML = "<div id='advanced-options'></div>";
                 cnslCont = setLocale(cnslCont.content).firstChild;
@@ -1845,7 +1848,7 @@
                         channelLink = document.querySelectorAll("[href*='/user/']");
                         Object.keys(channelLink).forEach(linkIterator);
                     }
-                    eventHandler(document, "click", defaultChannelPage);
+                    eventHandler([document, "click", defaultChannelPage]);
                 }
             }
         }
@@ -1899,7 +1902,6 @@
             commentsButton();
             defaultChannelPage();
             generalChanges();
-            clearOrphans();
         }
         function request(event) {
             var listAfter   = event.detail.url.split("list=").length > 1,
@@ -1940,17 +1942,18 @@
         if (!parSets || Object.keys(parSets).length < 1) {
             parSets = defSets;
         } else {
+            document.documentElement.removeAttribute("parSets");
             checkNewFeatures();
         }
         if (isChrome) {
-            eventHandler(document.documentElement, "load", scriptExit, true);
+           eventHandler([document.documentElement, "load", scriptExit, true]);
         } else {
-            eventHandler(window, "afterscriptexecute", scriptExit);
+           eventHandler([document, "afterscriptexecute", scriptExit]);
         }
-        eventHandler(window, "message", updateSettings);
-        eventHandler(window, "spfdone", initFunctions);
-        eventHandler(window, "spfrequest", request);
-        eventHandler(window, "readystatechange", initFunctions, true);
+        eventHandler([window, "message", updateSettings]);
+        eventHandler([document, "spfdone", initFunctions]);
+        eventHandler([document, "spfrequest", request]);
+        eventHandler([document, "readystatechange", initFunctions, true]);
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         window.matchMedia = false;
         initFunctions();
@@ -1961,8 +1964,7 @@
         window.postMessage(event, "*");
     }
     function initParticle(event) {
-        var hold,
-            holder;
+        var holder;
         function filterChromeStorage(keys) {
             if (keys.particleSettings && keys.particleSettings.newValue) {
                 updateSettings(keys.particleSettings.newValue);
@@ -1973,7 +1975,7 @@
         }
         if (event) {
             event = JSON.stringify(event.particleSettings || event);
-            hold = "(" + String(particle).replace("parSets,", "parSets = " + event + ",") + "())";
+            document.documentElement.setAttribute("parSets", event);
             if (window.chrome || userscript) {
                 holder = document.createElement("link");
                 holder.rel = "stylesheet";
@@ -1982,7 +1984,7 @@
                 document.documentElement.appendChild(holder);
             }
             holder = document.createElement("script");
-            holder.textContent = hold;
+            holder.textContent = "(" + particle + "())";
             document.documentElement.appendChild(holder);
             if (!userscript) {
                 if (window.chrome) {
