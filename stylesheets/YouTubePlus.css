@@ -618,7 +618,7 @@
        width: initial;
     }
     .ytp-thumbnail-overlay, .ytp-large-play-button{
-       transition-delay: initial !important;
+       transition: none !important;
     }
     #movie_player .video-ads .ad-container:not(.ad-overlay){
        top: 0;
