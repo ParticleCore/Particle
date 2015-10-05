@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.7.2
+// @version     0.7.3
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -182,8 +182,12 @@
                 LOCALE                : "English (US)"
             };
         function set(setting, newValue) {
-            parSets[setting] = newValue;
-            window.postMessage({set: parSets}, "*");
+            if (setting !== "parSets") {
+                parSets[setting] = newValue;
+            } else {
+                parSets = newValue;
+            }
+            document.documentElement.setAttribute("particle-send", JSON.stringify(parSets));
         }
         function eventHandler(event) {
             var i,
@@ -231,7 +235,7 @@
                     parSets.extLang[ytlang] = JSON.parse(data.target.response);
                     parSets.extLang[ytlang].lastMod = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
                 }
-                parSets.extLang.nextCheck = new Date().getTime() + 86400000;
+                parSets.extLang.nextCheck = new Date().getTime() + 864E5;
                 set("extLang", parSets.extLang);
             }
             function checkModified(data) {
@@ -247,13 +251,11 @@
                 }
             }
             if (!parSets.extLang) {
-                parSets.extLang = {};
-                set("extLang", parSets.extLang);
+                set("extLang", {});
             }
             if (parSets.GEN_LOCL_LANG && parSets.localLang && parSets.localLang[label]) {
                 if (JSON.stringify(parSets.extLang) !== "{}") {
-                    parSets.extLang = {};
-                    set("extLang", parSets.extLang);
+                    set("extLang", {});
                 }
                 return parSets.localLang[label];
             }
@@ -267,7 +269,7 @@
                             checkModified,
                             ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]
                         );
-                        parSets.extLang.nextCheck = new Date().getTime() + 86400000;
+                        parSets.extLang.nextCheck = new Date().getTime() + 864E5;
                         set("extLang", parSets.extLang);
                     }
                     return parSets.extLang[ytlang][label];
@@ -357,10 +359,19 @@
                 document.documentElement.classList.remove("part_grid_subs");
             }
         }
-        function updateSettings(event) {
-            if (event.data && event.data.updateSettings) {
-                delete event.data.updateSettings;
-                parSets = event.data;
+        function pageScript() {
+            var observer,
+                key  = "particle-receive",
+                gate = document.documentElement,
+                sets = JSON.parse(gate.getAttribute(key));
+            if (!gate.pagescript) {
+                gate.pagescript = true;
+                observer = new window.MutationObserver(pageScript);
+                observer.observe(gate, {attributeFilter: [key]});
+                return;
+            }
+            if (sets) {
+                parSets = sets;
                 customStyles();
             }
         }
@@ -686,12 +697,10 @@
                         document.getElementById("impexp-list").value = JSON.stringify((target.classList.contains("P-impexp") && parSets) || parSets.localLang || language, undefined, 2);
                     } else if (target.id === "impexp-save" || target.id === "implang-save") {
                         if (target.id === "implang-save") {
-                            parSets.localLang = JSON.parse(document.getElementById("impexp-list").value);
-                            set("localLang", parSets.localLang);
+                            set("localLang", JSON.parse(document.getElementById("impexp-list").value));
                             window.location.reload();
                         } else {
-                            parSets = JSON.parse(document.getElementById("impexp-list").value);
-                            window.postMessage({set: parSets}, "*");
+                            set("parSets", JSON.parse(document.getElementById("impexp-list").value));
                             document.getElementById("P").click();
                             document.getElementById("P").click();
                         }
@@ -732,8 +741,7 @@
                             savedSets[userSets[length].id] = false;
                         }
                     }
-                    parSets = savedSets;
-                    window.postMessage({set: parSets}, "*");
+                    set("parSets", savedSets);
                     customStyles();
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
@@ -758,8 +766,7 @@
                 if (event.target.classList.contains("P-save")) {
                     saveSettings();
                 } else if (event.target.classList.contains("P-reset")) {
-                    parSets = defSets;
-                    window.postMessage({set: defSets}, "*");
+                    set("parSets", defSets);
                     settingsButton.click();
                     settingsButton.click();
                 } else if (event.target.classList.contains("close")) {
@@ -964,7 +971,7 @@
                         if (!window.localStorage["yt-player-quality"] || window.localStorage["yt-player-quality"].split(parSets.VID_DFLT_QLTY).length < 2) {
                             window.localStorage["yt-player-quality"] = JSON.stringify({
                                 "data": parSets.VID_DFLT_QLTY,
-                                "expiration": new Date().getTime() + 86400000,
+                                "expiration": new Date().getTime() + 864E5,
                                 "creation": new Date().getTime()
                             });
                         }
@@ -1199,6 +1206,7 @@
                 if (event.target.tagName === "VIDEO" && !event.target.initiated) {
                     event.target.initiated = true;
                     api.cueVideoByPlayerVars(window.ytplayer.config.args);
+                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     eventHandler([video, "emptied", cueVideo, false, "remove"]);
                     eventHandler([video, "play", cueVideo, false, "remove"]);
                 }
@@ -1250,9 +1258,14 @@
             }
             function embedDetour(originalFunction) {
                 return function () {
-                    var args = arguments;
+                    var player,
+                        args = arguments;
                     argsCleaner(args[1]);
-                    return originalFunction.apply(this, args);
+                    originalFunction.apply(this, args);
+                    player = document.getElementById("movie_player");
+                    if (player) {
+                        player.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                    }
                 };
             }
             function autoplayDetour(originalFunction) {
@@ -1348,11 +1361,13 @@
                     }
                     args[1] = argsCleaner(args[1]);
                     if (args[0].id === "upsell-video") {
-                        return originalFunction.apply(this, args);
+                        originalFunction.apply(this, args);
                     } else if (typeof args[0] === "object") {
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
-                        return playerInstance;
+                        if (!parSets.VID_PLR_ATPL) {
+                            document.getElementById("movie_player").cueVideoByPlayerVars(window.ytplayer.config.args);
+                        }
                     }
                 };
             }
@@ -1890,6 +1905,7 @@
             }
         }
         function initFunctions() {
+            pageScript();
             customStyles();
             settingsMenu();
             infiniteScroll();
@@ -1905,22 +1921,17 @@
             defaultChannelPage();
             generalChanges();
         }
-        function request(event) {
-            var listAfter   = event.detail.url.split("list=").length > 1,
-                videoAfter  = event.detail.url.split("/watch?").length > 1,
-                listBefore  = event.detail.previous.split("list=").length > 1,
-                videoBefore = event.detail.previous.split("/watch?").length > 1,
-                videoPlayer = document.getElementById("movie_player"),
-                videoLoaded = window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded;
+        function request() {
+            var videoPlayer = document.getElementById("movie_player");
             document.documentElement.classList.remove("floater");
             if (videoPlayer) {
-                videoPlayer.removeAttribute("style");
-                if ((videoBefore && !videoAfter) || (videoAfter && (listAfter !== listBefore || !videoBefore))) {
-                    if (videoLoaded) {
+                if (!parSets.VID_PLR_ATPL) {
+                    if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
                         delete window.ytplayer.config.loaded;
                     }
-                    videoPlayer.remove();
+                    return videoPlayer.remove();
                 }
+                videoPlayer.removeAttribute("style");
             }
         }
         function shareApi(originalFunction) {
@@ -1948,11 +1959,10 @@
             checkNewFeatures();
         }
         if (isChrome) {
-           eventHandler([document.documentElement, "load", scriptExit, true]);
+            eventHandler([document.documentElement, "load", scriptExit, true]);
         } else {
-           eventHandler([document, "afterscriptexecute", scriptExit]);
+            eventHandler([document, "afterscriptexecute", scriptExit]);
         }
-        eventHandler([window, "message", updateSettings]);
         eventHandler([document, "spfdone", initFunctions]);
         eventHandler([document, "spfrequest", request]);
         eventHandler([document, "readystatechange", initFunctions, true]);
@@ -1962,8 +1972,7 @@
     }
     function updateSettings(event) {
         event = (event && event.particleSettings) || event || {};
-        event.updateSettings = true;
-        window.postMessage(event, "*");
+        document.documentElement.setAttribute("particle-receive", JSON.stringify(event));
     }
     function initParticle(event) {
         var holder;
@@ -1997,16 +2006,25 @@
             }
         }
     }
-    function internalXHR(details) {
-        details = details.data;
-        if (typeof details === "object" && details.set) {
+    function contentScript() {
+        var observer,
+            key  = "particle-send",
+            gate = document.documentElement,
+            sets = JSON.parse(gate.getAttribute(key));
+        if (!gate.contentscript) {
+            gate.contentscript = true;
+            observer = new window.MutationObserver(contentScript);
+            observer.observe(gate, {attributeFilter: [key]});
+            return;
+        }
+        if (sets) {
             if (userscript) {
-                window.GM_setValue("particleSettings", JSON.stringify(details.set));
+                window.GM_setValue("particleSettings", JSON.stringify(sets));
                 updateSettings(JSON.parse(window.GM_getValue("particleSettings", "{}")));
             } else if (window.chrome) {
-                window.chrome.storage.local.set({"particleSettings": details.set});
+                window.chrome.storage.local.set({"particleSettings": sets});
             } else {
-                window.self.port.emit("particleSettings", details);
+                window.self.port.emit("particleSettings", sets);
             }
         }
     }
@@ -2019,5 +2037,5 @@
     } else {
         window.self.port.once("particleSettings", initParticle);
     }
-    window.addEventListener("message", internalXHR);
+    contentScript();
 }());
