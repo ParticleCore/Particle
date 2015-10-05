@@ -566,7 +566,7 @@
         width: initial;
     }
     #theater-background, #watch7-sidebar, #watch-appbar-playlist{
-        transition: none !important;
+        transition-delay: .5s !important;
     }
     .part_fit_theater .watch-stage-mode #theater-background, .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{
         bottom: 0;
