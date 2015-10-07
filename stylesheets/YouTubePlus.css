@@ -212,6 +212,7 @@
     }
     #blacklist a:not(:hover){
         color: #666666;
+        opacity: 1;
     }
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{
         background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 5px -66px;
