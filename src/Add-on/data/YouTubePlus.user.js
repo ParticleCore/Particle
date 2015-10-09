@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.7.4
+// @version     0.7.5
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -222,8 +222,10 @@
             var request = new XMLHttpRequest();
             request.addEventListener("load", call);
             request.open(method, url, true);
-            if (setRequestHeader) {
+            if (setRequestHeader && setRequestHeader !== "doc") {
                 request.setRequestHeader(setRequestHeader[0], setRequestHeader[1]);
+            } else {
+                request.responseType = "document";
             }
             request.send();
         }
@@ -769,17 +771,11 @@
                     name.appendChild(link);
                 }
                 function getPLInfo(details) {
-                    details = details.target.responseText;
+                    details = details.target.response.querySelector(".pl-header-details li:nth-child(2)");
                     if (details) {
-                        details = JSON.parse(details);
-                        details = details.body && details.body.content && (details.body.content.html || details.body.content);
-                        details = details && details.match && details.match(/class="pl-header-details">([\w\W]*?)<\/ul>/)[1];
-                        details = details && details.match(/<li>([\w\W]*?)<\/li>/g)[1];
-                        if (details) {
-                            link.className = "spf-link";
-                            link.textContent = channelId[user.dataset.ytid] = details.replace(/<\/?li>/g, "").replace("&#39;", "'");
-                            videoCounter();
-                        }
+                        link.className = "spf-link";
+                        link.textContent = channelId[user.dataset.ytid] = details.textContent;
+                        videoCounter();
                     }
                     details = null;
                 }
@@ -792,31 +788,28 @@
                         link.textContent = channelId[user.dataset.ytid];
                         videoCounter();
                     } else {
-                        localXHR("GET", getPLInfo, "/playlist?spf=true&list=" + user.dataset.ytid.replace("UC", "UU"));
+                        localXHR("GET", getPLInfo, "/playlist?list=" + user.dataset.ytid.replace("UC", "UU"), "doc");
                     }
                 }
             }
             function publishedTime() {
                 var watchTime = document.getElementsByClassName("watch-time-text")[0];
                 function getCHInfo(details) {
-                    var isLive;
-                    details = details.target.responseText;
-                    if (details) {
-                        if (watchTime.textContent.split("·").length < 2) {
-                            details = JSON.parse(details);
-                            details = details.body && details.body.content && (details.body.content.html || details.body.content);
-                            isLive = details && details.match && details.match(/yt-badge-live/);
-                            details = details && details.match && details.match(/yt-lockup-meta-info">\n<li>([\w\W]*?)<\/ul/);
-                            if (details && !isLive) {
-                                watchTime.textContent += " · " + details[1].split("</li><li>")[0];
-                            }
+                    var retry  = details.target.responseURL.split("/videos").length < 2,
+                        isLive = details.target.response.querySelector(".yt-badge-live");
+                    details = details.target.response.querySelectorAll("[data-context-item-id='" + window.ytplayer.config.args.video_id + "'] .yt-lockup-meta-info li");
+                    if (!isLive) {
+                        if (details && details.length > 0 && watchTime.textContent.split("·").length < 2) {
+                            watchTime.textContent += " · " + details[retry ? 0 : 1].textContent;
+                        } else if (retry) {
+                            localXHR("GET", getCHInfo, "/channel/" + window.ytplayer.config.args.ucid + "/videos", "doc");
                         }
                     }
                     details = null;
                 }
                 if (watchTime && !watchTime.fetching && window.ytplayer && window.ytplayer.config) {
                     watchTime.fetching = true;
-                    localXHR("GET", getCHInfo, "/channel/" + window.ytplayer.config.args.ucid + "/search?query=%22" + window.ytplayer.config.args.video_id + "%22&spf=true");
+                    localXHR("GET", getCHInfo, "/channel/" + window.ytplayer.config.args.ucid + "/search?query=%22" + window.ytplayer.config.args.video_id + "%22", "doc");
                 }
             }
             if (window.location.pathname === "/watch") {
@@ -830,7 +823,8 @@
         }
         function commentsButton() {
             var wrapper,
-                comments = document.getElementById("watch-discussion");
+                comments = document.getElementById("watch-discussion"),
+                isLive   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
             function showComments(event) {
                 if (event.target.parentNode.id === "P-show-comments") {
                     if (comments.lazyload) {
@@ -840,7 +834,8 @@
                     wrapper.querySelector("button").textContent = userLang((comments.classList.contains("show") && "HIDE_CMTS") || "SHOW_CMTS");
                 }
             }
-            if (comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
+            if (!isLive && comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
+                console.info(window.ytplayer.config.args.livestream);
                 wrapper = document.createElement("template");
                 wrapper.innerHTML = "<div id='P-show-comments' class='yt-card'>" +
                     "    <button class='yt-uix-button yt-uix-button-expander' data-p='tnd|SHOW_CMTS'></button>" +
@@ -1134,7 +1129,8 @@
                 set("theaterMode", event);
             }
             function cueVideo(event) {
-                if (event.target.tagName === "VIDEO" && !event.target.initiated) {
+                var isLive = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
+                if (!isLive && event.target.tagName === "VIDEO" && !event.target.initiated) {
                     event.target.initiated = true;
                     api.cueVideoByPlayerVars(window.ytplayer.config.args);
                     api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
@@ -1172,8 +1168,9 @@
             function commentsLoad(originalFunction) {
                 return function () {
                     var args     = arguments,
-                        comments = document.getElementById("watch-discussion");
-                    if (comments && !comments.lazyload && parSets.VID_HIDE_COMS === "1" && !comments.classList.contains("show") && args[0].split("comments").length > 1) {
+                        comments = document.getElementById("watch-discussion"),
+                        isLive   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
+                    if (!isLive && comments && !comments.lazyload && parSets.VID_HIDE_COMS === "1" && !comments.classList.contains("show") && args[0].split("comments").length > 1) {
                         comments.lazyload = args;
                     } else {
                         return originalFunction.apply(this, args);
@@ -1266,7 +1263,8 @@
             }
             function html5Detour(originalFunction) {
                 return function () {
-                    var args = arguments;
+                    var player,
+                        args = arguments;
                     function playerInstanceIterator(keys) {
                         function firstLevel(fl) {
                             if (typeof playerInstance[keys][fl] === "function" && String(playerInstance[keys][fl]).split("get_video_info").length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
@@ -1287,8 +1285,9 @@
                     } else if (typeof args[0] === "object") {
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
-                        if (!parSets.VID_PLR_ATPL) {
-                            document.getElementById("movie_player").cueVideoByPlayerVars(window.ytplayer.config.args);
+                        player = document.getElementById("movie_player");
+                        if (!parSets.VID_PLR_ATPL && player) {
+                            player.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
                 };
