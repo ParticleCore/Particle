@@ -7,10 +7,8 @@ function settingsHandler(worker) {
         worker.port.emit("particleSettings", simpleStorage.storage.particleSettings);
     }
     function settingsGate(event) {
-        if (event.set && typeof event.set === "object") {
-            simpleStorage.storage.particleSettings = event.set;
-            simplePrefs.prefs.parSets = (simplePrefs.prefs.parSets > "0" && "0") || "1";
-        }
+        simpleStorage.storage.particleSettings = event;
+        simplePrefs.prefs.parSets = (simplePrefs.prefs.parSets > "0" && "0") || "1";
     }
     function detachGhosts() {
         simplePrefs.removeListener("parSets", settingsUpdate);

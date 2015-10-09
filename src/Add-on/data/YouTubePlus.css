@@ -212,6 +212,7 @@
     }
     #blacklist a:not(:hover){
         color: #666666;
+        opacity: 1;
     }
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{
         background: url(./Images/sprite.png) 5px -66px;
@@ -1026,9 +1027,12 @@
         border: 1px solid #C6C6C6;
         cursor: default;
         display: inline-block;
+        max-width: 200px;
         overflow: hidden !important;
         padding: 0 10px;
         position: relative;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     #blacklist .blacklist .close{
         background: #FFF url(./Images/sprite.png) -25px -58px;
