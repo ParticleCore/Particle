@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version     0.7.5
+// @version     0.7.6
 // @name        YouTube +
 // @namespace   https://github.com/ParticleCore
 // @description YouTube with more freedom
@@ -777,7 +777,6 @@
                         link.textContent = channelId[user.dataset.ytid] = details.textContent;
                         videoCounter();
                     }
-                    details = null;
                 }
                 if (!document.getElementById("uploaded-videos") && name) {
                     link = document.createElement("a");
@@ -805,7 +804,6 @@
                             localXHR("GET", getCHInfo, "/channel/" + window.ytplayer.config.args.ucid + "/videos", "doc");
                         }
                     }
-                    details = null;
                 }
                 if (watchTime && !watchTime.fetching && window.ytplayer && window.ytplayer.config) {
                     watchTime.fetching = true;
@@ -835,7 +833,6 @@
                 }
             }
             if (!isLive && comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
-                console.info(window.ytplayer.config.args.livestream);
                 wrapper = document.createElement("template");
                 wrapper.innerHTML = "<div id='P-show-comments' class='yt-card'>" +
                     "    <button class='yt-uix-button yt-uix-button-expander' data-p='tnd|SHOW_CMTS'></button>" +
@@ -1099,11 +1096,6 @@
                 var x,
                     y,
                     sets = document.getElementById("P-settings");
-                if (window.location.pathname !== "/watch") {
-                    eventHandler([document.documentElement, "focus", alwaysActive, true, "remove"]);
-                    eventHandler([document.documentElement, "mouseup", alwaysActive, true, "remove"]);
-                    return;
-                }
                 if (event.target.tagName === "IFRAME" || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
                     return;
                 }
