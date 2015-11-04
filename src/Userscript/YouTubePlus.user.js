@@ -1,15 +1,18 @@
 ﻿// ==UserScript==
-// @version     0.7.6
-// @name        YouTube +
-// @namespace   https://github.com/ParticleCore
-// @description YouTube with more freedom
-// @icon        https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/YT%2Bicon.png
-// @match       *://www.youtube.com/*
-// @exclude     *://www.youtube.com/embed/*
-// @run-at      document-start
-// @downloadURL https://github.com/ParticleCore/Particle/raw/master/src/Userscript/YouTubePlus.user.js
-// @grant       GM_getValue
-// @grant       GM_setValue
+// @version         0.7.7
+// @name            YouTube +
+// @namespace       https://github.com/ParticleCore
+// @description     YouTube with more freedom
+// @icon            https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/YT%2Bicon.png
+// @match           *://www.youtube.com/*
+// @exclude         *://www.youtube.com/embed/*
+// @run-at          document-start
+// @downloadURL     https://github.com/ParticleCore/Particle/raw/master/src/Userscript/YouTubePlus.user.js
+// @homepageURL     https://github.com/ParticleCore/Particle
+// @supportURL      https://github.com/ParticleCore/Particle/wiki
+// @contributionURL https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW
+// @grant           GM_getValue
+// @grant           GM_setValue
 // @noframes
 // ==/UserScript==
 (function () {
@@ -886,6 +889,10 @@
                 return newrvs.join(",");
             }
             if (config.args.video_id) {
+                if (config.args.vmap && !parSets.VID_PLR_ATPL && !parSets.VID_PLR_ADS) {
+                    config.args.dvmap = config.args.vmap;
+                    delete config.args.vmap;
+                }
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
                 if (parSets.VID_DFLT_QLTY !== "auto") {
@@ -1120,16 +1127,6 @@
             function sizeChanged(event) {
                 set("theaterMode", event);
             }
-            function cueVideo(event) {
-                var isLive = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
-                if (!isLive && event.target.tagName === "VIDEO" && !event.target.initiated) {
-                    event.target.initiated = true;
-                    api.cueVideoByPlayerVars(window.ytplayer.config.args);
-                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                    eventHandler([video, "emptied", cueVideo, false, "remove"]);
-                    eventHandler([video, "play", cueVideo, false, "remove"]);
-                }
-            }
             if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
                 video = document.getElementsByTagName("video")[0];
@@ -1149,10 +1146,6 @@
                 if (parSets.VID_PLR_ALACT) {
                     eventHandler([document.documentElement, "focus", alwaysActive, true]);
                     eventHandler([document.documentElement, "mouseup", alwaysActive, true]);
-                }
-                if (!parSets.VID_PLR_ATPL) {
-                    eventHandler([video, "emptied", cueVideo]);
-                    eventHandler([video, "play", cueVideo]);
                 }
             }
         }
@@ -1279,6 +1272,9 @@
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         player = document.getElementById("movie_player");
                         if (!parSets.VID_PLR_ATPL && player) {
+                            if (window.ytplayer.config.args.dvmap && !parSets.VID_PLR_ADS) {
+                                window.ytplayer.config.args.vmap = window.ytplayer.config.args.dvmap;
+                            }
                             player.cueVideoByPlayerVars(window.ytplayer.config.args);
                         }
                     }
