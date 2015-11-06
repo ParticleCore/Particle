@@ -131,6 +131,7 @@
                 VID_PLR_ALVIS_RST     : "Reset position",
                 VID_PLR_ALVIS_SCRL_TOP: "Go to top",
                 VID_PLR_ATPL          : "Autoplay videos",
+                VID_PLR_ATPL_BACK     : "Disable autoplay for background tabs",
                 VID_LAYT              : "Layout",
                 VID_VID_CNT           : "Show link with number of uploaded videos",
                 VID_POST_TIME         : "Show how long the video has been published",
@@ -366,6 +367,17 @@
                 customStyles();
             }
         }
+        function pauseNeeded() {
+            if (!parSets.VID_PLR_ATPL) {
+                return true;
+            }
+            if (parSets.VID_PLR_ATPL_BACK) {
+                if (typeof document.hidden !== "undefined") {
+                    return document.hidden;
+                }
+            }
+            return false;
+        }
         function settingsMenu() {
             var pContainer,
                 buttonNotif,
@@ -511,6 +523,7 @@
                         "    <div><input id='VID_SUB_ADS' type='checkbox'><label for='VID_SUB_ADS' data-p='tnd|VID_SUB_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subs_ads_on' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
                         "    <div><input id='VID_PLR_ALVIS' type='checkbox'><label for='VID_PLR_ALVIS' data-p='tnd|VID_PLR_ALVIS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
                         "    <div><input id='VID_PLR_ATPL' type='checkbox'><label for='VID_PLR_ATPL' data-p='tnd|VID_PLR_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_autoplay' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
+                        "    <div><input id='VID_PLR_ATPL_BACK' type='checkbox'><label for='VID_PLR_ATPL_BACK' data-p='tnd|VID_PLR_ATPL_BACK'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_autoplay' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
                         "    <div><input id='VID_PLR_CC' type='checkbox'><label for='VID_PLR_CC' data-p='tnd|VID_PLR_CC'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subtitles_off' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
                         "    <div><input id='VID_PLR_ANTS' type='checkbox'><label for='VID_PLR_ANTS' data-p='tnd|VID_PLR_ANTS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#annotations_off' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
                         "    <div><input id='VID_END_SHRE' type='checkbox'><label for='VID_END_SHRE' data-p='tnd|VID_END_SHRE'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#share_panel_off' data-p='ttl|FTR_DESC' target='_blank'>?</a></div>" +
@@ -889,7 +902,7 @@
                 return newrvs.join(",");
             }
             if (config.args.video_id) {
-                if (config.args.vmap && !parSets.VID_PLR_ATPL && !parSets.VID_PLR_ADS) {
+                if (config.args.vmap && pauseNeeded() && !parSets.VID_PLR_ADS) {
                     config.args.dvmap = config.args.vmap;
                     delete config.args.vmap;
                 }
@@ -915,7 +928,7 @@
                 if (parSets.VID_PLR_INFO) {
                     config.args.showinfo = "1";
                 }
-                if (!parSets.VID_PLR_ATPL) {
+                if (pauseNeeded()) {
                     config.args.autoplay = "0";
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
@@ -1271,7 +1284,7 @@
                         playerInstance = originalFunction.apply(this, args);
                         Object.keys(playerInstance).some(playerInstanceIterator);
                         player = document.getElementById("movie_player");
-                        if (!parSets.VID_PLR_ATPL && player) {
+                        if (pauseNeeded() && player) {
                             if (window.ytplayer.config.args.dvmap && !parSets.VID_PLR_ADS) {
                                 window.ytplayer.config.args.vmap = window.ytplayer.config.args.dvmap;
                             }
@@ -1834,7 +1847,7 @@
             var videoPlayer = document.getElementById("movie_player");
             document.documentElement.classList.remove("floater");
             if (videoPlayer) {
-                if (!parSets.VID_PLR_ATPL) {
+                if (pauseNeeded()) {
                     if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
                         delete window.ytplayer.config.loaded;
                     }
