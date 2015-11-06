@@ -8,6 +8,6 @@ Current support is being provided for:
 
 At the moment no support will be provided outside these platforms. YT+ supports only YouTube's HTML5 player, some features will not work when using YouTube's flash player.
 
-
+Due to time and framework limitations I am unable to accept any more feature requests.
 
 **[Download](https://github.com/ParticleCore/Particle/wiki/Download) | [Features](https://github.com/ParticleCore/Particle/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Particle/wiki/Report-a-problem) | [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW)**
