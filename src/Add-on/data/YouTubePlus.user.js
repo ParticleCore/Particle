@@ -32,6 +32,7 @@
                 GEN_INF_SCRL    : true,
                 GEN_BLUE_GLOW   : true,
                 GEN_SDBR_ON     : true,
+                VID_PLR_ATPL    : true,
                 VID_END_SHRE    : true,
                 VID_DFLT_QLTY   : "auto",
                 VID_PLST_SEP    : true,
