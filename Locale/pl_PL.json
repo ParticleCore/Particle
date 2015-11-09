@@ -102,7 +102,7 @@
     "VID_PLR_FIT"           : "Dopasowuj odtwarzacz w widoku teatralnym do strony",
     "VID_PLR_FIT_WDTH"      : "Dopasowuj odtwarzacz w widoku teatralnym do strony lub do maksymalnej szerokości użytkownika (w pikselach):",
     "VID_PLR_DYN_SIZE"      : "Zablokuj dynamiczny rozmiar odtwarzacza w widoku domyślnym",
-    "VID_DESC_SHRT"         : "Pokazuj krótkie przyciski pod odtwarzaczem",
+    "VID_DESC_SHRT"         : "Pokazuj krótkie przyciski na stronie pod odtwarzaczem",
     "VID_TTL_CMPT"          : "Pokazuj kompaktowy tytuł filmu",
     "VID_SDBR_ALGN"         : "Pozycja panelu",
     "VID_SDBR_ALGN_NONE"    : "Nigdzie",
