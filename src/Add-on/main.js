@@ -1,27 +1,29 @@
-var pageMod       = require("sdk/page-mod"),
-    simplePrefs   = require("sdk/simple-prefs"),
-    simpleStorage = require("sdk/simple-storage");
+var simplePrefs   = require("sdk/simple-prefs"),
+    simpleStorage = require("sdk/simple-storage").storage;
 
-function settingsHandler(worker) {
-    function settingsUpdate() {
-        worker.port.emit("particleSettings", simpleStorage.storage.particleSettings);
+function mainScript(worker) {
+    var subWorker = worker.tab.attach({
+        contentScriptFile: "./YouTubePlus.user.js",
+        contentScriptOptions: {settings: simpleStorage.particleSettings}
+    });
+    function update() {
+        subWorker.port.emit("particleSettings", simpleStorage.particleSettings);
     }
-    function settingsGate(event) {
-        simpleStorage.storage.particleSettings = event;
+    function save(event) {
+        simpleStorage.particleSettings = event;
         simplePrefs.prefs.parSets = (simplePrefs.prefs.parSets > "0" && "0") || "1";
     }
-    function detachGhosts() {
-        simplePrefs.removeListener("parSets", settingsUpdate);
-        this.port.removeListener("particleSettings", settingsGate);
+    function detach() {
+        simplePrefs.removeListener("parSets", update);
+        this.port.removeListener("particleSettings", save);
     }
-    simpleStorage.storage.particleSettings = simpleStorage.storage.particleSettings || {};
-    worker.on("detach", detachGhosts);
-    simplePrefs.on("parSets", settingsUpdate);
-    worker.port.on("particleSettings", settingsGate);
-    worker.port.emit("particleSettings", simpleStorage.storage.particleSettings);
+    simpleStorage.particleSettings = simpleStorage.particleSettings || {};
+    subWorker.on("detach", detach);
+    simplePrefs.on("parSets", update);
+    subWorker.port.on("particleSettings", save);
 }
 
-pageMod.PageMod({
+require("sdk/page-mod").PageMod({
     include: "*.youtube.com",
     exclude: [
         "http://www.youtube.com/embed/*",
@@ -30,7 +32,6 @@ pageMod.PageMod({
     ],
     attachTo: "top",
     contentScriptWhen: "start",
-    contentScriptFile: "./YouTubePlus.user.js",
     contentStyleFile: "./YouTubePlus.css",
-    onAttach: settingsHandler
+    onAttach: mainScript
 });
