@@ -79,6 +79,7 @@
         #movie_player {
             box-shadow: 0 0 10px #000;
             height: initial !important;
+            left: initial !important;
             position: fixed !important;
             top: 52px !important;
             width: 100% !important;

@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.7.8
+// @version         0.7.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -151,6 +151,7 @@
                 VID_SUB_ADS           : "Enable advertisements only in videos from subscribed channels",
                 VID_PLR_ANTS          : "Disable annotations",
                 VID_PLR_DASH          : "Disable DASH playback",
+                VID_PLR_HFR           : "Disable HFR (60fps)",
                 VID_PLR_CC            : "Disable subtitles and CC",
                 VID_PLR_INFO          : "Enable info bar with watch later button",
                 VID_PLR_FIT           : "Fit to page in theater mode",
@@ -518,6 +519,7 @@
                         "    <div><input id='VID_PLR_SIZE_MEM' type='checkbox'><label for='VID_PLR_SIZE_MEM' data-p='tnd|VID_PLR_SIZE_MEM'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_mode' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_VOL_WHEEL' type='checkbox'><label for='VID_VOL_WHEEL' data-p='tnd|VID_VOL_WHEEL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#wheel_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_DASH' type='checkbox'><label for='VID_PLR_DASH' data-p='tnd|VID_PLR_DASH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#dash_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PLR_HFR' type='checkbox'><label for='VID_PLR_HFR' data-p='tnd|VID_PLR_HFR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hfr_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div>" +
                         "        <label for='VID_DFLT_QLTY' data-p='tnd|VID_DFLT_QLTY'></label>" +
                         "        <div class='P-select'>" +
@@ -868,30 +870,33 @@
             }
         }
         function argsCleaner(config) {
-            function clearRVS(rvs) {
+            function rvshfr(list, type) {
                 var i,
-                    author,
-                    newrvs = [];
-                rvs = rvs.split(",");
-                i = rvs.length;
+                    temp,
+                    newList = [];
+                list = list.split(",");
+                i = list.length;
                 while (i) {
                     i -= 1;
-                    author = false;
-                    if (rvs[i].split("author").length > 1) {
-                        author = rvs[i].split(/\=|&/g);
-                        author = decodeURIComponent(author[author.indexOf("author") + 1]).replace(/\+/g, " ");
-                    }
-                    if (!author || JSON.stringify(parSets.blacklist).split(author).length < 2) {
-                        newrvs.unshift(rvs[i]);
+                    if (type === "HFR") {
+                        temp = list[i].split(/fps\=([0-9]{2})/)[1];
+                        if (!temp || temp < 31) {
+                            newList.push(list[i]);
+                        }
+                    } else {
+                        temp = false;
+                        if (list[i].split("author").length > 1) {
+                            temp = list[i].split(/\=|&/g);
+                            temp = decodeURIComponent(temp[temp.indexOf("author") + 1]).replace(/\+/g, " ");
+                        }
+                        if (!temp || JSON.stringify(parSets.blacklist).split('"' + temp + '"').length < 2) {
+                            newList.unshift(list[i]);
+                        }
                     }
                 }
-                return newrvs.join(",");
+                return newList.join(",");
             }
             if (config.args.video_id) {
-                if (config.args.vmap && !parSets.VID_PLR_ATPL && !parSets.VID_PLR_ADS) {
-                    config.args.dvmap = config.args.vmap;
-                    delete config.args.vmap;
-                }
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
                 if (parSets.VID_DFLT_QLTY !== "auto") {
@@ -926,8 +931,15 @@
                 if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
                     delete config.args.ad3_module;
                 }
+                if (config.args.vmap && !parSets.VID_PLR_ATPL && !parSets.VID_PLR_ADS) {
+                    config.args.dvmap = config.args.vmap;
+                    delete config.args.vmap;
+                }
+                if (parSets.VID_PLR_HFR && config.args.adaptive_fmts) {
+                    config.args.adaptive_fmts = rvshfr(config.args.adaptive_fmts, "HFR");
+                }
                 if (parSets.BLK_ON && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
-                    config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = clearRVS(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
+                    config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = rvshfr(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
                 }
                 if (window.ytplayer) {
                     if (window.ytplayer.config === null) {
@@ -1294,7 +1306,7 @@
                 window.yt.setConfig = baseDetour(window.yt.setConfig);
                 Object.keys(window._yt_www).some(ytIterator);
             }
-            if ((event && event.target && event.target.getAttribute("name") === "html5player/html5player") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
+            if ((event && event.target && event.target.getAttribute("name") === "player/base") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
                 window.html5Patched = true;
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
