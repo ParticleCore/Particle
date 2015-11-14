@@ -97,6 +97,7 @@
     "VID_SUB_ADS"           : "Activar publicidades só para vídeos de canais subscritos",
     "VID_PLR_ANTS"          : "Desactivar notas",
     "VID_PLR_DASH"          : "Desactivar reprodução DASH",
+    "VID_PLR_HFR"           : "Desactivar HFR (60fps)",
     "VID_PLR_CC"            : "Desactivar legendas e CC",
     "VID_PLR_INFO"          : "ACtivar barra de informação com o botão ver mais tarde",
     "VID_PLR_FIT"           : "Ajustar na página no modo cinema",
