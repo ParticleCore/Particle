@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
-    <rdf:Description rdf:about="urn:mozilla:extension:particle@particlecore.github.io">
+    <rdf:Description rdf:about="urn:mozilla:extension:unlisted-particle@particlecore.github.io">
         <em:updates>
             <rdf:Seq>
                 <rdf:li>
