@@ -514,8 +514,7 @@
     }
     .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal, .part_grid_search #results .yt-lockup-title{
         font-size: 13px;
-        margin-top: 4px;
-        margin-bottom: 1px;
+        margin: 4px 0 1px 0;
         max-width: 176px;
     }
     .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
