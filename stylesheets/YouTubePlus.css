@@ -193,15 +193,22 @@
         display: none;
     }
     #subscription-playlist-icon{
-        margin-right: -20px;
+        margin-left: 10px;
+    }
+    #subscription-playlist-icon a{
+        margin-left: 10px;
+        position: absolute;
+    }
+    #subscription-playlist {
+        padding: 10px 0 !important;
     }
     #subscription-playlist:hover span{
         opacity: 1;
     }
     #subscription-playlist span{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 2px -19px;
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 2px -24px;
         display: block;
-        height: 100%;
+        height: 20px;
         opacity: .4;
         width: 20px;
     }
