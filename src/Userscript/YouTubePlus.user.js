@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.7.9
+// @version         0.8.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -303,6 +303,7 @@
                 plrApi   = document.getElementById("player-api"),
                 commSect = document.getElementById("watch-discussion"),
                 sidebar  = document.getElementsByClassName("branded-page-v2-secondary-col")[0],
+                ytGrid   = document.querySelectorAll(".yt-uix-menu-top-level-flow-button:last-child a")[0],
                 adverts  = parSets.GEN_DSBL_ADS && (document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)")),
                 setsList = {
                     GEN_DSBL_ADS    : "part_no_ads",
@@ -319,35 +320,39 @@
                     VID_PLST_SEP    : "part_playlist_spacer",
                     VID_DESC_SHRT   : "part_labelless_buttons"
                 };
-            while (adverts) {
-                adverts.remove();
-                adverts = document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)");
-            }
-            if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
-                sidebar.remove();
-            }
-            if (window.location.pathname === "/watch" && parSets.VID_HIDE_COMS > 1 && commSect) {
-                commSect.remove();
-            }
-            if (parSets.VID_HIDE_COMS === "1") {
-                document.documentElement.classList.add("part_hide_comments");
-            } else if (parSets.VID_HIDE_COMS !== "1") {
-                document.documentElement.classList.remove("part_hide_comments");
-            }
-            if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
-                plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || "1280px";
-            }
-            for (classes in setsList) {
-                if (setsList.hasOwnProperty(classes)) {
-                    if (parSets[classes]) {
-                        document.documentElement.classList.add(setsList[classes]);
-                    } else {
-                        document.documentElement.classList.remove(setsList[classes]);
+            if (ytGrid) {
+                ytGrid.click();
+            } else {
+                while (adverts) {
+                    adverts.remove();
+                    adverts = document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)");
+                }
+                if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
+                    sidebar.remove();
+                }
+                if (window.location.pathname === "/watch" && parSets.VID_HIDE_COMS > 1 && commSect) {
+                    commSect.remove();
+                }
+                if (parSets.VID_HIDE_COMS === "1") {
+                    document.documentElement.classList.add("part_hide_comments");
+                } else if (parSets.VID_HIDE_COMS !== "1") {
+                    document.documentElement.classList.remove("part_hide_comments");
+                }
+                if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
+                    plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || "1280px";
+                }
+                for (classes in setsList) {
+                    if (setsList.hasOwnProperty(classes)) {
+                        if (parSets[classes]) {
+                            document.documentElement.classList.add(setsList[classes]);
+                        } else {
+                            document.documentElement.classList.remove(setsList[classes]);
+                        }
                     }
                 }
-            }
-            if (window.location.href.split("/feed/subscriptions").length < 2) {
-                document.documentElement.classList.remove("part_grid_subs");
+                if (window.location.href.split("/feed/subscriptions").length < 2) {
+                    document.documentElement.classList.remove("part_grid_subs");
+                }
             }
         }
         function pageScript() {
@@ -1078,7 +1083,7 @@
             var i,
                 list      = [],
                 button    = document.getElementById("subscription-playlist"),
-                navMenu   = document.getElementById("channel-navigation-menu"),
+                navMenu   = document.getElementsByClassName("appbar-nav-menu")[0],
                 listTitle = document.getElementsByClassName("appbar-nav-menu")[0],
                 videoList = document.getElementsByClassName("addto-watch-later-button");
             function initSubPlaylist(event) {
@@ -1104,7 +1109,7 @@
                     "    </a>" +
                     "</li>";
                 button = setLocale(button.content).firstChild;
-                navMenu.insertBefore(button, navMenu.firstChild);
+                navMenu.appendChild(button);
                 eventHandler([document, "click", initSubPlaylist]);
             }
         }
@@ -1616,11 +1621,20 @@
                     }
                 }
                 function openSidebar() {
-                    var sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ",left=" + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? "" : ",left=0",
-                        newSidebar   = window.open(window.location.href, "sidebarMode", "width=467,height=" + window.screen.availHeight + ",scrollbars=1" + sidebarAlign);
+                    var sidebarURL,
+                        newSidebar,
+                        video        = document.getElementsByTagName("video")[0],
+                        sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ",left=" + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? "" : ",left=0";
                     function snapFit() {
                         newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
                     }
+                    if (video && video.currentTime && video.currentTime < video.duration) {
+                        video.pause();
+                        sidebarURL = "#t=" + video.currentTime;
+                    } else {
+                        sidebarURL = "";
+                    }
+                    newSidebar = window.open(window.location.href + sidebarURL, "sidebarMode", "width=467,height=" + window.screen.availHeight + ",scrollbars=1" + sidebarAlign);
                     newSidebar.addEventListener("readystatechange", snapFit, true);
                     newSidebar.focus();
                 }

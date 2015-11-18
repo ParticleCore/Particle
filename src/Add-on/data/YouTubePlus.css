@@ -38,8 +38,9 @@
 /*   end| Compact video title */
 /* start| Compact thumbnail titles */
     .part_compact_titles .feed-item-container .yt-ui-ellipsis, .part_compact_titles .yt-shelf-grid-item .yt-ui-ellipsis{
-        white-space: nowrap !important;
         display: inherit !important;
+        margin-right: initial !important;
+        white-space: nowrap !important;
     }
 /*   end| Compact thumbnail titles */
 /* start| Floater player */
@@ -193,15 +194,19 @@
         display: none;
     }
     #subscription-playlist-icon{
-        margin-right: -20px;
+        margin-left: 10px;
+        position: absolute;
+    }
+    #subscription-playlist {
+        padding: 10px 0 !important;
     }
     #subscription-playlist:hover span{
         opacity: 1;
     }
     #subscription-playlist span{
-        background: url(./Images/sprite.png) 2px -19px;
+        background: url(./Images/sprite.png) 2px -24px;
         display: block;
-        height: 100%;
+        height: 20px;
         opacity: .4;
         width: 20px;
     }
@@ -486,12 +491,7 @@
         padding: initial;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{
-        left: initial;
-        opacity: 0;
-        position: absolute;
-        right: -9px !important;
-        top: 0 !important;
-        width: 20px;
+        display: none;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{
         opacity: 1;
@@ -514,8 +514,7 @@
     }
     .part_grid_subs div#browse-items-primary .yt-lockup-title, .part_grid_subs div#browse-items-primary .feed-item-dismissal, .part_grid_search #results .yt-lockup-title{
         font-size: 13px;
-        margin-top: 4px;
-        margin-bottom: 1px;
+        margin: 4px 0 1px 0;
         max-width: 176px;
     }
     .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
