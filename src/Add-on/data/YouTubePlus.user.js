@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.0
+// @version         0.8.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -320,7 +320,7 @@
                     VID_PLST_SEP    : "part_playlist_spacer",
                     VID_DESC_SHRT   : "part_labelless_buttons"
                 };
-            if (ytGrid) {
+            if (ytGrid && parSets.GEN_GRID_SUBS) {
                 ytGrid.click();
             } else {
                 while (adverts) {
