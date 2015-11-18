@@ -491,12 +491,7 @@
         padding: initial;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{
-        left: initial;
-        opacity: 0;
-        position: absolute;
-        right: -9px !important;
-        top: 0 !important;
-        width: 20px;
+        display: none;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container:hover .menu-container{
         opacity: 1;
