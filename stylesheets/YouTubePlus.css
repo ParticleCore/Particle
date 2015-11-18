@@ -194,10 +194,10 @@
     }
     #subscription-playlist-icon{
         margin-left: 10px;
+        position: absolute;
     }
     #subscription-playlist-icon a{
         margin-left: 10px;
-        position: absolute;
     }
     #subscription-playlist {
         padding: 10px 0 !important;
