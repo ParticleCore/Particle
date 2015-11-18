@@ -38,8 +38,9 @@
 /*   end| Compact video title */
 /* start| Compact thumbnail titles */
     .part_compact_titles .feed-item-container .yt-ui-ellipsis, .part_compact_titles .yt-shelf-grid-item .yt-ui-ellipsis{
-        white-space: nowrap !important;
         display: inherit !important;
+        margin-right: initial !important;
+        white-space: nowrap !important;
     }
 /*   end| Compact thumbnail titles */
 /* start| Floater player */
