@@ -194,11 +194,11 @@
         display: none;
     }
     #subscription-playlist-icon{
-        margin-left: 10px;
+        margin-left: 0;
         position: absolute;
     }
     #subscription-playlist {
-        padding: 10px 0 !important;
+        padding: 10px 5px !important;
     }
     #subscription-playlist:hover span{
         opacity: 1;
