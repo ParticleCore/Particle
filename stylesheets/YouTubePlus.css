@@ -89,7 +89,7 @@
             height: initial !important;
             left: initial !important;
             position: fixed !important;
-            top: 52px !important;
+            top: 50px !important;
             width: 100% !important;
         }
         #movie_player:after {
