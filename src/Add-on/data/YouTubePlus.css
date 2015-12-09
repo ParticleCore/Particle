@@ -89,7 +89,7 @@
             height: initial !important;
             left: initial !important;
             position: fixed !important;
-            top: 52px !important;
+            top: 50px !important;
             width: 100% !important;
         }
         #movie_player:after {
@@ -679,6 +679,7 @@
        top: 0;
     }
     .ytp-chrome-bottom{
+        max-width: calc(100% - 24px);
         min-width: calc(100% - 24px);
     }
 /*   end| Enhancements */

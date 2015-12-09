@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.3
+// @version         0.8.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1471,7 +1471,7 @@
                     }
                 }
             }
-            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1)) {
+            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1 || window.location.href.split("/feed/trending").length > 1)) {
                 ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item", "yt-lockup-mini", "lohp-large-shelf-container", "expanded-shelf-content-item-wrapper"].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
