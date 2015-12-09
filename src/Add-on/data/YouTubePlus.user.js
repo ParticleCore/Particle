@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.2
+// @version         0.8.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -45,6 +45,7 @@
                 VID_VID_CNT     : true,
                 VID_DESC_SHRT   : true,
                 VID_SDBR_ALGN   : "1",
+                VID_PLR_HTML5   : true,
                 BLK_ON          : true,
                 volLev          : 50,
                 plApl           : false,
@@ -152,6 +153,7 @@
                 VID_PLR_ANTS          : "Disable annotations",
                 VID_PLR_DASH          : "Disable DASH playback",
                 VID_PLR_HFR           : "Disable HFR (60fps)",
+                VID_PLR_HTML5         : "Use the HTML5 player when possible",
                 VID_PLR_CC            : "Disable subtitles and CC",
                 VID_PLR_INFO          : "Enable info bar with watch later button",
                 VID_PLR_FIT           : "Fit to page in theater mode",
@@ -525,6 +527,7 @@
                         "    <div><input id='VID_VOL_WHEEL' type='checkbox'><label for='VID_VOL_WHEEL' data-p='tnd|VID_VOL_WHEEL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#wheel_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_DASH' type='checkbox'><label for='VID_PLR_DASH' data-p='tnd|VID_PLR_DASH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#dash_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_HFR' type='checkbox'><label for='VID_PLR_HFR' data-p='tnd|VID_PLR_HFR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hfr_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PLR_HTML5' type='checkbox'><label for='VID_PLR_HTML5' data-p='tnd|VID_PLR_HTML5'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#force_html5' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div>" +
                         "        <label for='VID_DFLT_QLTY' data-p='tnd|VID_DFLT_QLTY'></label>" +
                         "        <div class='P-select'>" +
@@ -920,6 +923,9 @@
                     try {
                         window.localStorage["yt-html5-player-modules::subtitlesModuleData::module-enabled"] = false;
                     } catch (ignore) {}
+                }
+                if (parSets.VID_PLR_HTML5) {
+                    config.html5 = true;
                 }
                 if (parSets.VID_PLR_INFO) {
                     config.args.showinfo = "1";
