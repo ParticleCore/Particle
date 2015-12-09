@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.4
+// @version         0.8.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1863,11 +1863,11 @@
             defaultChannelPage();
             generalChanges();
         }
-        function request() {
+        function request(event) {
             var videoPlayer = document.getElementById("movie_player");
             document.documentElement.classList.remove("floater");
             if (videoPlayer) {
-                if (!parSets.VID_PLR_ATPL) {
+                if (!parSets.VID_PLR_ATPL || event.detail.url.split("/watch").length < 2) {
                     if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
                         delete window.ytplayer.config.loaded;
                     }
