@@ -98,6 +98,7 @@
     "VID_PLR_ANTS"          : "Desativar anotações",
     "VID_PLR_DASH"          : "Desativar reprodução DASH",
     "VID_PLR_HFR"           : "Desativar HFR (60fps)",
+    "VID_PLR_HTML5"         : "Usar o HTML5 player quando possível",
     "VID_PLR_CC"            : "Desativar legendas e CC",
     "VID_PLR_INFO"          : "Ativar barra de informação com o botão 'Assistir mais tarde'",
     "VID_PLR_FIT"           : "Ajustar na página inteira no modo teatro",
