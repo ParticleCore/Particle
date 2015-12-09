@@ -98,6 +98,7 @@
     "VID_PLR_ANTS"          : "Zablokuj adnotacje",
     "VID_PLR_DASH"          : "Zablokuj odtwarzanie DASH",
     "VID_PLR_HFR"           : "Zablokuj HFR (60 kl./s)",
+    "VID_PLR_HTML5"         : "Używaj odtwarzacza HTML5, gdy jest to możliwe",
     "VID_PLR_CC"            : "Zablokuj napisy",
     "VID_PLR_INFO"          : "Włącz pasek informacyjny z przyciskiem do obejrzenia filmu w późniejszym czasie",
     "VID_PLR_FIT"           : "Dopasowuj odtwarzacz w widoku teatralnym do strony",
