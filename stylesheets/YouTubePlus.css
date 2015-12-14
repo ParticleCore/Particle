@@ -60,7 +60,8 @@
         position: fixed !important;
         z-index: 10;
     }
-    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-next-button{
+    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
+    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
         display: none !important;
     }
     @media screen and (max-width: 640px){
