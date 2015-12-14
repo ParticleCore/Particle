@@ -58,9 +58,11 @@
     html.floater #player #movie_player:not(.ytp-fullscreen){
         box-shadow: 0 0 10px rgb(0, 0, 0);
         position: fixed !important;
-    }
-    html.floater #player #movie_player:not(.ytp-fullscreen){
         z-index: 10;
+    }
+    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
+    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
+        display: none !important;
     }
     @media screen and (max-width: 640px){
         #player-api{

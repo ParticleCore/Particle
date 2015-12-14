@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.6
+// @version         0.8.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -243,7 +243,7 @@
                     parSets.extLang[ytlang] = JSON.parse(data.target.response);
                     parSets.extLang[ytlang].lastMod = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
                 }
-                parSets.extLang.nextCheck = new Date().getTime() + 864E5;
+                parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
                 set("extLang", parSets.extLang);
             }
             function checkModified(data) {
@@ -267,7 +267,7 @@
                     if (!language.fetching && parSets.extLang.nextCheck && parSets.extLang.nextCheck <= new Date().getTime()) {
                         language.fetching = true;
                         localXHR("HEAD", checkModified, urlBase + ytlang + ".json", ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]);
-                        parSets.extLang.nextCheck = new Date().getTime() + 864E5;
+                        parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
                         set("extLang", parSets.extLang);
                     }
                     return parSets.extLang[ytlang][label];
@@ -1070,10 +1070,12 @@
                         document.documentElement.classList.add("floater");
                         eventHandler([window, "resize", updatePos]);
                         updatePos();
+                        window.dispatchEvent(new Event('resize'));
                     } else if (!outOfSight && isFloater) {
                         document.documentElement.classList.remove("floater");
                         eventHandler([window, "resize", updatePos, false, "remove"]);
                         videoPlayer.removeAttribute("style");
+                        window.dispatchEvent(new Event('resize'));
                     }
                 }
             }
