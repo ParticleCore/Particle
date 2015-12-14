@@ -100,7 +100,7 @@
     "VID_PLR_HFR"           : "Desactivar HFR (60fps)",
     "VID_PLR_HTML5"         : "Usar o reproductor HTML5 quando possível",
     "VID_PLR_CC"            : "Desactivar legendas e CC",
-    "VID_PLR_INFO"          : "ACtivar barra de informação com o botão ver mais tarde",
+    "VID_PLR_INFO"          : "Activar barra de informação com o botão ver mais tarde",
     "VID_PLR_FIT"           : "Ajustar na página no modo cinema",
     "VID_PLR_FIT_WDTH"      : "Largura máxima do ajuste na página:",
     "VID_PLR_DYN_SIZE"      : "Desactivar tamanho dinâmico do reproductor na vista predefinida",
