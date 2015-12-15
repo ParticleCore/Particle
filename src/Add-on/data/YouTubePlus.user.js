@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.8
+// @version         0.8.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -318,6 +318,7 @@
                     GEN_GRID_SUBS   : "part_grid_subs",
                     GEN_GRID_SRCH   : "part_grid_search",
                     GEN_CMPT_TTLS   : "part_compact_titles",
+                    VID_PLR_ATPL    : "part_autoplayon",
                     VID_PLR_FIT     : "part_fit_theater",
                     VID_PLR_DYN_SIZE: "part_static_size",
                     VID_HIDE_DETLS  : "part_hide_details",
@@ -1603,6 +1604,7 @@
                     frameStep   = controls.querySelector("#framestep-button");
                 function togglePlay() {
                     set("VID_PLR_ATPL", !parSets.VID_PLR_ATPL);
+                    document.documentElement.classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("part_autoplayon");
                     document.getElementById("autoplay-button").classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("active");
                 }
                 function toggleLoop(event) {
