@@ -325,10 +325,6 @@
         background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -230px;
         width: 24px;
     }
-    #seek-map{
-        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -86px;
-        width: 18px;
-    }
     #screenshot-button{
         background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -158px;
         width: 22px;
@@ -354,63 +350,6 @@
         width: 20px;
     }
 /*   end| Player console */
-/* start| Seek thumbs */
-    #seek-thumb-map{
-        font-size: 0;
-        overflow: auto;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        white-space: nowrap;
-        z-index: 940;
-        -moz-user-select: none;
-        -webkit-user-select: none;
-    }
-    #seek-controls{
-        background: rgba(0, 0, 0, .8);
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        bottom: 100%;
-        display: inline-block;
-        left: 50%;
-        padding: 5px 5px 0;
-        position: relative;
-        transform: translateX(-50%);
-    }
-    #seek-controls > div{
-        color: rgba(255,255,255, .4);
-        cursor: pointer;
-        font-size: 10px;
-        display: inline;
-        font-size: 10px;
-        margin: 5px;
-    }
-    .quality-1 .quality-1,
-    .quality-2 .quality-2,
-    .quality-3 .quality-3{
-        color: rgba(255,255,255, .7) !important;
-    }
-    #seek-controls > div:hover{
-        color: #F1F1F1 !important;
-    }
-    #seek-thumbs{
-        background: rgba(0, 0, 0, .8);
-        overflow: auto;
-    }
-    #seek-thumbs span{
-        display: inline-block;
-        margin: 10px 5px 20px;
-        position: relative;
-    }
-    #seek-thumbs .timer{
-        font-size: 11px;
-        line-height: 20px;
-        position: absolute;
-        text-align: center;
-        top: 100%;
-        width: 100%;
-    }
-/*   end| Seek thumbs */
 /* start| Screenshot window */
     #screenshot-result{
         bottom: 15px;
