@@ -612,8 +612,8 @@
     .part_grid_subs .c4-featured-content.branded-page-box{
        width: initial;
     }
-    .ytp-thumbnail-overlay,
-    .ytp-large-play-button{
+    html:not(.part_autoplayon) .ytp-thumbnail-overlay,
+    html:not(.part_autoplayon) .ytp-large-play-button{
        transition: none !important;
     }
     #movie_player .video-ads .ad-container:not(.ad-overlay){
