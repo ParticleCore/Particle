@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.7
+// @version         0.8.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -47,6 +47,7 @@
                 VID_SDBR_ALGN   : "1",
                 VID_PLR_HTML5   : true,
                 BLK_ON          : true,
+                firstTime       : true,
                 volLev          : 50,
                 plApl           : false,
                 plRev           : false,
@@ -185,6 +186,8 @@
                 ABT_LNK_GHB           : "GitHub",
                 ABT_LNK_GRFK          : "Greasy Fork",
                 ABT_LNK_OPNU          : "OpenUserJS",
+                WLCM                  : "Thank you for installing YT+",
+                WLCMSTRT              : "You can customize your settings by clicking the button above",
                 LOCALE                : "English (US)"
             };
         function set(setting, newValue) {
@@ -755,6 +758,25 @@
                     document[(isChrome && "body") || "documentElement"].scrollTop = 0;
                 }
             }
+            function firstTime(event) {
+                var welcome = document.getElementById("part_welcome");
+                if (event && event.target && event.target.parentNode && event.target.parentNode.className === "par_closewlcm") {
+                    set("firstTime", false);
+                    welcome.remove();
+                    eventHandler([welcome, "click", firstTime, false, "remove"]);
+                } else if (!welcome) {
+                    welcome = document.createElement("template");
+                    welcome.innerHTML = "<div id='part_welcome'>"+
+                        "    <span data-p='tnd|WLCM'></span>" +
+                        "    <br>" +
+                        "    <span data-p='tnd|WLCMSTRT'></span>" +
+                        "    <div class='par_closewlcm'><span>×</span></div>" +
+                        "</div>";
+                    welcome = setLocale(welcome.content);
+                    buttonsSection.insertBefore(welcome, settingsButton);
+                    eventHandler([welcome, "click", firstTime]);
+                }
+            }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
             buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
             if (buttonsSection && !document.getElementById("P")) {
@@ -766,6 +788,9 @@
                     buttonsSection.insertBefore(settingsButton, buttonNotif);
                 } else {
                     buttonsSection.appendChild(settingsButton);
+                }
+                if (parSets.firstTime) {
+                    firstTime();
                 }
             }
         }

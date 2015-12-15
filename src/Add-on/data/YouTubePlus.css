@@ -1178,3 +1178,42 @@
         display: none;
     }
 /*   end| Particle settings */
+/* start| Particle welcome */
+    #part_welcome{
+        background:#09F;
+        border-radius:2px;
+        max-width:220px;
+        position:absolute;
+        z-index:1;
+        color:#FFF;
+        padding:10px;
+        top:45px;
+        margin-left:-140px;
+        box-shadow:0 0 3px rgba(0,0,0,0.5);
+    }
+    #part_welcome:after{
+        content:"";
+        display:block;
+        width:0; 
+        height:0; 
+        border-left:10px solid transparent;
+        border-right:10px solid transparent;
+        border-bottom:10px solid #09F;
+        top:-10px;
+        position:absolute;
+        right:10px;
+    }
+    .par_closewlcm{
+        position:relative;
+        font-size:21px;
+        text-align:right;
+        line-height:14px;
+    }
+    .par_closewlcm > span{
+        cursor:default;
+        opacity:.5;
+    }
+    .par_closewlcm > span:hover{
+        opacity:1;
+    }
+/*   end| Particle welcome */
