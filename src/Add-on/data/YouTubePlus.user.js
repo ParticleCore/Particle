@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.8.9
+// @version         0.9.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1272,9 +1272,9 @@
                             patch[0][key] = args[0][key];
                         }
                     }
-                    config.args = JSON.parse("{\"" + decodeURIComponent(patch[0].response.replace(/&/g, "\",\"").replace(/\=/g, "\":\"").replace(/\+/g, "%20")) + "\"}");
+                    config.args = JSON.parse("{\"" + decodeURIComponent(patch[0].response.replace(/%5C/g, "<<>>").replace(/%22/g, "<>").replace(/&/g, "\",\"").replace(/\=/g, "\":\"").replace(/\+/g, "%20")) + "\"}");
                     config = argsCleaner(config);
-                    patch[0].responseText = patch[0].response = encodeURIComponent(JSON.stringify(config.args).split(/\{"([\w\W]*?)"\}/)[1]).replace(/%22%2C%22/g, "&").replace(/%22%3A%22/g, "=").replace(/%20/g, "+");
+                    patch[0].responseText = patch[0].response = encodeURIComponent(JSON.stringify(config.args).split(/\{"([\w\W]*?)"\}/)[1]).replace(/%3C%3C%3E%3E/g, "%5C").replace(/%3C%3E/g, "%22").replace(/%22%2C%22/g, "&").replace(/%22%3A%22/g, "=").replace(/%20/g, "+");
                     originalFunction.apply(this, patch);
                     api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                 };
