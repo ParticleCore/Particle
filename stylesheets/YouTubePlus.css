@@ -619,10 +619,6 @@
     #movie_player .video-ads .ad-container:not(.ad-overlay){
        top: 0;
     }
-    .ytp-chrome-bottom{
-        max-width: calc(100% - 24px);
-        min-width: calc(100% - 24px);
-    }
 /*   end| Enhancements */
 /* start| Improved notification button */
     .part_notif_button #appbar-main-guide-notification-container{
