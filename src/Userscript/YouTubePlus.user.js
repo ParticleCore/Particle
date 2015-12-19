@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.1
+// @version         0.9.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1166,6 +1166,7 @@
             function playerState(event) {
                 if (parSets.fullBrs) {
                     document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_fullbrowser");
+                    window.dispatchEvent(new Event('resize'));
                 }
                 if (parSets.lightsOut) {
                     document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_cinema_mode");
