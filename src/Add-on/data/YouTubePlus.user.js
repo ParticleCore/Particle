@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.3
+// @version         0.9.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1151,7 +1151,7 @@
                     y,
                     sets = document.getElementById("P-settings");
                 window.mouseisdown = event.type === "mousedown" || (window.mouseisdown && event.type === "blur");
-                if (window.mouseisdown || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
+                if (window.frameStep || window.mouseisdown || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
                     return;
                 }
                 if (["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
@@ -1719,6 +1719,7 @@
                     }
                     if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
                         if (event.shiftKey) {
+                            window.frameStep = true;
                             event.target.blur();
                             document.getSelection().removeAllRanges();
                             if (event.keyCode === 37 || event.keyCode === 39) {
@@ -1730,6 +1731,9 @@
                                     api.seekBy(1 / fps);
                                 }
                             }
+                        } else if (event.type === "keyup" && window.frameStep) {
+                            window.frameStep = false;
+                            api.focus();
                         } else if (event.type === "click" && event.target.id === "framestep-button") {
                             set("frameStep", !parSets.frameStep);
                             frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
@@ -1737,8 +1741,10 @@
                     }
                     if (frameStep && frameStep.classList.contains("active")) {
                         eventHandler([document, "keydown", toggleFrames]);
+                        eventHandler([document, "keyup", toggleFrames]);
                     } else if (!frameStep || !frameStep.classList.contains("active")) {
                         eventHandler([document, "keydown", toggleFrames, false, "remove"]);
+                        eventHandler([document, "keyup", toggleFrames, false, "remove"]);
                     }
                 }
                 function handleToggles(event) {
