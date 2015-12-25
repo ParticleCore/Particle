@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.2
+// @version         0.9.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -368,7 +368,7 @@
                 sets = JSON.parse(gate.dataset[key] || null);
             if (!gate.pagescript) {
                 gate.pagescript = true;
-                observer = new window.MutationObserver(pageScript);
+                observer = new MutationObserver(pageScript);
                 return observer.observe(gate, {attributeFilter: ["data-" + key]});
             }
             if (sets) {
@@ -912,13 +912,10 @@
                 i = list.length;
                 while (i) {
                     i -= 1;
-                    if (type === "HFR") {
-                        temp = list[i].split(/fps\=([0-9]{2})/)[1];
-                        if (!temp || temp < 31) {
-                            newList.push(list[i]);
-                        }
-                    } else {
-                        temp = false;
+                    temp = type && list[i].split(/fps\=([0-9]{2})/)[1];
+                    if (type && (!temp || temp < 31)) {
+                        newList.push(list[i]);
+                    } else if (!type) {
                         if (list[i].split("author").length > 1) {
                             temp = list[i].split(/\=|&/g);
                             temp = decodeURIComponent(temp[temp.indexOf("author") + 1]).replace(/\+/g, " ");
@@ -965,7 +962,7 @@
                 if (config.args.iv_load_policy && parSets.VID_PLR_ANTS) {
                     config.args.iv_load_policy = "3";
                 }
-                if ((parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed)))) {
+                if (parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed))) {
                     delete config.args.ad3_module;
                 }
                 if (config.args.vmap && !parSets.VID_PLR_ATPL && !parSets.VID_PLR_ADS) {
@@ -1153,10 +1150,11 @@
                 var x,
                     y,
                     sets = document.getElementById("P-settings");
-                if (event.target.tagName === "IFRAME" || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
+                window.mouseisdown = event.type === "mousedown" || (window.mouseisdown && event.type === "blur");
+                if (window.mouseisdown || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
                     return;
                 }
-                if (["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0) {
+                if (["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     x = window.scrollX;
                     y = window.scrollY;
                     api.focus();
@@ -1195,8 +1193,14 @@
                     video.loop = parSets.loopVid;
                 }
                 if (parSets.VID_PLR_ALACT) {
-                    eventHandler([document.documentElement, "focus", alwaysActive, true]);
                     eventHandler([document.documentElement, "mouseup", alwaysActive, true]);
+                    eventHandler([document.documentElement, "mousedown", alwaysActive, true]);
+                    if (window.chrome) {
+                        api.focus();
+                        eventHandler([document.documentElement, "blur", alwaysActive, true]);
+                    } else {
+                        eventHandler([document.documentElement, "focus", alwaysActive, true]);
+                    }
                 }
             }
         }
@@ -1243,13 +1247,13 @@
             function autoplayDetourFullScreen(originalFunction) {
                 return function () {
                     var nextButton,
-                        hasEnded    = api && api.getCurrentTime && !(Math.round(api.getCurrentTime()) < Math.floor(api.getDuration())),
+                        hasEnded    = api && api.getCurrentTime && Math.round(api.getCurrentTime()) >= Math.floor(api.getDuration()),
                         nextClicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
                     if (!parSets.plApl && !nextClicked && hasEnded) {
                         nextButton = document.getElementsByClassName("ytp-next-button")[0];
                         if (nextButton && nextButton.getAttribute("aria-disabled") === "true") {
                             nextButton.onclick = api.nextVideo;
-                            eventHandler(document, "click", api.nextVideo);
+                            eventHandler([document, "click", api.nextVideo]);
                             nextButton.setAttribute("aria-disabled", "false");
                         }
                         return false;
@@ -1390,7 +1394,7 @@
                 }
                 if (loadMore && !loadMore.classList.contains("thumbMod")) {
                     loadMore.classList.add("thumbMod");
-                    observer = new window.MutationObserver(thumbMod);
+                    observer = new MutationObserver(thumbMod);
                     observer.observe(loadMore, {
                         childList: true,
                         attributes: true,
@@ -1511,11 +1515,11 @@
             }
         }
         function volumeWheel(event) {
-            var playerApi  = document.getElementById("player-api"),
+            var playerApi  = document.getElementById("movie_player"),
                 direction  = event && (event.deltaY || event.wheelDeltaY),
                 currentVol = api && api.getVolume && api.getVolume(),
                 playlistFS = document.getElementsByClassName("ytp-playlist-tray-tray")[0] || document.getElementsByClassName("ytp-playlist-menu")[0];
-            if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === "player-api" || playerApi.contains(event.target))) {
+            if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === "movie_player" || playerApi.contains(event.target))) {
                 event.preventDefault();
                 if (direction > 0 && currentVol > 0) {
                     api.setVolume(currentVol - 5);
@@ -1593,11 +1597,10 @@
             }
         }
         function advancedOptions() {
-            var header      = document.getElementById("watch-header"),
-                cnslBtn     = document.getElementById("console-button"),
-                cnslCont    = document.getElementById("advanced-options"),
-                controls    = document.getElementById("player-console"),
-                videoPlayer = document.getElementsByTagName("video")[0];
+            var header   = document.getElementById("watch-header"),
+                cnslBtn  = document.getElementById("console-button"),
+                cnslCont = document.getElementById("advanced-options"),
+                controls = document.getElementById("player-console");
             function hookButtons() {
                 var loopButton  = controls.querySelector("#loop-button"),
                     fullBrowser = controls.querySelector("#fullbrowser-button"),
@@ -1609,7 +1612,7 @@
                     document.getElementById("autoplay-button").classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("active");
                 }
                 function toggleLoop(event) {
-                    videoPlayer = document.getElementsByTagName("video")[0];
+                    var videoPlayer = document.getElementsByTagName("video")[0];
                     if (videoPlayer) {
                         videoPlayer.loop = event ? !parSets.loopVid : parSets.loopVid;
                         if (event) {
@@ -1826,7 +1829,7 @@
             if (parSets.GEN_CHN_DFLT_PAGE !== "default") {
                 if (loadMore && !loadMore.classList.contains("defaultChannel")) {
                     loadMore.classList.add("defaultChannel");
-                    observer = new window.MutationObserver(defaultChannelPage);
+                    observer = new MutationObserver(defaultChannelPage);
                     observer.observe(loadMore, {attributes: true});
                 }
                 if (event && event.target && event.target.tagName === "A" && !event.target.classList.contains("spf-link") && event.target.href.split(parSets.GEN_CHN_DFLT_PAGE).length < 2 && (event.target.href.split("/channel/").length > 1 || event.target.href.split("/user/").length > 1)) {
@@ -1869,7 +1872,7 @@
             if (loadMore && parSets.GEN_INF_SCRL) {
                 if (!loadMore.classList.contains("infiniteScroll")) {
                     loadMore.classList.add("infiniteScroll");
-                    observer = new window.MutationObserver(infiniteScroll);
+                    observer = new MutationObserver(infiniteScroll);
                     observer.observe(loadMore, {attributes: true});
                 } else if (!loadMore.classList.contains("scrolldetect")) {
                     loadMore.classList.add("scrolldetect");
@@ -1985,7 +1988,7 @@
             sets = JSON.parse(gate.dataset[key] || null);
         if (!gate.contentscript) {
             gate.contentscript = true;
-            observer = new window.MutationObserver(contentScript);
+            observer = new MutationObserver(contentScript);
             return observer.observe(gate, {attributeFilter: ["data-" + key]});
         }
         if (sets) {
