@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.6
+// @version         0.9.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1143,11 +1143,10 @@
             }
         }
         function playerReady() {
-            var video;
             function alwaysActive(event) {
                 var i,
                     eventClone;
-                if (event.target !== api && !window.frameSteps && event.which < 112 && !event.ctrlKey && !event.shiftKey && !event.altKey  && !event.metaKey && !event.target.isContentEditable && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                if (event.target !== api && !api.contains(event.target) && event.which < 112 && !event.ctrlKey && !event.shiftKey && !event.altKey  && !event.metaKey && !event.target.isContentEditable && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
                     for (i in event) {
                         try {
@@ -1159,12 +1158,11 @@
                 }
             }
             function playerState(event) {
-                if (parSets.fullBrs) {
-                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_fullbrowser");
-                    window.dispatchEvent(new Event('resize'));
-                }
-                if (parSets.lightsOut) {
-                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_cinema_mode");
+                if (parSets.fullBrs || parSets.lightsOut) {
+                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((parSets.lightsOut && "part_cinema_mode") || "part_fullbrowser");
+                    if (parSets.fullBrs) {
+                        window.dispatchEvent(new Event('resize'));
+                    }
                 }
             }
             function handleCustoms(event) {
@@ -1172,8 +1170,9 @@
             }
             if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
-                video = document.getElementsByTagName("video")[0];
-                api.addEventListener("onStateChange", playerState);
+                if (parSets.fullBrs || parSets.lightsOut) {
+                    api.addEventListener("onStateChange", playerState);
+                }
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.addEventListener("onVolumeChange", handleCustoms);
                 }
@@ -1184,7 +1183,7 @@
                     api.setVolume(parSets.volLev);
                 }
                 if (parSets.loopVid) {
-                    video.loop = parSets.loopVid;
+                    document.getElementsByTagName("video")[0].loop = parSets.loopVid;
                 }
                 if (parSets.VID_PLR_ALACT) {
                     eventHandler([document, "keydown", alwaysActive]);
@@ -1706,7 +1705,6 @@
                     }
                     if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
                         if (event.shiftKey) {
-                            window.frameSteps = true;
                             if (event.keyCode === 37 || event.keyCode === 39) {
                                 pi = playerInstance.getVideoData();
                                 Object.keys(pi).forEach(currentFps);
@@ -1717,8 +1715,6 @@
                                 }
                                 event.preventDefault();
                             }
-                        } else if (event.type === "keyup" && window.frameSteps) {
-                            window.frameSteps = false;
                         } else if (event.type === "click" && event.target.id === "framestep-button") {
                             set("frameStep", !parSets.frameStep);
                             frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
@@ -1726,10 +1722,8 @@
                     }
                     if (frameStep && frameStep.classList.contains("active")) {
                         eventHandler([document, "keydown", toggleFrames]);
-                        eventHandler([document, "keyup", toggleFrames]);
                     } else if (!frameStep || !frameStep.classList.contains("active")) {
                         eventHandler([document, "keydown", toggleFrames, false, "remove"]);
-                        eventHandler([document, "keyup", toggleFrames, false, "remove"]);
                     }
                 }
                 function handleToggles(event) {
