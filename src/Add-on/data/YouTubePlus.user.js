@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.5
+// @version         0.9.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1147,7 +1147,7 @@
             function alwaysActive(event) {
                 var i,
                     eventClone;
-                if (event.target !== api && !window.frameSteps && event.which < 112 && !event.target.isContentEditable && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                if (event.target !== api && !window.frameSteps && event.which < 112 && !event.ctrlKey && !event.shiftKey && !event.altKey  && !event.metaKey && !event.target.isContentEditable && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
                     for (i in event) {
                         try {
