@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.4
+// @version         0.9.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -39,7 +39,7 @@
                 VID_PLST_RVRS   : true,
                 VID_PLR_ALVIS   : true,
                 VID_PLR_SIZE_MEM: true,
-                VID_PLR_FIT_WDTH: "1280px",
+                VID_PLR_FIT     : true,
                 VID_HIDE_COMS   : "1",
                 VID_POST_TIME   : true,
                 VID_VID_CNT     : true,
@@ -49,8 +49,6 @@
                 BLK_ON          : true,
                 firstTime       : true,
                 volLev          : 50,
-                plApl           : false,
-                plRev           : false,
                 advOpts         : true,
                 blacklist       : {}
             },
@@ -381,8 +379,8 @@
             var pContainer,
                 buttonNotif,
                 buttonsSection,
-                settingsButton = document.getElementById("P");
-            if (settingsButton) {
+                settingsButton;
+            if (document.getElementById("P")) {
                 return;
             }
             function template(section) {
@@ -780,7 +778,7 @@
             }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
             buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
-            if (buttonsSection && !document.getElementById("P")) {
+            if (buttonsSection) {
                 settingsButton = document.createElement("button");
                 settingsButton.id = "P";
                 settingsButton.setAttribute("title", userLang("YTSETS"));
@@ -1147,18 +1145,17 @@
         function playerReady() {
             var video;
             function alwaysActive(event) {
-                var x,
-                    y,
-                    sets = document.getElementById("P-settings");
-                window.mouseisdown = event.type === "mousedown" || (window.mouseisdown && event.type === "blur");
-                if (window.frameStep || window.mouseisdown || event.target.getAttribute("contenteditable") || (sets && sets.contains(event.target)) || window.getSelection().toString() !== "") {
-                    return;
-                }
-                if (["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
-                    x = window.scrollX;
-                    y = window.scrollY;
-                    api.focus();
-                    window.scrollTo(x, y);
+                var i,
+                    eventClone;
+                if (event.target !== api && !window.frameSteps && event.which < 112 && !event.target.isContentEditable && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                    eventClone = new Event("keydown");
+                    for (i in event) {
+                        try {
+                            eventClone[i] = event[i];
+                        } catch (ignore) {}
+                    }
+                    event.preventDefault();
+                    api.dispatchEvent(eventClone);
                 }
             }
             function playerState(event) {
@@ -1170,21 +1167,18 @@
                     document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]("part_cinema_mode");
                 }
             }
-            function volumeChanged(event) {
-                set("volLev", event.volume);
-            }
-            function sizeChanged(event) {
-                set("theaterMode", event);
+            function handleCustoms(event) {
+                typeof event === "object" ? set("volLev", event.volume) : set("theaterMode", event);
             }
             if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
                 video = document.getElementsByTagName("video")[0];
                 api.addEventListener("onStateChange", playerState);
                 if (parSets.VID_PLR_VOL_MEM) {
-                    api.addEventListener("onVolumeChange", volumeChanged);
+                    api.addEventListener("onVolumeChange", handleCustoms);
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
-                    api.addEventListener("SIZE_CLICKED", sizeChanged);
+                    api.addEventListener("SIZE_CLICKED", handleCustoms);
                 }
                 if (parSets.VID_PLR_VOL_MEM) {
                     api.setVolume(parSets.volLev);
@@ -1193,14 +1187,7 @@
                     video.loop = parSets.loopVid;
                 }
                 if (parSets.VID_PLR_ALACT) {
-                    eventHandler([document.documentElement, "mouseup", alwaysActive, true]);
-                    eventHandler([document.documentElement, "mousedown", alwaysActive, true]);
-                    if (window.chrome) {
-                        api.focus();
-                        eventHandler([document.documentElement, "blur", alwaysActive, true]);
-                    } else {
-                        eventHandler([document.documentElement, "focus", alwaysActive, true]);
-                    }
+                    eventHandler([document, "keydown", alwaysActive]);
                 }
             }
         }
@@ -1585,7 +1572,7 @@
                 navCtrls.appendChild(button);
             }
             if (plBar) {
-                if (document.readyState === "complete" && href.split(parSets.plRev).length > 1) {
+                if (document.readyState === "complete" && parSets.plRev && href.split(parSets.plRev).length > 1) {
                     reverseControl();
                 }
                 if (parSets.VID_PLST_RVRS && !document.getElementById("reverse")) {
@@ -1719,9 +1706,7 @@
                     }
                     if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
                         if (event.shiftKey) {
-                            window.frameStep = true;
-                            event.target.blur();
-                            document.getSelection().removeAllRanges();
+                            window.frameSteps = true;
                             if (event.keyCode === 37 || event.keyCode === 39) {
                                 pi = playerInstance.getVideoData();
                                 Object.keys(pi).forEach(currentFps);
@@ -1730,10 +1715,10 @@
                                     api.pauseVideo();
                                     api.seekBy(1 / fps);
                                 }
+                                event.preventDefault();
                             }
-                        } else if (event.type === "keyup" && window.frameStep) {
-                            window.frameStep = false;
-                            api.focus();
+                        } else if (event.type === "keyup" && window.frameSteps) {
+                            window.frameSteps = false;
                         } else if (event.type === "click" && event.target.id === "framestep-button") {
                             set("frameStep", !parSets.frameStep);
                             frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
