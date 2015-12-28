@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.7
+// @version         0.9.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -34,7 +34,6 @@
                 GEN_SDBR_ON     : true,
                 VID_END_SHRE    : true,
                 VID_DFLT_QLTY   : "auto",
-                VID_PLST_SEP    : true,
                 VID_PLST_ATPL   : true,
                 VID_PLST_RVRS   : true,
                 VID_PLR_ALVIS   : true,
@@ -140,7 +139,6 @@
                 VID_HIDE_COMS_REM     : "Remove",
                 VID_END_SHRE          : "Disable share panel when video ends",
                 VID_PLST              : "Playlists",
-                VID_PLST_SEP          : "Separate playlist from player",
                 VID_PLST_ATPL         : "Enable playlist autoplay control",
                 VID_PLST_RVRS         : "Enable reverse playlist control",
                 VID_PLR_SIZE_MEM      : "Memorize player mode",
@@ -321,7 +319,6 @@
                     VID_PLR_DYN_SIZE: "part_static_size",
                     VID_HIDE_DETLS  : "part_hide_details",
                     VID_TTL_CMPT    : "part_compact_title",
-                    VID_PLST_SEP    : "part_playlist_spacer",
                     VID_DESC_SHRT   : "part_labelless_buttons"
                 };
             if (ytGrid && parSets.GEN_GRID_SUBS) {
@@ -555,7 +552,6 @@
                         "    <div><input id='VID_PLR_FIT' type='checkbox'><label for='VID_PLR_FIT' data-p='tnd|VID_PLR_FIT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_to_page' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_FIT_WDTH' type='text' placeholder='1280px' size='6'><label for='VID_PLR_FIT_WDTH' data-p='tnd|VID_PLR_FIT_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_max_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <h3 data-p='tnd|VID_PLST'></h3>" +
-                        "    <div><input id='VID_PLST_SEP' type='checkbox'><label for='VID_PLST_SEP' data-p='tnd|VID_PLST_SEP'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#separate_playlist' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLST_ATPL' type='checkbox'><label for='VID_PLST_ATPL' data-p='tnd|VID_PLST_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLST_RVRS' type='checkbox'><label for='VID_PLST_RVRS' data-p='tnd|VID_PLST_RVRS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_reverse' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <h3 data-p='tnd|VID_LAYT'></h3>" +
@@ -761,8 +757,8 @@
                 var welcome = document.getElementById("part_welcome");
                 if (event && event.target && event.target.parentNode && event.target.parentNode.className === "par_closewlcm") {
                     set("firstTime", false);
-                    welcome.remove();
                     eventHandler([welcome, "click", firstTime, false, "remove"]);
+                    welcome.remove();
                 } else if (!welcome) {
                     welcome = document.createElement("template");
                     welcome.innerHTML = "<div id='part_welcome'>"+
@@ -1145,8 +1141,9 @@
         function playerReady() {
             function alwaysActive(event) {
                 var i,
-                    eventClone;
-                if (event.target !== api && !api.contains(event.target) && event.which < 112 && !event.ctrlKey && !event.shiftKey && !event.altKey  && !event.metaKey && !event.target.isContentEditable && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                    eventClone,
+                    clear = event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.target.isContentEditable;
+                if (clear && [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1 && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
                     for (i in event) {
                         try {
