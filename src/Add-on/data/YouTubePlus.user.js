@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.8
+// @version         0.9.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1143,7 +1143,7 @@
                 var i,
                     eventClone,
                     clear = event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.target.isContentEditable;
-                if (clear && [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1 && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                if (clear && ((event.which > 47 && event.which < 58) || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1) && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
                     for (i in event) {
                         try {
