@@ -86,7 +86,6 @@
     "VID_HIDE_COMS_REM"     : "Remove",
     "VID_END_SHRE"          : "Disable share panel when video ends",
     "VID_PLST"              : "Playlists",
-    "VID_PLST_SEP"          : "Separate playlist from player",
     "VID_PLST_ATPL"         : "Enable playlist autoplay control",
     "VID_PLST_RVRS"         : "Enable reverse playlist control",
     "VID_PLR_SIZE_MEM"      : "Memorize player mode",
