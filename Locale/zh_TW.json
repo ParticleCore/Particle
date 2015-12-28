@@ -86,7 +86,6 @@
     "VID_HIDE_COMS_REM"     : "刪除",
     "VID_END_SHRE"          : "影片結束時關閉分享面板",
     "VID_PLST"              : "播放列表",
-    "VID_PLST_SEP"          : "獨立播放列表",
     "VID_PLST_ATPL"         : "啟用自動播放列表",
     "VID_PLST_RVRS"         : "啟用反向播放列表",
     "VID_PLR_SIZE_MEM"      : "記住播放模式",
