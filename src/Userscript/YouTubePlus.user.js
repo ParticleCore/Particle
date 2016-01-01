@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.0
+// @version         1.0.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1159,8 +1159,8 @@
                     set("theaterMode", event);
                 }
             }
-            if (!document.getElementById("c4-player")) {
-                api = document.getElementById("movie_player");
+            api = document.getElementById("movie_player");
+            if (api && !document.getElementById("c4-player")) {
                 if (parSets.fullBrs || parSets.lightsOut) {
                     api.addEventListener("onStateChange", playerState);
                 }
