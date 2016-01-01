@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         0.9.9
+// @version         1.0.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -877,23 +877,14 @@
         function playerMode() {
             var pageElement   = document.getElementById("page"),
                 playerElement = document.getElementById("player");
-            if (parSets.VID_PLR_SIZE_MEM && parSets.theaterMode) {
-                if (window.navigator.cookieEnabled && (document.cookie.split("wide=0").length > 1 || document.cookie.split("wide=1").length < 2)) {
-                    document.cookie = "wide=1; path=/";
+            if (parSets.VID_PLR_SIZE_MEM) {
+                if (window.navigator.cookieEnabled && (document.cookie.split("wide=" + (parSets.theaterMode ? "0" : "1")).length > 1 || document.cookie.split("wide=" + (parSets.theaterMode ? "1" : "0")).length < 2)) {
+                    document.cookie = "wide=" + (parSets.theaterMode ? "1" : "0") + "; path=/";
                 }
                 if (playerElement && window.location.pathname === "/watch") {
-                    pageElement.classList.add("watch-wide");
-                    pageElement.className = pageElement.className.replace("non-", "");
-                    playerElement.className = playerElement.className.replace("small", "large");
-                }
-            } else if (parSets.VID_PLR_SIZE_MEM && !parSets.theaterMode) {
-                if (window.navigator.cookieEnabled && (document.cookie.split("wide=1").length > 1 || document.cookie.split("wide=0").length < 2)) {
-                    document.cookie = "wide=0; path=/";
-                }
-                if (playerElement && window.location.pathname === "/watch") {
-                    pageElement.classList.remove("watch-wide");
-                    pageElement.className = pageElement.className.replace("watch-stage", "watch-non-stage");
-                    playerElement.className = playerElement.className.replace("large", "small").replace("medium", "small");
+                    pageElement.classList[parSets.theaterMode ? "add" : "remove"]("watch-wide");
+                    pageElement.className = pageElement.className.replace(parSets.theaterMode ? "non-" : "watch-stage", parSets.theaterMode ? "" : "watch-non-stage");
+                    playerElement.className = parSets.theaterMode ? playerElement.className.replace("small", "large") : playerElement.className.replace("large", "small").replace("medium", "small");
                 }
             }
         }
@@ -924,6 +915,7 @@
             if (config.args.video_id) {
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
+                delete config.args.loudness;
                 if (parSets.VID_DFLT_QLTY !== "auto") {
                     try {
                         if (!window.localStorage["yt-player-quality"] || window.localStorage["yt-player-quality"].split(parSets.VID_DFLT_QLTY).length < 2) {
@@ -1087,12 +1079,12 @@
                         document.documentElement.classList.add("floater");
                         eventHandler([window, "resize", updatePos]);
                         updatePos();
-                        window.dispatchEvent(new Event('resize'));
+                        window.dispatchEvent(new Event("resize"));
                     } else if (!outOfSight && isFloater) {
                         document.documentElement.classList.remove("floater");
                         eventHandler([window, "resize", updatePos, false, "remove"]);
                         videoPlayer.removeAttribute("style");
-                        window.dispatchEvent(new Event('resize'));
+                        window.dispatchEvent(new Event("resize"));
                     }
                 }
             }
@@ -1140,16 +1132,14 @@
         }
         function playerReady() {
             function alwaysActive(event) {
-                var i,
-                    eventClone,
-                    clear = event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.target.isContentEditable;
-                if (clear && ((event.which > 47 && event.which < 58) || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1) && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                var eventClone,
+                    clear = event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !event.target.isContentEditable;
+                function cloneEvent(i) {
+                    eventClone[i] = event[i];
+                }
+                if (clear && ((event.which > 47 && event.which < 58) || (event.which > 95 && event.which < 106) || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1) && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
-                    for (i in event) {
-                        try {
-                            eventClone[i] = event[i];
-                        } catch (ignore) {}
-                    }
+                    Object.keys(Object.getPrototypeOf(event)).forEach(cloneEvent);
                     event.preventDefault();
                     api.dispatchEvent(eventClone);
                 }
@@ -1158,12 +1148,16 @@
                 if (parSets.fullBrs || parSets.lightsOut) {
                     document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((parSets.lightsOut && "part_cinema_mode") || "part_fullbrowser");
                     if (parSets.fullBrs) {
-                        window.dispatchEvent(new Event('resize'));
+                        window.dispatchEvent(new Event("resize"));
                     }
                 }
             }
             function handleCustoms(event) {
-                typeof event === "object" ? set("volLev", event.volume) : set("theaterMode", event);
+                if (typeof event === "object") {
+                    set("volLev", event.volume);
+                } else {
+                    set("theaterMode", event);
+                }
             }
             if (!document.getElementById("c4-player")) {
                 api = document.getElementById("movie_player");
@@ -1498,19 +1492,15 @@
             }
         }
         function volumeWheel(event) {
-            var playerApi  = document.getElementById("movie_player"),
-                direction  = event && (event.deltaY || event.wheelDeltaY),
-                currentVol = api && api.getVolume && api.getVolume(),
-                playlistFS = document.getElementsByClassName("ytp-playlist-tray-tray")[0] || document.getElementsByClassName("ytp-playlist-menu")[0];
-            if (event && api && playerApi && (!playlistFS || (playlistFS && !playlistFS.contains(event.target))) && (event.target.id === "movie_player" || playerApi.contains(event.target))) {
+            var fsPl      = document.getElementsByClassName("ytp-playlist-menu")[0],
+                ivCard    = document.getElementsByClassName("iv-drawer")[0],
+                canScroll = event && (!fsPl || (fsPl && !fsPl.contains(event.target))) && (!ivCard || (ivCard && !ivCard.contains(event.target))),
+                player    = document.querySelectorAll("video")[0],
+                direction = event && (event.deltaY || event.wheelDeltaY);
+            if (event && api && player && canScroll && (event.target.id === api || api.contains(event.target))) {
                 event.preventDefault();
-                if (direction > 0 && currentVol > 0) {
-                    api.setVolume(currentVol - 5);
-                } else if (direction < 0 && currentVol < 100) {
-                    api.setVolume(currentVol + 5);
-                }
-            }
-            if (!event && parSets.VID_VOL_WHEEL) {
+                api.setVolume(player.volume * 100 - (Math.sign(direction) * 5));
+            } else if (!event && parSets.VID_VOL_WHEEL) {
                 eventHandler([document, "wheel", volumeWheel]);
             } else if (window.location.pathname !== "/watch") {
                 eventHandler([document, "wheel", volumeWheel, false, "remove"]);
@@ -1680,7 +1670,7 @@
                     fullBrowser.classList[(parSets.fullBrs && "add") || "remove"]("active");
                     if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
                         document.documentElement.classList[(parSets.fullBrs && "add") || "remove"]("part_fullbrowser");
-                        window.dispatchEvent(new Event('resize'));
+                        window.dispatchEvent(new Event("resize"));
                     }
                 }
                 function toggleCinemaMode(event) {
