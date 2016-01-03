@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.1
+// @version         1.0.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -321,6 +321,9 @@
                     VID_TTL_CMPT    : "part_compact_title",
                     VID_DESC_SHRT   : "part_labelless_buttons"
                 };
+            function checkClasses(clss) {
+                document.documentElement.classList[parSets[clss] ? "add" : "remove"](setsList[clss]);
+            }
             if (ytGrid && parSets.GEN_GRID_SUBS) {
                 ytGrid.click();
             } else {
@@ -342,15 +345,7 @@
                 if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
                     plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || "1280px";
                 }
-                for (classes in setsList) {
-                    if (setsList.hasOwnProperty(classes)) {
-                        if (parSets[classes]) {
-                            document.documentElement.classList.add(setsList[classes]);
-                        } else {
-                            document.documentElement.classList.remove(setsList[classes]);
-                        }
-                    }
-                }
+                Object.keys(setsList).forEach(checkClasses);
                 if (window.location.href.split("/feed/subscriptions").length < 2) {
                     document.documentElement.classList.remove("part_grid_subs");
                 }
@@ -1146,7 +1141,7 @@
             }
             function playerState(event) {
                 if (parSets.fullBrs || parSets.lightsOut) {
-                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((parSets.lightsOut && "part_cinema_mode") || "part_fullbrowser");
+                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((parSets.fullBrs && "part_fullbrowser") || "0", (parSets.lightsOut && "part_cinema_mode") || "0");
                     if (parSets.fullBrs) {
                         window.dispatchEvent(new Event("resize"));
                     }
