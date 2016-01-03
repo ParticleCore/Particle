@@ -497,6 +497,10 @@
     .part_grid_search .yt-lockup-meta-info > li{
         display: inline;
     }
+    .part_grid_subs .yt-lockup-action-menu,
+    .part_grid_search .yt-lockup-action-menu{
+        right: 10px !important;
+    }
     .part_grid_search #results .item-section{
         float: left;
     }
