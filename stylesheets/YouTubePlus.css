@@ -436,9 +436,7 @@
     .part_grid_search #results .item-section > li{
         display: inline-block;
         margin-bottom: 20px;
-        margin-right: 10px;
         vertical-align: top;
-        width: 196px;
         word-wrap: break-word;
     }
     .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{
