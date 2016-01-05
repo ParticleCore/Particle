@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.2
+// @version         1.0.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -182,7 +182,7 @@
                 ABT_LNK_GHB           : "GitHub",
                 ABT_LNK_GRFK          : "Greasy Fork",
                 ABT_LNK_OPNU          : "OpenUserJS",
-                WLCM                  : "Thank you for installing YT+",
+                WLCM                  : "Thank you for installing YouTube+",
                 WLCMSTRT              : "You can customize your settings by clicking the button above",
                 LOCALE                : "English (US)"
             };
@@ -211,14 +211,16 @@
                 } else if (!event[4]) {
                     target.addEventListener(type, eventHandler, useCapture);
                     events[type] = events[type] || {};
-                    events[type][listener.name] = listener;
+                    events[type][listener.name] = [listener, useCapture];
                 }
             } else if (events[type]) {
                 keys = Object.keys(events[type]);
                 i = keys.length;
                 while (i) {
                     i -= 1;
-                    events[type][keys[i]](event);
+                    if ((!events[type][keys[i]][1] && event.eventPhase > 1) || (events[type][keys[i]][1] && event.eventPhase < 3)) {
+                        events[type][keys[i]][0](event);
+                    }
                 }
             }
         }
@@ -300,8 +302,7 @@
             return content;
         }
         function customStyles() {
-            var classes,
-                plrApi   = document.getElementById("player-api"),
+            var plrApi   = document.getElementById("player-api"),
                 commSect = document.getElementById("watch-discussion"),
                 sidebar  = document.getElementsByClassName("branded-page-v2-secondary-col")[0],
                 ytGrid   = document.querySelectorAll(".yt-uix-menu-top-level-flow-button:last-child a")[0],
@@ -749,22 +750,28 @@
                 }
             }
             function firstTime(event) {
-                var welcome = document.getElementById("part_welcome");
+                var coords,
+                    welcome = document.getElementById("part_welcome");
                 if (event && event.target && event.target.parentNode && event.target.parentNode.className === "par_closewlcm") {
                     set("firstTime", false);
                     eventHandler([welcome, "click", firstTime, false, "remove"]);
                     welcome.remove();
                 } else if (!welcome) {
+                    coords = settingsButton.getBoundingClientRect();
                     welcome = document.createElement("template");
-                    welcome.innerHTML = "<div id='part_welcome'>"+
+                    welcome.innerHTML = "<div id='part_welcome' style='top:" + (coords.top + coords.height + 10) + "px; right:" + (document.documentElement.clientWidth - coords.left - coords.width - 10) + "px'>"+
                         "    <span data-p='tnd|WLCM'></span>" +
                         "    <br>" +
                         "    <span data-p='tnd|WLCMSTRT'></span>" +
                         "    <div class='par_closewlcm'><span>×</span></div>" +
                         "</div>";
                     welcome = setLocale(welcome.content);
-                    buttonsSection.insertBefore(welcome, settingsButton);
+                    settingsButton.parentNode.appendChild(welcome);
                     eventHandler([welcome, "click", firstTime]);
+                    
+                    welcome = document.getElementById("part_welcome");
+                    welcome.style.position = "fixed";
+                    welcome.style.marginLeft = "initial";
                 }
             }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
@@ -1686,26 +1693,27 @@
                         }
                     }
                     if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
-                        if (event.shiftKey) {
-                            if (event.keyCode === 37 || event.keyCode === 39) {
-                                pi = playerInstance.getVideoData();
-                                Object.keys(pi).forEach(currentFps);
-                                fps = fps && ((event.keyCode < 39 && -1) || 1) * ((fps < 2 && 30) || fps);
-                                if (fps && api) {
+                        if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
+                            pi = playerInstance.getVideoData();
+                            Object.keys(pi).forEach(currentFps);
+                            fps = fps && ((event.keyCode < 39 && -1) || 1) * ((fps < 2 && 30) || fps);
+                            if (fps && api) {
+                                if (!document.querySelector("video").paused) {
                                     api.pauseVideo();
-                                    api.seekBy(1 / fps);
                                 }
-                                event.preventDefault();
+                                api.seekBy(1 / fps);
                             }
+                            event.preventDefault();
+                            event.stopImmediatePropagation();
                         } else if (event.type === "click" && event.target.id === "framestep-button") {
                             set("frameStep", !parSets.frameStep);
                             frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
                         }
                     }
                     if (frameStep && frameStep.classList.contains("active")) {
-                        eventHandler([document, "keydown", toggleFrames]);
+                        eventHandler([document, "keydown", toggleFrames, true]);
                     } else if (!frameStep || !frameStep.classList.contains("active")) {
-                        eventHandler([document, "keydown", toggleFrames, false, "remove"]);
+                        eventHandler([document, "keydown", toggleFrames, true, "remove"]);
                     }
                 }
                 function handleToggles(event) {
