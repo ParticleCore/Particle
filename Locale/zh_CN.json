@@ -18,7 +18,7 @@
     "CNSL_CINM_MD"          : "影院模式",
     "CNSL_FRME"             : "逐帧",
     "PLST_AP"               : "自动播放",
-    "PLST_RVRS"             : "后退",
+    "PLST_RVRS"             : "反向",
     "SHOW_CMTS"             : "显示评论",
     "HIDE_CMTS"             : "隐藏评论",
     "GLB_IMPR"              : "导入/导出设置",
