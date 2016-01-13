@@ -759,7 +759,7 @@
                 } else if (!welcome) {
                     coords = settingsButton.getBoundingClientRect();
                     welcome = document.createElement("template");
-                    welcome.innerHTML = "<div id='part_welcome' style='top:" + (coords.top + coords.height + 10) + "px; right:" + (document.documentElement.clientWidth - coords.left - coords.width - 10) + "px'>"+
+                    welcome.innerHTML = "<div id='part_welcome'>"+
                         "    <span data-p='tnd|WLCM'></span>" +
                         "    <br>" +
                         "    <span data-p='tnd|WLCMSTRT'></span>" +
@@ -768,8 +768,10 @@
                     welcome = setLocale(welcome.content);
                     settingsButton.parentNode.appendChild(welcome);
                     eventHandler([welcome, "click", firstTime]);
-                    
                     welcome = document.getElementById("part_welcome");
+                    welcome.style.top = (coords.top + coords.height + 10) + "px";
+                    welcome.style.right = (document.documentElement.clientWidth - coords.left - coords.width - 10) + "px";
+                    
                     welcome.style.position = "fixed";
                     welcome.style.marginLeft = "initial";
                 }

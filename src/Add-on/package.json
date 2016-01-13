@@ -1,0 +1,28 @@
+{
+    "title": "YouTube Plus",
+    "name": "particle",
+    "id": "unlisted-particle@particlecore.github.io",
+    "version": "1.0.3",
+    "description": "YouTube with more freedom",
+    "main": "main.js",
+    "author": "Yonez",
+    "license": "Custom",
+    "engines": {
+        "firefox": ">=38"
+    },
+    "permissions": {
+        "private-browsing": true
+    },
+    "preferences": [{
+        "name": "parSets",
+        "title": "Particle settings",
+        "type": "string",
+        "value": "{}",
+        "hidden": true
+    }, {
+        "name": "mozillaBug",
+        "title": "Due to a bug in Firefox the options button is showing up incorrectly, please access the YT+ settings menu from the dark grey triangle located at the top right of your YouTube pages.",
+        "type": "bool"
+    }],
+    "updateURL": "https://github.com/ParticleCore/Particle/raw/master/bin/update.rdf"
+}
