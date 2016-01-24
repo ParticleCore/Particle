@@ -96,6 +96,8 @@
     "VID_SUB_ADS"           : "仅在订阅频道的视频中启用广告",
     "VID_PLR_ANTS"          : "禁用注释",
     "VID_PLR_DASH"          : "禁用回放",
+    "VID_PLR_HFR"           : "禁用HFR (60fps)",
+    "VID_PLR_HTML5"         : "在可能时使用HTML5播放器",
     "VID_PLR_CC"            : "禁用字幕和CC",
     "VID_PLR_INFO"          : "启用稍后观看按钮",
     "VID_PLR_FIT"           : "适应页面为剧场模式",
@@ -127,5 +129,7 @@
     "ABT_LNK_GHB"           : "GitHub",
     "ABT_LNK_GRFK"          : "Greasy Fork",
     "ABT_LNK_OPNU"          : "OpenUserJS",
+    "WLCM"                  : "感谢您安装YouTube+",
+    "WLCMSTRT"              : "您可以通过点击上面的按钮来自定义您的设置",
     "LOCALE"                : "中文 (简体)"
 }
