@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.3
+// @version         1.0.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -771,9 +771,6 @@
                     welcome = document.getElementById("part_welcome");
                     welcome.style.top = (coords.top + coords.height + 10) + "px";
                     welcome.style.right = (document.documentElement.clientWidth - coords.left - coords.width - 10) + "px";
-                    
-                    welcome.style.position = "fixed";
-                    welcome.style.marginLeft = "initial";
                 }
             }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
