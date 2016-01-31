@@ -10,8 +10,10 @@ function mainScript(worker) {
         subWorker.port.emit("particleSettings", simpleStorage.particleSettings);
     }
     function save(event) {
-        simpleStorage.particleSettings = event;
-        simplePrefs.prefs.parSets = (simplePrefs.prefs.parSets > "0" && "0") || "1";
+        if (event && event !== "") {
+            simpleStorage.particleSettings = event;
+            simplePrefs.prefs.parSets = (simplePrefs.prefs.parSets > "0" && "0") || "1";
+        }
     }
     function detach() {
         simplePrefs.removeListener("parSets", update);

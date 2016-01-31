@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.4
+// @version         1.0.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -928,11 +928,8 @@
                         }
                     } catch (ignore) {}
                 }
-                if (config.args.cc_load_policy && parSets.VID_PLR_CC) {
-                    config.args.cc_load_policy = "0";
-                    try {
-                        window.localStorage["yt-html5-player-modules::subtitlesModuleData::module-enabled"] = false;
-                    } catch (ignore) {}
+                if (config.args.cc_load_policy && config.args.caption_audio_tracks && parSets.VID_PLR_CC) {
+                    config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&?d=[0-9]&?/).join("");
                 }
                 if (parSets.VID_PLR_HTML5) {
                     config.html5 = true;
