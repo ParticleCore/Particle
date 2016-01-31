@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.5
+// @version         1.0.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -929,7 +929,7 @@
                     } catch (ignore) {}
                 }
                 if (config.args.cc_load_policy && config.args.caption_audio_tracks && parSets.VID_PLR_CC) {
-                    config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&?d=[0-9]&?/).join("");
+                    config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
                 }
                 if (parSets.VID_PLR_HTML5) {
                     config.html5 = true;
@@ -1490,10 +1490,11 @@
             }
         }
         function volumeWheel(event) {
-            var fsPl      = document.getElementsByClassName("ytp-playlist-menu")[0],
+            var player    = document.querySelectorAll("video")[0],
+                fsPl      = document.getElementsByClassName("ytp-playlist-menu")[0],
+                pSets     = document.getElementsByClassName("ytp-settings-menu")[0],
                 ivCard    = document.getElementsByClassName("iv-drawer")[0],
-                canScroll = event && (!fsPl || (fsPl && !fsPl.contains(event.target))) && (!ivCard || (ivCard && !ivCard.contains(event.target))),
-                player    = document.querySelectorAll("video")[0],
+                canScroll = event && (!fsPl || (fsPl && !fsPl.contains(event.target))) && (!ivCard || (ivCard && !ivCard.contains(event.target))) && (!pSets || (pSets && !pSets.contains(event.target))),
                 direction = event && (event.deltaY || event.wheelDeltaY);
             if (event && api && player && canScroll && (event.target.id === api || api.contains(event.target))) {
                 event.preventDefault();
