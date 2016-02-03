@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.6
+// @version         1.0.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1529,17 +1529,15 @@
             }
             function reverseButton(event) {
                 if (event.target.id === "reverse") {
-                    event = isChrome ? event.target.parentNode : event.target;
-                    event.classList.toggle("yt-uix-button-toggled");
-                    set("plRev", (event.classList.contains("yt-uix-button-toggled")) ? window.yt.config_.LIST_ID : false);
+                    event.target.classList.toggle("yt-uix-button-toggled");
+                    set("plRev", (event.target.classList.contains("yt-uix-button-toggled")) ? window.yt.config_.LIST_ID : false);
                     reverseControl();
                 }
             }
             function autoplayButton(event) {
                 if (event.target.id === "autoplay") {
-                    event = isChrome ? event.target.parentNode : event.target;
-                    event.classList.toggle("yt-uix-button-toggled");
-                    set("plApl", event.classList.contains("yt-uix-button-toggled"));
+                    event.target.classList.toggle("yt-uix-button-toggled");
+                    set("plApl", event.target.classList.contains("yt-uix-button-toggled"));
                 }
             }
             function createButton(type, label, bool, call) {
@@ -1981,7 +1979,7 @@
     } else if (window.chrome) {
         window.chrome.storage.local.get(id, initParticle);
     } else {
-        initParticle(window.self.options.settings);
+        initParticle(window.self.options.settings || {});
     }
     contentScript();
 }());
