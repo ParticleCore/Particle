@@ -636,25 +636,25 @@
 /*   end| Improved notification button */
 /* start| Static normal mode */
     @media screen and (min-width: 640px){
-        .part_static_size .watch-non-stage-mode .player-width,
-        .part_static_size .watch-non-stage-mode #watch7-content{
+        .part_static_size .watch:not(.watch-stage-mode) .player-width,
+        .part_static_size .watch:not(.watch-stage-mode) #watch7-content{
             width: 640px;
         }
-        .part_static_size .watch-non-stage-mode .player-height{
+        .part_static_size .watch:not(.watch-stage-mode) .player-height{
             height: 390px;
         }
-        .part_static_size .watch-non-stage-mode .player-height{
+        .part_static_size .watch:not(.watch-stage-mode) .player-height{
             height: 360px;
         }
-        .part_static_size .watch-non-stage-mode #watch7-sidebar{
+        .part_static_size .watch:not(.watch-stage-mode) #watch7-sidebar{
             margin-left: 650px;
             top: 0;
         }
-        .part_static_size .watch.watch-non-stage-mode #content.content-alignment,
-        .part_static_size .watch.watch-non-stage-mode #player.content-alignment{
+        .part_static_size .watch:not(.watch-stage-mode) #content.content-alignment,
+        .part_static_size .watch:not(.watch-stage-mode) #player.content-alignment{
             max-width: 1066px;
         }
-        .part_static_size .watch-non-stage-mode #watch-appbar-playlist{
+        .part_static_size .watch:not(.watch-stage-mode) #watch-appbar-playlist{
             left: 650px;
         }
     }
