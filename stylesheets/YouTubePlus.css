@@ -388,6 +388,27 @@
         width: 17px;
     }
 /*   end| Sidebar mode */
+/* start| Pop-out */
+    .part_popout {
+        overflow: hidden;
+    }
+    .part_popout #masthead-positioner,
+    .part_popout #masthead-positioner-height-offset,
+    .part_popout .ytp-size-button{
+        display: none;
+    }
+    .part_popout #movie_player {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        top: 0 !important;
+        right: 0 !important;
+    }
+    .part_popout .ytp-hide-info-bar .ytp-chrome-top,
+    .part_popout .ytp-hide-info-bar .ytp-gradient-top{
+        display: initial;
+    }
+/*   end| Pop-out */
 /* start| Thumb buttons */
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
