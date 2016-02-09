@@ -321,6 +321,10 @@
         background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -110px;
         width: 22px;
     }
+    #popout-button{
+        background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -85px;
+        width: 22px;
+    }
     #loop-button{
         background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 4px -182px;
         width: 20px;
@@ -388,6 +392,23 @@
         width: 17px;
     }
 /*   end| Sidebar mode */
+/* start| Pop-out mode */
+    .yt-pl-thumb .popoutmode,
+    .thumb-wrapper .popoutmode,
+    .yt-lockup-thumbnail .popoutmode{
+        background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) -24px -118px;
+        bottom: 0;
+        color: #666;
+        cursor: pointer;
+        display: none;
+        font-size: 12px;
+        height: 17px;
+        left: 0;
+        line-height: 1;
+        position: absolute;
+        width: 17px;
+    }
+/*   end| Pop-out mode */
 /* start| Pop-out */
     .part_popout {
         overflow: hidden;
@@ -430,7 +451,10 @@
     .yt-pl-thumb:hover .blacklist,
     .yt-pl-thumb:hover .sidebarmode,
     .thumb-wrapper:hover .sidebarmode,
-    .yt-lockup-thumbnail:hover .sidebarmode{
+    .yt-lockup-thumbnail:hover .sidebarmode,
+    .yt-pl-thumb:hover .popoutmode,
+    .thumb-wrapper:hover .popoutmode,
+    .yt-lockup-thumbnail:hover .popoutmode{
         display: initial;
     }
 /*   end| Thumb buttons */
