@@ -418,6 +418,7 @@
     .part_popout .ytp-size-button{
         display: none;
     }
+    .part_popout #player-api,
     .part_popout #movie_player {
         position: fixed !important;
         bottom: 0 !important;
