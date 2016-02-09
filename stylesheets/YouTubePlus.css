@@ -273,6 +273,9 @@
     #console-button:hover{
         opacity: .8;
     }
+    #console-button.close {
+        background-position: -20px -55px;
+    }
     #player-console{
         background: inherit;
         display: none;
