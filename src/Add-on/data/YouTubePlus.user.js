@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.0
+// @version         1.1.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -348,7 +348,7 @@
                 if (window.location.href.split("/feed/subscriptions").length < 2) {
                     document.documentElement.classList.remove("part_grid_subs");
                 }
-                if (window.opener && window.opener.ytpPopout) {
+                if (window.name === "popOut") {
                     document.documentElement.classList.add("part_popout");
                 }
             }
@@ -905,7 +905,7 @@
                 return newList.join(",");
             }
             if (config.args.video_id) {
-                if (window.opener && window.opener.ytpPopout) {
+                if (window.name === "popOut") {
                     config.args.el = "embedded";
                     if (document.title !== config.args.title) {
                         document.title = config.args.title;
@@ -1231,7 +1231,7 @@
             }
             function spfNAvDetour(originalFunction) {
                 return function (a) {
-                    if (window.opener && window.opener.ytpPopout) {
+                    if (window.name === "popOut") {
                         return;
                     }
                     return originalFunction.apply(this, arguments);
@@ -1357,12 +1357,9 @@
                 popUrl += "#t=" + video.currentTime;
                 window.ytplayer.config.args.start = video.currentTime;
                 api.cueVideoByPlayerVars(window.ytplayer.config.args);
-            } else {
-                popUrl += "";
             }
             popOut = window.open(popUrl, "popOut", "width=" + width + ",height=" + height + ",scrollbars=0");
             popOut.focus();
-            window.ytpPopout = true;
         }
         function thumbMod() {
             var userId,
