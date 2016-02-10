@@ -273,6 +273,9 @@
     #console-button:hover{
         opacity: .8;
     }
+    #console-button.close {
+        background-position: -21px -56px;
+    }
     #player-console{
         background: inherit;
         display: none;
@@ -319,6 +322,10 @@
     }
     #sidebar-button{
         background: url(./Images/sprite.png) 4px -110px;
+        width: 22px;
+    }
+    #popout-button{
+        background: url(./Images/sprite.png) 4px -85px;
         width: 22px;
     }
     #loop-button{
@@ -388,6 +395,45 @@
         width: 17px;
     }
 /*   end| Sidebar mode */
+/* start| Pop-out mode */
+    .yt-pl-thumb .popoutmode,
+    .thumb-wrapper .popoutmode,
+    .yt-lockup-thumbnail .popoutmode{
+        background: #FFF url(./Images/sprite.png) -24px -118px;
+        bottom: 0;
+        color: #666;
+        cursor: pointer;
+        display: none;
+        font-size: 12px;
+        height: 17px;
+        left: 0;
+        line-height: 1;
+        position: absolute;
+        width: 17px;
+    }
+/*   end| Pop-out mode */
+/* start| Pop-out */
+    .part_popout {
+        overflow: hidden;
+    }
+    .part_popout #masthead-positioner,
+    .part_popout #masthead-positioner-height-offset,
+    .part_popout .ytp-size-button{
+        display: none;
+    }
+    .part_popout #player-api,
+    .part_popout #movie_player {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        top: 0 !important;
+        right: 0 !important;
+    }
+    .part_popout .ytp-hide-info-bar .ytp-chrome-top,
+    .part_popout .ytp-hide-info-bar .ytp-gradient-top{
+        display: initial;
+    }
+/*   end| Pop-out */
 /* start| Thumb buttons */
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
@@ -409,7 +455,10 @@
     .yt-pl-thumb:hover .blacklist,
     .yt-pl-thumb:hover .sidebarmode,
     .thumb-wrapper:hover .sidebarmode,
-    .yt-lockup-thumbnail:hover .sidebarmode{
+    .yt-lockup-thumbnail:hover .sidebarmode,
+    .yt-pl-thumb:hover .popoutmode,
+    .thumb-wrapper:hover .popoutmode,
+    .yt-lockup-thumbnail:hover .popoutmode{
         display: initial;
     }
 /*   end| Thumb buttons */

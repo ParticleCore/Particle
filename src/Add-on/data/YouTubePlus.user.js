@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.8
+// @version         1.0.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -31,7 +31,7 @@
                 GEN_SUB_LIST    : true,
                 GEN_INF_SCRL    : true,
                 GEN_BLUE_GLOW   : true,
-                GEN_SDBR_ON     : true,
+                GEN_PPOT_ON     : true,
                 VID_END_SHRE    : true,
                 VID_DFLT_QLTY   : "auto",
                 VID_PLST_ATPL   : true,
@@ -43,7 +43,7 @@
                 VID_POST_TIME   : true,
                 VID_VID_CNT     : true,
                 VID_DESC_SHRT   : true,
-                VID_SDBR_ALGN   : "1",
+                VID_PPOT_SZ     : 533,
                 VID_PLR_HTML5   : true,
                 BLK_ON          : true,
                 firstTime       : true,
@@ -55,8 +55,9 @@
                 YTSETS                : "YouTube+ settings",
                 ADV_OPTS              : "Advanced options",
                 SUB_PLST              : "Play recent uploads",
-                GEN_SDBR_ON           : "Enable sidebar mode",
+                GEN_PPOT_ON           : "Enable pop-out mode",
                 SDBR_OPEN             : "Open in sidebar",
+                PPOT_OPEN             : "Open in pop-out",
                 BLCK_ADD              : "Add to blacklist",
                 BLCK_EDIT             : "Edit",
                 BLCK_SAVE             : "Save",
@@ -66,7 +67,7 @@
                 CNSL_SVTH             : "Open thumbnail",
                 CNSL_SS               : "Take screenshot",
                 CNSL_SS_CLS           : "CLOSE",
-                CNSL_SDBR             : "Sidebar mode",
+                CNSL_PPOT             : "Pop-out video",
                 CNSL_FLBR             : "Fullbrowser mode",
                 CNSL_CINM_MD          : "Cinema mode",
                 CNSL_FRME             : "Frame by frame",
@@ -158,10 +159,7 @@
                 VID_PLR_DYN_SIZE      : "Disable dynamic player size in default view",
                 VID_DESC_SHRT         : "Short video description buttons",
                 VID_TTL_CMPT          : "Compact title in video description",
-                VID_SDBR_ALGN         : "Sidebar mode alignment",
-                VID_SDBR_ALGN_NONE    : "None",
-                VID_SDBR_ALGN_LEFT    : "Left",
-                VID_SDBR_ALGN_RIGHT   : "Right",
+                VID_PPOT_SZ           : "Pop-out player size",
                 VID_LAYT_AUTO_PNL     : "Auto expand video description",
                 GEN_CHN_DFLT_PAGE     : "Default channel page:",
                 GEN_CHN_DFLT_PAGE_DFLT: "Default",
@@ -350,6 +348,9 @@
                 if (window.location.href.split("/feed/subscriptions").length < 2) {
                     document.documentElement.classList.remove("part_grid_subs");
                 }
+                if (window.opener && window.opener.ytpPopout) {
+                    document.documentElement.classList.add("part_popout");
+                }
             }
         }
         function pageScript() {
@@ -469,7 +470,7 @@
                         "    <div><input id='GEN_YT_LOGO_LINK' type='checkbox'><label for='GEN_YT_LOGO_LINK' data-p='tnd|GEN_YT_LOGO_LINK'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#logo_redirect' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_SUB_LIST' type='checkbox'><label for='GEN_SUB_LIST' data-p='tnd|GEN_SUB_LIST'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_playlist' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_INF_SCRL' type='checkbox'><label for='GEN_INF_SCRL' data-p='tnd|GEN_INF_SCRL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#infinite_scroll' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
-                        "    <div><input id='GEN_SDBR_ON' type='checkbox'><label for='GEN_SDBR_ON' data-p='tnd|GEN_SDBR_ON'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sidebar_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='GEN_PPOT_ON' type='checkbox'><label for='GEN_PPOT_ON' data-p='tnd|GEN_PPOT_ON'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#popout_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_REM_APUN' type='checkbox'><label for='GEN_REM_APUN' data-p='tnd|GEN_REM_APUN'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remove_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_SPF_OFF' type='checkbox'><label for='GEN_SPF_OFF' data-p='tnd|GEN_SPF_OFF'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#spf_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div>" +
@@ -551,6 +552,7 @@
                         "    <div><input id='VID_PLST_ATPL' type='checkbox'><label for='VID_PLST_ATPL' data-p='tnd|VID_PLST_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLST_RVRS' type='checkbox'><label for='VID_PLST_RVRS' data-p='tnd|VID_PLST_RVRS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_reverse' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <h3 data-p='tnd|VID_LAYT'></h3>" +
+                        "    <div><input id='VID_PPOT_SZ' type='text' placeholder='533' size='6'><label for='VID_PPOT_SZ' data-p='tnd|VID_PPOT_SZ'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_max_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div>" +
                         "        <label for='VID_HIDE_COMS' data-p='tnd|VID_HIDE_COMS'></label>" +
                         "        <div class='P-select'>" +
@@ -561,17 +563,6 @@
                         "            </select>" +
                         "        </div>\n" +
                         "        <a href='https://github.com/ParticleCore/Particle/wiki/Features#comments' data-p='ttl|FTR_DESC' target='features'>?</a>" +
-                        "    </div>" +
-                        "    <div>" +
-                        "        <label for='VID_SDBR_ALGN' data-p='tnd|VID_SDBR_ALGN'></label>" +
-                        "        <div class='P-select'>" +
-                        "            <select id='VID_SDBR_ALGN'>" +
-                        "                <option value='0' data-p='tnd|VID_SDBR_ALGN_NONE'></option>" +
-                        "                <option value='1' data-p='tnd|VID_SDBR_ALGN_LEFT'></option>" +
-                        "                <option value='2' data-p='tnd|VID_SDBR_ALGN_RIGHT'></option>" +
-                        "            </select>" +
-                        "        </div>\n" +
-                        "        <a href='https://github.com/ParticleCore/Particle/wiki/Features#sidebar_align' data-p='ttl|FTR_DESC' target='features'>?</a>" +
                         "    </div>" +
                         "    <div><input id='VID_TTL_CMPT' type='checkbox'><label for='VID_TTL_CMPT' data-p='tnd|VID_TTL_CMPT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_title' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_DESC_SHRT' type='checkbox'><label for='VID_DESC_SHRT' data-p='tnd|VID_DESC_SHRT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#labelless_buttons' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
@@ -914,6 +905,12 @@
                 return newList.join(",");
             }
             if (config.args.video_id) {
+                if (window.opener && window.opener.ytpPopout) {
+                    config.args.el = "embedded";
+                    if (document.title !== config.args.title) {
+                        document.title = config.args.title;
+                    }
+                }
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
                 delete config.args.loudness;
@@ -942,6 +939,9 @@
                 }
                 if (parSets.VID_PLR_SIZE_MEM) {
                     config.args.player_wide = (parSets.theaterMode && "1") || "0";
+                    if (window.ytpsetwide) {
+                        window.ytpsetwide("wide", config.args.player_wide, -1);
+                    }
                 }
                 if (config.args.iv_load_policy && parSets.VID_PLR_ANTS) {
                     config.args.iv_load_policy = "3";
@@ -1179,6 +1179,43 @@
                 }
             }
         }
+        function xhrCleaner(originalFunction) {
+            return function(a, b, c, d) {
+                var key,
+                    args,
+                    patch,
+                    config;
+                if (a && a.detail && a.detail.part && a.detail.part.data && a.detail.part.data.swfcfg) {
+                    config = {args: {}};
+                    config.args = a.detail.part.data.swfcfg;
+                    a.detail.part.data.swfcfg = argsCleaner(config.args);
+                } else if (b && b.constructor.name === "XMLHttpRequest" && b.responseURL && b.responseURL.split("get_video_info").length > 1) {
+                    config = {args: {}};
+                    args = arguments;
+                    patch = {};
+                    for (key in args[1]) {
+                        if (args[1][key] !== undefined && args[1][key]) {
+                            patch[key] = args[1][key];
+                        }
+                    }
+                    config.args = JSON.parse("{\"" + decodeURIComponent(patch.responseText.replace(/%5C/g, "<<>>").replace(/%22/g, "<>").replace(/&/g, "\",\"").replace(/\=/g, "\":\"").replace(/\+/g, "%20")) + "\"}");
+                    config = argsCleaner(config);
+                    patch.responseText = patch.response = encodeURIComponent(JSON.stringify(config.args).split(/\{"([\w\W]*?)"\}/)[1]).replace(/%3C%3C%3E%3E/g, "%5C").replace(/%3C%3E/g, "%22").replace(/%22%2C%22/g, "&").replace(/%22%3A%22/g, "=").replace(/%20/g, "+");
+                    args[1] = patch;
+                    originalFunction.apply(this, args);
+                    return api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
+                }
+                return originalFunction.apply(this, arguments);
+            };
+        }
+        function spfPipe(originalFunction){
+            return function(){
+                if (arguments[0] === "spfpartprocess") {
+                    arguments[1] = xhrCleaner(arguments[1]);
+                }
+                return originalFunction.apply(this, arguments);
+            };
+        }
         function scriptExit(event) {
             function commentsLoad(originalFunction) {
                 return function () {
@@ -1190,6 +1227,14 @@
                     } else {
                         return originalFunction.apply(this, args);
                     }
+                };
+            }
+            function spfNAvDetour(originalFunction) {
+                return function (a) {
+                    if (window.opener && window.opener.ytpPopout) {
+                        return;
+                    }
+                    return originalFunction.apply(this, arguments);
                 };
             }
             function baseDetour(originalFunction) {
@@ -1241,56 +1286,14 @@
                     }
                 };
             }
-            function fullscreenVideoChange(originalFunction) {
-                return function () {
-                    var key,
-                        patch  = [{}],
-                        config = {args: {}},
-                        args   = arguments;
-                    for (key in args[0]) {
-                        if (args[0][key] !== undefined) {
-                            patch[0][key] = args[0][key];
-                        }
-                    }
-                    config.args = JSON.parse("{\"" + decodeURIComponent(patch[0].response.replace(/%5C/g, "<<>>").replace(/%22/g, "<>").replace(/&/g, "\",\"").replace(/\=/g, "\":\"").replace(/\+/g, "%20")) + "\"}");
-                    config = argsCleaner(config);
-                    patch[0].responseText = patch[0].response = encodeURIComponent(JSON.stringify(config.args).split(/\{"([\w\W]*?)"\}/)[1]).replace(/%3C%3C%3E%3E/g, "%5C").replace(/%3C%3E/g, "%22").replace(/%22%2C%22/g, "&").replace(/%22%3A%22/g, "=").replace(/%20/g, "+");
-                    originalFunction.apply(this, patch);
-                    api.setPlaybackQuality(parSets.VID_DFLT_QLTY);
-                };
-            }
-            function fsPointerDetour(originalFunction) {
-                return function () {
-                    var self = this;
-                    function firstLevel(fl) {
-                        function secondLevel(sl) {
-                            if (typeof self[fl][sl] === "function" && String(self[fl][sl]).split("onStatusFail").length > 1) {
-                                self[fl][sl] = fullscreenVideoChange(self[fl][sl]);
-                            }
-                        }
-                        if (typeof self[fl] === "object" && self[fl]) {
-                            Object.keys(Object.getPrototypeOf(self[fl])).forEach(secondLevel);
-                        }
-                    }
-                    Object.keys(self).some(firstLevel);
-                    return originalFunction.apply(this, arguments);
-                };
-            }
             function html5Detour(originalFunction) {
                 return function () {
                     var player,
                         args = arguments;
                     function playerInstanceIterator(keys) {
-                        function firstLevel(fl) {
-                            if (typeof playerInstance[keys][fl] === "function" && String(playerInstance[keys][fl]).split("get_video_info").length > 1 && playerInstance[keys][fl] !== fsPointerDetour) {
-                                playerInstance[keys][fl] = fsPointerDetour(playerInstance[keys][fl]);
-                            }
-                        }
                         if (typeof playerInstance[keys] === "object") {
                             if (playerInstance[keys] && playerInstance[keys].hasNext) {
                                 playerInstance[keys].hasNext = autoplayDetourFullScreen(playerInstance[keys].hasNext);
-                            } else if (playerInstance[keys]) {
-                                Object.keys(Object.getPrototypeOf(playerInstance[keys])).some(firstLevel);
                             }
                         }
                     }
@@ -1318,20 +1321,41 @@
                         window._yt_www[keys] = embedDetour(window._yt_www[keys]);
                     } else if (str.split("window.spf.navigate").length > 1) {
                         window._yt_www[keys] = autoplayDetour(window._yt_www[keys]);
+                    } else if (str.split(".set(\"\"+a,b,c,\"/\",d").length > 1) {
+                        window.ytpsetwide = window._yt_www[keys];
                     }
                 }
             }
-            if (event && event.target && event.target.getAttribute("name") === "www/base") {
-                window.yt.setConfig = baseDetour(window.yt.setConfig);
-                Object.keys(window._yt_www).some(ytIterator);
+            if (event && event.target) {
+                if (event.target.getAttribute("name") === "www/base") {
+                    window.yt.setConfig = baseDetour(window.yt.setConfig);
+                    Object.keys(window._yt_www).forEach(ytIterator);
+                }
+                if (event.target.getAttribute("name") === "spf/spf") {
+                    window.spf.load = commentsLoad(window.spf.load);
+                    window.spf.navigate = spfNAvDetour(window.spf.navigate);
+                }
             }
             if ((event && event.target && event.target.getAttribute("name") === "player/base") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
                 window.html5Patched = true;
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
-            if (event && event.target && event.target.getAttribute("name") === "spf/spf") {
-                window.spf.load = commentsLoad(window.spf.load);
+        }
+        function popPlayer(url) {
+            var popOut,
+                width  = parseInt(parSets.VID_PPOT_SZ) || 533,
+                height = Math.round(width / (16 / 9)),
+                popUrl = url || window.location.href,
+                video  = document.getElementsByTagName("video")[0];
+            if (!url && video && video.currentTime && video.currentTime < video.duration) {
+                video.pause();
+                popUrl += "#t=" + video.currentTime;
+            } else {
+                popUrl += "";
             }
+            popOut = window.open(popUrl, "popOut", "width=" + width + ",height=" + height + ",scrollbars=0");
+            popOut.focus();
+            window.ytpPopout = true;
         }
         function thumbMod() {
             var userId,
@@ -1347,15 +1371,6 @@
                 detailList = [];
             function initThumbMod(event) {
                 var observer;
-                function initSidebarMode() {
-                    var sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ",left=" + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? "" : ",left=0",
-                        newSidebar   = window.open(event.dataset.link, "sidebarMode", "width=467,height=" + window.screen.availHeight + ",scrollbars=1" + sidebarAlign);
-                    function snapFit() {
-                        newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
-                    }
-                    newSidebar.addEventListener("readystatechange", snapFit, true);
-                    newSidebar.focus();
-                }
                 function initBlackList() {
                     parSets.blacklist[event.dataset.ytid] = event.dataset.user;
                     set("blacklist", parSets.blacklist);
@@ -1376,11 +1391,11 @@
                         attributeOldValue: true
                     });
                 }
-                if (event && (event.target.className === "yt-uix-tooltip sidebarmode" || event.target.className === "yt-uix-tooltip blacklist")) {
+                if (event && (event.target.className === "yt-uix-tooltip popoutmode" || event.target.className === "yt-uix-tooltip blacklist")) {
                     event.preventDefault();
                     event = event.target;
-                    if (event.className === "yt-uix-tooltip sidebarmode") {
-                        initSidebarMode();
+                    if (event.className === "yt-uix-tooltip popoutmode") {
+                        popPlayer(event.dataset.link);
                     } else {
                         initBlackList();
                     }
@@ -1390,8 +1405,8 @@
                 var button;
                 function createButton(type, details) {
                     button = document.createElement("template");
-                    if (type === "sidebarmode") {
-                        button.innerHTML = "<div data-p='ttl|SDBR_OPEN&ttp|SDBR_OPEN' class='yt-uix-tooltip'></div>";
+                    if (type === "popoutmode") {
+                        button.innerHTML = "<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip'></div>";
                         button.content.firstChild.dataset.link = details.videolink;
                         button.content.firstChild.classList.add(type);
                     } else {
@@ -1403,8 +1418,8 @@
                     return setLocale(button.content).firstChild;
                 }
                 if (detailList[i]) {
-                    if (parSets.GEN_SDBR_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName("sidebarmode")[0]) {
-                        button = createButton("sidebarmode", detailList[i]);
+                    if (parSets.GEN_PPOT_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName("popoutmode")[0]) {
+                        button = createButton("popoutmode", detailList[i]);
                         eventHandler([document, "click", initThumbMod]);
                         detailList[i].thumbfield.appendChild(button);
                     }
@@ -1479,7 +1494,7 @@
                     }
                 }
             }
-            if ((parSets.BLK_ON || parSets.GEN_SDBR_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1 || window.location.href.split("/feed/trending").length > 1)) {
+            if ((parSets.BLK_ON || parSets.GEN_PPOT_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1 || window.location.href.split("/feed/trending").length > 1)) {
                 ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item", "yt-lockup-mini", "lohp-large-shelf-container", "expanded-shelf-content-item-wrapper"].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
@@ -1629,24 +1644,6 @@
                         container.classList.toggle("invisible");
                     }
                 }
-                function openSidebar() {
-                    var sidebarURL,
-                        newSidebar,
-                        video        = document.getElementsByTagName("video")[0],
-                        sidebarAlign = (parSets.VID_SDBR_ALGN > 1) ? ",left=" + (window.screen.availWidth - 467) : (parSets.VID_SDBR_ALGN < 1) ? "" : ",left=0";
-                    function snapFit() {
-                        newSidebar.resizeTo(newSidebar.outerWidth, window.screen.availHeight);
-                    }
-                    if (video && video.currentTime && video.currentTime < video.duration) {
-                        video.pause();
-                        sidebarURL = "#t=" + video.currentTime;
-                    } else {
-                        sidebarURL = "";
-                    }
-                    newSidebar = window.open(window.location.href + sidebarURL, "sidebarMode", "width=467,height=" + window.screen.availHeight + ",scrollbars=1" + sidebarAlign);
-                    newSidebar.addEventListener("readystatechange", snapFit, true);
-                    newSidebar.focus();
-                }
                 function toggleFullBrowser(event) {
                     var plrState = api && api.getPlayerState && api.getPlayerState();
                     plrState = plrState < 5 && plrState > 0;
@@ -1721,8 +1718,8 @@
                         return dlThumb();
                     case "screenshot-button":
                         return saveSS();
-                    case "sidebar-button":
-                        return openSidebar();
+                    case "popout-button":
+                        return popPlayer();
                     case "fullbrowser-button":
                         return toggleFullBrowser(event);
                     case "cinemamode-button":
@@ -1752,6 +1749,7 @@
             function toggleConsole(event) {
                 if (event.target.id === "console-button") {
                     document.documentElement.classList.toggle("player-console");
+                    event.target.classList[document.documentElement.classList.contains("player-console") ? "add" : "remove"]("close");
                     set("advOpts", document.documentElement.classList.contains("player-console"));
                 }
             }
@@ -1774,7 +1772,7 @@
                     "    <div id='loop-button' class='yt-uix-tooltip' data-p='ttp|CNSL_RPT'></div>" +
                     "    <div id='save-thumbnail-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SVTH'></div>" +
                     "    <div id='screenshot-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SS''></div>" +
-                    "    <div id='sidebar-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SDBR'" + ((window.opener && " style='display:none'") || "") + "></div>" +
+                    "    <div id='popout-button' class='yt-uix-tooltip' data-p='ttp|CNSL_PPOT'></div>" +
                     "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR'></div>" +
                     "    <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD'></div>" +
                     "    <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME'></div>" +
@@ -1784,6 +1782,7 @@
                 hookButtons();
                 if (parSets.advOpts) {
                     document.documentElement.classList.add("player-console");
+                    cnslBtn.classList.add("close");
                 }
             }
         }
@@ -1871,13 +1870,13 @@
             var videoPlayer = document.getElementById("movie_player");
             document.documentElement.classList.remove("floater");
             if (videoPlayer) {
+                videoPlayer.removeAttribute("style");
                 if (!parSets.VID_PLR_ATPL || event.detail.url.split("/watch").length < 2) {
                     if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
                         delete window.ytplayer.config.loaded;
                     }
-                    return videoPlayer.remove();
+                    videoPlayer.remove();
                 }
-                videoPlayer.removeAttribute("style");
             }
         }
         function shareApi(originalFunction) {
@@ -1912,6 +1911,8 @@
         eventHandler([document, "spfdone", initFunctions]);
         eventHandler([document, "spfrequest", request]);
         eventHandler([document, "readystatechange", initFunctions, true]);
+        window.Function.prototype.call = xhrCleaner(window.Function.prototype.call);
+        window.addEventListener = spfPipe(window.addEventListener);
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         window.matchMedia = false;
         initFunctions();
