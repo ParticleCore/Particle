@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.0.9
+// @version         1.1.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -552,7 +552,7 @@
                         "    <div><input id='VID_PLST_ATPL' type='checkbox'><label for='VID_PLST_ATPL' data-p='tnd|VID_PLST_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLST_RVRS' type='checkbox'><label for='VID_PLST_RVRS' data-p='tnd|VID_PLST_RVRS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_reverse' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <h3 data-p='tnd|VID_LAYT'></h3>" +
-                        "    <div><input id='VID_PPOT_SZ' type='text' placeholder='533' size='6'><label for='VID_PPOT_SZ' data-p='tnd|VID_PPOT_SZ'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_max_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PPOT_SZ' type='text' placeholder='533' size='6'><label for='VID_PPOT_SZ' data-p='tnd|VID_PPOT_SZ'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#popout_size' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div>" +
                         "        <label for='VID_HIDE_COMS' data-p='tnd|VID_HIDE_COMS'></label>" +
                         "        <div class='P-select'>" +
@@ -1237,6 +1237,11 @@
                     return originalFunction.apply(this, arguments);
                 };
             }
+            function spfPrefDetour() {
+                return function() {
+                    return;
+                };
+            }
             function baseDetour(originalFunction) {
                 return function () {
                     originalFunction.apply(this, arguments);
@@ -1334,6 +1339,7 @@
                 if (event.target.getAttribute("name") === "spf/spf") {
                     window.spf.load = commentsLoad(window.spf.load);
                     window.spf.navigate = spfNAvDetour(window.spf.navigate);
+                    window.spf.prefetch = spfPrefDetour(window.spf.prefetch);
                 }
             }
             if ((event && event.target && event.target.getAttribute("name") === "player/base") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
@@ -1345,11 +1351,12 @@
             var popOut,
                 width  = parseInt(parSets.VID_PPOT_SZ) || 533,
                 height = Math.round(width / (16 / 9)),
-                popUrl = url || window.location.href,
+                popUrl = url || window.location.href.split(/&t=[0-9]+/).join(""),
                 video  = document.getElementsByTagName("video")[0];
             if (!url && video && video.currentTime && video.currentTime < video.duration) {
-                video.pause();
                 popUrl += "#t=" + video.currentTime;
+                window.ytplayer.config.args.start = video.currentTime;
+                api.cueVideoByPlayerVars(window.ytplayer.config.args);
             } else {
                 popUrl += "";
             }
