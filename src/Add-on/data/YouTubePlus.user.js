@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.1
+// @version         1.1.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -55,8 +55,6 @@
                 YTSETS                : "YouTube+ settings",
                 ADV_OPTS              : "Advanced options",
                 SUB_PLST              : "Play recent uploads",
-                GEN_PPOT_ON           : "Enable pop-out mode",
-                SDBR_OPEN             : "Open in sidebar",
                 PPOT_OPEN             : "Open in pop-out",
                 BLCK_ADD              : "Add to blacklist",
                 BLCK_EDIT             : "Edit",
@@ -94,6 +92,7 @@
                 GEN_GEN               : "General",
                 GEN_LYT               : "Layout",
                 GEN_LOCL_LANG         : "Use modified YT+ language",
+                GEN_PPOT_ON           : "Enable pop-out mode",
                 GEN_DSBL_ADS          : "Disable advertisements outside the video page",
                 GEN_INF_SCRL          : "Enable infinite scroll in feeds",
                 GEN_YT_LOGO_LINK      : "YouTube logo redirects to subscriptions",
@@ -323,6 +322,9 @@
             function checkClasses(clss) {
                 document.documentElement.classList[parSets[clss] ? "add" : "remove"](setsList[clss]);
             }
+            if (window.name === "popOut") {
+                document.documentElement.classList.add("part_popout");
+            }
             if (ytGrid && parSets.GEN_GRID_SUBS) {
                 ytGrid.click();
             } else {
@@ -347,9 +349,6 @@
                 Object.keys(setsList).forEach(checkClasses);
                 if (window.location.href.split("/feed/subscriptions").length < 2) {
                     document.documentElement.classList.remove("part_grid_subs");
-                }
-                if (window.name === "popOut") {
-                    document.documentElement.classList.add("part_popout");
                 }
             }
         }
@@ -383,19 +382,16 @@
                     var sortAlpha = [],
                         list      = parSets.blacklist;
                     function buildList(obj) {
-                        var keys = Object.keys(obj),
-                            blk  = document.createElement("div"),
-                            btn  = document.createElement("button"),
-                            lnk  = document.createElement("a");
-                        blk.className = "blacklist";
-                        btn.className = "close";
-                        blk.appendChild(btn);
+                        var lnk,
+                            keys = Object.keys(obj),
+                            _temp = document.createElement("template");
+                        _temp.innerHTML = "<div class='blacklist'><button class='close'></button><a target='_blank'></a></div>";
+                        _temp = _temp.content.firstChild;
+                        lnk = _temp.getElementsByTagName("a")[0];
                         lnk.href = "/channel/" + keys[0];
-                        lnk.setAttribute("target", "_blank");
                         lnk.setAttribute("title", obj[keys[0]]);
                         lnk.textContent = obj[keys[0]];
-                        blk.appendChild(lnk);
-                        blist.appendChild(blk);
+                        blist.appendChild(_temp);
                         blist.appendChild(document.createTextNode("\n"));
                     }
                     function sortArray(previous, next) {
@@ -413,29 +409,28 @@
                     var i,
                         ytp,
                         list = menu.querySelector("#blacklist");
-                    if (!parSets) {
-                        return;
-                    }
-                    if (list) {
-                        buildBlacklist(list);
-                    }
-                    ytp = menu.querySelectorAll("input[id]");
-                    i = ytp.length;
-                    while (i) {
-                        i -= 1;
-                        if (ytp[i].type === "checkbox" && parSets[ytp[i].id] === true) {
-                            ytp[i].setAttribute("checked", "true");
+                    if (parSets) {
+                        if (list) {
+                            buildBlacklist(list);
                         }
-                        if (ytp[i].type === "text" && typeof parSets[ytp[i].id] === 'string') {
-                            ytp[i].setAttribute("value", parSets[ytp[i].id]);
+                        ytp = menu.querySelectorAll("input[id]");
+                        i = ytp.length;
+                        while (i) {
+                            i -= 1;
+                            if (ytp[i].type === "checkbox" && parSets[ytp[i].id] === true) {
+                                ytp[i].setAttribute("checked", "true");
+                            }
+                            if (ytp[i].type === "text" && typeof parSets[ytp[i].id] === 'string') {
+                                ytp[i].setAttribute("value", parSets[ytp[i].id]);
+                            }
                         }
-                    }
-                    ytp = menu.querySelectorAll("option[data-p]");
-                    i = ytp.length;
-                    while (i) {
-                        i -= 1;
-                        if (parSets[ytp[i].parentNode.id] === ytp[i].value) {
-                            ytp[i].setAttribute("selected", "true");
+                        ytp = menu.querySelectorAll("option[data-p]");
+                        i = ytp.length;
+                        while (i) {
+                            i -= 1;
+                            if (parSets[ytp[i].parentNode.id] === ytp[i].value) {
+                                ytp[i].setAttribute("selected", "true");
+                            }
                         }
                     }
                 }
@@ -652,18 +647,16 @@
                     }
                 }
                 function remBlackList() {
-                    var newKey = parSets.blacklist;
-                    delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
+                    delete parSets.blacklist[event.target.nextSibling.href.split("/channel/")[1]];
                     event.target.parentNode.remove();
-                    set("blacklist", newKey);
+                    set("blacklist", parSets.blacklist);
                 }
                 function saveSettings(salt) {
                     var value,
                         notification = document.getElementById("appbar-main-guide-notification-container"),
                         navId        = document.getElementsByClassName("selected")[0].id,
                         userSets     = document.getElementById("P-content").querySelectorAll("[id^='" + navId + "']"),
-                        length       = userSets.length,
-                        savedSets    = parSets;
+                        length       = userSets.length;
                     function hideNotif() {
                         document.body.classList.remove("show-guide-button-notification");
                     }
@@ -671,12 +664,12 @@
                         length -= 1;
                         value = (userSets[length].checked && (userSets[length].value === "on" || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute("type") === "text" && userSets[length].value);
                         if (value) {
-                            savedSets[userSets[length].name || userSets[length].id] = value;
+                            parSets[userSets[length].name || userSets[length].id] = value;
                         } else if (!value && userSets[length].type !== "radio") {
-                            savedSets[userSets[length].id] = false;
+                            parSets[userSets[length].id] = false;
                         }
                     }
-                    set("parSets", savedSets);
+                    set("parSets", parSets);
                     customStyles();
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
@@ -848,7 +841,7 @@
                 comments = document.getElementById("watch-discussion"),
                 isLive   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
             function showComments(event) {
-                if (event.target.parentNode.id === "P-show-comments") {
+                if (event.target && event.target.parentNode && event.target.parentNode.id === "P-show-comments") {
                     if (comments.lazyload) {
                         window.spf.load(comments.lazyload[0], comments.lazyload[1]);
                     }
@@ -870,8 +863,8 @@
             var pageElement   = document.getElementById("page"),
                 playerElement = document.getElementById("player");
             if (parSets.VID_PLR_SIZE_MEM) {
-                if (window.navigator.cookieEnabled && (document.cookie.split("wide=" + (parSets.theaterMode ? "0" : "1")).length > 1 || document.cookie.split("wide=" + (parSets.theaterMode ? "1" : "0")).length < 2)) {
-                    document.cookie = "wide=" + (parSets.theaterMode ? "1" : "0") + "; path=/";
+                if (window.ytpsetwide) {
+                    window.ytpsetwide("wide", (parSets.theaterMode ? "1" : "0"), -1);
                 }
                 if (playerElement && window.location.pathname === "/watch") {
                     pageElement.classList[parSets.theaterMode ? "add" : "remove"]("watch-wide");
@@ -904,12 +897,25 @@
                 }
                 return newList.join(",");
             }
+            function plList() {
+                var i,
+                    length,
+                    videos,
+                    canShare = document.getElementsByClassName("playlist-header-content")[0];
+                if (canShare && canShare.dataset.shareable === "False" && !config.args.video) {
+                    config.args.video = [];
+                    videos = document.querySelectorAll("li[data-video-id]");
+                    length = videos.length;
+                    for (i = 0; i < length; i += 1) {
+                        config.args.video[i] = {"encrypted_id": videos[i].getAttribute("data-video-id")};
+                    }
+                }
+            }
             if (config.args.video_id) {
                 if (window.name === "popOut") {
+                    plList();
+                    document.title = config.args.title;
                     config.args.el = "embedded";
-                    if (document.title !== config.args.title) {
-                        document.title = config.args.title;
-                    }
                 }
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
@@ -966,8 +972,8 @@
                         window.ytplayer.config.args = config.args;
                     }
                 }
-                return config;
             }
+            return config;
         }
         function alwaysVisible() {
             function initFloater() {
@@ -1102,7 +1108,7 @@
                 listTitle = document.getElementsByClassName("appbar-nav-menu")[0],
                 videoList = document.getElementsByClassName("addto-watch-later-button");
             function initSubPlaylist(event) {
-                if (event.target.parentNode.id === "subscription-playlist") {
+                if (event.target && event.target.parentNode && event.target.parentNode.id === "subscription-playlist") {
                     i = videoList.length;
                     while (i) {
                         i -= 1;
@@ -1130,14 +1136,18 @@
         }
         function playerReady() {
             function alwaysActive(event) {
-                var eventClone,
+                var i,
+                    list,
+                    length,
+                    eventClone,
                     clear = event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !event.target.isContentEditable;
-                function cloneEvent(i) {
-                    eventClone[i] = event[i];
-                }
                 if (clear && ((event.which > 47 && event.which < 58) || (event.which > 95 && event.which < 106) || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1) && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
-                    Object.keys(Object.getPrototypeOf(event)).forEach(cloneEvent);
+                    list = Object.keys(Object.getPrototypeOf(event));
+                    length = list.length;
+                    for (i = 0; i < length; i += 1) {
+                        eventClone[list[i]] = event[list[i]];
+                    }
                     event.preventDefault();
                     api.dispatchEvent(eventClone);
                 }
@@ -1229,19 +1239,6 @@
                     }
                 };
             }
-            function spfNAvDetour(originalFunction) {
-                return function (a) {
-                    if (window.name === "popOut") {
-                        return;
-                    }
-                    return originalFunction.apply(this, arguments);
-                };
-            }
-            function spfPrefDetour() {
-                return function() {
-                    return;
-                };
-            }
             function baseDetour(originalFunction) {
                 return function () {
                     originalFunction.apply(this, arguments);
@@ -1331,6 +1328,7 @@
                     }
                 }
             }
+            function nullFunc() {return;}
             if (event && event.target) {
                 if (event.target.getAttribute("name") === "www/base") {
                     window.yt.setConfig = baseDetour(window.yt.setConfig);
@@ -1338,8 +1336,10 @@
                 }
                 if (event.target.getAttribute("name") === "spf/spf") {
                     window.spf.load = commentsLoad(window.spf.load);
-                    window.spf.navigate = spfNAvDetour(window.spf.navigate);
-                    window.spf.prefetch = spfPrefDetour(window.spf.prefetch);
+                    window.spf.prefetch = nullFunc;
+                    if (window.name === "popOut") {
+                        window.spf.navigate = nullFunc;
+                    }
                 }
             }
             if ((event && event.target && event.target.getAttribute("name") === "player/base") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
@@ -1351,7 +1351,7 @@
             var popOut,
                 width  = parseInt(parSets.VID_PPOT_SZ) || 533,
                 height = Math.round(width / (16 / 9)),
-                popUrl = url || window.location.href.split(/&t=[0-9]+/).join(""),
+                popUrl = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join(""),
                 video  = document.getElementsByTagName("video")[0];
             if (!url && video && video.currentTime && video.currentTime < video.duration) {
                 popUrl += "#t=" + video.currentTime;
