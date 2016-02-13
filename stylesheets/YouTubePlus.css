@@ -469,8 +469,7 @@
         display: none !important;
         height: 0 !important;
     }
-    .part_grid_subs div#browse-items-primary,
-    .part_grid_search #results {
+    .part_grid_subs div#browse-items-primary{
         font-size: 0;
         margin-right: -15px;
         padding: 15px;
@@ -547,6 +546,7 @@
     }
     .part_grid_search #results .item-section{
         float: left;
+        margin-left: 15px;
     }
     .part_grid_search .search .branded-page-v2-body{
         overflow: hidden;
