@@ -529,7 +529,7 @@
     }
     .part_grid_search #results .item-section{
         float: left;
-        margin-left: 15px;
+        padding: 15px;
     }
     .part_grid_search .search .branded-page-v2-body{
         overflow: hidden;
