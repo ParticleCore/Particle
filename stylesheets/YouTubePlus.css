@@ -67,8 +67,8 @@
             display: block;
             padding-top: 56.25%;
         }
-        #page #player,
-        #page #placeholder-player{
+        #player,
+        #placeholder-player{
             margin-top: -10px !important;
         }
         #placeholder-player{
