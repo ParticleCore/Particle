@@ -762,6 +762,9 @@
         right: 0;
         z-index: 1000;
     }
+    #P-settings + #page-container{
+        display: none;
+    }
     #P-container{
         margin: 10px auto 0;
         max-width: 1262px;
