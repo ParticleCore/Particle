@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.2
+// @version         1.1.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -46,6 +46,8 @@
                 VID_PPOT_SZ     : 533,
                 VID_PLR_HTML5   : true,
                 BLK_ON          : true,
+                floaterX        : 0,
+                floaterY        : 0,
                 firstTime       : true,
                 volLev          : 50,
                 advOpts         : true,
@@ -125,8 +127,7 @@
                 VID_DFLT_QLTY_2880    : "2880p (5k)",
                 VID_DFLT_QLTY_ORIG    : "4320p (8k)",
                 VID_PLR_ALVIS         : "Player always visible when reading comments",
-                VID_PLR_ALVIS_MOVE    : "Move",
-                VID_PLR_ALVIS_RST     : "Reset position",
+                VID_PLR_ALVIS_WDTH    : "Floating player width",
                 VID_PLR_ALVIS_SCRL_TOP: "Go to top",
                 VID_PLR_ATPL          : "Autoplay videos",
                 VID_LAYT              : "Layout",
@@ -383,7 +384,7 @@
                         list      = parSets.blacklist;
                     function buildList(obj) {
                         var lnk,
-                            keys = Object.keys(obj),
+                            keys  = Object.keys(obj),
                             _temp = document.createElement("template");
                         _temp.innerHTML = "<div class='blacklist'><button class='close'></button><a target='_blank'></a></div>";
                         _temp = _temp.content.firstChild;
@@ -508,6 +509,7 @@
                         "    <div><input id='VID_PLR_ADS' type='checkbox'><label for='VID_PLR_ADS' data-p='tnd|VID_PLR_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_ads' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_SUB_ADS' type='checkbox'><label for='VID_SUB_ADS' data-p='tnd|VID_SUB_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subs_ads_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ALVIS' type='checkbox'><label for='VID_PLR_ALVIS' data-p='tnd|VID_PLR_ALVIS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PLR_ALVIS_WDTH' type='text' placeholder='345' size='6'><label for='VID_PLR_ALVIS_WDTH' data-p='tnd|VID_PLR_ALVIS_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ATPL' type='checkbox'><label for='VID_PLR_ATPL' data-p='tnd|VID_PLR_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_CC' type='checkbox'><label for='VID_PLR_CC' data-p='tnd|VID_PLR_CC'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subtitles_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ANTS' type='checkbox'><label for='VID_PLR_ANTS' data-p='tnd|VID_PLR_ANTS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#annotations_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
@@ -647,15 +649,17 @@
                     }
                 }
                 function remBlackList() {
-                    delete parSets.blacklist[event.target.nextSibling.href.split("/channel/")[1]];
+                    var newKey = parSets.blacklist;
+                    delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
                     event.target.parentNode.remove();
-                    set("blacklist", parSets.blacklist);
+                    set("blacklist", newKey);
                 }
                 function saveSettings(salt) {
                     var value,
                         notification = document.getElementById("appbar-main-guide-notification-container"),
                         navId        = document.getElementsByClassName("selected")[0].id,
                         userSets     = document.getElementById("P-content").querySelectorAll("[id^='" + navId + "']"),
+                        savedSets    = parSets,
                         length       = userSets.length;
                     function hideNotif() {
                         document.body.classList.remove("show-guide-button-notification");
@@ -664,12 +668,12 @@
                         length -= 1;
                         value = (userSets[length].checked && (userSets[length].value === "on" || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute("type") === "text" && userSets[length].value);
                         if (value) {
-                            parSets[userSets[length].name || userSets[length].id] = value;
+                            savedSets[userSets[length].name || userSets[length].id] = value;
                         } else if (!value && userSets[length].type !== "radio") {
-                            parSets[userSets[length].id] = false;
+                            savedSets[userSets[length].id] = false;
                         }
                     }
-                    set("parSets", parSets);
+                    set("parSets", savedSets);
                     customStyles();
                     if (!salt) {
                         if (notification.childNodes.length < 1) {
@@ -922,13 +926,11 @@
                 delete config.args.loudness;
                 if (parSets.VID_DFLT_QLTY !== "auto") {
                     try {
-                        if (!window.localStorage["yt-player-quality"] || window.localStorage["yt-player-quality"].split(parSets.VID_DFLT_QLTY).length < 2) {
-                            window.localStorage["yt-player-quality"] = JSON.stringify({
-                                "data": parSets.VID_DFLT_QLTY,
-                                "expiration": new Date().getTime() + 864E5,
-                                "creation": new Date().getTime()
-                            });
-                        }
+                        window.localStorage["yt-player-quality"] = JSON.stringify({
+                            "data": parSets.VID_DFLT_QLTY,
+                            "expiration": new Date().getTime() + 864E5,
+                            "creation": new Date().getTime()
+                        });
                     } catch (ignore) {}
                 }
                 if (config.args.cc_load_policy && config.args.caption_audio_tracks && parSets.VID_PLR_CC) {
@@ -976,108 +978,84 @@
             return config;
         }
         function alwaysVisible() {
-            function initFloater() {
-                var height,
-                    oldPosX,
-                    oldPosY,
-                    XBounds,
-                    YBounds,
-                    maxOffsetX,
-                    maxOffsetY,
-                    minOffsetX,
-                    minOffsetY,
-                    activeMove,
-                    videoPlayer     = document.getElementById("movie_player"),
-                    playerContainer = document.getElementById("player-api"),
-                    containerSize   = playerContainer && playerContainer.getBoundingClientRect(),
-                    sidebar         = document.getElementById("watch7-sidebar"),
-                    sidebarSize     = sidebar && sidebar.getBoundingClientRect(),
-                    outOfSight      = containerSize.bottom < ((containerSize.height / 2) + 51),
-                    isFloater       = document.documentElement.classList.contains("floater"),
-                    floaterUI       = document.getElementById("part_floaterui");
-                function updatePos() {
-                    if (!document.documentElement.classList.contains("floater")) {
-                        return eventHandler([window, "resize", updatePos, false, "remove"]);
-                    }
-                    sidebar = document.getElementById("watch7-sidebar");
-                    sidebarSize = sidebar.getBoundingClientRect();
-                    height = ((sidebarSize.width > 299 && sidebarSize.width) || 300) / (16 / 9);
-                    videoPlayer.style.width = ((sidebarSize.width > 299 && sidebarSize.width) || 300) + "px";
-                    videoPlayer.style.height = height + "px";
-                    XBounds = parSets.floaterX > -1 && (parSets.floaterX + videoPlayer.offsetWidth) < document.documentElement.offsetWidth;
-                    YBounds = parSets.floaterY > 50 && (parSets.floaterY + videoPlayer.offsetHeight) < document.documentElement.offsetHeight;
-                    if (!parSets.customFloater) {
-                        videoPlayer.style.top = "calc(50% - " + (height / 2) + "px)";
-                        videoPlayer.style.left = sidebarSize.left + "px";
-                    } else {
-                        videoPlayer.style.top = ((YBounds && parSets.floaterY) || (parSets.floaterY < 51 && 51) || (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) + "px";
-                        videoPlayer.style.left = ((XBounds && parSets.floaterX) || (parSets.floaterX < 1 && "0") || (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) + "px";
-                    }
+            function checkBounds(X, Y) {
+                var player = document.getElementById("movie_player"),
+                    bounds = {
+                        x: (((X > -1 && (X + player.offsetWidth) < document.documentElement.offsetWidth) && X) || (X < 1 && "0") || (document.documentElement.offsetWidth - player.offsetWidth)),
+                        y: (((Y > 51 && (Y + player.offsetHeight) < document.documentElement.offsetHeight) && Y) || (Y < 52 && 52) || (document.documentElement.offsetHeight - player.offsetHeight))
+                    };
+                return bounds;
+            }
+            function updatePos() {
+                if (!document.documentElement.classList.contains("floater")) {
+                    return eventHandler([window, "resize", updatePos, false, "remove"]);
                 }
-                function customFloaterPosition(event) {
-                    var newXval,
-                        newYval;
-                    if (activeMove) {
-                        if (event.type === "mouseup") {
-                            set("floaterY", videoPlayer.offsetTop);
-                            set("floaterX", videoPlayer.offsetLeft);
-                            activeMove = false;
-                            return;
-                        }
-                        if (event.type === "mousemove") {
-                            newXval = videoPlayer.offsetLeft + (event.clientX - oldPosX);
-                            newYval = videoPlayer.offsetTop + (event.clientY - oldPosY);
-                            newXval = (event.clientX < (minOffsetX + 1) && "0") || (event.clientX > (maxOffsetX - 1) && (document.documentElement.offsetWidth - videoPlayer.offsetWidth)) || newXval;
-                            newYval = (event.clientY < (minOffsetY + 1) && "51") || (event.clientY > (maxOffsetY - 1) && (document.documentElement.offsetHeight - videoPlayer.offsetHeight)) || newYval;
-                            if (newYval !== videoPlayer.style.top) {
-                                videoPlayer.style.top = newYval + "px";
-                            }
-                            if (newXval !== videoPlayer.style.left) {
-                                videoPlayer.style.left = newXval + "px";
-                            }
-                        }
-                        oldPosX = event.clientX;
-                        oldPosY = event.clientY;
-                    } else if (!document.getElementById("part_floaterui")) {
-                        eventHandler([document, "mousemove", customFloaterPosition, false, "remove"]);
-                        eventHandler([document, "mouseup", customFloaterPosition, false, "remove"]);
-                    }
-                }
-                function floaterControl(event) {
+                var height = parseInt(parSets.VID_PLR_ALVIS_WDTH || 345) / (16 / 9),
+                    bounds = checkBounds(parSets.floaterX, parSets.floaterY),
+                    player = document.getElementById("movie_player");
+                player.style.width = parseInt(parSets.VID_PLR_ALVIS_WDTH || 345) + "px";
+                player.style.height = height + "px";
+                player.style.left = bounds.x + "px";
+                player.style.top = bounds.y + "px";
+            }
+            function dragFloater(event) {
+                var bounds,
+                    player    = document.getElementById("movie_player"),
+                    isFloater = document.documentElement.classList.contains("floater"),
+                    excluded  = document.getElementsByClassName("ytp-chrome-bottom")[0];
+                if (event && isFloater && player.contains(event.target)) {
                     if (event.target.id === "part_floaterui_scrolltop") {
-                        document[(isChrome && "body") || "documentElement"].scrollTop = 0;
-                    } else if (event.target.id === "part_floaterui_reset") {
-                        set("customFloater", false);
-                        updatePos();
-                    } else if (event.target.id === "part_floaterui_move") {
-                        set("customFloater", true);
-                        activeMove = true;
-                        maxOffsetX = document.documentElement.offsetWidth - (videoPlayer.offsetWidth - (event.clientX - videoPlayer.offsetLeft));
-                        maxOffsetY = document.documentElement.offsetHeight - (videoPlayer.offsetHeight - (event.clientY - videoPlayer.offsetTop));
-                        minOffsetX = Math.abs(event.clientX - videoPlayer.offsetLeft);
-                        minOffsetY = Math.abs(event.clientY - videoPlayer.offsetTop) + 51;
-                        customFloaterPosition(event);
-                    } else if (!document.getElementById("part_floaterui")) {
-                        eventHandler([document, "mousedown", floaterControl, false, "remove"]);
+                         document[(isChrome && "body") || "documentElement"].scrollTop = 0;
+                    } else if (!excluded || (event.target !== excluded && !excluded.contains(event.target))) {
+                        if (event.buttons === 1) {
+                            if (event.type === "mousedown") {
+                                eventHandler([document, "mousemove", dragFloater, false]);
+                                eventHandler([document, "click", dragFloater, true]);
+                                window.oldPos = {
+                                    x: parseInt(player.style.left) - event.clientX,
+                                    y: parseInt(player.style.top) - event.clientY
+                                };
+                            } else if (event.type === "mousemove") {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                bounds = checkBounds(event.clientX + window.oldPos.x, event.clientY + window.oldPos.y);
+                                player.style.left = bounds.x + "px";
+                                player.style.top = bounds.y + "px";
+                                window.hasMoved = true;
+                            }
+                        }
+                        if (event.buttons !== 1 || event.type === "click") {
+                            if (window.hasMoved) {
+                                event.preventDefault();
+                                event.stopImmediatePropagation();
+                                delete window.oldPos;
+                                delete window.hasMoved;
+                            }
+                            eventHandler([document, "mousemove", dragFloater, false, "remove"]);
+                            eventHandler([document, "click", dragFloater, true, "remove"]);
+                            set("floaterX", parseInt(player.style.left));
+                            set("floaterY", parseInt(player.style.top));
+                        }
                     }
                 }
-                if (!sidebar) {
-                    eventHandler([window, "scroll", initFloater, false, "remove"]);
-                    return;
-                }
-                if (videoPlayer) {
+            }
+            function initFloater() {
+                var player     = document.getElementById("movie_player"),
+                    plrApi     = document.getElementById("player-api").getBoundingClientRect(),
+                    outOfSight = plrApi.bottom < ((plrApi.height / 2) + 52),
+                    isFloater  = document.documentElement.classList.contains("floater"),
+                    floaterUI  = document.getElementById("part_floaterui");
+                if (player) {
                     if (!floaterUI) {
                         floaterUI = document.createElement("template");
                         floaterUI.innerHTML = "<div id='part_floaterui'>" +
-                            "    <button id='part_floaterui_move' data-p='ttl|VID_PLR_ALVIS_MOVE'></button>" +
-                            "    <button id='part_floaterui_reset' data-p='ttl|VID_PLR_ALVIS_RST'></button>" +
                             "    <button id='part_floaterui_scrolltop' data-p='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>" +
                             "</div>";
                         floaterUI = setLocale(floaterUI.content).firstChild;
-                        eventHandler([document, "mousemove", customFloaterPosition]);
-                        eventHandler([document, "mouseup", customFloaterPosition]);
-                        eventHandler([document, "mousedown", floaterControl]);
-                        videoPlayer.appendChild(floaterUI);
+                        eventHandler([document, "mousedown", dragFloater]);
+                        eventHandler([document, "mousemove", dragFloater]);
+                        eventHandler([document, "click", dragFloater, true]);
+                        player.appendChild(floaterUI);
                     }
                     if (outOfSight && !isFloater) {
                         document.documentElement.classList.add("floater");
@@ -1087,7 +1065,7 @@
                     } else if (!outOfSight && isFloater) {
                         document.documentElement.classList.remove("floater");
                         eventHandler([window, "resize", updatePos, false, "remove"]);
-                        videoPlayer.removeAttribute("style");
+                        player.removeAttribute("style");
                         window.dispatchEvent(new Event("resize"));
                     }
                 }
@@ -1347,6 +1325,35 @@
                 window.yt.player.Application.create = html5Detour(window.yt.player.Application.create);
             }
         }
+        function dragPopOut(event) {
+            var excluded = document.getElementsByClassName("ytp-chrome-bottom")[0];
+            if (event && (!excluded || (event.target !== excluded && !excluded.contains(event.target)))) {
+                if (event.buttons === 1) {
+                    if (event.type === "mousedown") {
+                        eventHandler([document, "mousemove", dragPopOut, false]);
+                        eventHandler([document, "click", dragPopOut, true]);
+                        window.oldPos = {X: event.clientX, Y: event.clientY};
+                    } else if (event.type === "mousemove") {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        window.moveBy(event.clientX - window.oldPos.X, event.clientY - window.oldPos.Y);
+                        window.hasMoved = true;
+                    }
+                }
+                if (event.buttons !== 1 || event.type === "click") {
+                    if (window.hasMoved) {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        delete window.oldPos;
+                        delete window.hasMoved;
+                    }
+                    eventHandler([document, "mousemove", dragPopOut, false, "remove"]);
+                    eventHandler([document, "click", dragPopOut, true, "remove"]);
+                }
+            } else if (!event && window.name === "popOut") {
+                eventHandler([document, "mousedown", dragPopOut]);
+            }
+        }
         function popPlayer(url) {
             var popOut,
                 width  = parseInt(parSets.VID_PPOT_SZ) || 533,
@@ -1358,7 +1365,7 @@
                 window.ytplayer.config.args.start = video.currentTime;
                 api.cueVideoByPlayerVars(window.ytplayer.config.args);
             }
-            popOut = window.open(popUrl, "popOut", "width=" + width + ",height=" + height + ",scrollbars=0");
+            popOut = window.open(popUrl, "popOut", "width=" + width + ",height=" + height);
             popOut.focus();
         }
         function thumbMod() {
@@ -1372,7 +1379,8 @@
                 clickTitle,
                 masterList = [],
                 trashList  = [],
-                detailList = [];
+                detailList = [],
+                pageName   = window.yt && window.yt.config_ && /watch|index|feed|channel|results/.test(window.yt.config_.PAGE_NAME);
             function initThumbMod(event) {
                 var observer;
                 function initBlackList() {
@@ -1421,13 +1429,13 @@
                     }
                     return setLocale(button.content).firstChild;
                 }
-                if (detailList[i]) {
+                if (detailList[i] && detailList[i].thumbfield) {
                     if (parSets.GEN_PPOT_ON && !window.opener && !detailList[i].thumbfield.getElementsByClassName("popoutmode")[0]) {
                         button = createButton("popoutmode", detailList[i]);
                         eventHandler([document, "click", initThumbMod]);
                         detailList[i].thumbfield.appendChild(button);
                     }
-                    if (parSets.BLK_ON && window.location.href.split("/feed/subscriptions").length < 2 && !detailList[i].thumbfield.getElementsByClassName("blacklist")[0]) {
+                    if (parSets.BLK_ON && window.yt.config_.PAGE_NAME !== "channel" && detailList[i].username && detailList[i].youtubeid && !detailList[i].thumbfield.getElementsByClassName("blacklist")[0]) {
                         button = createButton("blacklist", detailList[i]);
                         eventHandler([document, "click", initThumbMod]);
                         detailList[i].thumbfield.appendChild(button);
@@ -1438,7 +1446,7 @@
                 var upNext;
                 if (i > -1 && masterList[i]) {
                     infoField = masterList[i].getElementsByClassName("g-hovercard")[1] || masterList[i].getElementsByClassName("g-hovercard")[0];
-                    titleField = masterList[i].getElementsByClassName("yt-uix-tile-link")[0] || masterList[i].getElementsByClassName("yt-ui-ellipsis")[0] || masterList[i].getElementsByClassName("content-link")[0] || masterList[i].getElementsByTagName("a")[0];
+                    titleField = (window.yt.config_.PAGE_NAME === "channel" && masterList[i].getElementsByClassName("yt-pl-thumb-link")[0]) || masterList[i].getElementsByClassName("yt-uix-tile-link")[0] || masterList[i].getElementsByClassName("yt-ui-ellipsis")[0] || masterList[i].getElementsByClassName("content-link")[0] || masterList[i].getElementsByTagName("a")[0];
                     thumbField = masterList[i].getElementsByClassName("yt-lockup-thumbnail")[0] || masterList[i].getElementsByClassName("thumb-wrapper")[0] || masterList[i].getElementsByClassName("yt-pl-thumb")[0];
                     userId = infoField && infoField.dataset.ytid;
                     userName = infoField && infoField.textContent;
@@ -1463,7 +1471,7 @@
                                 }
                             }
                         }
-                    } else if (userName && userId && videoLink && thumbField) {
+                    } else if (videoLink) {
                         detailList[i] = {
                             username: userName,
                             youtubeid: userId,
@@ -1498,11 +1506,13 @@
                     }
                 }
             }
-            if ((parSets.BLK_ON || parSets.GEN_PPOT_ON) && (window.location.pathname === "/" || window.location.pathname === "/results" || window.location.pathname === "/watch" || window.location.pathname === "/feed/music" || window.location.href.split("/feed/subscriptions").length > 1 || window.location.href.split("/feed/trending").length > 1)) {
+            if ((parSets.BLK_ON || parSets.GEN_PPOT_ON) && pageName) {
                 ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item", "yt-lockup-mini", "lohp-large-shelf-container", "expanded-shelf-content-item-wrapper"].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
-                    Object.keys(trashList).forEach(cleanList);
+                    if (window.yt.config_.PAGE_NAME !== "channel") {
+                        Object.keys(trashList).forEach(cleanList);
+                    }
                     Object.keys(detailList).forEach(insertButtons);
                     initThumbMod();
                 }
@@ -1869,6 +1879,7 @@
             commentsButton();
             defaultChannelPage();
             generalChanges();
+            dragPopOut();
         }
         function request(event) {
             var videoPlayer = document.getElementById("movie_player");
@@ -1879,7 +1890,7 @@
                     if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
                         delete window.ytplayer.config.loaded;
                     }
-                    videoPlayer.remove();
+                    api.destroy();
                 }
             }
         }

@@ -102,7 +102,6 @@
         font-size: 0;
         height: 0;
         opacity: 0;
-        pointer-events: none;
         position: absolute;
         text-align: center;
         top: 0;
@@ -378,40 +377,6 @@
         background: rgba(0, 0, 0, .8);
     }
 /*   end| Screenshot window */
-/* start| Sidebar mode */
-    .yt-pl-thumb .sidebarmode,
-    .thumb-wrapper .sidebarmode,
-    .yt-lockup-thumbnail .sidebarmode{
-        background: #FFF url(./Images/sprite.png) -24px -72px;
-        bottom: 0;
-        color: #666;
-        cursor: pointer;
-        display: none;
-        font-size: 12px;
-        height: 17px;
-        left: 0;
-        line-height: 1;
-        position: absolute;
-        width: 17px;
-    }
-/*   end| Sidebar mode */
-/* start| Pop-out mode */
-    .yt-pl-thumb .popoutmode,
-    .thumb-wrapper .popoutmode,
-    .yt-lockup-thumbnail .popoutmode{
-        background: #FFF url(./Images/sprite.png) -24px -118px;
-        bottom: 0;
-        color: #666;
-        cursor: pointer;
-        display: none;
-        font-size: 12px;
-        height: 17px;
-        left: 0;
-        line-height: 1;
-        position: absolute;
-        width: 17px;
-    }
-/*   end| Pop-out mode */
 /* start| Pop-out */
     .part_popout {
         overflow: hidden;
@@ -435,20 +400,37 @@
     }
 /*   end| Pop-out */
 /* start| Thumb buttons */
+    .yt-pl-thumb .popoutmode,
+    .thumb-wrapper .popoutmode,
+    .yt-lockup-thumbnail .popoutmode,
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
-        background: #FFF url(./Images/sprite.png) -24px -57px;
+        background: #FFF url(./Images/sprite.png);
+        border: 4px solid #FFF;
+        border-radius: 2px;
         color: #666;
         cursor: pointer;
         display: none;
         font-size: 12px;
-        height: 17px;
+        height: 14px;
         line-height: 1;
         position: absolute;
-        right: 0;
-        top: 0;
-        width: 17px;
+        width: 14px;
+    }
+    .yt-pl-thumb .popoutmode,
+    .thumb-wrapper .popoutmode,
+    .yt-lockup-thumbnail .popoutmode{
+        background-position: -26px -120px;
+        bottom: 2px;
+        left: 2px;
+    }
+    .yt-pl-thumb .blacklist,
+    .thumb-wrapper .blacklist,
+    .yt-lockup-thumbnail .blacklist{
+        background-position: -26px -59px;
+        right: 2px;
+        top: 2px;
     }
     .thumb-wrapper:hover .blacklist,
     .yt-lockup-thumbnail:hover .blacklist,
@@ -469,8 +451,7 @@
         display: none !important;
         height: 0 !important;
     }
-    .part_grid_subs div#browse-items-primary,
-    .part_grid_search #results {
+    .part_grid_subs div#browse-items-primary{
         font-size: 0;
         margin-right: -15px;
         padding: 15px;
@@ -547,6 +528,7 @@
     }
     .part_grid_search #results .item-section{
         float: left;
+        padding: 15px;
     }
     .part_grid_search .search .branded-page-v2-body{
         overflow: hidden;
@@ -778,6 +760,9 @@
         position: absolute;
         right: 0;
         z-index: 1000;
+    }
+    #P-settings + #page-container{
+        display: none;
     }
     #P-container{
         margin: 10px auto 0;
