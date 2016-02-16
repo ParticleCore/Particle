@@ -228,6 +228,12 @@
         height: 24px;
         width: 24px;
     }
+    #movie_player.ytp-fullscreen {
+        height: 100% !important;
+        width: 100% !important;
+        left: initial !important;
+        top: initial !important;
+    }
 /*   end| Custom styles */
 /* start| Player console */
     #watch-header{
