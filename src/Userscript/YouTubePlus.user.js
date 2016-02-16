@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.4
+// @version         1.1.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -974,49 +974,47 @@
             return config;
         }
         function alwaysVisible() {
-            function checkBounds(X, Y) {
-                var player = document.getElementById("movie_player"),
-                    bounds = {
-                        x: (((X > -1 && (X + player.offsetWidth) < document.documentElement.offsetWidth) && X) || (X < 1 && "0") || (document.documentElement.offsetWidth - player.offsetWidth)),
-                        y: (((Y > 51 && (Y + player.offsetHeight) < document.documentElement.offsetHeight) && Y) || (Y < 52 && 52) || (document.documentElement.offsetHeight - player.offsetHeight))
-                    };
-                return bounds;
+            function checkBounds(elm, X, Y) {
+                return {
+                    X: (((X > -1 && (X + elm.offsetWidth) < document.documentElement.offsetWidth) && X) || (X < 1 && "0") || (document.documentElement.offsetWidth - elm.offsetWidth)),
+                    Y: (((Y > 51 && (Y + elm.offsetHeight) < document.documentElement.offsetHeight) && Y) || (Y < 52 && 52) || (document.documentElement.offsetHeight - elm.offsetHeight))
+                };
             }
             function updatePos() {
                 if (!document.documentElement.classList.contains("floater")) {
                     return eventHandler([window, "resize", updatePos, false, "remove"]);
                 }
-                var height = parseInt(parSets.VID_PLR_ALVIS_WDTH || 345) / (16 / 9),
-                    bounds = checkBounds(parSets.floaterX, parSets.floaterY),
-                    player = document.getElementById("movie_player");
-                player.style.width = parseInt(parSets.VID_PLR_ALVIS_WDTH || 345) + "px";
-                player.style.height = height + "px";
-                player.style.left = bounds.x + "px";
-                player.style.top = bounds.y + "px";
+                var height = (parseInt(parSets.VID_PLR_ALVIS_WDTH) || 345) / (16 / 9),
+                    player = document.getElementById("movie_player"),
+                    bounds = checkBounds(player, parSets.floaterX, parSets.floaterY);
+                player.setAttribute("style", "width:" + (parseInt(parSets.VID_PLR_ALVIS_WDTH) || 345) + "px;height:" + height + "px;left:" + bounds.X + "px;top:" + bounds.Y + "px");
             }
             function dragFloater(event) {
                 var bounds,
                     player    = document.getElementById("movie_player"),
                     isFloater = document.documentElement.classList.contains("floater"),
+                    isFScreen = document.getElementsByClassName("ytp-fullscreen")[0],
                     excluded  = document.getElementsByClassName("ytp-chrome-bottom")[0];
-                if (event && isFloater && player.contains(event.target)) {
-                    if (event.target.id === "part_floaterui_scrolltop") {
+                if (event && isFloater && !isFScreen) {
+                    if (event.type === "click" && event.target.id === "part_floaterui_scrolltop") {
                          document[(isChrome && "body") || "documentElement"].scrollTop = 0;
-                    } else if (!excluded || (event.target !== excluded && !excluded.contains(event.target))) {
+                    } else {
                         if (event.buttons === 1) {
-                            if (event.type === "mousedown") {
+                            if (event.type === "mousedown" && player.contains(event.target) && (!excluded || !excluded.contains(event.target))) {
+                                event.preventDefault();
+                                event.stopPropagation();
                                 eventHandler([document, "mousemove", dragFloater, false]);
                                 eventHandler([document, "click", dragFloater, true]);
                                 window.oldPos = {
-                                    x: parseInt(player.style.left) - event.clientX,
-                                    y: parseInt(player.style.top) - event.clientY
+                                    X: parseInt(player.style.left) - event.clientX,
+                                    Y: parseInt(player.style.top) - event.clientY,
+                                    orgX: event.clientX,
+                                    orgY: event.clientY
                                 };
-                            } else if (event.type === "mousemove") {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                bounds = checkBounds(event.clientX + window.oldPos.x, event.clientY + window.oldPos.y);
-                                player.style.left = bounds.x + "px";
-                                player.style.top = bounds.y + "px";
+                            } else if (event.type === "mousemove" && (window.hasMoved || Math.abs(event.clientX - window.oldPos.orgX) > 10 || Math.abs(event.clientY - window.oldPos.orgY) > 10)) {
+                                bounds = checkBounds(player, event.clientX + window.oldPos.X, event.clientY + window.oldPos.Y);
+                                player.style.left = bounds.X + "px";
+                                player.style.top = bounds.Y + "px";
                                 window.hasMoved = true;
                             }
                         }
@@ -1040,8 +1038,9 @@
                     plrApi     = document.getElementById("player-api").getBoundingClientRect(),
                     outOfSight = plrApi.bottom < ((plrApi.height / 2) + 52),
                     isFloater  = document.documentElement.classList.contains("floater"),
+                    isFScreen  = document.getElementsByClassName("ytp-fullscreen")[0],
                     floaterUI  = document.getElementById("part_floaterui");
-                if (player) {
+                if (player && !isFScreen) {
                     if (!floaterUI) {
                         floaterUI = document.createElement("template");
                         floaterUI.innerHTML = "<div id='part_floaterui'>" +
@@ -1049,8 +1048,6 @@
                             "</div>";
                         floaterUI = setLocale(floaterUI.content).firstChild;
                         eventHandler([document, "mousedown", dragFloater]);
-                        eventHandler([document, "mousemove", dragFloater]);
-                        eventHandler([document, "click", dragFloater, true]);
                         player.appendChild(floaterUI);
                     }
                     if (outOfSight && !isFloater) {
@@ -1322,16 +1319,22 @@
             }
         }
         function dragPopOut(event) {
-            var excluded = document.getElementsByClassName("ytp-chrome-bottom")[0];
-            if (event && (!excluded || (event.target !== excluded && !excluded.contains(event.target)))) {
+            var excluded = document.getElementsByClassName("ytp-chrome-bottom")[0],
+                isFScreen = document.getElementsByClassName("ytp-fullscreen")[0];
+            if (event && !isFScreen && (!excluded || (event.target !== excluded && !excluded.contains(event.target)))) {
                 if (event.buttons === 1) {
                     if (event.type === "mousedown") {
-                        eventHandler([document, "mousemove", dragPopOut, false]);
-                        eventHandler([document, "click", dragPopOut, true]);
-                        window.oldPos = {X: event.clientX, Y: event.clientY};
-                    } else if (event.type === "mousemove") {
                         event.preventDefault();
                         event.stopPropagation();
+                        eventHandler([document, "mousemove", dragPopOut, false]);
+                        eventHandler([document, "click", dragPopOut, true]);
+                        window.oldPos = {
+                            X: event.clientX,
+                            Y: event.clientY,
+                            orgX: event.clientX,
+                            orgY: event.clientY
+                        };
+                    } else if (event.type === "mousemove" && (window.hasMoved || Math.abs(event.clientX - window.oldPos.orgX) > 10 || Math.abs(event.clientY - window.oldPos.orgY) > 10)) {
                         window.moveBy(event.clientX - window.oldPos.X, event.clientY - window.oldPos.Y);
                         window.hasMoved = true;
                     }
