@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.3
+// @version         1.1.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -370,13 +370,15 @@
             }
         }
         function settingsMenu() {
-            var pContainer,
-                buttonNotif,
-                buttonsSection,
-                settingsButton;
             if (document.getElementById("P")) {
                 return;
             }
+            var welcome,
+                pContainer,
+                buttonNotif,
+                buttonsSection,
+                settingsSection,
+                settingsButton;
             function template(section) {
                 var temp = document.createElement("template");
                 function buildBlacklist(blist) {
@@ -738,43 +740,37 @@
                 }
             }
             function firstTime(event) {
-                var coords,
-                    welcome = document.getElementById("part_welcome");
                 if (event && event.target && event.target.parentNode && event.target.parentNode.className === "par_closewlcm") {
                     set("firstTime", false);
                     eventHandler([welcome, "click", firstTime, false, "remove"]);
-                    welcome.remove();
-                } else if (!welcome) {
-                    coords = settingsButton.getBoundingClientRect();
-                    welcome = document.createElement("template");
-                    welcome.innerHTML = "<div id='part_welcome'>"+
-                        "    <span data-p='tnd|WLCM'></span>" +
-                        "    <br>" +
-                        "    <span data-p='tnd|WLCMSTRT'></span>" +
-                        "    <div class='par_closewlcm'><span>×</span></div>" +
-                        "</div>";
-                    welcome = setLocale(welcome.content);
-                    settingsButton.parentNode.appendChild(welcome);
-                    eventHandler([welcome, "click", firstTime]);
-                    welcome = document.getElementById("part_welcome");
-                    welcome.style.top = (coords.top + coords.height + 10) + "px";
-                    welcome.style.right = (document.documentElement.clientWidth - coords.left - coords.width - 10) + "px";
+                    welcome.style.display = "none";
                 }
             }
             buttonNotif = document.getElementsByClassName("notifications-container")[0];
             buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
             if (buttonsSection) {
-                settingsButton = document.createElement("button");
-                settingsButton.id = "P";
-                settingsButton.setAttribute("title", userLang("YTSETS"));
+                settingsSection = document.createElement("template");
+                settingsSection.innerHTML = "<div id='Psettings' style='display:inline-block;position:relative'>" +
+                    "   <button id='P' data-p='ttl|YTSETS'></button>" +
+                    "   <div id='part_welcome' style='display:none;   margin-left:-220px;top:38px;right:0'>"+
+                    "       <span data-p='tnd|WLCM'></span>" +
+                    "       <br>" +
+                    "       <span data-p='tnd|WLCMSTRT'></span>" +
+                    "       <div class='par_closewlcm'><span>×</span></div>" +
+                    "   </div>" +
+                    "</div>";
+                settingsSection = setLocale(settingsSection.content);
                 eventHandler([document, "click", settingsTemplate]);
                 if (buttonNotif) {
-                    buttonsSection.insertBefore(settingsButton, buttonNotif);
+                    buttonsSection.insertBefore(settingsSection, buttonNotif);
                 } else {
-                    buttonsSection.appendChild(settingsButton);
+                    buttonsSection.appendChild(settingsSection);
                 }
+                settingsButton = document.getElementById("P");
+                welcome = document.getElementById("part_welcome");
                 if (parSets.firstTime) {
-                    firstTime();
+                    welcome.style.display = "block";
+                    eventHandler([welcome, "click", firstTime]);
                 }
             }
         }
@@ -1030,11 +1026,11 @@
                                 event.stopImmediatePropagation();
                                 delete window.oldPos;
                                 delete window.hasMoved;
+                                set("floaterX", parseInt(player.style.left));
+                                set("floaterY", parseInt(player.style.top));
                             }
                             eventHandler([document, "mousemove", dragFloater, false, "remove"]);
                             eventHandler([document, "click", dragFloater, true, "remove"]);
-                            set("floaterX", parseInt(player.style.left));
-                            set("floaterY", parseInt(player.style.top));
                         }
                     }
                 }
