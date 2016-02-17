@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.5
+// @version         1.1.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -46,8 +46,8 @@
                 VID_PPOT_SZ     : 533,
                 VID_PLR_HTML5   : true,
                 BLK_ON          : true,
-                floaterX        : 0,
-                floaterY        : 0,
+                floaterX        : 2000,
+                floaterY        : 2000,
                 firstTime       : true,
                 volLev          : 50,
                 advOpts         : true,
@@ -511,7 +511,7 @@
                         "    <div><input id='VID_PLR_ADS' type='checkbox'><label for='VID_PLR_ADS' data-p='tnd|VID_PLR_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_ads' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_SUB_ADS' type='checkbox'><label for='VID_SUB_ADS' data-p='tnd|VID_SUB_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subs_ads_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ALVIS' type='checkbox'><label for='VID_PLR_ALVIS' data-p='tnd|VID_PLR_ALVIS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
-                        "    <div><input id='VID_PLR_ALVIS_WDTH' type='text' placeholder='345' size='6'><label for='VID_PLR_ALVIS_WDTH' data-p='tnd|VID_PLR_ALVIS_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PLR_ALVIS_WDTH' type='text' placeholder='350' size='6'><label for='VID_PLR_ALVIS_WDTH' data-p='tnd|VID_PLR_ALVIS_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ATPL' type='checkbox'><label for='VID_PLR_ATPL' data-p='tnd|VID_PLR_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_CC' type='checkbox'><label for='VID_PLR_CC' data-p='tnd|VID_PLR_CC'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subtitles_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ANTS' type='checkbox'><label for='VID_PLR_ANTS' data-p='tnd|VID_PLR_ANTS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#annotations_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
@@ -874,7 +874,7 @@
             }
         }
         function argsCleaner(config) {
-            function rvshfr(list, type) {
+            function rvshfr(list) {
                 var i,
                     temp,
                     newList = [];
@@ -882,17 +882,9 @@
                 i = list.length;
                 while (i) {
                     i -= 1;
-                    temp = type && list[i].split(/fps\=([0-9]{2})/)[1];
-                    if (type && (!temp || temp < 31)) {
+                    temp = list[i].split(/fps\=([0-9]{2})/)[1];
+                    if (!temp || temp < 31) {
                         newList.push(list[i]);
-                    } else if (!type) {
-                        if (list[i].split("author").length > 1) {
-                            temp = list[i].split(/\=|&/g);
-                            temp = decodeURIComponent(temp[temp.indexOf("author") + 1]).replace(/\+/g, " ");
-                        }
-                        if (!temp || JSON.stringify(parSets.blacklist).split('"' + temp + '"').length < 2) {
-                            newList.unshift(list[i]);
-                        }
                     }
                 }
                 return newList.join(",");
@@ -958,10 +950,7 @@
                     delete config.args.vmap;
                 }
                 if (parSets.VID_PLR_HFR && config.args.adaptive_fmts) {
-                    config.args.adaptive_fmts = rvshfr(config.args.adaptive_fmts, "HFR");
-                }
-                if (parSets.BLK_ON && window.yt && window.yt.config_ && window.yt.config_.RELATED_PLAYER_ARGS && window.yt.config_.RELATED_PLAYER_ARGS.rvs) {
-                    config.args.rvs = window.yt.config_.RELATED_PLAYER_ARGS.rvs = rvshfr(window.yt.config_.RELATED_PLAYER_ARGS.rvs);
+                    config.args.adaptive_fmts = rvshfr(config.args.adaptive_fmts);
                 }
                 if (window.ytplayer) {
                     if (window.ytplayer.config === null) {
@@ -984,10 +973,11 @@
                 if (!document.documentElement.classList.contains("floater")) {
                     return eventHandler([window, "resize", updatePos, false, "remove"]);
                 }
-                var height = (parseInt(parSets.VID_PLR_ALVIS_WDTH) || 345) / (16 / 9),
+                var height = parseInt(parSets.VID_PLR_ALVIS_WDTH) || 350,
                     player = document.getElementById("movie_player"),
                     bounds = checkBounds(player, parSets.floaterX, parSets.floaterY);
-                player.setAttribute("style", "width:" + (parseInt(parSets.VID_PLR_ALVIS_WDTH) || 345) + "px;height:" + height + "px;left:" + bounds.X + "px;top:" + bounds.Y + "px");
+                height = (height < 350 ? 350 : height) / (16 / 9);
+                player.setAttribute("style", "width:" + (height * (16 / 9)) + "px;height:" + height + "px;left:" + bounds.X + "px;top:" + bounds.Y + "px");
             }
             function dragFloater(event) {
                 var bounds,
@@ -1040,8 +1030,8 @@
                     isFloater  = document.documentElement.classList.contains("floater"),
                     isFScreen  = document.getElementsByClassName("ytp-fullscreen")[0],
                     floaterUI  = document.getElementById("part_floaterui");
-                if (player && !isFScreen) {
-                    if (!floaterUI) {
+                if (player) {
+                    if (!floaterUI && !isFScreen) {
                         floaterUI = document.createElement("template");
                         floaterUI.innerHTML = "<div id='part_floaterui'>" +
                             "    <button id='part_floaterui_scrolltop' data-p='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>" +
@@ -1829,6 +1819,7 @@
         }
         function generalChanges() {
             var logo,
+                checkbox    = document.getElementsByClassName("checkbox-on-off")[0],
                 autoplaybar = document.getElementsByClassName("autoplay-bar")[0],
                 description = document.getElementById("action-panel-details");
             if (parSets.GEN_YT_LOGO_LINK && window.yt && window.yt.config_ && window.yt.config_.LOGGED_IN) {
@@ -1839,7 +1830,9 @@
             }
             if (parSets.GEN_REM_APUN && window.location.pathname === "/watch" && autoplaybar) {
                 autoplaybar.removeAttribute("class");
-                document.getElementsByClassName("checkbox-on-off")[0].remove();
+                if (checkbox) {
+                    checkbox.remove();
+                }
             }
             if (parSets.VID_LAYT_AUTO_PNL && window.location.pathname === "/watch" && description) {
                 description.classList.remove("yt-uix-expander-collapsed");
