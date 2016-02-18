@@ -463,7 +463,9 @@
         padding: 15px;
         padding-right: 0;
     }
-    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{
+    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item,
+    .part_grid_subs div#browse-items-primary .section-list > li,
+    .part_grid_search #results .item-section > li{
         display: inline-block;
         margin-right: 10px;
         vertical-align: top;
