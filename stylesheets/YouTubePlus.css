@@ -228,12 +228,6 @@
         height: 24px;
         width: 24px;
     }
-    #movie_player.ytp-fullscreen {
-        height: 100% !important;
-        width: 100% !important;
-        left: initial !important;
-        top: initial !important;
-    }
 /*   end| Custom styles */
 /* start| Player console */
     #watch-header{
@@ -511,6 +505,10 @@
         font-size: 13px;
         margin: 4px 0 1px 0;
         max-width: 176px;
+    }
+    .part_grid_search #results .exploratory-section,
+    .part_grid_search #results .compact-shelf{
+        display: none;
     }
     .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
         white-space: nowrap;
