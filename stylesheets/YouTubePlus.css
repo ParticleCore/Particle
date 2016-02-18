@@ -463,13 +463,6 @@
         padding: 15px;
         padding-right: 0;
     }
-    .part_grid_subs div#browse-items-primary .section-list > li,
-    .part_grid_search #results .item-section > li{
-        display: inline-block;
-        margin-bottom: 20px;
-        vertical-align: top;
-        word-wrap: break-word;
-    }
     .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{
         display: inline-block;
         margin-right: 10px;
