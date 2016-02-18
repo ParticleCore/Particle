@@ -471,8 +471,11 @@
         word-wrap: break-word;
     }
     .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{
-        margin-bottom: initial;
-        margin-right: initial;
+        display: inline-block;
+        margin-right: 10px;
+        vertical-align: top;
+        margin-bottom: 12px;
+        width: 196px;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container,
     .part_grid_search #results .item-section > li .yt-lockup{
@@ -498,6 +501,8 @@
     .part_grid_subs div#browse-items-primary .yt-lockup-thumbnail,
     .part_grid_search #results .yt-lockup-thumbnail{
         float: initial !important;
+        margin-bottom: 4px;
+        margin-right: initial;
     }
     .part_grid_subs div#browse-items-primary .yt-lockup-meta,
     .part_grid_subs div#browse-items-primary .yt-lockup-byline,
@@ -514,15 +519,6 @@
     }
     .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
         white-space: nowrap;
-    }
-    .part_grid_search #results .yt-lockup-playlist-items,
-    .part_grid_search #results .yt-lockup-badges,
-    .part_grid_subs .yt-lockup-badges,
-    .part_grid_subs .yt-uix-livereminder,
-    .part_grid_search .yt-uix-livereminder,
-    .part_grid_search #results .exploratory-section,
-    .part_grid_search #results .compact-shelf{
-        display: none;
     }
     .part_grid_subs .yt-lockup-meta-info > li,
     .part_grid_search .yt-lockup-meta-info > li{
@@ -541,6 +537,10 @@
     }
     .part_grid_search .webkit #results .yt-ui-ellipsis{
         display: block;
+    }
+    .part_grid_subs .yt-uix-menu-container.yt-lockup-action-menu,
+    .part_grid_search #results .yt-uix-menu-container.yt-lockup-action-menu{
+        right: -8px;
     }
 /*   end| Grid layout */
 /* start| Enhancements */
