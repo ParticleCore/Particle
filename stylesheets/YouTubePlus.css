@@ -14,7 +14,8 @@
 /*   end| Hide video details */
 /* start| Disable blue glow */
     .part_dsbl_glow .yt-uix-button:focus,
-    .part_dsbl_glow .yt-uix-button:focus:hover{
+    .part_dsbl_glow .yt-uix-button:focus:hover
+    .part_dsbl_glow .ytp-keyboard-focus{
         box-shadow: initial !important;
     }
 /*   end| Disable blue glow */
@@ -538,6 +539,7 @@
 /*   end| Grid layout */
 /* start| Enhancements */
     :focus{
+        box-shadow: initial !important;
         outline: none;
     }
     :-moz-focus-inner{
