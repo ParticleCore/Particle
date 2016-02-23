@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.6
+// @version         1.1.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1160,7 +1160,7 @@
                     config = {args: {}};
                     config.args = a.detail.part.data.swfcfg;
                     a.detail.part.data.swfcfg = argsCleaner(config.args);
-                } else if (b && b.constructor.name === "XMLHttpRequest" && b.responseURL && b.responseURL.split("get_video_info").length > 1) {
+                } else if (b && b.constructor && b.constructor.name === "XMLHttpRequest" && b.responseURL && b.responseURL.split("get_video_info").length > 1) {
                     config = {args: {}};
                     args = arguments;
                     patch = {};
@@ -1209,14 +1209,16 @@
             }
             function embedDetour(originalFunction) {
                 return function () {
-                    var player,
+                    var orig,
+                        player,
                         args = arguments;
                     argsCleaner(args[1]);
-                    originalFunction.apply(this, args);
+                    orig = originalFunction.apply(this, args);
                     player = document.getElementById("movie_player");
                     if (player) {
                         player.setPlaybackQuality(parSets.VID_DFLT_QLTY);
                     }
+                    return orig;
                 };
             }
             function autoplayDetour(originalFunction) {

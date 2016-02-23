@@ -14,7 +14,8 @@
 /*   end| Hide video details */
 /* start| Disable blue glow */
     .part_dsbl_glow .yt-uix-button:focus,
-    .part_dsbl_glow .yt-uix-button:focus:hover{
+    .part_dsbl_glow .yt-uix-button:focus:hover
+    .part_dsbl_glow .ytp-keyboard-focus{
         box-shadow: initial !important;
     }
 /*   end| Disable blue glow */
@@ -457,16 +458,14 @@
         padding: 15px;
         padding-right: 0;
     }
+    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item,
     .part_grid_subs div#browse-items-primary .section-list > li,
     .part_grid_search #results .item-section > li{
         display: inline-block;
-        margin-bottom: 20px;
+        margin-right: 10px;
         vertical-align: top;
-        word-wrap: break-word;
-    }
-    .part_grid_subs div#browse-items-primary .expanded-shelf-content-item{
-        margin-bottom: initial;
-        margin-right: initial;
+        margin-bottom: 12px;
+        width: 196px;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container,
     .part_grid_search #results .item-section > li .yt-lockup{
@@ -492,6 +491,8 @@
     .part_grid_subs div#browse-items-primary .yt-lockup-thumbnail,
     .part_grid_search #results .yt-lockup-thumbnail{
         float: initial !important;
+        margin-bottom: 4px;
+        margin-right: initial;
     }
     .part_grid_subs div#browse-items-primary .yt-lockup-meta,
     .part_grid_subs div#browse-items-primary .yt-lockup-byline,
@@ -506,17 +507,12 @@
         margin: 4px 0 1px 0;
         max-width: 176px;
     }
-    .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
-        white-space: nowrap;
-    }
-    .part_grid_search #results .yt-lockup-playlist-items,
-    .part_grid_search #results .yt-lockup-badges,
-    .part_grid_subs .yt-lockup-badges,
-    .part_grid_subs .yt-uix-livereminder,
-    .part_grid_search .yt-uix-livereminder,
     .part_grid_search #results .exploratory-section,
     .part_grid_search #results .compact-shelf{
         display: none;
+    }
+    .part_grid_search.part_compact_titles  #results .yt-lockup-title a{
+        white-space: nowrap;
     }
     .part_grid_subs .yt-lockup-meta-info > li,
     .part_grid_search .yt-lockup-meta-info > li{
@@ -536,9 +532,14 @@
     .part_grid_search .webkit #results .yt-ui-ellipsis{
         display: block;
     }
+    .part_grid_subs .yt-uix-menu-container.yt-lockup-action-menu,
+    .part_grid_search #results .yt-uix-menu-container.yt-lockup-action-menu{
+        right: -8px;
+    }
 /*   end| Grid layout */
 /* start| Enhancements */
     :focus{
+        box-shadow: initial !important;
         outline: none;
     }
     :-moz-focus-inner{
