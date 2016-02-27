@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.7
+// @version         1.1.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -921,7 +921,7 @@
                         });
                     } catch (ignore) {}
                 }
-                if (config.args.cc_load_policy && config.args.caption_audio_tracks && parSets.VID_PLR_CC) {
+                if (config.args.caption_audio_tracks && parSets.VID_PLR_CC) {
                     config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
                 }
                 if (parSets.VID_PLR_HTML5) {
@@ -949,7 +949,7 @@
                     config.args.dvmap = config.args.vmap;
                     delete config.args.vmap;
                 }
-                if (parSets.VID_PLR_HFR && config.args.adaptive_fmts) {
+                if (config.args.adaptive_fmts && parSets.VID_PLR_HFR) {
                     config.args.adaptive_fmts = rvshfr(config.args.adaptive_fmts);
                 }
                 if (window.ytplayer) {
@@ -1792,29 +1792,22 @@
             }
         }
         function defaultChannelPage(event) {
-            var observer,
-                channelLink,
-                loadMore = document.getElementsByClassName("load-more-button")[0];
-            function linkIterator(link) {
-                if (link !== "length" && channelLink[link].href.split("/").length < 6 && parSets.GEN_CHN_DFLT_PAGE !== "default") {
-                    channelLink[link].href += "/" + parSets.GEN_CHN_DFLT_PAGE;
-                }
-            }
+            var parentNode;
             if (parSets.GEN_CHN_DFLT_PAGE !== "default") {
-                if (loadMore && !loadMore.classList.contains("defaultChannel")) {
-                    loadMore.classList.add("defaultChannel");
-                    observer = new MutationObserver(defaultChannelPage);
-                    observer.observe(loadMore, {attributes: true});
-                }
-                if (event && event.target && event.target.tagName === "A" && !event.target.classList.contains("spf-link") && event.target.href.split(parSets.GEN_CHN_DFLT_PAGE).length < 2 && (event.target.href.split("/channel/").length > 1 || event.target.href.split("/user/").length > 1)) {
-                    event.target.href += "/" + parSets.GEN_CHN_DFLT_PAGE;
-                } else if (!event || (event && event[0])) {
-                    if (window.location.href.split(/\/(channel|user|c)\//).length < 2) {
-                        channelLink = document.querySelectorAll("[href*='/channel/']");
-                        Object.keys(channelLink).forEach(linkIterator);
-                        channelLink = document.querySelectorAll("[href*='/user/']");
-                        Object.keys(channelLink).forEach(linkIterator);
+                if (event && event.target) {
+                    parentNode = event.target;
+                    if (event.target.tagName !== "A") {
+                        while (parentNode) {
+                            parentNode = parentNode.parentNode;
+                            if (parentNode && parentNode.tagName === "A") {
+                                break;
+                            }
+                        }
                     }
+                    if (parentNode && parentNode.href && parentNode.href.split(parSets.GEN_CHN_DFLT_PAGE).length < 2 && (parentNode.href.split("/channel/").length > 1 || parentNode.href.split("/user/").length > 1) && parentNode.href.split(/[a-z0-9]\/[a-z0-9]/i).length < 4) {
+                        parentNode.href += "/" + parSets.GEN_CHN_DFLT_PAGE;
+                    }
+                } else if (!event) {
                     eventHandler([document, "click", defaultChannelPage]);
                 }
             }
