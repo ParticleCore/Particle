@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.8
+// @version         1.1.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -361,7 +361,10 @@
             if (!gate.pagescript) {
                 gate.pagescript = true;
                 observer = new MutationObserver(pageScript);
-                return observer.observe(gate, {attributeFilter: ["data-" + key]});
+                return observer.observe(gate, {
+                    attributes:true,
+                    attributeFilter: ["data-" + key]
+                });
             }
             if (sets) {
                 parSets = sets;
@@ -1101,7 +1104,7 @@
                     list,
                     length,
                     eventClone,
-                    clear = event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !event.target.isContentEditable;
+                    clear = window.location.pathname == "/watch" && api && event.target !== api && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !event.target.isContentEditable;
                 if (clear && ((event.which > 47 && event.which < 58) || (event.which > 95 && event.which < 106) || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1) && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
                     eventClone = new Event("keydown");
                     list = Object.keys(Object.getPrototypeOf(event));
@@ -1474,14 +1477,30 @@
             }
             function cleanList(trash) {
                 var i,
+                    parentNode,
                     emptyShelves = document.getElementsByClassName("feed-item-container");
                 trashList[trash].remove();
-                if (emptyShelves.length > 0) {
-                    i = emptyShelves.length;
-                    while (i) {
-                        i -= 1;
-                        if (emptyShelves[i].getElementsByTagName("li").length < 2) {
-                            emptyShelves[i].remove();
+                i = emptyShelves.length;
+                while (i) {
+                    i -= 1;
+                    if (emptyShelves[i].getElementsByTagName("li").length < 2) {
+                        emptyShelves[i].remove();
+                    }
+                }
+                emptyShelves = document.querySelectorAll("li");
+                i = emptyShelves.length;
+                while (i) {
+                    i -= 1;
+                    if (emptyShelves[i].children.length === 0 && emptyShelves[i].textContent.trim() === "") {
+                        parentNode = emptyShelves[i].parentNode;
+                        emptyShelves[i].remove();
+                        while (parentNode) {
+                            if (parentNode.children.length === 0 && parentNode.textContent.trim() === "") {
+                                parentNode.remove();
+                                parentNode = parentNode.parentNode;
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }
@@ -1501,7 +1520,7 @@
                 ["yt-lockup-tile", "video-list-item", "yt-shelf-grid-item", "yt-lockup-mini", "lohp-large-shelf-container", "expanded-shelf-content-item-wrapper"].forEach(getList);
                 if (masterList) {
                     Object.keys(masterList).forEach(buildDetailList);
-                    if (window.yt.config_.PAGE_NAME !== "channel") {
+                    if (parSets.BLK_ON && window.yt.config_.PAGE_NAME !== "channel") {
                         Object.keys(trashList).forEach(cleanList);
                     }
                     Object.keys(detailList).forEach(insertButtons);
@@ -1962,7 +1981,10 @@
         if (!gate.contentscript) {
             gate.contentscript = true;
             observer = new MutationObserver(contentScript);
-            return observer.observe(gate, {attributeFilter: ["data-" + key]});
+            return observer.observe(gate, {
+                attributes: true,
+                attributeFilter: ["data-" + key]
+            });
         }
         if (sets) {
             if (userscript) {
