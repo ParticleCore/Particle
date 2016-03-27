@@ -91,6 +91,7 @@
     "VID_PLR_SIZE_MEM"      : "Memorizar tamanho do reproductor",
     "VID_VOL_WHEEL"         : "Alterar nível de som com a roda do rato",
     "VID_PLR_VOL_MEM"       : "Memorizar volume de audio",
+    "VID_PLR_VOL_LDN"       : "Disable YouTube loudness normalisation",
     "VID_PLR_ADS"           : "Desactivar publicidades na página de vídeo",
     "VID_PLR_ALACT"         : "Atalhos do reproductor sempre activos",
     "VID_SUB_ADS"           : "Activar publicidades só para vídeos de canais subscritos",
