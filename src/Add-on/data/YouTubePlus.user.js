@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.1.9
+// @version         1.2.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -39,6 +39,7 @@
                 VID_PLR_ALVIS   : true,
                 VID_PLR_SIZE_MEM: true,
                 VID_PLR_FIT     : true,
+                VID_PLR_VOL_LDN : true,
                 VID_HIDE_COMS   : "1",
                 VID_POST_TIME   : true,
                 VID_VID_CNT     : true,
@@ -145,6 +146,7 @@
                 VID_PLR_SIZE_MEM      : "Memorize player mode",
                 VID_VOL_WHEEL         : "Change volume with mouse wheel",
                 VID_PLR_VOL_MEM       : "Memorize audio volume",
+                VID_PLR_VOL_LDN       : "Disable YouTube loudness normalisation",
                 VID_PLR_ADS           : "Disable advertisements in the video page",
                 VID_PLR_ALACT         : "Player shortcuts always active",
                 VID_SUB_ADS           : "Enable advertisements only in videos from subscribed channels",
@@ -214,8 +216,7 @@
             } else if (events[type]) {
                 keys = Object.keys(events[type]);
                 i = keys.length;
-                while (i) {
-                    i -= 1;
+                while (i--) {
                     if ((!events[type][keys[i]][1] && event.eventPhase > 1) || (events[type][keys[i]][1] && event.eventPhase < 3)) {
                         events[type][keys[i]][0](event);
                     }
@@ -293,8 +294,7 @@
             }
             ytplabel = content.querySelectorAll("[data-p]");
             i = ytplabel.length;
-            while (i) {
-                i -= 1;
+            while (i--) {
                 ytplabel[i].dataset.p.split("&").forEach(addLocale);
             }
             return content;
@@ -421,8 +421,7 @@
                         }
                         ytp = menu.querySelectorAll("input[id]");
                         i = ytp.length;
-                        while (i) {
-                            i -= 1;
+                        while (i--) {
                             if (ytp[i].type === "checkbox" && parSets[ytp[i].id] === true) {
                                 ytp[i].setAttribute("checked", "true");
                             }
@@ -432,8 +431,7 @@
                         }
                         ytp = menu.querySelectorAll("option[data-p]");
                         i = ytp.length;
-                        while (i) {
-                            i -= 1;
+                        while (i--) {
                             if (parSets[ytp[i].parentNode.id] === ytp[i].value) {
                                 ytp[i].setAttribute("selected", "true");
                             }
@@ -520,6 +518,7 @@
                         "    <div><input id='VID_PLR_ANTS' type='checkbox'><label for='VID_PLR_ANTS' data-p='tnd|VID_PLR_ANTS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#annotations_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_END_SHRE' type='checkbox'><label for='VID_END_SHRE' data-p='tnd|VID_END_SHRE'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#share_panel_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_VOL_MEM' type='checkbox'><label for='VID_PLR_VOL_MEM' data-p='tnd|VID_PLR_VOL_MEM'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PLR_VOL_LDN' type='checkbox'><label for='VID_PLR_VOL_LDN' data-p='tnd|VID_PLR_VOL_LDN'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#disable_normalisation' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_ALACT' type='checkbox'><label for='VID_PLR_ALACT' data-p='tnd|VID_PLR_ALACT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#shortcuts_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_SIZE_MEM' type='checkbox'><label for='VID_PLR_SIZE_MEM' data-p='tnd|VID_PLR_SIZE_MEM'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_mode' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_VOL_WHEEL' type='checkbox'><label for='VID_VOL_WHEEL' data-p='tnd|VID_VOL_WHEEL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#wheel_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
@@ -669,8 +668,7 @@
                     function hideNotif() {
                         document.body.classList.remove("show-guide-button-notification");
                     }
-                    while (length) {
-                        length -= 1;
+                    while (length--) {
                         value = (userSets[length].checked && (userSets[length].value === "on" || userSets[length].value)) || (userSets[length].length && userSets[length].value) || (userSets[length].getAttribute("type") === "text" && userSets[length].value);
                         if (value) {
                             savedSets[userSets[length].name || userSets[length].id] = value;
@@ -883,8 +881,7 @@
                     newList = [];
                 list = list.split(",");
                 i = list.length;
-                while (i) {
-                    i -= 1;
+                while (i--) {
                     temp = list[i].split(/fps\=([0-9]{2})/)[1];
                     if (!temp || temp < 31) {
                         newList.push(list[i]);
@@ -901,7 +898,7 @@
                     config.args.video = [];
                     videos = document.querySelectorAll("li[data-video-id]");
                     length = videos.length;
-                    for (i = 0; i < length; i += 1) {
+                    for (i = 0; i < length; i++) {
                         config.args.video[i] = {"encrypted_id": videos[i].getAttribute("data-video-id")};
                     }
                 }
@@ -914,7 +911,6 @@
                 }
                 config.args.dash = (parSets.VID_PLR_DASH && "0") || config.args.dash;
                 config.args.vq = parSets.VID_DFLT_QLTY;
-                delete config.args.loudness;
                 if (parSets.VID_DFLT_QLTY !== "auto") {
                     try {
                         window.localStorage["yt-player-quality"] = JSON.stringify({
@@ -926,6 +922,9 @@
                 }
                 if (config.args.caption_audio_tracks && parSets.VID_PLR_CC) {
                     config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
+                }
+                if (parSets.VID_PLR_VOL_LDN) {
+                    delete config.args.loudness;
                 }
                 if (parSets.VID_PLR_HTML5) {
                     config.html5 = true;
@@ -1074,8 +1073,7 @@
             function initSubPlaylist(event) {
                 if (event.target && event.target.parentNode && event.target.parentNode.id === "subscription-playlist") {
                     i = videoList.length;
-                    while (i) {
-                        i -= 1;
+                    while (i--) {
                         if (i > -1) {
                             list.push(videoList[i].dataset.videoIds);
                         }
@@ -1109,7 +1107,7 @@
                     eventClone = new Event("keydown");
                     list = Object.keys(Object.getPrototypeOf(event));
                     length = list.length;
-                    for (i = 0; i < length; i += 1) {
+                    for (i = 0; i < length; i++) {
                         eventClone[list[i]] = event[list[i]];
                     }
                     event.preventDefault();
@@ -1119,10 +1117,8 @@
             function playerState(event) {
                 if (parSets.fullBrs || parSets.lightsOut) {
                     document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((parSets.fullBrs && "part_fullbrowser") || "0", (parSets.lightsOut && "part_cinema_mode") || "0");
-                    if (parSets.fullBrs) {
-                        window.dispatchEvent(new Event("resize"));
-                    }
                 }
+                window.dispatchEvent(new Event("resize"));
             }
             function handleCustoms(event) {
                 if (typeof event === "object") {
@@ -1481,16 +1477,14 @@
                     emptyShelves = document.getElementsByClassName("feed-item-container");
                 trashList[trash].remove();
                 i = emptyShelves.length;
-                while (i) {
-                    i -= 1;
+                while (i--) {
                     if (emptyShelves[i].getElementsByTagName("li").length < 2) {
                         emptyShelves[i].remove();
                     }
                 }
                 emptyShelves = document.querySelectorAll("li");
                 i = emptyShelves.length;
-                while (i) {
-                    i -= 1;
+                while (i--) {
                     if (emptyShelves[i].children.length === 0 && emptyShelves[i].textContent.trim() === "") {
                         parentNode = emptyShelves[i].parentNode;
                         emptyShelves[i].remove();
@@ -1510,8 +1504,7 @@
                 list = document.getElementsByClassName(list);
                 if (list.length > 0) {
                     i = list.length;
-                    while (i) {
-                        i -= 1;
+                    while (i--) {
                         masterList.push(list[i]);
                     }
                 }
@@ -1554,8 +1547,7 @@
                     list   = document.getElementById("playlist-autoscroll-list"),
                     videos = list.getElementsByTagName("li"),
                     length = videos.length;
-                while (length) {
-                    length -= 1;
+                while (length--) {
                     list.appendChild(videos[length]);
                 }
                 temp = prev.href;
