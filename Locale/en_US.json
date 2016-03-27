@@ -91,6 +91,7 @@
     "VID_PLR_SIZE_MEM"      : "Memorize player mode",
     "VID_VOL_WHEEL"         : "Change volume with mouse wheel",
     "VID_PLR_VOL_MEM"       : "Memorize audio volume",
+    "VID_PLR_VOL_LDN"       : "Disable YouTube loudness normalisation",
     "VID_PLR_ADS"           : "Disable advertisements in the video page",
     "VID_PLR_ALACT"         : "Player shortcuts always active",
     "VID_SUB_ADS"           : "Enable advertisements only in videos from subscribed channels",
