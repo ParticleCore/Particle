@@ -69,7 +69,6 @@
     "VID_DFLT_QLTY_2880"    : "2880p (5k)",
     "VID_DFLT_QLTY_ORIG"    : "4320p (8k)",
     "VID_PLR_ALVIS"         : "阅读评论时保持播放器可见",
-    "VID_PLR_ALVIS_MOVE"    : "移动",
     "VID_PLR_ALVIS_RST"     : "重设位置",
     "VID_PLR_ALVIS_SCRL_TOP": "返回顶部",
     "VID_PLR_ATPL"          : "自动播放视频",
