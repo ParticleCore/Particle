@@ -69,7 +69,6 @@
     "VID_DFLT_QLTY_2880"    : "2880p (5k)",
     "VID_DFLT_QLTY_ORIG"    : "4320p (8k)",
     "VID_PLR_ALVIS"         : "Garder le lecteur à l'écran lors de la lecture de commentaires",
-    "VID_PLR_ALVIS_MOVE"    : "Déplacer",
     "VID_PLR_ALVIS_RST"     : "Réinitialiser la position",
     "VID_PLR_ALVIS_SCRL_TOP": "Retour en haut",
     "VID_PLR_ATPL"          : "Lecture automatique des vidéos",
