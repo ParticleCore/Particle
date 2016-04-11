@@ -71,7 +71,6 @@
     "VID_DFLT_QLTY_2880"    : "2880p (5k)",
     "VID_DFLT_QLTY_ORIG"    : "4320p (8k)",
     "VID_PLR_ALVIS"         : "Reproductor siempre visible al leer comentarios",
-    "VID_PLR_ALVIS_MOVE"    : "Mover",
     "VID_PLR_ALVIS_RST"     : "Restaurar posición",
     "VID_PLR_ALVIS_SCRL_TOP": "Ir hasta arriba",
     "VID_PLR_ATPL"          : "Autoreproducir vídeos",
