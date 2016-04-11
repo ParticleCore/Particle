@@ -72,7 +72,6 @@
     "VID_DFLT_QLTY_2880"    : "2880p (5k)",
     "VID_DFLT_QLTY_ORIG"    : "4320p (8k)",
     "VID_PLR_ALVIS"         : "Player always visible when reading comments",
-    "VID_PLR_ALVIS_MOVE"    : "Move",
     "VID_PLR_ALVIS_RST"     : "Reset position",
     "VID_PLR_ALVIS_SCRL_TOP": "Go to top",
     "VID_PLR_ATPL"          : "Autoplay videos",
