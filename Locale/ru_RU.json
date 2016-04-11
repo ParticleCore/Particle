@@ -69,7 +69,6 @@
     "VID_DFLT_QLTY_2880"    : "2880p (5K)",
     "VID_DFLT_QLTY_ORIG"    : "4320p (8K)",
     "VID_PLR_ALVIS"         : "Плеер виден при чтении комментариев",
-    "VID_PLR_ALVIS_MOVE"    : "Переместить",
     "VID_PLR_ALVIS_RST"     : "Сбросить расположение",
     "VID_PLR_ALVIS_SCRL_TOP": "Наверх",
     "VID_PLR_ATPL"          : "Автовоспроизведение видео",
