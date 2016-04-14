@@ -418,6 +418,7 @@
         line-height: 1;
         position: absolute;
         width: 14px;
+        z-index: 99;
     }
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
