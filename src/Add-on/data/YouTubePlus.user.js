@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.0
+// @version         1.2.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -36,6 +36,7 @@
                 VID_DFLT_QLTY   : "auto",
                 VID_PLST_ATPL   : true,
                 VID_PLST_RVRS   : true,
+                VID_PLR_ATPL    : true,
                 VID_PLR_ALVIS   : true,
                 VID_PLR_SIZE_MEM: true,
                 VID_PLR_FIT     : true,
