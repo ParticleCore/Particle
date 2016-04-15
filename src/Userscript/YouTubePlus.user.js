@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.1
+// @version         1.2.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1349,9 +1349,9 @@
             var popOut,
                 width  = parseInt(parSets.VID_PPOT_SZ) || 533,
                 height = Math.round(width / (16 / 9)),
-                popUrl = url || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join(""),
+                popUrl = (!url.target && url) || window.location.href.split(/&t=[0-9]+|#t=[0-9]+|&time=[0-9]+/).join(""),
                 video  = document.getElementsByTagName("video")[0];
-            if (!url && video && video.currentTime && video.currentTime < video.duration) {
+            if (url.target && video && video.currentTime && video.currentTime < video.duration) {
                 popUrl += "#t=" + video.currentTime;
                 window.ytplayer.config.args.start = video.currentTime;
                 api.cueVideoByPlayerVars(window.ytplayer.config.args);
@@ -1607,160 +1607,160 @@
                 var loopButton  = controls.querySelector("#loop-button"),
                     fullBrowser = controls.querySelector("#fullbrowser-button"),
                     cinemaMode  = controls.querySelector("#cinemamode-button"),
-                    frameStep   = controls.querySelector("#framestep-button");
-                function togglePlay() {
-                    set("VID_PLR_ATPL", !parSets.VID_PLR_ATPL);
-                    document.documentElement.classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("part_autoplayon");
-                    document.getElementById("autoplay-button").classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("active");
-                }
-                function toggleLoop(event) {
-                    var videoPlayer = document.getElementsByTagName("video")[0];
-                    if (videoPlayer) {
-                        videoPlayer.loop = event ? !parSets.loopVid : parSets.loopVid;
-                        if (event) {
-                            loopButton.classList[(!parSets.loopVid && "add") || "remove"]("active");
+                    frameStep   = controls.querySelector("#framestep-button"),
+                    actions     = {
+                    popPlayer: popPlayer,
+                    togglePlay: function() {
+                        set("VID_PLR_ATPL", !parSets.VID_PLR_ATPL);
+                        document.documentElement.classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("part_autoplayon");
+                        document.getElementById("autoplay-button").classList[(parSets.VID_PLR_ATPL && "add") || "remove"]("active");
+                    },
+                    toggleLoop: function(event) {
+                        var videoPlayer = document.getElementsByTagName("video")[0];
+                        if (videoPlayer) {
+                            videoPlayer.loop = event ? !parSets.loopVid : parSets.loopVid;
+                            if (event) {
+                                loopButton.classList[(!parSets.loopVid && "add") || "remove"]("active");
+                            }
                         }
-                    }
-                    set("loopVid", loopButton.classList.contains("active"));
-                }
-                function dlThumb() {
-                    var args     = window.ytplayer.config.args,
-                        base     = (args.iurl_webp && "_webp") || "",
-                        thumbURL = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
-                    window.open(thumbURL);
-                }
-                function saveSS() {
-                    var width,
-                        height,
-                        aspectRatio,
-                        video     = document.getElementsByTagName("video")[0],
-                        container = document.getElementById("screenshot-result") || document.createElement("div"),
-                        canvas    = container.querySelector("canvas") || document.createElement("canvas"),
-                        close     = document.createElement("div"),
-                        context   = canvas.getContext("2d");
-                    function hideContainer(event) {
-                        if (event.target.id === "close-screenshot") {
+                        set("loopVid", loopButton.classList.contains("active"));
+                    },
+                    dlThumb: function() {
+                        var args     = window.ytplayer.config.args,
+                            base     = (args.iurl_webp && "_webp") || "",
+                            thumbURL = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
+                        window.open(thumbURL);
+                    },
+                    saveSS: function() {
+                        var width,
+                            height,
+                            aspectRatio,
+                            video     = document.getElementsByTagName("video")[0],
+                            container = document.getElementById("screenshot-result") || document.createElement("div"),
+                            canvas    = container.querySelector("canvas") || document.createElement("canvas"),
+                            close     = document.createElement("div"),
+                            context   = canvas.getContext("2d");
+                        function hideContainer(event) {
+                            if (event.target.id === "close-screenshot") {
+                                container.classList.toggle("invisible");
+                            }
+                        }
+                        aspectRatio = video.videoWidth / video.videoHeight;
+                        width = video.videoWidth;
+                        height = parseInt(width / aspectRatio, 10);
+                        canvas.width = width;
+                        canvas.height = height;
+                        context.drawImage(video, 0, 0, width, height);
+                        if (!container.id) {
+                            container.id = "screenshot-result";
+                            container.appendChild(canvas);
+                            close.id = "close-screenshot";
+                            close.textContent = userLang("CNSL_SS_CLS");
+                            eventHandler([document, "click", hideContainer]);
+                            container.appendChild(close);
+                            document.body.appendChild(container);
+                        } else if (container.id && container.classList.contains("invisible")) {
                             container.classList.toggle("invisible");
                         }
-                    }
-                    aspectRatio = video.videoWidth / video.videoHeight;
-                    width = video.videoWidth;
-                    height = parseInt(width / aspectRatio, 10);
-                    canvas.width = width;
-                    canvas.height = height;
-                    context.drawImage(video, 0, 0, width, height);
-                    if (!container.id) {
-                        container.id = "screenshot-result";
-                        container.appendChild(canvas);
-                        close.id = "close-screenshot";
-                        close.textContent = userLang("CNSL_SS_CLS");
-                        eventHandler([document, "click", hideContainer]);
-                        container.appendChild(close);
-                        document.body.appendChild(container);
-                    } else if (container.id && container.classList.contains("invisible")) {
-                        container.classList.toggle("invisible");
-                    }
-                }
-                function toggleFullBrowser(event) {
-                    var plrState = api && api.getPlayerState && api.getPlayerState();
-                    plrState = plrState < 5 && plrState > 0;
-                    function exitFullBrowser(key) {
-                        if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || (key.target.className && key.target.className.split("ytp-size").length > 1))) {
-                            toggleFullBrowser(key);
-                            if (key.type === "click") {
-                                eventHandler([document, "keydown", exitFullBrowser, false, "remove"]);
-                                eventHandler([document, "click", exitFullBrowser, false, "remove"]);
-                                key.target.click();
-                            }
-                        }
-                    }
-                    document[(isChrome && "body") || "documentElement"].scrollTop = 0;
-                    eventHandler([document, "keydown", exitFullBrowser]);
-                    eventHandler([document, "click", exitFullBrowser]);
-                    set("fullBrs", event ? !parSets.fullBrs : true);
-                    fullBrowser.classList[(parSets.fullBrs && "add") || "remove"]("active");
-                    if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
-                        document.documentElement.classList[(parSets.fullBrs && "add") || "remove"]("part_fullbrowser");
-                        window.dispatchEvent(new Event("resize"));
-                    }
-                }
-                function toggleCinemaMode(event) {
-                    var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
-                    set("lightsOut", event ? !parSets.lightsOut : true);
-                    cinemaMode.classList[(parSets.lightsOut && "add") || "remove"]("active");
-                    if (event && plrState) {
-                        document.documentElement.classList[(parSets.lightsOut && "add") || "remove"]("part_cinema_mode");
-                    }
-                }
-                function toggleFrames(event) {
-                    var pi,
-                        fps;
-                    frameStep = document.getElementById("framestep-button");
-                    function currentFps(keys) {
-                        if (typeof pi[keys] === "object" && pi[keys] && pi[keys].video && pi[keys].video.fps) {
-                            fps = pi[keys].video.fps;
-                        }
-                    }
-                    if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
-                        if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
-                            pi = playerInstance.getVideoData();
-                            Object.keys(pi).forEach(currentFps);
-                            fps = fps && ((event.keyCode < 39 && -1) || 1) * ((fps < 2 && 30) || fps);
-                            if (fps && api) {
-                                if (!document.querySelector("video").paused) {
-                                    api.pauseVideo();
+                    },
+                    toggleFullBrowser: function(event) {
+                        var plrState = api && api.getPlayerState && api.getPlayerState();
+                        plrState = plrState < 5 && plrState > 0;
+                        function exitFullBrowser(key) {
+                            if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || (key.target.className && key.target.className.split("ytp-size").length > 1))) {
+                                actions.toggleFullBrowser(key);
+                                if (key.type === "click") {
+                                    eventHandler([document, "keydown", exitFullBrowser, false, "remove"]);
+                                    eventHandler([document, "click", exitFullBrowser, false, "remove"]);
+                                    key.target.click();
                                 }
-                                api.seekBy(1 / fps);
                             }
-                            event.preventDefault();
-                            event.stopImmediatePropagation();
-                        } else if (event.type === "click" && event.target.id === "framestep-button") {
-                            set("frameStep", !parSets.frameStep);
-                            frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
+                        }
+                        document[(isChrome && "body") || "documentElement"].scrollTop = 0;
+                        eventHandler([document, "keydown", exitFullBrowser]);
+                        eventHandler([document, "click", exitFullBrowser]);
+                        set("fullBrs", event ? !parSets.fullBrs : true);
+                        fullBrowser.classList[(parSets.fullBrs && "add") || "remove"]("active");
+                        if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
+                            document.documentElement.classList[(parSets.fullBrs && "add") || "remove"]("part_fullbrowser");
+                            window.dispatchEvent(new Event("resize"));
+                        }
+                    },
+                    toggleCinemaMode: function(event) {
+                        var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
+                        set("lightsOut", event ? !parSets.lightsOut : true);
+                        cinemaMode.classList[(parSets.lightsOut && "add") || "remove"]("active");
+                        if (event && plrState) {
+                            document.documentElement.classList[(parSets.lightsOut && "add") || "remove"]("part_cinema_mode");
+                        }
+                    },
+                    toggleFrames: function(event) {
+                        var i,
+                            j,
+                            pi,
+                            fps;
+                        frameStep = document.getElementById("framestep-button");
+                        if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
+                            if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
+                                pi = playerInstance.getVideoData();
+                                if (!actions.fps) {
+                                    getfps:
+                                    for (i in pi) {
+                                        if (typeof pi[i] === "object" && pi[i] && pi[i].video && pi[i].video) {
+                                            for (j in pi[i].video) {
+                                                if (pi[i].video[j] > 14 && pi[i].video[j] < 61) {
+                                                    actions.fps = [i, j];
+                                                    break getfps;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (actions.fps) {
+                                    fps = actions.fps && pi[actions.fps[0]].video[actions.fps[1]];
+                                    fps = fps && ((event.keyCode < 39 && -1) || 1) * ((fps < 2 && 30) || fps);
+                                    if (fps && api) {
+                                        if (!document.querySelector("video").paused) {
+                                            api.pauseVideo();
+                                        }
+                                        api.seekBy(1 / fps);
+                                    }
+                                    event.preventDefault();
+                                    event.stopImmediatePropagation();
+                                }
+                            } else if (event.type === "click" && event.target.id === "framestep-button") {
+                                set("frameStep", !parSets.frameStep);
+                                frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
+                            }
+                        }
+                        if (frameStep && frameStep.classList.contains("active")) {
+                            eventHandler([document, "keydown", actions.toggleFrames, true]);
+                        } else if (!frameStep || !frameStep.classList.contains("active")) {
+                            eventHandler([document, "keydown", actions.toggleFrames, true, "remove"]);
+                        }
+                    },
+                    handleToggles: function(event) {
+                        if (event.target.dataset.action) {
+                            actions[event.target.dataset.action](event);
                         }
                     }
-                    if (frameStep && frameStep.classList.contains("active")) {
-                        eventHandler([document, "keydown", toggleFrames, true]);
-                    } else if (!frameStep || !frameStep.classList.contains("active")) {
-                        eventHandler([document, "keydown", toggleFrames, true, "remove"]);
-                    }
-                }
-                function handleToggles(event) {
-                    switch (event.target.id) {
-                    case "autoplay-button":
-                        return togglePlay();
-                    case "loop-button":
-                        return toggleLoop(event);
-                    case "save-thumbnail-button":
-                        return dlThumb();
-                    case "screenshot-button":
-                        return saveSS();
-                    case "popout-button":
-                        return popPlayer();
-                    case "fullbrowser-button":
-                        return toggleFullBrowser(event);
-                    case "cinemamode-button":
-                        return toggleCinemaMode(event);
-                    case "framestep-button":
-                        return toggleFrames(event);
-                    }
-                }
-                eventHandler([document, "click", handleToggles]);
+                };
+                eventHandler([document, "click", actions.handleToggles]);
                 if (parSets.loopVid && !loopButton.classList.contains("active")) {
                     loopButton.classList.add("active");
-                    toggleLoop();
+                    actions.toggleLoop();
                 }
                 if (parSets.fullBrs && !fullBrowser.classList.contains("active")) {
                     fullBrowser.classList.add("active");
-                    toggleFullBrowser();
+                    actions.toggleFullBrowser();
                 }
                 if (parSets.lightsOut && !cinemaMode.classList.contains("active")) {
                     cinemaMode.classList.add("active");
-                    toggleCinemaMode();
+                    actions.toggleCinemaMode();
                 }
                 if (parSets.frameStep && !frameStep.classList.contains("active")) {
                     frameStep.classList.add("active");
-                    toggleFrames();
+                    actions.toggleFrames();
                 }
             }
             function toggleConsole(event) {
@@ -1785,14 +1785,14 @@
                 }
                 controls = document.createElement("template");
                 controls.innerHTML = "<div id='player-console'>" +
-                    "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL && " active") || "") + "' data-p='ttp|CNSL_AP''></div>" +
-                    "    <div id='loop-button' class='yt-uix-tooltip' data-p='ttp|CNSL_RPT'></div>" +
-                    "    <div id='save-thumbnail-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SVTH'></div>" +
-                    "    <div id='screenshot-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SS''></div>" +
-                    "    <div id='popout-button' class='yt-uix-tooltip' data-p='ttp|CNSL_PPOT'></div>" +
-                    "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR'></div>" +
-                    "    <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD'></div>" +
-                    "    <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME'></div>" +
+                    "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL && " active") || "") + "' data-p='ttp|CNSL_AP'' data-action='togglePlay'></div>" +
+                    "    <div id='loop-button' class='yt-uix-tooltip' data-p='ttp|CNSL_RPT' data-action='toggleLoop'></div>" +
+                    "    <div id='save-thumbnail-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SVTH' data-action='dlThumb'></div>" +
+                    "    <div id='screenshot-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SS'' data-action='saveSS'></div>" +
+                    "    <div id='popout-button' class='yt-uix-tooltip' data-p='ttp|CNSL_PPOT' data-action='popPlayer'></div>" +
+                    "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR' data-action='toggleFullBrowser'></div>" +
+                    "    <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD' data-action='toggleCinemaMode'></div>" +
+                    "    <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME' data-action='toggleFrames'></div>" +
                     "</div>";
                 controls = setLocale(controls.content).firstChild;
                 cnslCont.appendChild(controls);
