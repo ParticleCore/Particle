@@ -408,9 +408,8 @@
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
         background: #FFF url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png);
-        border: 3px solid #FFF;
-        margin: 1px;
-        box-shadow: 0 0 0 1px #d3d3d3;
+        border: 1px solid #d3d3d3;
+        padding: 3px;
         border-radius: 2px;
         color: #666;
         cursor: pointer;
@@ -425,14 +424,14 @@
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
     .yt-lockup-thumbnail .popoutmode{
-        background-position: -26px -120px;
+        background-position: -23px -117px;
         bottom: 2px;
         left: 2px;
     }
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
-        background-position: -26px -59px;
+        background-position: -23px -56px;
         right: 2px;
         top: 2px;
     }
