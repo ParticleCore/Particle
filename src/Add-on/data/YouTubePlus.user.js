@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.2
+// @version         1.2.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1524,13 +1524,32 @@
         }
         function volumeWheel(event) {
             var player    = document.querySelectorAll("video")[0],
+                cBottom   = document.getElementsByClassName("ytp-chrome-bottom")[0],
                 fsPl      = document.getElementsByClassName("ytp-playlist-menu")[0],
                 pSets     = document.getElementsByClassName("ytp-settings-menu")[0],
                 ivCard    = document.getElementsByClassName("iv-drawer")[0],
                 canScroll = event && (!fsPl || (fsPl && !fsPl.contains(event.target))) && (!ivCard || (ivCard && !ivCard.contains(event.target))) && (!pSets || (pSets && !pSets.contains(event.target))),
                 direction = event && (event.deltaY || event.wheelDeltaY);
+            function resetSliderState() {
+                if(cBottom && cBottom.classList.contains("ytp-volume-slider-active")) {
+                    cBottom.classList.remove("ytp-volume-slider-active");
+                    delete cBottom.timer;
+                }
+            }
             if (event && api && player && canScroll && (event.target.id === api || api.contains(event.target))) {
                 event.preventDefault();
+                if(cBottom) {
+                    if (!cBottom.classList.contains("ytp-volume-slider-active")) {
+                        cBottom.classList.add("ytp-volume-slider-active");
+                    }
+                    if (cBottom.timer) {
+                        window.clearTimeout(cBottom.timer);
+                    }
+                    if (api) {
+                        api.dispatchEvent(new Event("mousemove"));
+                    }
+                    cBottom.timer = window.setTimeout(resetSliderState, 4000);
+                }
                 api.setVolume(player.volume * 100 - (Math.sign(direction) * 5));
             } else if (!event && parSets.VID_VOL_WHEEL) {
                 eventHandler([document, "wheel", volumeWheel]);

@@ -45,7 +45,7 @@
 /*   end| Compact thumbnail titles */
 /* start| Floater player */
     html.floater #player #movie_player:not(.ytp-fullscreen){
-        box-shadow: 0 0 10px rgb(0, 0, 0);
+        box-shadow: 0 0 10px rgb(0, 0, 0) !important;
         position: fixed !important;
         z-index: 10;
     }
@@ -408,7 +408,8 @@
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
         background: #FFF url(Images/sprite.png);
-        border: 4px solid #FFF;
+        border: 1px solid #d3d3d3;
+        padding: 3px;
         border-radius: 2px;
         color: #666;
         cursor: pointer;
@@ -423,14 +424,14 @@
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
     .yt-lockup-thumbnail .popoutmode{
-        background-position: -26px -120px;
+        background-position: -23px -117px;
         bottom: 2px;
         left: 2px;
     }
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
-        background-position: -26px -59px;
+        background-position: -23px -56px;
         right: 2px;
         top: 2px;
     }
