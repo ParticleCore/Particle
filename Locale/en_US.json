@@ -15,7 +15,7 @@
     "CNSL_PPOT"             : "Pop-out video",
     "CNSL_FLBR"             : "Fullbrowser mode",
     "CNSL_CINM_MD"          : "Cinema mode",
-    "CNSL_FRME"             : "Frame by frame",
+    "CNSL_FRME"             : "Frame by frame (Shift + ← or →)",
     "PLST_AP"               : "Autoplay",
     "PLST_RVRS"             : "Reverse",
     "SHOW_CMTS"             : "Show comments",
