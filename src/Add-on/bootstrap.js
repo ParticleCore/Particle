@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {utils: Cu}  = Components,
-      rootURI      = __SCRIPT_URI_SPEC__.replace("bootstrap.js", ""),
-      COMMONJS_URI = "resource://gre/modules/commonjs",
-      {require}    = Cu.import(COMMONJS_URI + "/toolkit/require.js", {}),
-      {Bootstrap}  = require(COMMONJS_URI + "/sdk/addon/bootstrap.js"),
-      {startup, shutdown, install, uninstall} = new Bootstrap(rootURI);
+const { utils: Cu } = Components;
+const rootURI = __SCRIPT_URI_SPEC__.replace("bootstrap.js", "");
+const COMMONJS_URI = "resource://gre/modules/commonjs";
+const { require } = Cu.import(COMMONJS_URI + "/toolkit/require.js", {});
+const { Bootstrap } = require(COMMONJS_URI + "/sdk/addon/bootstrap.js");
+const { startup, shutdown, install, uninstall } = new Bootstrap(rootURI);

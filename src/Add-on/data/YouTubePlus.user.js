@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.3
+// @version         1.2.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -18,8 +18,9 @@
 (function () {
     "use strict";
     var id         = "particleSettings",
+        id2        = "particleLocale",
         userscript = typeof GM_info === "object";
-    function particle() {
+    function particle(isaddon) {
         var api,
             playerInstance,
             events    = {},
@@ -72,7 +73,7 @@
                 CNSL_PPOT             : "Pop-out video",
                 CNSL_FLBR             : "Fullbrowser mode",
                 CNSL_CINM_MD          : "Cinema mode",
-                CNSL_FRME             : "Frame by frame",
+                CNSL_FRME             : "Frame by frame (Shift + ← or →)",
                 PLST_AP               : "Autoplay",
                 PLST_RVRS             : "Reverse",
                 SHOW_CMTS             : "Show comments",
@@ -185,6 +186,7 @@
                 ABT_LNK_OPNU          : "OpenUserJS",
                 WLCM                  : "Thank you for installing YouTube+",
                 WLCMSTRT              : "You can customize your settings by clicking the button above",
+                WLCMFTRS              : "Click here to see all the features",
                 LOCALE                : "English (US)"
             };
         function set(setting, newValue) {
@@ -236,8 +238,21 @@
             request.send();
         }
         function userLang(label) {
-            var ytlang  = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE,
+            var observer,
+                ytlang  = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE,
                 urlBase = "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/";
+            function getLocale(data) {
+                delete language.fetching;
+                data = document.documentElement.dataset.setlocale;
+                data = data && JSON.parse(data);
+                if (data) {
+                    parSets.extLang[ytlang] = data;
+                    parSets.extLang[ytlang].lastMod = new Date().getTime();
+                    parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
+                    set("extLang", parSets.extLang);
+                }
+                observer.disconnect();
+            }
             function getLanguage(data) {
                 delete language.fetching;
                 if (data.target.readyState === 4 && data.target.status === 200) {
@@ -267,15 +282,32 @@
                 if (parSets.extLang[ytlang] && parSets.extLang[ytlang][label]) {
                     if (!language.fetching && parSets.extLang.nextCheck && parSets.extLang.nextCheck <= new Date().getTime()) {
                         language.fetching = true;
-                        localXHR("HEAD", checkModified, urlBase + ytlang + ".json", ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]);
-                        parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
+                        if (isaddon) {
+                            observer = new MutationObserver(getLocale);
+                            observer.observe(document.documentElement, {
+                                attributes: true,
+                                attributeFilter: ["data-setlocale"]
+                            });
+                            document.documentElement.dataset.getlocale = ytlang;
+                        } else {
+                            localXHR("HEAD", checkModified, urlBase + ytlang + ".json", ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]);
+                        }                        parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
                         set("extLang", parSets.extLang);
                     }
                     return parSets.extLang[ytlang][label];
                 }
                 if (!parSets.extLang[ytlang] && !language.fetching && (!parSets.extLang.nextCheck || parSets.extLang.nextCheck <= new Date().getTime())) {
                     language.fetching = true;
-                    localXHR("GET", getLanguage, urlBase + ytlang + ".json", ["Accept", "application/vnd.github.raw"]);
+                    if (isaddon) {
+                        observer = new MutationObserver(getLocale);
+                        observer.observe(document.documentElement, {
+                            attributes: true,
+                            attributeFilter: ["data-setlocale"]
+                        });
+                        document.documentElement.dataset.getlocale = ytlang;
+                    } else {
+                        localXHR("GET", getLanguage, urlBase + ytlang + ".json", ["Accept", "application/vnd.github.raw"]);
+                    }
                 }
             }
             return language[label];
@@ -758,6 +790,8 @@
                     "       <span data-p='tnd|WLCM'></span>" +
                     "       <br>" +
                     "       <span data-p='tnd|WLCMSTRT'></span>" +
+                    "       <br><br>" +
+                    "       <a data-p='tnd|WLCMFTRS' style='color:#FFF;' href='https://github.com/ParticleCore/Particle/wiki/Features' target='_blank'></a>" +
                     "       <div class='par_closewlcm'><span>×</span></div>" +
                     "   </div>" +
                     "</div>";
@@ -1759,7 +1793,7 @@
                         }
                     },
                     handleToggles: function(event) {
-                        if (event.target.dataset.action) {
+                        if (event.target.dataset && event.target.dataset.action) {
                             actions[event.target.dataset.action](event);
                         }
                     }
@@ -1955,6 +1989,9 @@
     }
     function initParticle(event) {
         var holder;
+        function localeResponse(data) {
+            document.documentElement.dataset.setlocale = data;
+        }
         function filterChromeStorage(keys) {
             if (keys[id] && keys[id].newValue) {
                 updateSettings(keys[id].newValue);
@@ -1974,13 +2011,14 @@
                 document.documentElement.appendChild(holder);
             }
             holder = document.createElement("script");
-            holder.textContent = "(" + particle + "())";
+            holder.textContent = "(" + particle + "(" + ((!window.chrome && !userscript) ? "true" : "") + "))";
             document.documentElement.appendChild(holder);
             if (!userscript) {
                 if (window.chrome) {
                     window.chrome.storage.onChanged.addListener(filterChromeStorage);
                 } else {
                     window.self.port.on(id, updateSettings);
+                    window.self.port.on(id2, localeResponse);
                 }
             }
         }
@@ -1988,14 +2026,16 @@
     function contentScript() {
         var observer,
             key  = "parsend",
+            key2 = "getlocale",
             gate = document.documentElement,
-            sets = JSON.parse(gate.dataset[key] || null);
+            sets = JSON.parse(gate.dataset[key] || null),
+            locs = gate.dataset[key2] || null;
         if (!gate.contentscript) {
             gate.contentscript = true;
             observer = new MutationObserver(contentScript);
             return observer.observe(gate, {
                 attributes: true,
-                attributeFilter: ["data-" + key]
+                attributeFilter: ["data-" + key, "data-" + key2]
             });
         }
         if (sets) {
@@ -2007,6 +2047,8 @@
                 window.self.port.emit(id, sets);
             }
             gate.dataset[key] = null;
+        } else if (locs) {
+            window.self.port.emit(id2, locs);
         }
     }
     if (userscript) {
