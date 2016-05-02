@@ -14,7 +14,7 @@
     "CNSL_SS_CLS"           : "CERRAR",
     "CNSL_FLBR"             : "Modo navegador completo",
     "CNSL_CINM_MD"          : "Modo cinema",
-    "CNSL_FRME"             : "Frame por frame",
+    "CNSL_FRME"             : "Frame por frame (Shift + ← or →)",
     "PLST_AP"               : "Autoreproducir",
     "PLST_RVRS"             : "Inverso",
     "SHOW_CMTS"             : "Mostrar comentarios",
@@ -89,6 +89,7 @@
     "VID_PLR_SIZE_MEM"      : "Memorizar modo del reproductor",
     "VID_VOL_WHEEL"         : "Cambiar volumen con la rueda del mouse",
     "VID_PLR_VOL_MEM"       : "Memorizar volumen del audio",
+    "VID_PLR_VOL_LDN"       : "Desactivar normalización de volumen de Youtube",
     "VID_PLR_ADS"           : "Desactivar anuncios en la página del video",
     "VID_PLR_ALACT"         : "Atajos del reproductor siempre activos",
     "VID_SUB_ADS"           : "Activar anuncios en vídeos de canales suscritos",
@@ -126,5 +127,6 @@
     "ABT_LNK_OPNU"          : "OpenUserJS",
     "WLCM"                  : "Gracias por instalar YouTube+",
     "WLCMSTRT"              : "Puede personalizar la configuración haciendo click en el botón de arriba",
+    "WLCMFTRS"              : "Haga click aquí para ver todas las características",
     "LOCALE"                : "Español (Latinoamérica)"
 }
