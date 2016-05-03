@@ -15,7 +15,7 @@
     "CNSL_PPOT"             : "Film we wyskakującym oknie",
     "CNSL_FLBR"             : "Widok pełnej przeglądarki",
     "CNSL_CINM_MD"          : "Widok kinowy",
-    "CNSL_FRME"             : "Klatka po klatce",
+    "CNSL_FRME"             : "Klatka po klatce (z klawiszem Shift i ← lub →)",
     "PLST_AP"               : "Odtwarzaj listę odtwarzania automatycznie",
     "PLST_RVRS"             : "Odwróć listę odtwarzania",
     "SHOW_CMTS"             : "Pokaż komentarze",
@@ -129,5 +129,6 @@
     "ABT_LNK_OPNU"          : "OpenUserJS",
     "WLCM"                  : "Dziękuję za zainstalowanie YouTube+",
     "WLCMSTRT"              : "Możesz zmienić ustawienia klikając powyższy przycisk",
+    "WLCMFTRS"              : "Kliknij tutaj, by zobaczyć wszystkie funkcje",
     "LOCALE"                : "Polski"
 }
