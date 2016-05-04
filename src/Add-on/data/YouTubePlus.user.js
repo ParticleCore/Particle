@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.4
+// @version         1.2.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -291,7 +291,8 @@
                             document.documentElement.dataset.getlocale = ytlang;
                         } else {
                             localXHR("HEAD", checkModified, urlBase + ytlang + ".json", ["If-Modified-Since", new Date(parSets.extLang[ytlang].lastMod).toUTCString()]);
-                        }                        parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
+                        }
+                        parSets.extLang.nextCheck = new Date().getTime() + 6048E5;
                         set("extLang", parSets.extLang);
                     }
                     return parSets.extLang[ytlang][label];
@@ -1987,11 +1988,14 @@
     function updateSettings(event) {
         document.documentElement.dataset.parreceive = JSON.stringify((event && event[id]) || event || {});
     }
+    function localeResponse(data) {
+        document.documentElement.dataset.setlocale = data;
+    }
+    function unloadScript() {
+        window.location.reload();
+    }
     function initParticle(event) {
         var holder;
-        function localeResponse(data) {
-            document.documentElement.dataset.setlocale = data;
-        }
         function filterChromeStorage(keys) {
             if (keys[id] && keys[id].newValue) {
                 updateSettings(keys[id].newValue);
@@ -2019,6 +2023,7 @@
                 } else {
                     window.self.port.on(id, updateSettings);
                     window.self.port.on(id2, localeResponse);
+                    window.self.port.on("detach", unloadScript);
                 }
             }
         }
