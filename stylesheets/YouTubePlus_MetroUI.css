@@ -750,6 +750,7 @@
     .part_cinema_mode #movie_player:before,
     .part_cinema_mode #masthead-positioner:before{
         background-color: rgba(0, 0, 0, .9);
+        z-index: 1;
     }
     .part_cinema_mode .html5-video-player{
         overflow: initial;
