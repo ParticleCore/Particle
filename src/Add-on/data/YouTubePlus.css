@@ -1,7 +1,7 @@
 /* start| Ads visibility */
     .part_no_ads #header,
     .part_no_ads #feed-pyv-container,
-    .part_no_ads .video-list-item:not(.related-list-item),
+    .part_no_ads .video-list-item:not(.related-list-item):not(.dashboard-widget-item),
     .part_no_ads .pyv-afc-ads-container,
     .part_no_ads .ad-div{
         display: none;

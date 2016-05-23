@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.5
+// @version         1.2.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -338,7 +338,7 @@
                 commSect = document.getElementById("watch-discussion"),
                 sidebar  = document.getElementsByClassName("branded-page-v2-secondary-col")[0],
                 ytGrid   = document.querySelectorAll(".yt-uix-menu-top-level-flow-button:last-child a")[0],
-                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)")),
+                adverts  = parSets.GEN_DSBL_ADS && (document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item):not(.dashboard-widget-item)")),
                 setsList = {
                     GEN_DSBL_ADS    : "part_no_ads",
                     GEN_BLUE_GLOW   : "part_dsbl_glow",
@@ -365,7 +365,7 @@
             } else {
                 while (adverts) {
                     adverts.remove();
-                    adverts = document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item)");
+                    adverts = document.getElementById("masthead_child") || document.getElementById("feed-pyv-container") || document.getElementsByClassName("pyv-afc-ads-container")[0] || document.getElementsByClassName("ad-div")[0] || document.querySelector(".video-list-item:not(.related-list-item):not(.dashboard-widget-item)");
                 }
                 if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((parSets.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (parSets.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (parSets.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
                     sidebar.remove();
@@ -760,7 +760,7 @@
                 var bodyContainer,
                     pageContainer,
                     pWrapper = document.getElementById("P-settings");
-                if (event.target.id === "P") {
+                if (event.target.id === "P" && event.target.tagName !== "INPUT") {
                     if (pWrapper) {
                         pWrapper.remove();
                     } else {
