@@ -401,9 +401,11 @@
     }
 /*   end| Pop-out */
 /* start| Thumb buttons */
+    .ytd-thumbnail .popoutmode,
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
     .yt-lockup-thumbnail .popoutmode,
+    .ytd-thumbnail .blacklist,
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
@@ -421,6 +423,7 @@
         width: 14px;
         z-index: 99;
     }
+    .ytd-thumbnail .popoutmode,
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
     .yt-lockup-thumbnail .popoutmode{
@@ -428,6 +431,7 @@
         bottom: 2px;
         left: 2px;
     }
+    .ytd-thumbnail .blacklist,
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
@@ -435,12 +439,11 @@
         right: 2px;
         top: 2px;
     }
+    .ytd-thumbnail:hover .blacklist,
     .thumb-wrapper:hover .blacklist,
     .yt-lockup-thumbnail:hover .blacklist,
     .yt-pl-thumb:hover .blacklist,
-    .yt-pl-thumb:hover .sidebarmode,
-    .thumb-wrapper:hover .sidebarmode,
-    .yt-lockup-thumbnail:hover .sidebarmode,
+    .ytd-thumbnail:hover .popoutmode,
     .yt-pl-thumb:hover .popoutmode,
     .thumb-wrapper:hover .popoutmode,
     .yt-lockup-thumbnail:hover .popoutmode{
