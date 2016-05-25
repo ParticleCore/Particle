@@ -1,7 +1,7 @@
 YouTube + [![version](https://img.shields.io/github/release/ParticleCore/Particle.svg)](https://github.com/ParticleCore/Particle/releases/latest) [![issues](https://img.shields.io/github/issues/ParticleCore/Particle.svg)](https://github.com/ParticleCore/Particle/issues)
 ===========
 
-**[Download](https://github.com/ParticleCore/Particle/wiki/Download) | [Features](https://github.com/ParticleCore/Particle/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Particle/wiki/Report-a-problem) | [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW) | [Become a Patron](https://www.patreon.com/particle)**  
+**[Download](https://github.com/ParticleCore/Particle/wiki/Download) | [Features](https://github.com/ParticleCore/Particle/wiki/Features) | [Report a problem](https://github.com/ParticleCore/Particle/wiki/Report-a-problem) | [Become a Patron](https://www.patreon.com/particle) | [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW)**  
 
 YouTube + (codename Particle) is focused on providing an extended YouTube experience.
 
