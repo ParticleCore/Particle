@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.7
+// @version         1.2.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -344,7 +344,7 @@
                     GEN_BLUE_GLOW   : "part_dsbl_glow",
                     GEN_HIDE_FTR    : "part_hide_footer",
                     GEN_BTTR_NTF    : "part_notif_button",
-                    //GEN_GRID_SUBS   : "part_grid_subs",
+                    GEN_GRID_SUBS   : "part_grid_subs",
                     GEN_GRID_SRCH   : "part_grid_search",
                     GEN_CMPT_TTLS   : "part_compact_titles",
                     VID_PLR_ATPL    : "part_autoplayon",
@@ -361,7 +361,7 @@
                 document.documentElement.classList.add("part_popout");
             }
             if (ytGrid && parSets.GEN_GRID_SUBS) {
-                //ytGrid.click();
+                ytGrid.click();
             } else {
                 while (adverts) {
                     adverts.remove();
@@ -521,7 +521,7 @@
                         "        <a href='https://github.com/ParticleCore/Particle/wiki/Features#channel_page' data-p='ttl|FTR_DESC' target='features'>?</a>" +
                         "    </div>" +
                         "    <h3 data-p='tnd|GEN_LYT'></h3>" +
-                        //"    <div><input id='GEN_GRID_SUBS' type='checkbox'><label for='GEN_GRID_SUBS' data-p='tnd|GEN_GRID_SUBS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='GEN_GRID_SUBS' type='checkbox'><label for='GEN_GRID_SUBS' data-p='tnd|GEN_GRID_SUBS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_GRID_SRCH' type='checkbox'><label for='GEN_GRID_SRCH' data-p='tnd|GEN_GRID_SRCH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#search_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_BTTR_NTF' type='checkbox'><label for='GEN_BTTR_NTF' data-p='tnd|GEN_BTTR_NTF'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blue_box' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_DSB_HVRC' type='checkbox'><label for='GEN_DSB_HVRC' data-p='tnd|GEN_DSB_HVRC'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hovercards_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
