@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.2.9
+// @version         1.3.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1716,7 +1716,7 @@
                         parentNode.href += "/" + parSets.GEN_CHN_DFLT_PAGE;
                     }
                 } else if (!event) {
-                    eventHandler([document, "click", defaultChannelPage]);
+                    eventHandler([document, "mouseup", defaultChannelPage]);
                 }
             }
         }
