@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.0
+// @version         1.3.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -145,69 +145,20 @@
             function addLocale(list) {
                 list = list.split("|");
                 if (list[0] === "tnd") {
-                    content.appendChild(document.createTextNode(lang(list[1])));
+                    ytplabel[i].appendChild(document.createTextNode(lang(list[1])));
                 } else if (list[0] === "ttl") {
-                    content.setAttribute("title", lang(list[1]));
+                    ytplabel[i].setAttribute("title", lang(list[1]));
                 } else {
-                    content.dataset.tooltipText = lang(list[1]);
+                    ytplabel[i].dataset.tooltipText = lang(list[1]);
                 }
             }
-            content.dataset.p.split("&").forEach(addLocale);
-            return content;
-        }
-        function stringToDOM(target, str) {
-            function buildNodes(node_target) {
-                var j, type, attr, node, tag_dat, tag_atr, tag_ini, tag_txt, tag_end;
-                if (!node_tree[--i] || i < 0) {
-                    return;
-                }
-                tag_end = node_tree[i].match(/<\/([\w\W]*?)>/);
-                if (tag_end && tag_end[1]) {
-                    buildNodes(node_target.parentNode);
-                    return;
-                }
-                tag_txt = node_tree[i].match(/>([\w\W]*?)</);
-                if (tag_txt && (tag_txt[1] || tag_txt[1] === "")) {
-                    if (tag_txt[1]) {
-                        node_target.appendChild(document.createTextNode(tag_txt[1]));
-                    }
-                    buildNodes(node_target);
-                    return;
-                }
-                tag_ini = node_tree[i].match(/<([\w\W]*?)>/);
-                if (tag_ini && tag_ini[1]) {
-                    attr = [];
-                    type = tag_ini[0].match(/<([a-z0-9]*?)( |>)/i)[1];
-                    tag_dat = tag_ini[1].match(/[\S]*?='[\s\S]*?'/g);
-                    j = tag_dat && tag_dat.length;
-                    while (j--) {
-                        tag_atr = tag_dat[j].split("='");
-                        attr.push(tag_atr[0]);
-                        attr.push(tag_atr[1].replace("'", ""));
-                    }
-                    attr.reverse();
-                    node = document.createElement(type);
-                    j = attr.length;
-                    while (j--) {
-                        node.setAttribute(attr[j], attr[--j]);
-                    }
-                    if (node.dataset && node.dataset.p) {
-                        setLocale(node);
-                    }
-                    node_target.appendChild(node);
-                    buildNodes(node);
-                }
-            }
-            var node_tree = [],
-                node_text = str.match(/>[\w\W]*?</g),
-                node_tags = str.match(/<[\w\W]*?>/g),
-                i = node_tags.length;
+            var i, ytplabel;
+            ytplabel = content.querySelectorAll("[data-p]");
+            i = ytplabel.length;
             while (i--) {
-                node_tree.push(node_text[i]);
-                node_tree.push(node_tags[i]);
+                ytplabel[i].dataset.p.split("&").forEach(addLocale);
             }
-            i = node_tree.length;
-            buildNodes(target);
+            return content;
         }
         function customStyles() {
             function checkClasses(clss) {
@@ -288,9 +239,20 @@
             }
             function template(section) {
                 function buildBlacklist(blist) {
+                    var sortAlpha = [],
+                        list      = parSets.blacklist;
                     function buildList(obj) {
-                        var keys  = Object.keys(obj);
-                        black_list += "<div class='blacklist'><button class='close'></button><a target='_blank' href='/channel/" + keys[0] + "' title='" + obj[keys[0]] + "'>" + obj[keys[0]] + "</a></div>\n";
+                        var lnk,
+                            keys  = Object.keys(obj),
+                            _temp = document.createElement("template");
+                        _temp.innerHTML = "<div class='blacklist'><button class='close'></button><a target='_blank'></a></div>";
+                        _temp = _temp.content.firstChild;
+                        lnk = _temp.getElementsByTagName("a")[0];
+                        lnk.href = "/channel/" + keys[0];
+                        lnk.setAttribute("title", obj[keys[0]]);
+                        lnk.textContent = obj[keys[0]];
+                        blist.appendChild(_temp);
+                        blist.appendChild(document.createTextNode("\n"));
                     }
                     function sortArray(previous, next) {
                         return previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
@@ -300,16 +262,15 @@
                         obj[ytid] = list[ytid];
                         sortAlpha.push(obj);
                     }
-                    var sortAlpha  = [],
-                        list       = parSets.blacklist,
-                        black_list = "";
                     Object.keys(list).forEach(fillArray);
                     sortAlpha.sort(sortArray).forEach(buildList);
-                    return black_list;
                 }
                 function addValues(menu) {
-                    var i, ytp;
+                    var i, ytp, list = menu.querySelector("#blacklist");
                     if (parSets) {
+                        if (list) {
+                            buildBlacklist(list);
+                        }
                         ytp = menu.querySelectorAll("input[id]");
                         i = ytp.length;
                         while (i--) {
@@ -332,7 +293,7 @@
                 }
                 var temp = document.createElement("template");
                 if (section === "MEN") {
-                    stringToDOM(temp.content, //
+                    temp.innerHTML = //
                         "<div id='P-settings'>" +
                         "    <div id='P-container'>" +
                         "        <div id='P-sidebar'>" +
@@ -346,15 +307,15 @@
                         "            </ul>" +
                         "        </div>" +
                         "    </div>" +
-                        "</div>");
+                        "</div>";
                 } else if (section === "GEN") {
-                    stringToDOM(temp.content, //
+                    temp.innerHTML = //
                         "<div id='P-content'>" +
                         "    <div class='P-header'>" +
                         "        <button class='P-save' data-p='tnd|GLB_SVE'></button>" +
                         "        <button class='P-reset' data-p='tnd|GLB_RSET'></button>" +
                         "        <button class='P-impexp' data-p='ttl|GLB_IMPR'></button>" +
-                        "        <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|" + ((parSets.GEN_LOCL_LANG && parSets.localLang && "GLB_LOCL_LANG_CSTM") || "LOCALE") + "'></button>" +
+                        "        <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>" +
                         "        <h2 data-p='tnd|GEN_TTL'></h2>" +
                         "    </div>" +
                         "    <hr class='P-horz'></hr>" +
@@ -392,15 +353,18 @@
                         "    <div><input id='GEN_HDE_RECM_SDBR' type='checkbox'></input><label for='GEN_HDE_RECM_SDBR' data-p='tnd|GEN_HDE_RECM_SDBR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_recom_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_HDE_SRCH_SDBR' type='checkbox'></input><label for='GEN_HDE_SRCH_SDBR' data-p='tnd|GEN_HDE_SRCH_SDBR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_search_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='GEN_HDE_CHN_SDBR' type='checkbox'></input><label for='GEN_HDE_CHN_SDBR' data-p='tnd|GEN_HDE_CHN_SDBR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_channel_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
-                        "</div>");
+                        "</div>";
+                    if (parSets.GEN_LOCL_LANG && parSets.localLang) {
+                        temp.content.querySelector(".P-implang").dataset.p = "GLB_LOCL_LANG_CSTM";
+                    }
                 } else if (section === "VID") {
-                    stringToDOM(temp.content, //
+                    temp.innerHTML = //
                         "<div id='P-content'>" +
                         "    <div class='P-header'>" +
                         "        <button class='P-save' data-p='tnd|GLB_SVE'></button>" +
                         "        <button class='P-reset' data-p='tnd|GLB_RSET'></button>" +
                         "        <button class='P-impexp' data-p='ttl|GLB_IMPR'></button>" +
-                        "        <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|" + ((parSets.GEN_LOCL_LANG && parSets.localLang && "GLB_LOCL_LANG_CSTM") || "LOCALE") + "'></button>" +
+                        "        <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>" +
                         "        <h2 data-p='tnd|VID_TTL'></h2>" +
                         "    </div>" +
                         "    <hr class='P-horz'></hr>" +
@@ -467,15 +431,18 @@
                         "    <div><input id='VID_POST_TIME' type='checkbox'></input><label for='VID_POST_TIME' data-p='tnd|VID_POST_TIME'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#relative_upload_time' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_HIDE_DETLS' type='checkbox'></input><label for='VID_HIDE_DETLS' data-p='tnd|VID_HIDE_DETLS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_video_details' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_LAYT_AUTO_PNL' type='checkbox'></input><label for='VID_LAYT_AUTO_PNL' data-p='tnd|VID_LAYT_AUTO_PNL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#expand_description' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
-                        "</div>");
+                        "</div>";
+                    if (parSets.GEN_LOCL_LANG && parSets.localLang) {
+                        temp.content.querySelector(".P-implang").dataset.p = "GLB_LOCL_LANG_CSTM";
+                    }
                 } else if (section === "BLK") {
-                    stringToDOM(temp.content, //
+                    temp.innerHTML = //
                         "<div id='P-content'>" +
                         "    <div class='P-header'>" +
                         "        <button class='P-save' data-p='tnd|GLB_SVE'></button>" +
                         "        <button class='P-reset' data-p='tnd|GLB_RSET'></button>" +
                         "        <button class='P-impexp' data-p='ttl|GLB_IMPR'></button>" +
-                        "        <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|" + ((parSets.GEN_LOCL_LANG && parSets.localLang && "GLB_LOCL_LANG_CSTM") || "LOCALE") + "'></button>" +
+                        "        <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>" +
                         "        <h2 data-p='tnd|BLK_TTL'></h2>" +
                         "    </div>" +
                         "    <hr class='P-horz'></hr>" +
@@ -487,12 +454,15 @@
                         "            <button id='blacklist-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'><span class='yt-uix-button-content' data-p='tnd|BLCK_SAVE'></span></button>" +
                         "            <button id='blacklist-close' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'><span class='yt-uix-button-content' data-p='tnd|BLCK_CLSE'></span></button>" +
                         "        </div>" +
-                        "        <textarea id='blacklist-edit-list'></textarea>" + buildBlacklist() +
+                        "        <textarea id='blacklist-edit-list'></textarea>" +
                         "    </div>" +
                         "    <br></br>" +
-                        "</div>");
+                        "</div>";
+                    if (parSets.GEN_LOCL_LANG && parSets.localLang) {
+                        temp.content.querySelector(".P-implang").dataset.p = "ttl|GLB_LOCL_LANG&tnd|GLB_LOCL_LANG_CSTM";
+                    }
                 } else if (section === "ABT") {
-                    stringToDOM(temp.content, //
+                    temp.innerHTML = //
                         "<div id='P-content'>" +
                         "    <div class='P-header'>" +
                         "        <h2 data-p='tnd|ABT_TTL'></h2>" +
@@ -506,9 +476,9 @@
                         "    <div><a target='_blank' href='https://github.com/ParticleCore/Particle/'>GitHub</a></div>" +
                         "    <div><a target='_blank' href='https://greasyfork.org/en/users/8223-particlecore'>Greasy Fork</a></div>" +
                         "    <div><a target='_blank' href='http://openuserjs.org/scripts/ParticleCore/'>OpenUserJS</a></div>" +
-                        "</div>");
+                        "</div>";
                 }
-                return addValues(temp.content);
+                return setLocale(addValues(temp.content));
             }
             function navigateSettings(event) {
                 function exportSettings(target) {
@@ -519,14 +489,17 @@
                             return;
                         }
                         expCont = document.createElement("template");
-                        stringToDOM(expCont.content, //
+                        expCont.innerHTML = //
                             "<div id='exp-cont'>" +
-                            "   <button id='" + ((target.classList.contains("P-impexp") && "impexp-save") || "implang-save") + "' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>" +
+                            "   <button id='implang-save' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'>" +
                             "        <span class='yt-uix-button-content' data-p='tnd|GLB_IMPR_SAVE'></span>" +
                             "    </button>" +
                             "   <textarea id='impexp-list'></textarea>" +
-                            "</div>");
-                        expCont = expCont.content.firstChild;
+                            "</div>";
+                        if (target.classList.contains("P-impexp")) {
+                            expCont.content.querySelector("#implang-save").id = "P-impexp";
+                        }
+                        expCont = setLocale(expCont.content).firstChild;
                         document.getElementById("P-content").appendChild(expCont);
                         document.getElementById("impexp-list").value = JSON.stringify((target.classList.contains("P-impexp") && parSets) || parSets.localLang || language, undefined, 2);
                     } else if (target.id === "impexp-save" || target.id === "implang-save") {
@@ -580,7 +553,7 @@
                         if (notification.childNodes.length < 1) {
                             notification.remove();
                             notification = document.createElement("template");
-                            stringToDOM(notification.content, //
+                            notification.innerHTML = //
                                 "<div id='appbar-main-guide-notification-container'>" +
                                 "    <div class='appbar-guide-notification' role='alert'>" +
                                 "        <span class='appbar-guide-notification-content-wrapper yt-valign'>" +
@@ -588,7 +561,7 @@
                                 "            <span class='appbar-guide-notification-text-content'></span>" +
                                 "        </span>" +
                                 "    </div>" +
-                                "</div>");
+                                "</div>";
                             notification = notification.content.firstChild;
                             document.getElementsByClassName("yt-masthead-logo-container")[0].appendChild(notification);
                         }
@@ -651,7 +624,7 @@
             buttonsSection = document.getElementById("yt-masthead-user") || document.getElementById("yt-masthead-signin");
             if (buttonsSection) {
                 settingsSection = document.createElement("template");
-                stringToDOM(settingsSection.content, //
+                settingsSection.innerHTML = //
                     "<div id='Psettings' style='display:inline-block;position:relative'>" +
                     "   <button id='P' data-p='ttl|YTSETS'></button>" +
                     "   <div id='part_welcome' style='display:none;margin-left:-220px;top:38px;right:0'>"+
@@ -662,8 +635,8 @@
                     "       <a data-p='tnd|WLCMFTRS' style='color:#FFF;' href='https://github.com/ParticleCore/Particle/wiki/Features' target='_blank'></a>" +
                     "       <div class='par_closewlcm'><span>×</span></div>" +
                     "   </div>" +
-                    "</div>");
-                settingsSection = settingsSection.content;
+                    "</div>";
+                settingsSection = setLocale(settingsSection.content);
                 eventHandler([document, "click", settingsTemplate]);
                 if (buttonNotif) {
                     buttonsSection.insertBefore(settingsSection, buttonNotif);
@@ -753,11 +726,11 @@
                 isLive   = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
             if (!isLive && comments && !document.getElementById("P-show-comments") && parSets.VID_HIDE_COMS === "1") {
                 wrapper = document.createElement("template");
-                stringToDOM(wrapper.content, //
+                wrapper.innerHTML = //
                     "<div id='P-show-comments' class='yt-card'>" +
                     "    <button class='yt-uix-button yt-uix-button-expander' data-p='tnd|SHOW_CMTS'></button>" +
-                    "</div>");
-                wrapper = wrapper.content.firstChild;
+                    "</div>";
+                wrapper = setLocale(wrapper.content).firstChild;
                 eventHandler([document, "click", showComments]);
                 comments.parentNode.insertBefore(wrapper, comments);
             }
@@ -934,11 +907,11 @@
                 if (player) {
                     if (!floaterUI && !isFScreen) {
                         floaterUI = document.createElement("template");
-                        stringToDOM(floaterUI.content, //
+                        floaterUI.innerHTML = //
                             "<div id='part_floaterui'>" +
                             "    <button id='part_floaterui_scrolltop' data-p='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>" +
-                            "</div>");
-                        floaterUI = floaterUI.content.firstChild;
+                            "</div>";
+                        floaterUI = setLocale(floaterUI.content).firstChild;
                         eventHandler([document, "mousedown", dragFloater]);
                         player.appendChild(floaterUI);
                     }
@@ -986,13 +959,13 @@
                 videoList = document.getElementsByClassName("addto-watch-later-button");
             if (parSets.GEN_SUB_LIST && window.location.href.split("/feed/subscriptions").length > 1 && !button && listTitle && videoList) {
                 button = document.createElement("template");
-                stringToDOM(button.content, //
+                button.innerHTML = //
                     "<li id='subscription-playlist-icon'>" +
                     "    <a id='subscription-playlist' data-p='ttl|SUB_PLST' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>" +
                     "        <span class='yt-uix-button-content'></span>" +
                     "    </a>" +
-                    "</li>");
-                button = button.content.firstChild;
+                    "</li>";
+                button = setLocale(button.content).firstChild;
                 navMenu.appendChild(button);
                 eventHandler([document, "click", initSubPlaylist]);
             }
@@ -1283,16 +1256,16 @@
                 function createButton(type, details) {
                     button = document.createElement("template");
                     if (type === "popoutmode") {
-                        stringToDOM(button.content, "<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip'></div>");
+                        button.innerHTML = "<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip'></div>";
                         button.content.firstChild.dataset.link = details.videolink;
                         button.content.firstChild.classList.add(type);
                     } else {
-                        stringToDOM(button.content, "<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip'></div>");
+                        button.innerHTML = "<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip'></div>";
                         button.content.firstChild.dataset.user = details.username;
                         button.content.firstChild.dataset.ytid = details.youtubeid;
                         button.content.firstChild.classList.add(type);
                     }
-                    return button.content.firstChild;
+                    return setLocale(button.content).firstChild;
                 }
                 var button;
                 if (detailList[i] && detailList[i].thumbfield) {
@@ -1472,10 +1445,13 @@
             function createButton(type, label, bool, call) {
                 var navCtrls = document.getElementsByClassName("playlist-nav-controls")[0],
                     button   = document.createElement("template");
-                stringToDOM(button.content, //
-                    "<button class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip" + (((bool === true || href.split(bool).length > 1) && " yt-uix-button-toggled") || "") + "' type='button'>" +
+                button.innerHTML = //
+                    "<button class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' type='button'>" +
                     "    <span class='yt-uix-button-icon'></span>" +
-                    "</button>");
+                    "</button>";
+                if (bool === true || href.split(bool).length > 1) {
+                    button.content.querySelector("button").classList.add("yt-uix-button-toggled");
+                }
                 button.content.firstChild.id = type;
                 button.content.firstChild.dataset.p = "ttp|" + label + "&ttl|" + label;
                 button.content.firstChild.classList.add("yt-uix-button-icon-watch-appbar-" + type + "-video-list");
@@ -1667,11 +1643,11 @@
                 controls = document.getElementById("player-console");
             if (window.location.pathname === "/watch" && header && !cnslBtn) {
                 cnslBtn = document.createElement("template");
-                stringToDOM(cnslBtn.content, "<button id='console-button' data-p='ttl|ADV_OPTS'></button>");
-                cnslBtn = cnslBtn.content.firstChild;
+                cnslBtn.innerHTML = "<button id='console-button' data-p='ttl|ADV_OPTS'></button>";
+                cnslBtn = setLocale(cnslBtn.content).firstChild;
                 eventHandler([document, "click", toggleConsole]);
                 cnslCont = document.createElement("template");
-                stringToDOM(cnslCont.content, "<div id='advanced-options'></div>");
+                cnslCont.innerHTML = "<div id='advanced-options'></div>";
                 cnslCont = cnslCont.content.firstChild;
                 cnslCont.appendChild(cnslBtn);
                 header.appendChild(cnslCont);
@@ -1679,9 +1655,9 @@
                     controls.remove();
                 }
                 controls = document.createElement("template");
-                stringToDOM(controls.content, //
+                controls.innerHTML = //
                     "<div id='player-console'>" +
-                    "    <div id='autoplay-button' class='yt-uix-tooltip" + ((parSets.VID_PLR_ATPL && " active") || "") + "' data-p='ttp|CNSL_AP'' data-action='togglePlay'></div>" +
+                    "    <div id='autoplay-button' class='yt-uix-tooltip' data-p='ttp|CNSL_AP'' data-action='togglePlay'></div>" +
                     "    <div id='loop-button' class='yt-uix-tooltip' data-p='ttp|CNSL_RPT' data-action='toggleLoop'></div>" +
                     "    <div id='save-thumbnail-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SVTH' data-action='dlThumb'></div>" +
                     "    <div id='screenshot-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SS'' data-action='saveSS'></div>" +
@@ -1689,8 +1665,11 @@
                     "    <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR' data-action='toggleFullBrowser'></div>" +
                     "    <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD' data-action='toggleCinemaMode'></div>" +
                     "    <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME' data-action='toggleFrames'></div>" +
-                    "</div>");
-                controls = controls.content.firstChild;
+                    "</div>";
+                if (parSets.VID_PLR_ATPL) {
+                    controls.querySelector("#autoplay-button").classList.add("active");
+                }
+                controls = setLocale(controls.content).firstChild;
                 cnslCont.appendChild(controls);
                 hookButtons();
                 if (parSets.advOpts) {
