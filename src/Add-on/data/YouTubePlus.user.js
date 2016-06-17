@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.1
+// @version         1.3.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1667,7 +1667,7 @@
                     "    <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME' data-action='toggleFrames'></div>" +
                     "</div>";
                 if (parSets.VID_PLR_ATPL) {
-                    controls.querySelector("#autoplay-button").classList.add("active");
+                    controls.content.querySelector("#autoplay-button").classList.add("active");
                 }
                 controls = setLocale(controls.content).firstChild;
                 cnslCont.appendChild(controls);
