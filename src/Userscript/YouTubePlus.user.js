@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.2
+// @version         1.3.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1565,36 +1565,31 @@
                         }
                     },
                     toggleFrames: function(event) {
-                        var i, j, pi, fps;
+                        var i, pi, fps, temp;
                         frameStep = document.getElementById("framestep-button");
                         if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
                             if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
-                                pi = playerInstance.getVideoData();
-                                if (!actions.fps) {
-                                    getfps:
-                                    for (i in pi) {
-                                        if (typeof pi[i] === "object" && pi[i] && pi[i].video && pi[i].video) {
-                                            for (j in pi[i].video) {
-                                                if (pi[i].video[j] > 14 && pi[i].video[j] < 61) {
-                                                    actions.fps = [i, j];
-                                                    break getfps;
-                                                }
-                                            }
-                                        }
+                                pi = api.getVideoStats().fmt;
+                                temp = window.ytplayer.config.args.adaptive_fmts.split(",");
+                                i = temp.length;
+                                while (i--) {
+                                    if (temp[i].indexOf("itag=" + pi) > 0) {
+                                        actions.fps = parseInt(temp[i].match(/fps=([\d]+)/)[1]);
+                                        break;
                                     }
                                 }
-                                if (actions.fps) {
-                                    fps = actions.fps && pi[actions.fps[0]].video[actions.fps[1]];
-                                    fps = fps && ((event.keyCode < 39 && -1) || 1) * ((fps < 2 && 30) || fps);
-                                    if (fps && api) {
-                                        if (!document.querySelector("video").paused) {
-                                            api.pauseVideo();
-                                        }
-                                        api.seekBy(1 / fps);
-                                    }
-                                    event.preventDefault();
-                                    event.stopImmediatePropagation();
+                                if (!actions.fps || actions.fps === 1) {
+                                    actions.fps = 30;
                                 }
+                                fps = ((event.keyCode < 39 && -1) || 1) * ((actions.fps < 2 && 30) || actions.fps);
+                                if (fps && api) {
+                                    if (!document.querySelector("video").paused) {
+                                        api.pauseVideo();
+                                    }
+                                    api.seekBy(1 / fps);
+                                }
+                                event.preventDefault();
+                                event.stopImmediatePropagation();
                             } else if (event.type === "click" && event.target.id === "framestep-button") {
                                 set("frameStep", !parSets.frameStep);
                                 frameStep.classList[(parSets.frameStep && "add") || "remove"]("active");
