@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.3
+// @version         1.3.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -497,7 +497,7 @@
                             "   <textarea id='impexp-list'></textarea>" +
                             "</div>";
                         if (target.classList.contains("P-impexp")) {
-                            expCont.content.querySelector("#implang-save").id = "P-impexp";
+                            expCont.content.querySelector("#implang-save").id = "impexp-save";
                         }
                         expCont = setLocale(expCont.content).firstChild;
                         document.getElementById("P-content").appendChild(expCont);
@@ -1974,9 +1974,6 @@
     function localeResponse(data) {
         document.documentElement.dataset.setlocale = data;
     }
-    function unloadScript() {
-        window.location.reload();
-    }
     function initParticle(event) {
         function filterChromeStorage(keys) {
             if (keys[id] && keys[id].newValue) {
@@ -2006,7 +2003,6 @@
                 } else {
                     window.self.port.on(id, updateSettings);
                     window.self.port.on(id2, localeResponse);
-                    window.self.port.on("detach", unloadScript);
                 }
             }
         }

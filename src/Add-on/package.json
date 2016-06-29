@@ -2,7 +2,7 @@
     "title": "YouTube Plus",
     "name": "particle",
     "id": "unlisted-particle@particlecore.github.io",
-    "version": "1.3.3",
+    "version": "1.3.4.a",
     "description": "YouTube with more freedom",
     "main": "main.js",
     "author": "Yonez",
