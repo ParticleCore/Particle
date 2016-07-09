@@ -1,10 +1,11 @@
 ﻿// ==UserScript==
-// @version         1.3.4
+// @version         1.3.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
 // @icon            https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/YT%2Bicon.png
 // @match           *://www.youtube.com/*
+// @exclude         *://www.youtube.com/tv*
 // @exclude         *://www.youtube.com/embed/*
 // @run-at          document-start
 // @downloadURL     https://github.com/ParticleCore/Particle/raw/master/src/Userscript/YouTubePlus.user.js

@@ -36,6 +36,8 @@ function mainScript(worker) {
 require("sdk/page-mod").PageMod({
     include: "*.youtube.com",
     exclude: [
+        "http://www.youtube.com/tv*",
+        "https://www.youtube.com/tv*",
         "http://www.youtube.com/embed/*",
         "https://www.youtube.com/embed/*",
         "*.gaming.youtube.com"
