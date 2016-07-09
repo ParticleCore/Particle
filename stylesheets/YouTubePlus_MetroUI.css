@@ -1123,6 +1123,9 @@
     #impexp-list{
         height: calc(100% - 80px);
     }
+    #Psettings {
+        z-index: 1 !important;
+    }
     #P{
         background: url(https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/sprite.png) 3px 1px;
         display: inline-flex;
