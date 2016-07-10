@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.6
+// @version         1.3.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1733,6 +1733,29 @@
                 }
             }
         }
+        function checkMaterial() {
+            var n, temp;
+            try {
+                temp = document.cookie.match(/PREF=([a-zA-Z0-9\=\&]+)/);
+                if (temp) {
+                    temp = temp[1];
+                    n = temp.match(/f6=([0-9]+)/);
+                    if (!n) {
+                        temp += "&f6=8";
+                    } else if (n[1] < 8) {
+                        temp = temp.replace(/f6=[0-9]+/, "f6=" + (window.parseInt(n[1]) + 8));
+                    } else {
+                        temp = false;
+                    }
+                } else {
+                    temp = "f6=8";
+                }
+                if (temp) {
+                    document.cookie = "PREF=" + temp + "; domain=youtube.com; path=/; expires=" + (new Date(Date.now() + 1E3 * 63072E3)).toUTCString() + "; path=/";
+                    window.location.reload();
+                }
+            } catch (ignore) {}
+        }
         function initFunctions() {
             pageScript();
             customStyles();
@@ -1949,6 +1972,7 @@
                 WLCMFTRS              : "Click here to see all the features",
                 LOCALE                : "English (US)"
             };
+        checkMaterial();
         if (!parSets || Object.keys(parSets).length < 1) {
             parSets = defSets;
         } else {
