@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.5
+// @version         1.3.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom

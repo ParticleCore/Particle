@@ -547,8 +547,8 @@
     :-moz-focus-inner{
         border: 0;
     }
-    input[type='checkbox'],
-    input[type='radio']{
+    #P-settings input[type='checkbox'],
+    #P-settings input[type='radio']{
         opacity: 0;
     }
     .signin-container{
