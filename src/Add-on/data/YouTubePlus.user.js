@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.7
+// @version         1.3.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1733,29 +1733,6 @@
                 }
             }
         }
-        function checkMaterial() {
-            var n, temp;
-            try {
-                temp = document.cookie.match(/PREF=([a-zA-Z0-9\=\&]+)/);
-                if (temp) {
-                    temp = temp[1];
-                    n = temp.match(/f6=([0-9]+)/);
-                    if (!n) {
-                        temp += "&f6=8";
-                    } else if (n[1] < 8) {
-                        temp = temp.replace(/f6=[0-9]+/, "f6=" + (window.parseInt(n[1]) + 8));
-                    } else {
-                        temp = false;
-                    }
-                } else {
-                    temp = "f6=8";
-                }
-                if (temp) {
-                    document.cookie = "PREF=" + temp + "; domain=youtube.com; path=/; expires=" + (new Date(Date.now() + 1E3 * 63072E3)).toUTCString() + "; path=/";
-                    window.location.reload();
-                }
-            } catch (ignore) {}
-        }
         function initFunctions() {
             pageScript();
             customStyles();
@@ -1972,7 +1949,6 @@
                 WLCMFTRS              : "Click here to see all the features",
                 LOCALE                : "English (US)"
             };
-        checkMaterial();
         if (!parSets || Object.keys(parSets).length < 1) {
             parSets = defSets;
         } else {
@@ -1992,6 +1968,24 @@
         window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
         window.matchMedia = false;
         initFunctions();
+    }
+    function isMaterial() {
+        var i, temp;
+        temp = document.querySelectorAll("script");
+        i = temp.length;
+        while (i--) {
+            if (temp[i].textContent.match("window.Polymer")) {
+                temp = document.createElement("template");
+                temp.innerHTML = //
+                    "<div style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);position:fixed;bottom:20px;right:20px;z-index:99999'>" +
+                    "YouTube Plus is not yet compatible with the YouTube beta Material Layout<br>" +
+                    "<a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>" +
+                    "To keep using the current layout without this message please disable YT+" +
+                    "</div>";
+                document.documentElement.appendChild(temp.content.firstChild);
+                return true;
+            }
+        }
     }
     function updateSettings(event) {
         document.documentElement.dataset.parreceive = JSON.stringify((event && event[id]) || event || {});
@@ -2063,6 +2057,9 @@
     var id         = "particleSettings",
         id2        = "particleLocale",
         userscript = typeof GM_info === "object";
+    if (isMaterial()) {
+        return;
+    }
     if (userscript) {
         window.GM_getValue = GM_getValue;
         window.GM_setValue = GM_setValue;
