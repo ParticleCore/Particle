@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.8
+// @version         1.3.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1727,7 +1727,8 @@
                     loadMore.classList.add("infiniteScroll");
                     observer = new MutationObserver(infiniteScroll);
                     observer.observe(loadMore, {attributes: true});
-                } else if (!loadMore.classList.contains("scrolldetect")) {
+                }
+                if (!loadMore.classList.contains("scrolldetect")) {
                     loadMore.classList.add("scrolldetect");
                     loadMore.dataset.scrolldetectCallback = "load-more-auto";
                 }
