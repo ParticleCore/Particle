@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.3.9
+// @version         1.4.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -814,8 +814,9 @@
                         window.ytpsetwide("wide", config.args.player_wide, -1);
                     }
                 }
-                if (config.args.iv_load_policy && parSets.VID_PLR_ANTS) {
+                if ((config.args.iv_load_policy || config.args.iv_endscreen_url) && parSets.VID_PLR_ANTS) {
                     config.args.iv_load_policy = "3";
+                    delete config.args.iv_endscreen_url;
                 }
                 if (parSets.VID_PLR_ADS && (!parSets.VID_SUB_ADS || (parSets.VID_SUB_ADS && !config.args.subscribed))) {
                     delete config.args.ad3_module;
