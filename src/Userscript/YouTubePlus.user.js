@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.4.1
+// @version         1.4.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1776,11 +1776,31 @@
                 generalChanges();
                 dragPopOut();
             }
+            function isMaterial() {
+                var i, temp;
+                temp = document.querySelectorAll("link");
+                i = temp.length;
+                while (i--) {
+                    if (temp[i].href.match("olymer")) {
+                        temp = document.createElement("template");
+                        temp.innerHTML = //
+                            `<div style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:20px;z-index:99999'>
+                            YouTube Plus is not yet compatible with the YouTube beta Material Layout<br>
+                            <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
+                            To keep using the current layout without this message please disable YT+
+                            </div>`;
+                        document.documentElement.appendChild(temp.content.firstChild);
+                        return true;
+                    }
+                }
+            }
             var api, cid, events, language, user_settings, player_instance, default_settings;
+            if (isMaterial()) {
+                return;
+            }
             cid = {};
             events = {};
             user_settings = JSON.parse(document.documentElement.dataset.user_settings || null);
-            document.documentElement.dataset.user_settings = "";
             default_settings = {
                 GEN_BTTR_NTF    : true,
                 GEN_SUB_LIST    : true,
@@ -1960,24 +1980,6 @@
             window.matchMedia = false;
             main();
         },
-        isMaterial: function() {
-            var i, temp;
-            temp = document.querySelectorAll("link");
-            i = temp.length;
-            while (i--) {
-                if (temp[i].href.match("olymer")) {
-                    temp = document.createElement("template");
-                    temp.innerHTML = //
-                        `<div style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:20px;z-index:99999'>
-                        YouTube Plus is not yet compatible with the YouTube beta Material Layout<br>
-                        <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
-                        To keep using the current layout without this message please disable YT+
-                        </div>`;
-                    document.documentElement.appendChild(temp.content.firstChild);
-                    return true;
-                }
-            }
-        },
         contentScriptMessages: function() {
             var key1, key2, gate, sets, locs, observer;
             key1 = "parsend";
@@ -2044,25 +2046,7 @@
                 }
             }
         },
-        ini: function(mutation) {
-            var observer;
-            if (document.documentElement.innerHTML === "") {
-                if (!mutation) {
-                    observer = new MutationObserver(particle.ini);
-                    observer.observe(document.documentElement, {childList: true});
-                }
-                return;
-            }
-            if (mutation) {
-                if (document.body) {
-                    this.disconnect();
-                } else {
-                    return;
-                }
-            }
-            if (particle.isMaterial()) {
-                return;
-            }
+        ini: function() {
             particle.id = "particleSettings";
             particle.is_userscript = typeof GM_info === "object" ? true : false;
             if (particle.is_userscript) {
