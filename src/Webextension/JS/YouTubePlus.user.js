@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.4.4
+// @version         1.4.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -40,35 +40,35 @@
                 }
                 return content;
             }
-            function lang(label) {
-                function getLocale(data) {
-                    delete language.fetching;
-                    data = document.documentElement.dataset.setlocale;
-                    data = data && JSON.parse(data);
-                    if (data) {
-                        user_settings.extLang[lang.ytlang] = JSON.parse(document.documentElement.dataset.setlocale);
-                        user_settings.extLang[lang.ytlang].lastMod = new Date().getTime();
-                        user_settings.extLang.nextCheck = new Date().getTime() + 6048E5;
-                        set("extLang", user_settings.extLang);
-                    }
-                    lang.observer.disconnect();
-                }
-                function getLanguage(data) {
-                    delete language.fetching;
-                    if (data.target.readyState === 4 && data.target.status === 200) {
-                        user_settings.extLang[lang.ytlang] = JSON.parse(data.target.response);
-                        user_settings.extLang[lang.ytlang].lastMod = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
-                    }
+            function getLocale(data) {
+                lang.fetching = false;
+                data = document.documentElement.dataset.setlocale;
+                data = data && JSON.parse(data);
+                if (data) {
+                    user_settings.extLang[lang.ytlang] = JSON.parse(document.documentElement.dataset.setlocale);
+                    user_settings.extLang[lang.ytlang].lastMod = new Date().getTime();
                     user_settings.extLang.nextCheck = new Date().getTime() + 6048E5;
                     set("extLang", user_settings.extLang);
                 }
-                function checkModified(data) {
-                    delete language.fetching;
-                    if (data.target.readyState === 4 && data.target.status === 200) {
-                        language.fetching = true;
-                        localXHR("GET", getLanguage, lang.urlBase + lang.ytlang + ".json", ["Accept", "application/vnd.github.raw"]);
-                    }
+                lang.observer.disconnect();
+            }
+            function getLanguage(data) {
+                lang.fetching = false;
+                if (data.target.readyState === 4 && data.target.status === 200) {
+                    user_settings.extLang[lang.ytlang] = JSON.parse(data.target.response);
+                    user_settings.extLang[lang.ytlang].lastMod = new Date(data.target.getResponseHeader("Last-Modified")).getTime();
                 }
+                user_settings.extLang.nextCheck = new Date().getTime() + 6048E5;
+                set("extLang", user_settings.extLang);
+            }
+            function checkModified(data) {
+                lang.fetching = false;
+                if (data.target.readyState === 4 && data.target.status === 200) {
+                    lang.fetching = true;
+                    localXHR("GET", getLanguage, lang.urlBase + lang.ytlang + ".json", ["Accept", "application/vnd.github.raw"]);
+                }
+            }
+            function lang(label) {
                 lang.ytlang = window.yt && window.yt.config_ && window.yt.config_.GAPI_LOCALE;
                 lang.urlBase = "https://api.github.com/repos/ParticleCore/Particle/contents/Locale/";
                 if (!user_settings.extLang) {
@@ -82,8 +82,8 @@
                 }
                 if (!user_settings.GEN_LOCL_LANG && lang.ytlang && lang.ytlang !== "en_US") {
                     if (user_settings.extLang[lang.ytlang] && user_settings.extLang[lang.ytlang][label]) {
-                        if (!language.fetching && user_settings.extLang.nextCheck && user_settings.extLang.nextCheck <= new Date().getTime()) {
-                            language.fetching = true;
+                        if (!lang.fetching && user_settings.extLang.nextCheck && user_settings.extLang.nextCheck <= new Date().getTime()) {
+                            lang.fetching = true;
                             if (!is_userscript) {
                                 lang.observer = new MutationObserver(getLocale);
                                 lang.observer.observe(document.documentElement, {
@@ -99,8 +99,8 @@
                         }
                         return user_settings.extLang[lang.ytlang][label];
                     }
-                    if (!user_settings.extLang[lang.ytlang] && !language.fetching && (!user_settings.extLang.nextCheck || user_settings.extLang.nextCheck <= new Date().getTime())) {
-                        language.fetching = true;
+                    if (!user_settings.extLang[lang.ytlang] && !lang.fetching && (!user_settings.extLang.nextCheck || user_settings.extLang.nextCheck <= new Date().getTime())) {
+                        lang.fetching = true;
                         if (!is_userscript) {
                             lang.observer = new MutationObserver(getLocale);
                             lang.observer.observe(document.documentElement, {
@@ -115,28 +115,33 @@
                 }
                 return language[label];
             }
+            function setButton(obj) {
+                var lnk, keys, temp;
+                keys = Object.keys(obj);
+                temp = document.createElement("template");
+                temp.innerHTML = "<div class='blacklist'><button class='close ytplus_sprite'></button><a target='_blank'></a></div>";
+                temp = temp.content.firstChild;
+                lnk = temp.querySelector("a");
+                lnk.href = "/channel/" + keys[0];
+                lnk.setAttribute("title", obj[keys[0]]);
+                lnk.textContent = obj[keys[0]];
+                getBlacklist.blist.appendChild(temp);
+                getBlacklist.blist.appendChild(document.createTextNode("\n"));
+            }
+            function sortList(previous, next){
+                previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
+            }
+            function buildList(ytid) {
+                var obj = {};
+                obj[ytid] = getBlacklist.list[ytid];
+                getBlacklist.sortAlpha.push(obj);
+            }
             function getBlacklist(blist) {
-                var list, sortAlpha;
-                list = user_settings.blacklist;
-                sortAlpha = [];
-                Object.keys(list).forEach(ytid => {
-                    var obj = {};
-                    obj[ytid] = list[ytid];
-                    sortAlpha.push(obj);
-                });
-                sortAlpha.sort((previous, next) => previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]])).forEach(obj => {
-                    var lnk, keys, temp;
-                    keys = Object.keys(obj);
-                    temp = document.createElement("template");
-                    temp.innerHTML = "<div class='blacklist'><button class='close ytplus_sprite'></button><a target='_blank'></a></div>";
-                    temp = temp.content.firstChild;
-                    lnk = temp.querySelector("a");
-                    lnk.href = "/channel/" + keys[0];
-                    lnk.setAttribute("title", obj[keys[0]]);
-                    lnk.textContent = obj[keys[0]];
-                    blist.appendChild(temp);
-                    blist.appendChild(document.createTextNode("\n"));
-                });
+                getBlacklist.blist = blist;
+                getBlacklist.list = user_settings.blacklist;
+                getBlacklist.sortAlpha = [];
+                Object.keys(getBlacklist.list).forEach(buildList);
+                getBlacklist.sortAlpha.sort(sortList).forEach(setButton);
             }
             function getValues(menu) {
                 var i, ytp, list;
@@ -404,6 +409,9 @@
                 event.target.parentNode.remove();
                 set("blacklist", newKey);
             }
+            function delNotification() {
+                document.body.classList.remove("show-guide-button-notification");
+            }
             function saveSettings(salt) {
                 var i, value, notification, navId, userSets, savedSets;
                 navId = document.querySelector(".selected").id;
@@ -439,7 +447,7 @@
                     }
                     document.querySelector(".appbar-guide-notification-text-content").textContent = lang("GLB_SVE_SETS");
                     document.body.classList.add("show-guide-button-notification");
-                    window.setTimeout(() => document.body.classList.remove("show-guide-button-notification"), 2000);
+                    window.setTimeout(delNotification, 2000);
                 }
             }
             function navigateSettings(event) {
@@ -528,121 +536,122 @@
                     }
                 }
             }
-            function scriptExit(event) {
-                function modComment(original) {
-                    return function (a) {
-                        var comments, is_live;
-                        comments = document.getElementById("watch-discussion");
-                        is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
-                        if (a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
-                            comments.lazyload = arguments;
-                        } else {
-                            return original.apply(this, arguments);
+            function modComment(original) {
+                return function (a) {
+                    var comments, is_live;
+                    comments = document.getElementById("watch-discussion");
+                    is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
+                    if (a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
+                        comments.lazyload = arguments;
+                    } else {
+                        return original.apply(this, arguments);
+                    }
+                };
+            }
+            function modSetConfig(original) {
+                return function (a) {
+                    if (typeof a === "object") {
+                        if ("SHARE_ON_VIDEO_END" in a) {
+                            a.SHARE_ON_VIDEO_END = !user_settings.VID_END_SHRE;
                         }
-                    };
-                }
-                function modSetConfig(original) {
-                    return function (a) {
-                        if (typeof a === "object") {
-                            if ("SHARE_ON_VIDEO_END" in a) {
-                                a.SHARE_ON_VIDEO_END = !user_settings.VID_END_SHRE;
-                            }
-                            if ("UNIVERSAL_HOVERCARDS" in a) {
-                                a.UNIVERSAL_HOVERCARDS = !user_settings.GEN_DSB_HVRC;
-                            }
-                        }
-                        original.apply(scriptExit, arguments);
-                    };
-                }
-                function modEmbed(original) {
-                    return function (a, b) {
-                        var temp, player;
-                        b = modArgs(b);
-                        temp = original.apply(scriptExit, arguments);
-                        player = document.getElementById("movie_player");
-                        if (player) {
-                            player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
-                        }
-                        return temp;
-                    };
-                }
-                function modAutoplay(original) {
-                    return function (a, b) {
-                        if (!b || user_settings.plApl || (!user_settings.plApl && b.feature && b.feature !== "autoplay")) {
-                            original.apply(scriptExit, arguments);
-                        }
-                    };
-                }
-                function modAutoplayFullscreen(original) {
-                    return function () {
-                        var has_ended, next_button, next_clicked;
-                        has_ended = api && api.getCurrentTime && Math.round(api.getCurrentTime()) >= Math.floor(api.getDuration());
-                        next_clicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
-                        if (!user_settings.plApl && !next_clicked && has_ended) {
-                            next_button = document.querySelector(".ytp-next-button");
-                            if (next_button && next_button.getAttribute("aria-disabled") === "true") {
-                                next_button.onclick = api.nextVideo;
-                                document.addEventListener("click", api.nextVideo);
-                                next_button.setAttribute("aria-disabled", "false");
-                            }
-                            return false;
-                        }
-                        if (user_settings.plApl || next_clicked || !has_ended) {
-                            if (next_clicked) {
-                                document.getElementById("movie_player").focus();
-                            }
-                            return original.apply(this, arguments);
-                        }
-                    };
-                }
-                function modPlayerCreate(original) {
-                    return function (a, b) {
-                        var player;
-                        b = modArgs(b);
-                        if (a.id === "upsell-video") {
-                            original.apply(scriptExit, arguments);
-                        } else if (typeof a === "object") {
-                            player_instance = original.apply(scriptExit, arguments);
-                            Object.keys(player_instance).some(keys => {
-                                if (typeof player_instance[keys] === "object") {
-                                    if (player_instance[keys] && player_instance[keys].hasNext) {
-                                        player_instance[keys].hasNext = modAutoplayFullscreen(player_instance[keys].hasNext);
-                                        return true;
-                                    }
-                                }
-                            });
-                            player = document.getElementById("movie_player");
-                            if (!user_settings.VID_PLR_ATPL && player) {
-                                if (window.ytplayer.config.args.dvmap && !user_settings.VID_PLR_ADS) {
-                                    window.ytplayer.config.args.vmap = window.ytplayer.config.args.dvmap;
-                                }
-                                player.cueVideoByPlayerVars(window.ytplayer.config.args);
-                            }
-                        }
-                    };
-                }
-                function modSeekTo(original) {
-                    return function(time, autoscroll) {
-                        var autoscroll;
-                        if (document.documentElement.classList.contains("floater")) {
-                            autoscroll = false;
-                        }
-                        original.call(this, time, autoscroll);
-                    };
-                }
-                function setMods(keys) {
-                    var str;
-                    if (typeof window._yt_www[keys] === "function") {
-                        str = String(window._yt_www[keys]);
-                        if (str.split("player-added").length > 1) {
-                            window._yt_www[keys] = modEmbed(window._yt_www[keys]);
-                        } else if (str.split("window.spf.navigate").length > 1) {
-                            window._yt_www[keys] = modAutoplay(window._yt_www[keys]);
-                        } else if (str.split(".set(\"\"+a,b,c,\"/\",d").length > 1) {
-                            window.ytpsetwide = window._yt_www[keys];
+                        if ("UNIVERSAL_HOVERCARDS" in a) {
+                            a.UNIVERSAL_HOVERCARDS = !user_settings.GEN_DSB_HVRC;
                         }
                     }
+                    original.apply(scriptExit, arguments);
+                };
+            }
+            function modEmbed(original) {
+                return function (a, b) {
+                    var temp, player;
+                    b = modArgs(b);
+                    temp = original.apply(scriptExit, arguments);
+                    player = document.getElementById("movie_player");
+                    if (player) {
+                        player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
+                    }
+                    return temp;
+                };
+            }
+            function modAutoplay(original) {
+                return function (a, b) {
+                    if (!b || user_settings.plApl || (!user_settings.plApl && b.feature && b.feature !== "autoplay")) {
+                        original.apply(scriptExit, arguments);
+                    }
+                };
+            }
+            function modAutoplayFullscreen(original) {
+                return function () {
+                    var has_ended, next_button, next_clicked;
+                    has_ended = api && api.getCurrentTime && Math.round(api.getCurrentTime()) >= Math.floor(api.getDuration());
+                    next_clicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
+                    if (!user_settings.plApl && !next_clicked && has_ended) {
+                        next_button = document.querySelector(".ytp-next-button");
+                        if (next_button && next_button.getAttribute("aria-disabled") === "true") {
+                            next_button.onclick = api.nextVideo;
+                            document.addEventListener("click", api.nextVideo);
+                            next_button.setAttribute("aria-disabled", "false");
+                        }
+                        return false;
+                    }
+                    if (user_settings.plApl || next_clicked || !has_ended) {
+                        if (next_clicked) {
+                            document.getElementById("movie_player").focus();
+                        }
+                        return original.apply(this, arguments);
+                    }
+                };
+            }
+            function iterateKeys(keys) {
+                if (typeof player_instance[keys] === "object") {
+                    if (player_instance[keys] && player_instance[keys].hasNext) {
+                        player_instance[keys].hasNext = modAutoplayFullscreen(player_instance[keys].hasNext);
+                        return true;
+                    }
                 }
+            }
+            function modPlayerCreate(original) {
+                return function (a, b) {
+                    var player;
+                    b = modArgs(b);
+                    if (a.id === "upsell-video") {
+                        original.apply(scriptExit, arguments);
+                    } else if (typeof a === "object") {
+                        player_instance = original.apply(scriptExit, arguments);
+                        Object.keys(player_instance).some(iterateKeys);
+                        player = document.getElementById("movie_player");
+                        if (!user_settings.VID_PLR_ATPL && player) {
+                            if (window.ytplayer.config.args.dvmap && !user_settings.VID_PLR_ADS) {
+                                window.ytplayer.config.args.vmap = window.ytplayer.config.args.dvmap;
+                            }
+                            player.cueVideoByPlayerVars(window.ytplayer.config.args);
+                        }
+                    }
+                };
+            }
+            function modSeekTo(original) {
+                return function(time) {
+                    if (document.documentElement.classList.contains("floater")) {
+                        original.call(this, time, false);
+                    } else {
+                        original.apply(this, arguments);
+                    }
+                };
+            }
+            function setMods(keys) {
+                var str;
+                if (typeof window._yt_www[keys] === "function") {
+                    str = String(window._yt_www[keys]);
+                    if (str.split("player-added").length > 1) {
+                        window._yt_www[keys] = modEmbed(window._yt_www[keys]);
+                    } else if (str.split("window.spf.navigate").length > 1) {
+                        window._yt_www[keys] = modAutoplay(window._yt_www[keys]);
+                    } else if (str.split(".set(\"\"+a,b,c,\"/\",d").length > 1) {
+                        window.ytpsetwide = window._yt_www[keys];
+                    }
+                }
+            }
+            function scriptExit(event) {
                 if (event && event.target) {
                     if (event.target.getAttribute("name") === "www/base") {
                         window.yt.setConfig = modSetConfig(window.yt.setConfig);
@@ -653,9 +662,9 @@
                     }
                     if (event.target.getAttribute("name") === "spf/spf") {
                         window.spf.load = modComment(window.spf.load);
-                        window.spf.prefetch = () => {};
+                        window.spf.prefetch = function(){return;};
                         if (window.name === "popOut") {
-                            window.spf.navigate = () => {};
+                            window.spf.navigate = function(){return;};
                         }
                     }
                 }
@@ -665,13 +674,29 @@
                 }
             }
             function checkBounds(elm, X, Y) {
-                return {
-                    X: (((X > -1 && (X + elm.offsetWidth) < document.documentElement.offsetWidth) && X) || (X < 1 && "0") || (document.documentElement.offsetWidth - elm.offsetWidth)),
-                    Y: (((Y > 51 && (Y + elm.offsetHeight) < document.documentElement.offsetHeight) && Y) || (Y < 52 && 52) || (document.documentElement.offsetHeight - elm.offsetHeight))
-                };
+                var snapX, snapY;
+                if (X > -1 && X + elm.offsetWidth < document.documentElement.offsetWidth) {
+                    snapX = false;
+                } else if (X < 1) {
+                    X = "0";
+                    snapX = -1;
+                } else {
+                    X = document.documentElement.offsetWidth - elm.offsetWidth;
+                    snapX = 1;
+                }
+                if (Y > 51 && Y + elm.offsetHeight < document.documentElement.offsetHeight) {
+                    snapY = false;
+                } else if (Y < 52) {
+                    Y = 52;
+                    snapY = -1;
+                } else {
+                    Y = document.documentElement.offsetHeight - elm.offsetHeight;
+                    snapY = 1;
+                }
+                return {X: X + "px", Y: Y + "px", snapX: snapX, snapY: snapY};
             }
             function updatePos() {
-                var height, player, bounds;
+                var x, y, height, player, bounds;
                 if (!document.documentElement.classList.contains("floater")) {
                     window.removeEventListener("resize", updatePos);
                     return;
@@ -680,7 +705,21 @@
                 player = document.getElementById("movie_player");
                 bounds = checkBounds(player, user_settings.floaterX, user_settings.floaterY);
                 height = (height < 350 ? 350 : height) / (16 / 9);
-                player.setAttribute("style", "width:" + (height * (16 / 9)) + "px;height:" + height + "px;left:" + bounds.X + "px;top:" + bounds.Y + "px");
+                if (user_settings.floaterSnapX === -1) {
+                    x = "0px";
+                } else if (user_settings.floaterSnapX === 1) {
+                    x = document.documentElement.offsetWidth - player.offsetWidth + "px";
+                } else {
+                    x = bounds.X;
+                }
+                if (user_settings.floaterSnapY === -1) {
+                    y = "52px";
+                } else if (user_settings.floaterSnapY === 1) {
+                    y = document.documentElement.offsetHeight - player.offsetHeight + "px";
+                } else {
+                    y = bounds.Y;
+                }
+                player.setAttribute("style", "width:" + (height * (16 / 9)) + "px;height:" + height + "px;left:" + x + ";top:" + y);
             }
             function dragFloater(event) {
                 var excluded, isFScreen, isFloater, bounds, player;
@@ -698,27 +737,32 @@
                                 event.stopPropagation();
                                 document.addEventListener("mousemove", dragFloater);
                                 document.addEventListener("click", dragFloater, true);
-                                window.oldPos = {
+                                dragFloater.oldPos = {
                                     X: parseInt(player.style.left) - event.clientX,
                                     Y: parseInt(player.style.top) - event.clientY,
                                     orgX: event.clientX,
                                     orgY: event.clientY
                                 };
-                            } else if (event.type === "mousemove" && (window.hasMoved || Math.abs(event.clientX - window.oldPos.orgX) > 10 || Math.abs(event.clientY - window.oldPos.orgY) > 10)) {
-                                bounds = checkBounds(player, event.clientX + window.oldPos.X, event.clientY + window.oldPos.Y);
-                                player.style.left = bounds.X + "px";
-                                player.style.top = bounds.Y + "px";
-                                window.hasMoved = true;
+                            } else if (event.type === "mousemove" && (dragFloater.hasMoved || Math.abs(event.clientX - dragFloater.oldPos.orgX) > 10 || Math.abs(event.clientY - dragFloater.oldPos.orgY) > 10)) {
+                                bounds = checkBounds(player, event.clientX + dragFloater.oldPos.X, event.clientY + dragFloater.oldPos.Y);
+                                player.style.left = bounds.X;
+                                player.style.top = bounds.Y;
+                                dragFloater.hasMoved = true;
+                                dragFloater.snapX = bounds.snapX;
+                                dragFloater.snapY = bounds.snapY;
                             }
                         }
                         if (event.buttons !== 1 || event.type === "click") {
-                            if (window.hasMoved) {
+                            if (dragFloater.hasMoved) {
                                 event.preventDefault();
                                 event.stopImmediatePropagation();
-                                delete window.oldPos;
-                                delete window.hasMoved;
-                                set("floaterX", parseInt(player.style.left));
-                                set("floaterY", parseInt(player.style.top));
+                                dragFloater.oldPos = false;
+                                dragFloater.hasMoved = false;
+                                user_settings.floaterX = parseInt(player.style.left);
+                                user_settings.floaterY = parseInt(player.style.top);
+                                user_settings.floaterSnapX = dragFloater.snapX;
+                                user_settings.floaterSnapY = dragFloater.snapY;
+                                set("user_settings", user_settings);
                             }
                             document.removeEventListener("mousemove", dragFloater);
                             document.removeEventListener("click", dragFloater, true);
@@ -781,20 +825,20 @@
                     api.dispatchEvent(eventClone);
                 }
             }
+            function playerState(event) {
+                if (user_settings.fullBrs || user_settings.lightsOut) {
+                    document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((user_settings.fullBrs && "part_fullbrowser") || "0", (user_settings.lightsOut && "part_cinema_mode") || "0");
+                }
+                window.dispatchEvent(new Event("resize"));
+            }
+            function handleCustoms(event) {
+                if (typeof event === "object") {
+                    set("volLev", event.volume);
+                } else {
+                    set("theaterMode", event);
+                }
+            }
             function playerReady() {
-                function playerState(event) {
-                    if (user_settings.fullBrs || user_settings.lightsOut) {
-                        document.documentElement.classList[(event < 5 && event > 0 && "add") || "remove"]((user_settings.fullBrs && "part_fullbrowser") || "0", (user_settings.lightsOut && "part_cinema_mode") || "0");
-                    }
-                    window.dispatchEvent(new Event("resize"));
-                }
-                function handleCustoms(event) {
-                    if (typeof event === "object") {
-                        set("volLev", event.volume);
-                    } else {
-                        set("theaterMode", event);
-                    }
-                }
                 api = document.getElementById("movie_player");
                 if (api && !document.getElementById("c4-player")) {
                     api.addEventListener("onStateChange", playerState);
@@ -815,9 +859,50 @@
                     }
                 }
             }
+            function getThumb() {
+                var args, base, thumb_url;
+                args = window.ytplayer.config.args;
+                base = (args.iurl_webp && "_webp") || "";
+                thumb_url = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
+                window.open(thumb_url);
+            }
             function hideScreenshot(event) {
                 if (event.target.id === "close-screenshot") {
-                    event.target.parentNode.classList.toggle("invisible");
+                    event.target.parentNode.remove();
+                    document.removeEventListener("click", hideScreenshot);
+                }
+            }
+            function getScreenshot() {
+                var width, height, aspectRatio, video, container, canvas, close, context;
+                video = document.querySelector("video");
+                container = document.getElementById("screenshot-result") || document.createElement("div");
+                canvas = container.querySelector("canvas") || document.createElement("canvas");
+                context = canvas.getContext("2d");
+                aspectRatio = video.videoWidth / video.videoHeight;
+                width = video.videoWidth;
+                height = parseInt(width / aspectRatio, 10);
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(video, 0, 0, width, height);
+                if (!container.id) {
+                    container.id = "screenshot-result";
+                    container.appendChild(canvas);
+                    close = document.createElement("div");
+                    close.id = "close-screenshot";
+                    close.textContent = lang("CNSL_SS_CLS");
+                    document.addEventListener("click", hideScreenshot);
+                    container.appendChild(close);
+                    document.body.appendChild(container);
+                }
+            }
+            function exitFullBrowser(key) {
+                if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || (key.target.className && key.target.className.split("ytp-size").length > 1))) {
+                    toggleFullBrowser(key);
+                    if (key.type === "mousedown") {
+                        document.removeEventListener("keydown", exitFullBrowser);
+                        document.removeEventListener("mousedown", exitFullBrowser);
+                        key.preventDefault();
+                    }
                 }
             }
             function toggleFullBrowser(event) {
@@ -831,16 +916,6 @@
                 if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
                     document.documentElement.classList[(user_settings.fullBrs && "add") || "remove"]("part_fullbrowser");
                     window.dispatchEvent(new Event("resize"));
-                }
-            }
-            function exitFullBrowser(key) {
-                if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || (key.target.className && key.target.className.split("ytp-size").length > 1))) {
-                    toggleFullBrowser(key);
-                    if (key.type === "mousedown") {
-                        document.removeEventListener("keydown", exitFullBrowser);
-                        document.removeEventListener("mousedown", exitFullBrowser);
-                        key.preventDefault();
-                    }
                 }
             }
             function toggleFrames(event) {
@@ -880,11 +955,6 @@
                     document.removeEventListener("keydown", toggleFrames, true);
                 }
             }
-            function handleToggles(event) {
-                if (event.target.dataset && event.target.dataset.action) {
-                    advancedOptions.actions[event.target.dataset.action](event);
-                }
-            }
             function toggleConsole(event) {
                 if (event.target.id === "console-button") {
                     document.documentElement.classList.toggle("player-console");
@@ -892,96 +962,69 @@
                     set("advOpts", document.documentElement.classList.contains("player-console"));
                 }
             }
+            function togglePlay() {
+                set("VID_PLR_ATPL", !user_settings.VID_PLR_ATPL);
+                document.documentElement.classList[(user_settings.VID_PLR_ATPL && "add") || "remove"]("part_autoplayon");
+                document.getElementById("autoplay-button").classList[(user_settings.VID_PLR_ATPL && "add") || "remove"]("active");
+            }
+            function toggleLoop(event) {
+                var videoPlayer = document.querySelector("video");
+                if (videoPlayer) {
+                    videoPlayer.loop = event ? !user_settings.loopVid : user_settings.loopVid;
+                    if (event) {
+                        advancedOptions.loop_button.classList[(!user_settings.loopVid && "add") || "remove"]("active");
+                    }
+                }
+                set("loopVid", advancedOptions.loop_button.classList.contains("active"));
+            }
+            function toggleCinemaMode(event) {
+                var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
+                set("lightsOut", event ? !user_settings.lightsOut : true);
+                advancedOptions.cinema_mode.classList[(user_settings.lightsOut && "add") || "remove"]("active");
+                if (event && plrState) {
+                    document.documentElement.classList[(user_settings.lightsOut && "add") || "remove"]("part_cinema_mode");
+                }
+            }
+            function handleToggles(event) {
+                if (event.target.dataset && event.target.dataset.action) {
+                    advancedOptions.actions[event.target.dataset.action](event);
+                }
+            }
+            function hookButtons() {
+                advancedOptions.popPlayer = popPlayer;
+                advancedOptions.full_browser = advancedOptions.controls.querySelector("#fullbrowser-button");
+                advancedOptions.cinema_mode = advancedOptions.controls.querySelector("#cinemamode-button");
+                advancedOptions.loop_button = advancedOptions.controls.querySelector("#loop-button");
+                advancedOptions.frame_step = advancedOptions.controls.querySelector("#framestep-button");
+                advancedOptions.actions = {
+                    togglePlay: togglePlay,
+                    toggleLoop: toggleLoop,
+                    getThumb: getThumb,
+                    getScreenshot: getScreenshot,
+                    popPlayer: popPlayer,
+                    toggleFullBrowser: toggleFullBrowser,
+                    toggleCinemaMode: toggleCinemaMode,
+                    toggleFrames: toggleFrames
+                };
+                document.addEventListener("click", handleToggles);
+                if (user_settings.loopVid && !advancedOptions.loop_button.classList.contains("active")) {
+                    advancedOptions.loop_button.classList.add("active");
+                    toggleLoop();
+                }
+                if (user_settings.fullBrs && !advancedOptions.full_browser.classList.contains("active")) {
+                    advancedOptions.full_browser.classList.add("active");
+                    toggleFullBrowser();
+                }
+                if (user_settings.lightsOut && !advancedOptions.cinema_mode.classList.contains("active")) {
+                    advancedOptions.cinema_mode.classList.add("active");
+                    toggleCinemaMode();
+                }
+                if (user_settings.frame_step && !advancedOptions.frame_step.classList.contains("active")) {
+                    advancedOptions.frame_step.classList.add("active");
+                    toggleFrames();
+                }
+            }
             function advancedOptions() {
-                function togglePlay() {
-                    set("VID_PLR_ATPL", !user_settings.VID_PLR_ATPL);
-                    document.documentElement.classList[(user_settings.VID_PLR_ATPL && "add") || "remove"]("part_autoplayon");
-                    document.getElementById("autoplay-button").classList[(user_settings.VID_PLR_ATPL && "add") || "remove"]("active");
-                }
-                function toggleLoop(event) {
-                    var videoPlayer = document.querySelector("video");
-                    if (videoPlayer) {
-                        videoPlayer.loop = event ? !user_settings.loopVid : user_settings.loopVid;
-                        if (event) {
-                            advancedOptions.loop_button.classList[(!user_settings.loopVid && "add") || "remove"]("active");
-                        }
-                    }
-                    set("loopVid", advancedOptions.loop_button.classList.contains("active"));
-                }
-                function getThumb() {
-                    var args, base, thumb_url;
-                    args = window.ytplayer.config.args;
-                    base = (args.iurl_webp && "_webp") || "";
-                    thumb_url = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
-                    window.open(thumb_url);
-                }
-                function getScreenshot() {
-                    var width, height, aspectRatio, video, container, canvas, close, context;
-                    video = document.querySelector("video");
-                    container = document.getElementById("screenshot-result") || document.createElement("div");
-                    canvas = container.querySelector("canvas") || document.createElement("canvas");
-                    context = canvas.getContext("2d");
-                    aspectRatio = video.videoWidth / video.videoHeight;
-                    width = video.videoWidth;
-                    height = parseInt(width / aspectRatio, 10);
-                    canvas.width = width;
-                    canvas.height = height;
-                    context.drawImage(video, 0, 0, width, height);
-                    if (!container.id) {
-                        container.id = "screenshot-result";
-                        container.appendChild(canvas);
-                        close = document.createElement("div");
-                        close.id = "close-screenshot";
-                        close.textContent = lang("CNSL_SS_CLS");
-                        document.addEventListener("click", hideScreenshot);
-                        container.appendChild(close);
-                        document.body.appendChild(container);
-                    } else if (container.id && container.classList.contains("invisible")) {
-                        container.classList.toggle("invisible");
-                    }
-                }
-                function toggleCinemaMode(event) {
-                    var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
-                    set("lightsOut", event ? !user_settings.lightsOut : true);
-                    advancedOptions.cinema_mode.classList[(user_settings.lightsOut && "add") || "remove"]("active");
-                    if (event && plrState) {
-                        document.documentElement.classList[(user_settings.lightsOut && "add") || "remove"]("part_cinema_mode");
-                    }
-                }
-                function hookButtons() {
-                    advancedOptions.popPlayer = popPlayer;
-                    advancedOptions.full_browser = advancedOptions.controls.querySelector("#fullbrowser-button");
-                    advancedOptions.cinema_mode = advancedOptions.controls.querySelector("#cinemamode-button");
-                    advancedOptions.loop_button = advancedOptions.controls.querySelector("#loop-button");
-                    advancedOptions.frame_step = advancedOptions.controls.querySelector("#framestep-button");
-                    advancedOptions.actions = {
-                        togglePlay: togglePlay,
-                        toggleLoop: toggleLoop,
-                        getThumb: getThumb,
-                        getScreenshot: getScreenshot,
-                        popPlayer: popPlayer,
-                        toggleFullBrowser: toggleFullBrowser,
-                        toggleCinemaMode: toggleCinemaMode,
-                        toggleFrames: toggleFrames
-                    };
-                    document.addEventListener("click", handleToggles);
-                    if (user_settings.loopVid && !advancedOptions.loop_button.classList.contains("active")) {
-                        advancedOptions.loop_button.classList.add("active");
-                        toggleLoop();
-                    }
-                    if (user_settings.fullBrs && !advancedOptions.full_browser.classList.contains("active")) {
-                        advancedOptions.full_browser.classList.add("active");
-                        toggleFullBrowser();
-                    }
-                    if (user_settings.lightsOut && !advancedOptions.cinema_mode.classList.contains("active")) {
-                        advancedOptions.cinema_mode.classList.add("active");
-                        toggleCinemaMode();
-                    }
-                    if (user_settings.frame_step && !advancedOptions.frame_step.classList.contains("active")) {
-                        advancedOptions.frame_step.classList.add("active");
-                        toggleFrames();
-                    }
-                }
                 var header, cnslBtn, cnslCont;
                 header = document.getElementById("watch-header");
                 cnslBtn = document.getElementById("console-button");
@@ -1052,77 +1095,56 @@
                     }
                 }
             }
-            function modThumbs() {
-                function setButtons() {
-                    var i, j, list, temp, thumb, button;
-                    list = Object.keys(modThumbs.thumbs);
-                    i = list.length;
-                    while (i--) {
-                        temp = modThumbs.thumbs[list[i]];
-                        j = temp.length;
-                        while (j--) {
-                            thumb = temp[j].querySelector(".yt-lockup-thumbnail, .thumb-wrapper");
-                            if (thumb) {
-                                if (user_settings.GEN_PPOT_ON && !thumb.querySelector(".popoutmode") && !/channel/.test(temp[j].firstChild.className)) {
-                                    button = document.createElement("template");
-                                    button.innerHTML = "<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip popoutmode ytplus_sprite'></div>";
-                                    button.content.firstChild.dataset.link = temp[j].querySelector("a[href*='/watch?v']").href;
-                                    thumb.appendChild(setLocale(button.content).firstChild);
-                                }
-                                if (user_settings.BLK_ON && !thumb.querySelector(".blacklist")) {
-                                    button = document.createElement("template");
-                                    button.innerHTML = "<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist ytplus_sprite'></div>";
-                                    button.content.firstChild.dataset.user = temp[j].username;
-                                    button.content.firstChild.dataset.ytid = list[i];
-                                    thumb.appendChild(setLocale(button.content).firstChild);
-                                }
+            function setButtons() {
+                var i, j, list, temp, thumb, button;
+                list = Object.keys(modThumbs.thumbs);
+                i = list.length;
+                while (i--) {
+                    temp = modThumbs.thumbs[list[i]];
+                    j = temp.length;
+                    while (j--) {
+                        thumb = temp[j].querySelector(".yt-lockup-thumbnail, .thumb-wrapper");
+                        if (thumb) {
+                            if (user_settings.GEN_PPOT_ON && !thumb.querySelector(".popoutmode") && !/channel/.test(temp[j].firstChild.className)) {
+                                button = document.createElement("template");
+                                button.innerHTML = "<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip popoutmode ytplus_sprite'></div>";
+                                button.content.firstChild.dataset.link = temp[j].querySelector("a[href*='/watch?v']").href;
+                                thumb.appendChild(setLocale(button.content).firstChild);
+                            }
+                            if (user_settings.BLK_ON && !thumb.querySelector(".blacklist")) {
+                                button = document.createElement("template");
+                                button.innerHTML = "<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist ytplus_sprite'></div>";
+                                button.content.firstChild.dataset.user = temp[j].username;
+                                button.content.firstChild.dataset.ytid = list[i];
+                                thumb.appendChild(setLocale(button.content).firstChild);
                             }
                         }
                     }
                 }
-                function delVideos() {
-                    var i, j, temp, parent, blacklist, has_upnext;
-                    has_upnext = document.querySelector(".autoplay-bar");
-                    blacklist = Object.keys(user_settings.blacklist);
-                    i = blacklist.length;
-                    while (i--) {
-                        temp = modThumbs.thumbs[blacklist[i]];
-                        if (temp) {
-                            j = temp.length;
-                            while (j--) {
-                                if (has_upnext && has_upnext.contains(temp[j])) {
-                                    has_upnext.parentNode.remove();
-                                    has_upnext = document.querySelector(".watch-sidebar-separation-line");
-                                    if (has_upnext) {
-                                        has_upnext.remove();
-                                    }
-                                    has_upnext = false;
-                                    parent = false;
-                                } else {
-                                    parent = temp[j].parentNode;
-                                    temp[j].remove();
+            }
+            function delVideos() {
+                var i, j, temp, parent, blacklist, has_upnext;
+                has_upnext = document.querySelector(".autoplay-bar");
+                blacklist = Object.keys(user_settings.blacklist);
+                i = blacklist.length;
+                while (i--) {
+                    temp = modThumbs.thumbs[blacklist[i]];
+                    if (temp) {
+                        j = temp.length;
+                        while (j--) {
+                            if (has_upnext && has_upnext.contains(temp[j])) {
+                                has_upnext.parentNode.remove();
+                                has_upnext = document.querySelector(".watch-sidebar-separation-line");
+                                if (has_upnext) {
+                                    has_upnext.remove();
                                 }
-                                temp.splice(j, 1);
-                                while (parent) {
-                                    if (parent.childElementCount) {
-                                        break;
-                                    }
-                                    parent = parent.parentNode;
-                                    parent.firstChild.remove();
-                                }
+                                has_upnext = false;
+                                parent = false;
+                            } else {
+                                parent = temp[j].parentNode;
+                                temp[j].remove();
                             }
-                            if (!temp.length) {
-                                delete modThumbs.thumbs[blacklist[i]];
-                            }
-                            temp = false;
-                        }
-                    }
-                    temp = document.getElementsByClassName("feed-item-container");
-                    i = temp.length;
-                    while (i--) {
-                        if (temp[i].querySelectorAll("ul").length < 2) {
-                            parent = temp[i].parentNode;
-                            temp[i].remove();
+                            temp.splice(j, 1);
                             while (parent) {
                                 if (parent.childElementCount) {
                                     break;
@@ -1131,34 +1153,55 @@
                                 parent.firstChild.remove();
                             }
                         }
+                        if (!temp.length) {
+                            delete modThumbs.thumbs[blacklist[i]];
+                        }
+                        temp = false;
                     }
                 }
-                function getVideos() {
-                    var i, list, temp, channel_id;
-                    modThumbs.thumbs = {};
-                    list = document.querySelectorAll(`
-                        .yt-lockup-byline > a,
-                        .yt-lockup-thumbnail > .g-hovercard,
-                        .video-list-item .g-hovercard
-                    `);
-                    i = list.length;
-                    while (i--) {
-                        temp = list[i];
-                        channel_id = temp.dataset.ytid;
-                        while (temp) {
-                            if (temp.tagName && temp.tagName === "LI") {
-                                temp.username = list[i].textContent;
-                                if (!modThumbs.thumbs[channel_id]) {
-                                    modThumbs.thumbs[channel_id] = [temp];
-                                } else if (modThumbs.thumbs[channel_id].indexOf(temp) < 0) {
-                                    modThumbs.thumbs[channel_id].push(temp);
-                                }
+                temp = document.getElementsByClassName("feed-item-container");
+                i = temp.length;
+                while (i--) {
+                    if (temp[i].querySelectorAll("ul").length < 2) {
+                        parent = temp[i].parentNode;
+                        temp[i].remove();
+                        while (parent) {
+                            if (parent.childElementCount) {
                                 break;
                             }
-                            temp = temp.parentNode;
+                            parent = parent.parentNode;
+                            parent.firstChild.remove();
                         }
                     }
                 }
+            }
+            function getVideos() {
+                var i, list, temp, channel_id;
+                modThumbs.thumbs = {};
+                list = document.querySelectorAll(`
+                    .yt-lockup-byline > a,
+                    .yt-lockup-thumbnail > .g-hovercard,
+                    .video-list-item .g-hovercard
+                `);
+                i = list.length;
+                while (i--) {
+                    temp = list[i];
+                    channel_id = temp.dataset.ytid;
+                    while (temp) {
+                        if (temp.tagName && temp.tagName === "LI") {
+                            temp.username = list[i].textContent;
+                            if (!modThumbs.thumbs[channel_id]) {
+                                modThumbs.thumbs[channel_id] = [temp];
+                            } else if (modThumbs.thumbs[channel_id].indexOf(temp) < 0) {
+                                modThumbs.thumbs[channel_id].push(temp);
+                            }
+                            break;
+                        }
+                        temp = temp.parentNode;
+                    }
+                }
+            }
+            function modThumbs() {
                 if ((user_settings.BLK_ON || user_settings.GEN_PPOT_ON) && !window.opener && window.yt && window.yt.config_ && /watch|index|feed|channel|results/.test(window.yt.config_.PAGE_NAME)) {
                     getVideos();
                     if (user_settings.BLK_ON && window.yt.config_.PAGE_NAME !== "channel") {
@@ -1169,57 +1212,57 @@
                     iniAction();
                 }
             }
-            function enhancedDetails() {
-                function setVideoCount() {
-                    var span = document.createElement("span");
-                    span.textContent = " · ";
-                    enhancedDetails.username.appendChild(span);
-                    enhancedDetails.link.href = window.location.origin + "/channel/" + enhancedDetails.user.dataset.ytid + "/videos";
+            function setVideoCount() {
+                var span = document.createElement("span");
+                span.textContent = " · ";
+                enhancedDetails.username.appendChild(span);
+                enhancedDetails.link.href = window.location.origin + "/channel/" + enhancedDetails.user.dataset.ytid + "/videos";
+                enhancedDetails.username.appendChild(enhancedDetails.link);
+            }
+            function updateVideoCount(details) {
+                details = details.target.response.querySelector(".pl-header-details li:nth-child(2)");
+                if (details) {
+                    enhancedDetails.link.className = "spf-link";
+                    enhancedDetails.link.textContent = cid[enhancedDetails.user.dataset.ytid] = details.textContent;
+                    setVideoCount();
+                }
+            }
+            function getVideoCount() {
+                enhancedDetails.username = document.querySelector(".yt-user-info");
+                if (!document.getElementById("uploaded-videos") && enhancedDetails.username) {
+                    enhancedDetails.link = document.createElement("a");
+                    enhancedDetails.link.id = "uploaded-videos";
                     enhancedDetails.username.appendChild(enhancedDetails.link);
-                }
-                function updateVideoCount(details) {
-                    details = details.target.response.querySelector(".pl-header-details li:nth-child(2)");
-                    if (details) {
-                        enhancedDetails.link.className = "spf-link";
-                        enhancedDetails.link.textContent = cid[enhancedDetails.user.dataset.ytid] = details.textContent;
+                    enhancedDetails.user = enhancedDetails.username.querySelector("a");
+                    if (cid[enhancedDetails.user.dataset.ytid]) {
+                        enhancedDetails.link.textContent = cid[enhancedDetails.user.dataset.ytid];
                         setVideoCount();
+                    } else {
+                        localXHR("GET", updateVideoCount, "/playlist?list=" + enhancedDetails.user.dataset.ytid.replace("UC", "UU"), "doc");
                     }
                 }
-                function getVideoCount() {
-                    enhancedDetails.username = document.querySelector(".yt-user-info");
-                    if (!document.getElementById("uploaded-videos") && enhancedDetails.username) {
-                        enhancedDetails.link = document.createElement("a");
-                        enhancedDetails.link.id = "uploaded-videos";
-                        enhancedDetails.username.appendChild(enhancedDetails.link);
-                        enhancedDetails.user = enhancedDetails.username.querySelector("a");
-                        if (cid[enhancedDetails.user.dataset.ytid]) {
-                            enhancedDetails.link.textContent = cid[enhancedDetails.user.dataset.ytid];
-                            setVideoCount();
-                        } else {
-                            localXHR("GET", updateVideoCount, "/playlist?list=" + enhancedDetails.user.dataset.ytid.replace("UC", "UU"), "doc");
-                        }
+            }
+            function getChannelInfo(details) {
+                var retry, isLive;
+                isLive = details.target.response.querySelector(".yt-badge-live");
+                if (!isLive) {
+                    retry = details.target.responseURL.split("/videos").length < 2;
+                    details = details.target.response.querySelectorAll("[data-context-item-id='" + window.ytplayer.config.args.video_id + "'] .yt-lockup-meta-info li");
+                    if (details && details.length > 0 && enhancedDetails.watchTime.textContent.split("·").length < 2) {
+                        enhancedDetails.watchTime.textContent += " · " + details[retry ? 0 : 1].textContent;
+                    } else if (retry) {
+                        localXHR("GET", getChannelInfo, "/channel/" + window.ytplayer.config.args.ucid + "/videos", "doc");
                     }
                 }
-                function getChannelInfo(details) {
-                    var retry, isLive;
-                    isLive = details.target.response.querySelector(".yt-badge-live");
-                    if (!isLive) {
-                        retry = details.target.responseURL.split("/videos").length < 2;
-                        details = details.target.response.querySelectorAll("[data-context-item-id='" + window.ytplayer.config.args.video_id + "'] .yt-lockup-meta-info li");
-                        if (details && details.length > 0 && enhancedDetails.watchTime.textContent.split("·").length < 2) {
-                            enhancedDetails.watchTime.textContent += " · " + details[retry ? 0 : 1].textContent;
-                        } else if (retry) {
-                            localXHR("GET", getChannelInfo, "/channel/" + window.ytplayer.config.args.ucid + "/videos", "doc");
-                        }
-                    }
+            }
+            function getPublishedTime() {
+                enhancedDetails.watchTime = document.querySelector(".watch-time-text");
+                if (enhancedDetails.watchTime && !enhancedDetails.watchTime.fetching && window.ytplayer && window.ytplayer.config) {
+                    enhancedDetails.watchTime.fetching = true;
+                    localXHR("GET", getChannelInfo, "/channel/" + window.ytplayer.config.args.ucid + "/search?query=%22" + window.ytplayer.config.args.video_id + "%22", "doc");
                 }
-                function getPublishedTime() {
-                    enhancedDetails.watchTime = document.querySelector(".watch-time-text");
-                    if (enhancedDetails.watchTime && !enhancedDetails.watchTime.fetching && window.ytplayer && window.ytplayer.config) {
-                        enhancedDetails.watchTime.fetching = true;
-                        localXHR("GET", getChannelInfo, "/channel/" + window.ytplayer.config.args.ucid + "/search?query=%22" + window.ytplayer.config.args.video_id + "%22", "doc");
-                    }
-                }
+            }
+            function enhancedDetails() {
                 if (window.location.pathname === "/watch") {
                     if (user_settings.VID_VID_CNT) {
                         getVideoCount();
@@ -1324,8 +1367,14 @@
                     return original.apply(this, arguments);
                 };
             }
+            function hideVolume() {
+                if (volumeWheel.cBottom && volumeWheel.cBottom.classList.contains("ytp-volume-slider-active")) {
+                    volumeWheel.cBottom.classList.remove("ytp-volume-slider-active");
+                    delete volumeWheel.cBottom.timer;
+                }
+            }
             function volumeWheel(event) {
-                var fsPl, pSets, ivCard, player, cBottom, canScroll, direction;
+                var fsPl, pSets, ivCard, player, canScroll, direction;
                 player = document.querySelector("video");
                 fsPl = document.querySelector(".ytp-playlist-menu");
                 pSets = document.querySelector(".ytp-settings-menu");
@@ -1333,23 +1382,18 @@
                 canScroll = event && (!fsPl || (fsPl && !fsPl.contains(event.target))) && (!ivCard || (ivCard && !ivCard.contains(event.target))) && (!pSets || (pSets && !pSets.contains(event.target)));
                 if (event && api && player && canScroll && (event.target.id === api || api.contains(event.target))) {
                     event.preventDefault();
-                    cBottom = document.querySelector(".ytp-chrome-bottom");
-                    if (cBottom) {
-                        if (!cBottom.classList.contains("ytp-volume-slider-active")) {
-                            cBottom.classList.add("ytp-volume-slider-active");
+                    volumeWheel.cBottom = document.querySelector(".ytp-chrome-bottom");
+                    if (volumeWheel.cBottom) {
+                        if (!volumeWheel.cBottom.classList.contains("ytp-volume-slider-active")) {
+                            volumeWheel.cBottom.classList.add("ytp-volume-slider-active");
                         }
-                        if (cBottom.timer) {
-                            window.clearTimeout(cBottom.timer);
+                        if (volumeWheel.cBottom.timer) {
+                            window.clearTimeout(volumeWheel.cBottom.timer);
                         }
                         if (api) {
                             api.dispatchEvent(new Event("mousemove"));
                         }
-                        cBottom.timer = window.setTimeout(() => {
-                            if (cBottom && cBottom.classList.contains("ytp-volume-slider-active")) {
-                                cBottom.classList.remove("ytp-volume-slider-active");
-                                delete cBottom.timer;
-                            }
-                        }, 4000);
+                        volumeWheel.cBottom.timer = window.setTimeout(hideVolume, 4000);
                     }
                     direction = event && (event.deltaY || event.wheelDeltaY);
                     api.setVolume(player.volume * 100 - (Math.sign(direction) * 5));
@@ -1467,11 +1511,14 @@
                     modComments.comments.parentNode.insertBefore(modComments.wrapper, modComments.comments);
                 }
             }
+            function setCustomStyles(clss) {
+                document.documentElement.classList[user_settings[clss] ? "add" : "remove"](customStyles.custom_styles[clss]);
+            }
             function customStyles() {
-                var plr_api, comments, sidebar, ytGrid, adverts, ads_list, custom_styles;
+                var plr_api, comments, sidebar, ytGrid, adverts, ads_list;
                 comments = document.getElementById("watch-discussion");
                 ytGrid = document.querySelector(".yt-uix-menu-top-level-flow-button:last-child a");
-                custom_styles = {
+                customStyles.custom_styles = {
                     GEN_DSBL_ADS    : "part_no_ads",
                     GEN_BLUE_GLOW   : "part_dsbl_glow",
                     GEN_HIDE_FTR    : "part_hide_footer",
@@ -1521,7 +1568,7 @@
                     if (user_settings.VID_PLR_FIT && plr_api && (!!plr_api.style.maxWidth || plr_api.style.maxWidth !== user_settings.VID_PLR_FIT_WDTH)) {
                         plr_api.style.maxWidth = user_settings.VID_PLR_FIT_WDTH || "1280px";
                     }
-                    Object.keys(custom_styles).forEach(clss => document.documentElement.classList[user_settings[clss] ? "add" : "remove"](custom_styles[clss]));
+                    Object.keys(customStyles.custom_styles).forEach(setCustomStyles);
                     if (window.location.href.split("/feed/subscriptions").length < 2) {
                         document.documentElement.classList.remove("part_grid_subs");
                     }
@@ -1596,9 +1643,8 @@
                             window.ytpsetwide("wide", config.args.player_wide, -1);
                         }
                     }
-                    if ((config.args.iv_load_policy || config.args.iv_endscreen_url) && user_settings.VID_PLR_ANTS) {
+                    if (config.args.iv_load_policy && user_settings.VID_PLR_ANTS) {
                         config.args.iv_load_policy = "3";
-                        delete config.args.iv_endscreen_url;
                     }
                     if (user_settings.VID_PLR_ADS && (!user_settings.VID_SUB_ADS || (user_settings.VID_SUB_ADS && !config.args.subscribed))) {
                         delete config.args.ad3_module;
@@ -1742,7 +1788,7 @@
                     user_settings = sets;
                     gate.dataset[key] = null;
                     customStyles();
-                    document.documentElement.dataset.parreceive = "";
+                    document.documentElement.removeAttribute("data-parreceive");
                 }
             }
             function set(setting, new_value) {
@@ -2025,6 +2071,13 @@
                 document.documentElement.dataset.setlocale = chrome.i18n.getMessage(locs);
             }
         },
+        filterChromeKeys: function(keys) {
+            if (keys[particle.id] && keys[particle.id].new_value) {
+                document.documentElement.dataset.parreceive = JSON.stringify(
+                    (keys[particle.id].new_value && keys[particle.id].new_value[particle.id]) || keys[particle.id].new_value || {}
+                );
+            }
+        },
         main: function(event) {
             var holder;
             if (!event && particle.is_userscript) {
@@ -2055,13 +2108,7 @@
                 holder.textContent = "(" + particle.inject + "(" + particle.is_userscript + "))";
                 document.documentElement.appendChild(holder);
                 if (!particle.is_userscript) {
-                    chrome.storage.onChanged.addListener(keys => {
-                        if (keys[particle.id] && keys[particle.id].new_value) {
-                            document.documentElement.dataset.parreceive = JSON.stringify(
-                                (keys[particle.id].new_value && keys[particle.id].new_value[particle.id]) || keys[particle.id].new_value || {}
-                            );
-                        }
-                    });
+                    chrome.storage.onChanged.addListener(particle.filterChromeKeys);
                 }
             }
         },
