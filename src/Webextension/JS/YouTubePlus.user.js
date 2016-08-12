@@ -490,6 +490,7 @@
                     if (document.documentElement.classList.contains("floater")) {
                         document.documentElement.classList.remove("floater");
                         document.getElementById("movie_player").removeAttribute("style");
+                        window.dispatchEvent(new Event("resize"));
                     }
                 }
             }
