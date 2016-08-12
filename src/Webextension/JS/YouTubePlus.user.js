@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.4.5
+// @version         1.4.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -129,7 +129,7 @@
                 getBlacklist.blist.appendChild(document.createTextNode("\n"));
             }
             function sortList(previous, next){
-                previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
+                return previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
             }
             function buildList(ytid) {
                 var obj = {};
@@ -403,7 +403,7 @@
                     document.getElementById("BLK").click();
                 }
             }
-            function delBlackList() {
+            function delBlackList(event) {
                 var newKey = user_settings.blacklist;
                 delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
                 event.target.parentNode.remove();
@@ -458,7 +458,7 @@
                     settingsMenu.settingsButton.click();
                     settingsMenu.settingsButton.click();
                 } else if (event.target.classList.contains("close")) {
-                    delBlackList();
+                    delBlackList(event);
                 } else if (event.target.classList.contains("P-impexp") || event.target.id === "impexp-save" || event.target.classList.contains("P-implang") || event.target.id === "implang-save") {
                     exportSettings(event.target);
                 } else if (event.target.id === "blacklist-edit" || event.target.id === "blacklist-save" || event.target.id === "blacklist-close") {
@@ -678,7 +678,7 @@
                 if (X > -1 && X + elm.offsetWidth < document.documentElement.offsetWidth) {
                     snapX = false;
                 } else if (X < 1) {
-                    X = "0";
+                    X = 0;
                     snapX = -1;
                 } else {
                     X = document.documentElement.offsetWidth - elm.offsetWidth;
@@ -1180,7 +1180,7 @@
                 modThumbs.thumbs = {};
                 list = document.querySelectorAll(`
                     .yt-lockup-byline > a,
-                    .yt-lockup-thumbnail > .g-hovercard,
+                    .yt-lockup-content .g-hovercard,
                     .video-list-item .g-hovercard
                 `);
                 i = list.length;
@@ -1336,10 +1336,10 @@
             }
             function xhrPatch(event) {
                 var temp;
-                if (checkXHR.readyState === 4) {
+                if (this.readyState === 4) {
                     temp = {args: JSON.parse(
                         "{\"" +
-                        decodeURIComponent(checkXHR.responseText
+                        decodeURIComponent(this.responseText
                             .replace(/%5C/g, "%5C%5C")
                             .replace(/%22/g, "%5C%22")
                             .replace(/&/g, "\",\"")
@@ -1355,8 +1355,8 @@
                         .replace(/%22%2C%22/g, "&")
                         .replace(/%22%3A%22/g, "=")
                         .replace(/%20/g, "+");
-                    Object.defineProperty(checkXHR, "responseText", {writable: true});
-                    checkXHR.responseText = temp;
+                    Object.defineProperty(this, "responseText", {writable: true});
+                    this.responseText = temp;
                 }
             }
             function checkXHR(original) {
