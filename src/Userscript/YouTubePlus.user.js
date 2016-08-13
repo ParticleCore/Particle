@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.4.6
+// @version         1.4.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -466,6 +466,7 @@
                 } else if (event.target.id === "P-container" || event.target.id === "P-settings") {
                     event = (event.target.id === "P-settings") ? event.target : event.target.parentNode;
                     event.remove();
+                    document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
                 } else if (event.target.id !== "DNT" && event.target.tagName !== "A" && event.target.parentNode.id === "P-sidebar-list") {
                     saveSettings("no-notification");
                     document.getElementById("P-content").remove();
@@ -481,16 +482,17 @@
                     if (pWrapper) {
                         pWrapper.remove();
                     } else {
+                        if (document.documentElement.classList.contains("floater")) {
+                            document.documentElement.classList.remove("floater");
+                            document.getElementById("movie_player").removeAttribute("style");
+                            window.dispatchEvent(new Event("resize"));
+                        }
                         pWrapper = getMenu("MEN");
                         pWrapper.querySelector("#P-container").appendChild(getMenu("GEN"));
                         document.getElementById("body-container").insertBefore(pWrapper, document.getElementById("page-container"));
                         document.addEventListener("click", navigateSettings);
                     }
                     document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
-                    if (document.documentElement.classList.contains("floater")) {
-                        document.documentElement.classList.remove("floater");
-                        document.getElementById("movie_player").removeAttribute("style");
-                    }
                 }
             }
             function firstTime(event) {
@@ -771,9 +773,10 @@
                 }
             }
             function iniFloater() {
-                var player, plrApi, out_of_sight, isFloater, isFScreen, floaterUI;
+                var player, plrApi, out_of_sight, isFloater, isFScreen, floaterUI, settings_open;
                 player = document.getElementById("movie_player");
                 plrApi = document.getElementById("player-api").getBoundingClientRect();
+                settings_open = document.getElementById("P-settings");
                 if (player) {
                     out_of_sight = plrApi.bottom < ((plrApi.height / 2) + 52);
                     isFloater = document.documentElement.classList.contains("floater");
@@ -789,12 +792,12 @@
                         document.addEventListener("mousedown", dragFloater);
                         player.appendChild(floaterUI);
                     }
-                    if (out_of_sight && !isFloater) {
+                    if (out_of_sight && !isFloater && !settings_open) {
                         document.documentElement.classList.add("floater");
                         window.addEventListener("resize", updatePos);
                         updatePos();
                         window.dispatchEvent(new Event("resize"));
-                    } else if (!out_of_sight && isFloater) {
+                    } else if ((!out_of_sight || settings_open) && isFloater) {
                         document.documentElement.classList.remove("floater");
                         window.removeEventListener("resize", updatePos);
                         player.removeAttribute("style");
@@ -1335,7 +1338,7 @@
                 }
             }
             function xhrPatch(event) {
-                var temp;
+                var temp, player;
                 if (this.readyState === 4) {
                     temp = {args: JSON.parse(
                         "{\"" +
@@ -1357,6 +1360,10 @@
                         .replace(/%20/g, "+");
                     Object.defineProperty(this, "responseText", {writable: true});
                     this.responseText = temp;
+                    player = document.getElementById("movie_player");
+                    if (player) {
+                        player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
+                    }
                 }
             }
             function checkXHR(original) {
