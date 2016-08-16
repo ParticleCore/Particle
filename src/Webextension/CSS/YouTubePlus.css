@@ -630,6 +630,10 @@
     #movie_player .video-ads .ad-container:not(.ad-overlay){
        top: 0;
     }
+    .floater #movie_player,
+    .part_fullbrowser #movie_player {
+        background-color: #000 !important;
+    }
 /*   end| Enhancements */
 /* start| Improved notification button */
     .part_notif_button #appbar-main-guide-notification-container{

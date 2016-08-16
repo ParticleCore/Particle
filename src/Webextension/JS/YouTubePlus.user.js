@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.4.7
+// @version         1.4.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1091,7 +1091,7 @@
                     event = event.target;
                     if (event.classList.contains("popoutmode")) {
                         popPlayer(event.dataset.link);
-                    } else {
+                    } else if (event.dataset.ytid !== "undefined") {
                         user_settings.blacklist[event.dataset.ytid] = event.dataset.user;
                         set("blacklist", user_settings.blacklist);
                         modThumbs();
@@ -1114,7 +1114,7 @@
                                 button.content.firstChild.dataset.link = temp[j].querySelector("a[href*='/watch?v']").href;
                                 thumb.appendChild(setLocale(button.content).firstChild);
                             }
-                            if (user_settings.BLK_ON && !thumb.querySelector(".blacklist")) {
+                            if (user_settings.BLK_ON && !thumb.querySelector(".blacklist") && window.yt.config_.PAGE_NAME !== "channel") {
                                 button = document.createElement("template");
                                 button.innerHTML = "<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist ytplus_sprite'></div>";
                                 button.content.firstChild.dataset.user = temp[j].username;
@@ -1184,7 +1184,8 @@
                 list = document.querySelectorAll(`
                     .yt-lockup-byline > a,
                     .yt-lockup-content .g-hovercard,
-                    .video-list-item .g-hovercard
+                    .video-list-item .g-hovercard,
+                    .channels-content-item .yt-lockup-title > a
                 `);
                 i = list.length;
                 while (i--) {
@@ -1540,6 +1541,11 @@
                     VID_TTL_CMPT    : "part_compact_title",
                     VID_DESC_SHRT   : "part_labelless_buttons"
                 };
+                if (window.yt && window.yt.config_ && window.yt.config_.PAGE_NAME === "shared_conversation") {
+                    window.stop();
+                    window.location = document.querySelector("[rel='shortlink']").href;
+                    return;
+                }
                 if (window.name === "popOut") {
                     document.documentElement.classList.add("part_popout");
                 }
