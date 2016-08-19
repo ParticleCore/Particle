@@ -734,6 +734,7 @@
         right: 0;
         top: 0;
         transition: background-color 1s;
+        -webkit-transform: translateZ(0);
     }
     #masthead-positioner:before{
         z-index: 1;
