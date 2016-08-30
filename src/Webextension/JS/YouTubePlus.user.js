@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.4.9
+// @version         1.5.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -262,7 +262,6 @@
                             <div><input id='VID_PLR_ALACT' type='checkbox'></input><label for='VID_PLR_ALACT' data-p='tnd|VID_PLR_ALACT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#shortcuts_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div><input id='VID_PLR_SIZE_MEM' type='checkbox'></input><label for='VID_PLR_SIZE_MEM' data-p='tnd|VID_PLR_SIZE_MEM'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_mode' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div><input id='VID_VOL_WHEEL' type='checkbox'></input><label for='VID_VOL_WHEEL' data-p='tnd|VID_VOL_WHEEL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#wheel_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_DASH' type='checkbox'></input><label for='VID_PLR_DASH' data-p='tnd|VID_PLR_DASH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#dash_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div><input id='VID_PLR_HFR' type='checkbox'></input><label for='VID_PLR_HFR' data-p='tnd|VID_PLR_HFR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hfr_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div><input id='VID_PLR_HTML5' type='checkbox'></input><label for='VID_PLR_HTML5' data-p='tnd|VID_PLR_HTML5'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#force_html5' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div>
@@ -1624,7 +1623,6 @@
                         document.title = config.args.title;
                         config.args.el = "embedded";
                     }
-                    config.args.dash = (user_settings.VID_PLR_DASH && "0") || config.args.dash;
                     config.args.vq = user_settings.VID_DFLT_QLTY;
                     if (user_settings.VID_DFLT_QLTY !== "auto") {
                         try {
@@ -1889,7 +1887,6 @@
                 VID_PLR_ATPL    : true,
                 VID_PLR_ALVIS   : true,
                 VID_PLR_SIZE_MEM: true,
-                VID_PLR_FIT     : true,
                 VID_PLR_VOL_LDN : true,
                 VID_POST_TIME   : true,
                 VID_VID_CNT     : true,
@@ -2001,7 +1998,6 @@
                 VID_PLR_ALACT         : "Player shortcuts always active",
                 VID_SUB_ADS           : "Enable advertisements only in videos from subscribed channels",
                 VID_PLR_ANTS          : "Disable annotations",
-                VID_PLR_DASH          : "Disable DASH playback",
                 VID_PLR_HFR           : "Disable HFR (60fps)",
                 VID_PLR_HTML5         : "Use the HTML5 player when possible",
                 VID_PLR_CC            : "Disable subtitles and CC",
