@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.0
+// @version         1.5.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -685,10 +685,10 @@
                     X = document.documentElement.offsetWidth - elm.offsetWidth;
                     snapX = 1;
                 }
-                if (Y > 51 && Y + elm.offsetHeight < document.documentElement.offsetHeight) {
+                if (Y > 50 && Y + elm.offsetHeight < document.documentElement.offsetHeight) {
                     snapY = false;
-                } else if (Y < 52) {
-                    Y = 52;
+                } else if (Y < 51) {
+                    Y = 50;
                     snapY = -1;
                 } else {
                     Y = document.documentElement.offsetHeight - elm.offsetHeight;
@@ -714,7 +714,7 @@
                     x = bounds.X;
                 }
                 if (user_settings.floaterSnapY === -1) {
-                    y = "52px";
+                    y = "50px";
                 } else if (user_settings.floaterSnapY === 1) {
                     y = document.documentElement.offsetHeight - player.offsetHeight + "px";
                 } else {
@@ -777,7 +777,7 @@
                 plrApi = document.getElementById("player-api").getBoundingClientRect();
                 settings_open = document.getElementById("P-settings");
                 if (player) {
-                    out_of_sight = plrApi.bottom < ((plrApi.height / 2) + 52);
+                    out_of_sight = plrApi.bottom < ((plrApi.height / 2) + 50);
                     isFloater = document.documentElement.classList.contains("floater");
                     isFScreen = document.querySelector(".ytp-fullscreen");
                     floaterUI = document.getElementById("part_floaterui");
