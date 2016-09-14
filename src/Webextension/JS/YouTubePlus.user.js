@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.1
+// @version         1.5.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -926,12 +926,14 @@
                 if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
                     if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
                         pi = api.getVideoStats().fmt;
-                        temp = window.ytplayer.config.args.adaptive_fmts.split(",");
-                        i = temp.length;
-                        while (i--) {
-                            if (temp[i].indexOf("itag=" + pi) > 0) {
-                                advancedOptions.fps = parseInt(temp[i].match(/fps=([\d]+)/)[1]);
-                                break;
+                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts) {
+                            temp = window.ytplayer.config.args.adaptive_fmts.split(",");
+                            i = temp.length;
+                            while (i--) {
+                                if (temp[i].indexOf("itag=" + pi) > 0) {
+                                    advancedOptions.fps = parseInt(temp[i].match(/fps=([\d]+)/)[1]);
+                                    break;
+                                }
                             }
                         }
                         if (!advancedOptions.fps || advancedOptions.fps === 1) {
@@ -988,7 +990,7 @@
                 }
             }
             function handleToggles(event) {
-                if (event.target.dataset && event.target.dataset.action) {
+                if (event.target.dataset && event.target.dataset.action && advancedOptions.actions[event.target.dataset.action]) {
                     advancedOptions.actions[event.target.dataset.action](event);
                 }
             }
