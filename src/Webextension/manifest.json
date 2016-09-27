@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "YouTube Plus",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "description": "YouTube with more freedom",
     "default_locale": "en",
     "icons": {
@@ -11,7 +11,11 @@
     },
     "content_scripts": [{
         "matches": ["*://www.youtube.com/*"],
-        "exclude_matches": ["*://www.youtube.com/embed/*", "*://www.youtube.com/tv*"],
+        "exclude_matches": [
+            "*://www.youtube.com/live_chat*",
+            "*://www.youtube.com/embed/*",
+            "*://www.youtube.com/tv*"
+        ],
         "js": ["JS/YouTubePlus.user.js"],
         "css": ["CSS/YouTubePlus.css"],
         "run_at": "document_start"

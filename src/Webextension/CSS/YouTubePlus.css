@@ -62,7 +62,7 @@
     html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
         display: none !important;
     }
-    @media screen and (max-width: 640px){
+    @media screen and (max-width: 639px){
         #player-api{
             height: auto !important;
             left: 0 !important;
@@ -168,7 +168,7 @@
         padding-bottom: 0;
         padding-top: 0;
     }
-    @media screen and (max-width: 640px){
+    @media screen and (max-width: 639px){
        .part_hide_comments #P-show-comments{
           display: none;
        }
@@ -588,7 +588,7 @@
     #player-unavailable:not(.hid) + #player-api{
         display: none;
     }
-    @media screen and (max-width: 640px){
+    @media screen and (max-width: 639px){
         #theater-background,
         #footer-container{
             display: none;
@@ -1118,7 +1118,7 @@
         vertical-align: middle;
         width: 19px;
     }
-    @media screen and (max-width: 640px){
+    @media screen and (max-width: 639px){
         #yt-masthead #P{
             display: none;
         }

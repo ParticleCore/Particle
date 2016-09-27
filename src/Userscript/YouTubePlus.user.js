@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.2
+// @version         1.5.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -7,6 +7,7 @@
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
 // @exclude         *://www.youtube.com/embed/*
+// @exclude         *://www.youtube.com/live_chat*
 // @run-at          document-start
 // @downloadURL     https://github.com/ParticleCore/Particle/raw/master/src/Userscript/YouTubePlus.user.js
 // @homepageURL     https://github.com/ParticleCore/Particle
@@ -1472,7 +1473,7 @@
                             list.push(subPlaylist.video_list[i].dataset.videoIds);
                         }
                     }
-                    list.reverse().join("%2C");
+                    list = list.reverse().splice(0, 20).join("%2C");
                     subPlaylist.list_title = subPlaylist.list_title && subPlaylist.list_title.querySelector(".epic-nav-item-heading").textContent.trim();
                     button = document.getElementById("subscription-playlist");
                     button.href = "/watch_videos?title=" + subPlaylist.list_title + "&video_ids=" + list;
@@ -1693,7 +1694,7 @@
                 autoplaybar = document.querySelector(".autoplay-bar");
                 description = document.getElementById("action-panel-details");
                 if (user_settings.GEN_YT_LOGO_LINK && window.yt && window.yt.config_ && window.yt.config_.LOGGED_IN) {
-                    logo = document.querySelector("map[name='doodle'] > area, #logo-container");
+                    logo = document.querySelector("map[name='doodle'] > area, a#logo-container");
                     if (logo && logo.href === window.location.origin + "/") {
                         logo.href = "/feed/subscriptions";
                     }
