@@ -719,6 +719,9 @@
     .part_fit_theater .watch-stage-mode #content{
         margin-top: 10px;
     }
+    #page:not(.watch-stage-mode) #player-api{
+        max-width: none !important;
+    }
 /*   end| Fit player in theater mode */
 /* start| Cinema mode */
     #movie_player:before,

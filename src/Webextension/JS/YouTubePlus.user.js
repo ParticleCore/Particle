@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.3
+// @version         1.5.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -365,7 +365,7 @@
                 if (target.classList.contains("P-impexp") || target.classList.contains("P-implang")) {
                     expCont = document.getElementById("exp-cont");
                     if (expCont) {
-                        expCont.remove();
+                        expCont.outerHTML = "";
                         return;
                     }
                     expCont = document.createElement("template");
@@ -406,7 +406,7 @@
             function delBlackList(event) {
                 var newKey = user_settings.blacklist;
                 delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
-                event.target.parentNode.remove();
+                event.target.parentNode.outerHTML = "";
                 set("blacklist", newKey);
             }
             function delNotification() {
@@ -431,7 +431,7 @@
                 if (!salt) {
                     notification = document.getElementById("appbar-main-guide-notification-container");
                     if (notification.childNodes.length < 1) {
-                        notification.remove();
+                        notification.outerHTML = "";
                         notification = document.createElement("template");
                         notification.innerHTML = //
                             `<div id='appbar-main-guide-notification-container'>
@@ -465,11 +465,12 @@
                     setBlackList(event.target);
                 } else if (event.target.id === "P-container" || event.target.id === "P-settings") {
                     event = (event.target.id === "P-settings") ? event.target : event.target.parentNode;
-                    event.remove();
+                    event.outerHTML = "";
                     document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
+                    window.dispatchEvent(new Event("resize"));
                 } else if (event.target.id !== "DNT" && event.target.tagName !== "A" && event.target.parentNode.id === "P-sidebar-list") {
                     saveSettings("no-notification");
-                    document.getElementById("P-content").remove();
+                    document.getElementById("P-content").outerHTML = "";
                     document.getElementById("P-container").appendChild(getMenu(event.target.id));
                     event.target.parentNode.querySelector(".selected").removeAttribute("class");
                     event.target.className = "selected";
@@ -480,12 +481,11 @@
                 if (event.target.id === "P" && event.target.tagName !== "INPUT") {
                     pWrapper = document.getElementById("P-settings");
                     if (pWrapper) {
-                        pWrapper.remove();
+                        pWrapper.outerHTML = "";
                     } else {
                         if (document.documentElement.classList.contains("floater")) {
                             document.documentElement.classList.remove("floater");
                             document.getElementById("movie_player").removeAttribute("style");
-                            window.dispatchEvent(new Event("resize"));
                         }
                         pWrapper = getMenu("MEN");
                         pWrapper.querySelector("#P-container").appendChild(getMenu("GEN"));
@@ -493,6 +493,7 @@
                         document.addEventListener("click", navigateSettings);
                     }
                     document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
+                    window.dispatchEvent(new Event("resize"));
                 }
             }
             function firstTime(event) {
@@ -871,7 +872,7 @@
             }
             function hideScreenshot(event) {
                 if (event.target.id === "close-screenshot") {
-                    event.target.parentNode.remove();
+                    event.target.parentNode.outerHTML = "";
                     document.removeEventListener("click", hideScreenshot);
                 }
             }
@@ -1045,7 +1046,7 @@
                     cnslCont.appendChild(cnslBtn);
                     header.appendChild(cnslCont);
                     if (advancedOptions.controls) {
-                        advancedOptions.controls.remove();
+                        advancedOptions.controls.outerHTML = "";
                     }
                     advancedOptions.controls = document.createElement("template");
                     advancedOptions.controls.innerHTML = //
@@ -1138,16 +1139,16 @@
                         j = temp.length;
                         while (j--) {
                             if (has_upnext && has_upnext.contains(temp[j])) {
-                                has_upnext.parentNode.remove();
+                                has_upnext.parentNode.outerHTML = "";
                                 has_upnext = document.querySelector(".watch-sidebar-separation-line");
                                 if (has_upnext) {
-                                    has_upnext.remove();
+                                    has_upnext.outerHTML = "";
                                 }
                                 has_upnext = false;
                                 parent = false;
                             } else {
                                 parent = temp[j].parentNode;
-                                temp[j].remove();
+                                temp[j].outerHTML = "";
                             }
                             temp.splice(j, 1);
                             while (parent) {
@@ -1155,7 +1156,7 @@
                                     break;
                                 }
                                 parent = parent.parentNode;
-                                parent.firstChild.remove();
+                                parent.firstChild.outerHTML = "";
                             }
                         }
                         if (!temp.length) {
@@ -1169,13 +1170,13 @@
                 while (i--) {
                     if (temp[i].querySelectorAll("ul").length < 2) {
                         parent = temp[i].parentNode;
-                        temp[i].remove();
+                        temp[i].outerHTML = "";
                         while (parent) {
                             if (parent.childElementCount) {
                                 break;
                             }
                             parent = parent.parentNode;
-                            parent.firstChild.remove();
+                            parent.firstChild.outerHTML = "";
                         }
                     }
                 }
@@ -1566,14 +1567,14 @@
                         .video-list-item:not(.related-list-item):not(.dashboard-widget-item)`;
                     adverts = user_settings.GEN_DSBL_ADS && document.querySelector(ads_list);
                     while (adverts) {
-                        adverts.remove();
+                        adverts.outerHTML = "";
                         adverts = document.querySelector(ads_list);
                     }
                     if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((user_settings.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (user_settings.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (user_settings.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
-                        sidebar.remove();
+                        sidebar.outerHTML = "";
                     }
                     if (window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
-                        comments.remove();
+                        comments.outerHTML = "";
                     }
                     if (user_settings.VID_HIDE_COMS === "1") {
                         document.documentElement.classList.add("part_hide_comments");
@@ -1702,7 +1703,7 @@
                 if (user_settings.GEN_REM_APUN && window.location.pathname === "/watch" && autoplaybar) {
                     checkbox = document.querySelector(".checkbox-on-off");
                     if (checkbox) {
-                        checkbox.remove();
+                        checkbox.outerHTML = "";
                     }
                 }
                 if (user_settings.VID_LAYT_AUTO_PNL && window.location.pathname === "/watch" && description) {
@@ -1852,7 +1853,7 @@
             function closeMigrationInstructions(event) {
                 if (event && event.target && event.target.id === "close_migration_instructions") {
                     document.removeEventListener("click", closeMigrationInstructions);
-                    event.target.parentNode.remove();
+                    event.target.parentNode.outerHTML = "";
                     set("migration_instructions", true);
                 }
             }
