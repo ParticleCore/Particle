@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.4
+// @version         1.5.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -561,14 +561,14 @@
                             a.UNIVERSAL_HOVERCARDS = !user_settings.GEN_DSB_HVRC;
                         }
                     }
-                    original.apply(scriptExit, arguments);
+                    original.apply(this, arguments);
                 };
             }
             function modEmbed(original) {
                 return function (a, b) {
                     var temp, player;
                     b = modArgs(b);
-                    temp = original.apply(scriptExit, arguments);
+                    temp = original.apply(this, arguments);
                     player = document.getElementById("movie_player");
                     if (player) {
                         player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
@@ -579,7 +579,7 @@
             function modAutoplay(original) {
                 return function (a, b) {
                     if (!b || user_settings.plApl || (!user_settings.plApl && b.feature && b.feature !== "autoplay")) {
-                        original.apply(scriptExit, arguments);
+                        original.apply(this, arguments);
                     }
                 };
             }
@@ -618,16 +618,16 @@
                     var player;
                     b = modArgs(b);
                     if (a.id === "upsell-video") {
-                        original.apply(scriptExit, arguments);
+                        original.apply(this, arguments);
                     } else if (typeof a === "object") {
-                        player_instance = original.apply(scriptExit, arguments);
+                        player_instance = original.apply(this, arguments);
                         Object.keys(player_instance).some(iterateKeys);
                         player = document.getElementById("movie_player");
-                        if (!user_settings.VID_PLR_ATPL && player) {
+                        if (!user_settings.VID_PLR_ATPL && player && (!window.opener || window.location.hash === "")) {
                             if (window.ytplayer.config.args.dvmap && !user_settings.VID_PLR_ADS) {
                                 window.ytplayer.config.args.vmap = window.ytplayer.config.args.dvmap;
                             }
-                            player.cueVideoByPlayerVars(window.ytplayer.config.args);
+                            player.stopVideo();
                         }
                     }
                 };
@@ -1450,6 +1450,15 @@
                     document.addEventListener("mousedown", dragPopOut);
                 }
             }
+            function resumePlayback() {
+                var temp = this.document.querySelector("video");
+                if (temp && !isNaN(temp.duration) && temp.currentTime < temp.duration) {
+                    temp = temp.currentTime;
+                    window.setTimeout(function() {
+                        window.location.hash = "t=" + temp;
+                    }, 0);
+                }
+            }
             function popPlayer(url) {
                 var popOut, width, height, pop_url, video;
                 width = parseInt(user_settings.VID_PPOT_SZ) || 533;
@@ -1462,6 +1471,9 @@
                     api.cueVideoByPlayerVars(window.ytplayer.config.args);
                 }
                 popOut = window.open(pop_url, "popOut", "width=" + width + ",height=" + height);
+                if (url.target) {
+                    popOut.addEventListener("beforeunload", resumePlayback);
+                }
                 popOut.focus();
             }
             function setSubPlaylist(event) {
@@ -1649,7 +1661,9 @@
                     if (user_settings.VID_PLR_INFO) {
                         config.args.showinfo = "1";
                     }
-                    if (!user_settings.VID_PLR_ATPL) {
+                    if (window.opener && window.location.hash !== "") {
+                        config.args.autoplay = "1";
+                    } else if (!user_settings.VID_PLR_ATPL) {
                         config.args.autoplay = "0";
                     }
                     if (user_settings.VID_PLR_SIZE_MEM) {
