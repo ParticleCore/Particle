@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.5
+// @version         1.5.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1538,7 +1538,7 @@
                 document.documentElement.classList[user_settings[clss] ? "add" : "remove"](customStyles.custom_styles[clss]);
             }
             function customStyles() {
-                var plr_api, comments, sidebar, ytGrid, adverts, ads_list;
+                var child, parent, plr_api, comments, sidebar, ytGrid, adverts, ads_list;
                 comments = document.getElementById("watch-discussion");
                 ytGrid = document.querySelector(".yt-uix-menu-top-level-flow-button:last-child a");
                 customStyles.custom_styles = {
@@ -1579,7 +1579,15 @@
                         .video-list-item:not(.related-list-item):not(.dashboard-widget-item)`;
                     adverts = user_settings.GEN_DSBL_ADS && document.querySelector(ads_list);
                     while (adverts) {
-                        adverts.outerHTML = "";
+                        child = adverts;
+                        while (child) {
+                            parent = child.parentNode;
+                            if (parent.childElementCount > 1) {
+                                child.outerHTML = "";
+                                break;
+                            }
+                            child = parent;
+                        }
                         adverts = document.querySelector(ads_list);
                     }
                     if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((user_settings.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (user_settings.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (user_settings.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
