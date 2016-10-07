@@ -692,8 +692,8 @@
         right: 0;
         width: 100%;
     }
-    .part_fit_theater .watch-stage-mode #player-api:before,
-    .part_fit_theater .watch-stage-mode #player-unavailable:before{
+    .part_fit_theater .watch-stage-mode #player-api:after,
+    .part_fit_theater .watch-stage-mode #player-unavailable:after{
         content: '';
         display: block;
         padding-top: 56.25%;
@@ -724,7 +724,7 @@
     }
 /*   end| Fit player in theater mode */
 /* start| Cinema mode */
-    #movie_player:before,
+    #player-api:before,
     #masthead-positioner:before{
         bottom: 0;
         content: '';
@@ -734,12 +734,13 @@
         right: 0;
         top: 0;
         transition: background-color 1s;
+        transform: translateZ(0);
         -webkit-transform: translateZ(0);
     }
     #masthead-positioner:before{
         z-index: 1;
     }
-    .part_cinema_mode #movie_player:before,
+    .part_cinema_mode #player-api:before,
     .part_cinema_mode #masthead-positioner:before{
         background-color: rgba(0, 0, 0, .9);
     }
