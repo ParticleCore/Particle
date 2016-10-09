@@ -1,15 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 48 24" style="enable-background:new 0 0 48 24;" xml:space="preserve">
-<g id="XMLID_7_">
-	<polygon id="XMLID_8_" points="8.1,13 4.6,16.5 2,13.9 2,22 10,22 7.4,19.4 10.9,15.8 	"/>
-	<polygon id="XMLID_9_" points="15.9,13 13.1,15.8 16.6,19.4 14,22 22,22 22,13.9 19.4,16.5 	"/>
-	<polygon id="XMLID_10_" points="14,3 16.6,5.6 13.1,9.2 15.9,12 19.4,8.5 22,11.1 22,3 	"/>
-	<polygon id="XMLID_16_" points="10,3 2,3 2,11.1 4.6,8.5 8.1,12 10.9,9.2 7.4,5.6 	"/>
+<svg version="1.1" id="layer" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 120 96" style="enable-background:new 0 0 120 96;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:#27346A;}
+	.st2{fill:#2790C3;}
+	.st3{fill:#1F264F;}
+</style>
+<g id="move3">
+	<polygon id="XMLID_18_" class="st0" points="56.4,5.6 57.2,6.3 60,3.5 62.8,6.3 63.6,5.6 60,2 	"/>
+	<polygon id="XMLID_17_" class="st0" points="66.4,8.4 65.7,9.2 68.5,12 65.7,14.8 66.4,15.6 70,12 	"/>
+	<polygon id="XMLID_16_" class="st0" points="53.6,8.4 50,12 53.6,15.6 54.3,14.8 51.5,12 54.3,9.2 	"/>
+	<polygon id="XMLID_15_" class="st0" points="60,20.5 57.2,17.7 56.4,18.4 60,22 63.6,18.4 62.8,17.7 	"/>
+	<circle id="XMLID_10_" class="st0" cx="60" cy="12" r="2"/>
 </g>
-<g id="XMLID_32_">
-	<path id="XMLID_34_" d="M31,4v12h16V4H31z M45,14H33V6h12V14z"/>
-	<polygon id="XMLID_33_" points="39,18 27,18 27,10 30,10 30,8 25,8 25,20 41,20 41,17 39,17 	"/>
+<polygon id="top_1_" class="st0" points="60,26.1 50.1,36 52.9,38.8 60,31.8 67.1,38.8 69.9,36 "/>
+<polygon id="triangle_1_" class="st0" points="53,68 67,60 53,52 "/>
+<g id="reverse">
+	<polygon id="XMLID_155_" class="st0" points="59,82 55,82 55,88 52,88 57,94 62,88 59,88 	"/>
+	<polygon id="XMLID_157_" class="st0" points="63,74 58,80 61,80 61,86 65,86 65,80 68,80 	"/>
+</g>
+<g id="pop">
+	<path id="XMLID_34_" d="M7,52v12h16V52H7z M21,62H9v-8h12V62z"/>
+	<polygon id="XMLID_33_" points="15,66 3,66 3,58 6,58 6,56 1,56 1,68 17,68 17,65 15,65 	"/>
+</g>
+<path id="cinema" d="M20,75v2h-2v-2H6v2H4v-2H2v18h2v-2h2v2h12v-2h2v2h2V75H20z M6,89H4v-2h2V89z M6,85H4v-2h2V85z M6,81H4v-2h2V81z
+	 M16,91H8v-6h8V91z M16,83H8v-6h8V83z M20,89h-2v-2h2V89z M20,85h-2v-2h2V85z M20,81h-2v-2h2V81z"/>
+<path id="loop" d="M36,3c-2.5,0-4.7,1-6.4,2.6l1.4,1.4C32.3,5.8,34.1,5,36,5c3.9,0,7,3.1,7,7c0,3.9-3.1,7-7,7s-7-3.1-7-7h2.5L28,7
+	l-3.5,5H27c0,5,4,9,9,9s9-4,9-9C45,7,41,3,36,3z"/>
+<g id="thumb">
+	<path id="XMLID_148_" d="M24,51v18h24V51H24z M46,67H26V53h20V67z"/>
+	<circle id="XMLID_146_" cx="32" cy="57" r="3"/>
+	<polygon id="XMLID_32_" points="27,63 30,61 33,63 34,63 40,57 45,62 45,66 27,66 	"/>
+</g>
+<polygon id="triangle" points="5,44 19,36 5,28 "/>
+<g id="plus">
+	<polygon id="XMLID_134_" points="5,20 19,12 5,4 	"/>
+	<polygon id="XMLID_137_" points="20,3 20,0 18,0 18,3 15,3 15,5 18,5 18,8 20,8 20,5 23,5 23,3 	"/>
+</g>
+<g id="save">
+	<path id="XMLID_147_" d="M89,4H76v16h16V7L89,4z M79,5h9v6h-9V5z M90,19H78v-6h12V19z"/>
+	<rect id="XMLID_145_" x="86" y="6" width="1" height="4"/>
+</g>
+<g id="console">
+	<rect id="XMLID_159_" x="78" y="31" width="12" height="2"/>
+	<rect id="XMLID_158_" x="78" y="35" width="12" height="2"/>
+	<rect id="XMLID_156_" x="78" y="39" width="12" height="2"/>
+</g>
+<g id="thumb-pop-out">
+	<polygon id="XMLID_164_" points="86,64 80,64 80,59 82,59 82,57 79,57 79,65 87,65 87,62 86,62 	"/>
+	<path id="XMLID_154_" d="M83,55v6h6v-6H83z M88,60h-4v-3h4V60z"/>
+</g>
+<polygon id="blacklist" points="88.9,80.5 87.5,79.1 84,82.6 80.5,79.1 79.1,80.5 82.6,84 79.1,87.5 80.5,88.9 84,85.4 87.5,88.9 
+	88.9,87.5 85.4,84 "/>
+<circle id="radio-button" cx="108" cy="12" r="4"/>
+<polygon id="checkmark" points="103.4,35.2 102,36.7 106.2,40.9 114.7,32.4 113.3,31 106.2,38.1 "/>
+<g id="paypal">
+	<path id="XMLID_11_" class="st1" d="M113.4,52.4c-0.8-0.9-2.3-1.4-4.3-1.4h-5.6c-0.4,0-0.7,0.3-0.8,0.7l-2.3,14.8
+		c0,0.3,0.2,0.6,0.5,0.6h3.5l0.9-5.5l0,0.2c0.1-0.4,0.4-0.7,0.8-0.7h1.6c3.2,0,5.7-1.3,6.5-5.1c0-0.1,0-0.2,0.1-0.3
+		c-0.1,0-0.1,0,0,0C114.3,54.2,114.1,53.2,113.4,52.4"/>
+	<path id="XMLID_6_" class="st1" d="M106.5,55.1c0.1,0,0.2-0.1,0.3-0.1h4.4c0.5,0,1,0,1.4,0.1c0.1,0,0.2,0,0.4,0.1
+		c0.1,0,0.2,0.1,0.3,0.1c0.1,0,0.1,0,0.2,0.1c0.2,0.1,0.4,0.2,0.6,0.3c0.2-1.4,0-2.4-0.8-3.2c-0.8-0.9-2.3-1.4-4.3-1.4h-5.6
+		c-0.4,0-0.7,0.3-0.8,0.7l-2.3,14.8c0,0.3,0.2,0.6,0.5,0.6h3.5l1.8-11.4C106.1,55.4,106.3,55.2,106.5,55.1z"/>
+	<path id="XMLID_5_" class="st2" d="M114.1,55.9c-0.7,3.8-3.3,5.1-6.5,5.1h-1.6c-0.4,0-0.7,0.3-0.8,0.7l-1.1,6.8
+		c0,0.3,0.2,0.5,0.4,0.5h2.9c0.3,0,0.6-0.3,0.7-0.6l0-0.1l0.5-3.5l0-0.2c0.1-0.3,0.3-0.6,0.7-0.6h0.4c2.8,0,5-1.1,5.7-4.5
+		c0.3-1.4,0.1-2.5-0.6-3.4c-0.2-0.2-0.5-0.4-0.8-0.6C114.1,55.7,114.1,55.8,114.1,55.9L114.1,55.9z"/>
+	<path id="XMLID_4_" class="st3" d="M113.3,55.3c-0.1,0-0.2-0.1-0.3-0.1c-0.1,0-0.2,0-0.4-0.1c-0.4-0.1-0.9-0.1-1.4-0.1h-4.4
+		c-0.1,0-0.2,0-0.3,0.1c-0.2,0.1-0.4,0.3-0.4,0.5l-0.9,5.9l0,0.2c0.1-0.4,0.4-0.7,0.8-0.7h1.6c3.2,0,5.7-1.3,6.5-5.1
+		c0-0.1,0-0.2,0.1-0.3c-0.2-0.1-0.4-0.2-0.6-0.3C113.5,55.3,113.4,55.3,113.3,55.3"/>
+</g>
+<g id="ytshortcuts_1_">
+	<polygon id="XMLID_14_" points="34,35 37,35 37,40 38,40 38,41 34,41 34,40 35,40 35,36 34,36 	"/>
+	<rect id="XMLID_13_" x="35" y="31" width="2" height="2"/>
+	<path id="XMLID_3_" d="M36,27c-5,0-9,4-9,9c0,5,4,9,9,9s9-4,9-9C45,31,41,27,36,27z M36,43.1c-3.9,0-7.1-3.2-7.1-7.1
+		s3.2-7.1,7.1-7.1s7.1,3.2,7.1,7.1S39.9,43.1,36,43.1z"/>
+</g>
+<g id="screenshot">
+	<path id="XMLID_20_" d="M42.7,79l-2.3-4h-9l-2.3,4H25v14h22V79H42.7z M36,90c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S38.8,90,36,90z"
+		/>
+	<circle id="XMLID_19_" cx="36" cy="85" r="4"/>
 </g>
 </svg>
