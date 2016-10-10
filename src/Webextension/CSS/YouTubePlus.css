@@ -1,12 +1,3 @@
-/* start| global sprite */
-    .ytplus_sprite,
-    #DNT:hover:after,
-    #player-console > div,
-    #P-content input[type='radio']:checked + label:before,
-    #P-content input[type='checkbox']:checked + label:before{
-        background-image: url(/images/sprite.png);
-    }
-/*   end| global sprite */
 /* start| Ads visibility */
     .part_no_ads #header,
     .part_no_ads #feed-pyv-container,
@@ -62,7 +53,7 @@
     html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
         display: none !important;
     }
-    @media screen and (max-width: 639px){
+    @media screen and (max-width: 656px){
         #player-api{
             height: auto !important;
             left: 0 !important;
@@ -84,15 +75,16 @@
         #placeholder-player{
             display: none !important;
         }
-        #movie_player {
+        #movie_player{
             box-shadow: 0 0 10px #000;
             height: initial !important;
             left: initial !important;
             position: fixed !important;
             top: 50px !important;
             width: 100% !important;
+            margin-left: auto;
         }
-        #movie_player:after {
+        #movie_player{
             content: '';
             display: block;
             padding-top: 56.25%;
@@ -129,7 +121,7 @@
         width: 100%;
         z-index: -1;
     }
-    @media screen and (min-width: 640px){
+    @media screen and (min-width: 657px){
         .floater #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
             opacity: 1;
             pointer-events: initial;
@@ -141,8 +133,18 @@
         margin: 5px;
         width: 22px;
     }
+    #part_floaterui svg{
+        fill: #fff;
+        width: 20px;
+    }
+    #part_floaterui_move{
+        position: absolute;
+        left: 0;
+    }
+    #part_floaterui_move svg{
+        width: 20px;
+    }
     #part_floaterui_scrolltop{
-        background-position: 0 -332px;
         position: absolute;
         right: 0;
     }
@@ -168,7 +170,7 @@
         padding-bottom: 0;
         padding-top: 0;
     }
-    @media screen and (max-width: 639px){
+    @media screen and (max-width: 656px){
        .part_hide_comments #P-show-comments{
           display: none;
        }
@@ -198,18 +200,24 @@
         margin-left: 0;
         position: absolute;
     }
-    #subscription-playlist {
-        padding: 10px 5px !important;
+    #subscription-playlist{
+        width: 0;
+        height: 0 !important;
+        padding: 20px 15px !important;
     }
-    #subscription-playlist:hover span{
+    #subscription-playlist:hover{
+        padding: 17px 15px !important;
+    }
+    #subscription-playlist:hover svg{
         opacity: 1;
     }
-    #subscription-playlist span{
-        background-position: 2px -24px;
-        display: block;
-        height: 20px;
+    #subscription-playlist svg{
         opacity: .4;
-        width: 20px;
+        width:14px;
+        height: 16px;
+        display:block;
+        pointer-events:none;
+        transform: translate(-50%, -50%);
     }
     #blacklist-import,
     #blacklist-export{
@@ -222,15 +230,30 @@
         color: #666666;
         opacity: 1;
     }
-    #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list{
-        background-position: 5px -66px;
-        height: 24px;
-        width: 24px;
+    .pl-autoplay,
+    .pl-reverse{
+        fill: #fff;
+        display: none;
+        pointer-events: none;
     }
+    .pl-reverse{
+        width: 16px;
+    }
+    .pl-autoplay{
+        width: 14px;
+    }
+    #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list .pl-reverse,
+    #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list .pl-autoplay{
+        display: block;
+        transform: translate(-50%,-50%);
+    }
+    #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-reverse-video-list,
     #watch-appbar-playlist .yt-uix-button-icon-watch-appbar-autoplay-video-list{
-        background-position: 5px -46px;
-        height: 24px;
-        width: 24px;
+        font-size: 0 !important;
+        width: 0;
+        height: 0;
+        padding: 11px !important;
+        border: 0;
     }
 /*   end| Custom styles */
 /* start| Player console */
@@ -263,21 +286,25 @@
         z-index: initial;
     }
     #console-button{
-        background-position: -22px -16px;
         cursor: pointer;
         height: 20px;
         opacity: .5;
         position: absolute;
         top: 0;
         right: 0;
-        width: 25px;
         z-index: 1;
+        width: 20px;
     }
     #console-button:hover{
         opacity: .8;
     }
-    #console-button.close {
-        background-position: -21px -56px;
+    #console-button.close .open,
+    #console-button:not(.close) .close{
+        display: none;
+    }
+    #console-button svg{
+        height: 10px;
+        pointer-events: none;
     }
     #player-console{
         background: inherit;
@@ -292,11 +319,18 @@
         display: block;
     }
     #player-console > div{
+        width: 0 !important;
+        height: 0 !important;
         cursor: pointer;
         height: 30px;
         opacity: .4;
         padding: 0 4px;
         position: relative;
+    }
+    #player-console > div svg{
+        transform: translate(-50%,-50%);
+        pointer-events: none;
+        display:block;
     }
     #player-console:before{
         background: inherit;
@@ -312,40 +346,52 @@
         opacity: .6;
     }
     #autoplay-button{
-        background-position: 4px -19px;
-        width: 16px;
+        padding: 15px 10px !important;
+    }
+    #autoplay-button svg{
+        height: 16px;
     }
     #save-thumbnail-button{
-        background-position: 4px -230px;
-        width: 24px;
+        padding: 15px 16px !important;
+    }
+    #save-thumbnail-button svg{
+        height: 18px;
     }
     #screenshot-button{
-        background-position: 4px -158px;
-        width: 22px;
+        padding: 15px !important;
     }
-    #sidebar-button{
-        background-position: 4px -110px;
-        width: 22px;
+    #screenshot-button svg{
+        height: 18px;
     }
     #popout-button{
-        background-position: 4px -85px;
-        width: 22px;
+        padding: 15px !important;
+    }
+    #popout-button svg{
+        height: 16px;
     }
     #loop-button{
-        background-position: 4px -182px;
-        width: 20px;
+        padding: 15px 14.25px !important;
+    }
+    #loop-button svg{
+        height: 18px;
     }
     #fullbrowser-button{
-        background-position: 4px -134px;
-        width: 20px;
+        padding: 15px 14px !important;
+    }
+    #fullbrowser-button svg{
+        height: 18px;
     }
     #cinemamode-button{
-        background-position: 4px -206px;
-        width: 20px;
+        padding: 15px 14px !important;
     }
-    #framestep-button{
-        background-position: 5px -254px;
-        width: 20px;
+    #cinemamode-button svg{
+        height: 18px;
+    }
+    #shortcuts-button{
+        padding: 15px 13px !important;
+    }
+    #shortcuts-button svg{
+        height: 18px;
     }
 /*   end| Player console */
 /* start| Screenshot window */
@@ -382,7 +428,7 @@
     }
 /*   end| Screenshot window */
 /* start| Pop-out */
-    .part_popout {
+    .part_popout{
         overflow: hidden;
     }
     .part_popout #masthead-positioner,
@@ -391,7 +437,7 @@
         display: none;
     }
     .part_popout #player-api,
-    .part_popout #movie_player {
+    .part_popout #movie_player{
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
@@ -412,42 +458,45 @@
     .yt-lockup-thumbnail .blacklist{
         background-color: #FFF;
         border: 1px solid #d3d3d3;
-        padding: 3px;
         border-radius: 2px;
         color: #666;
         cursor: pointer;
-        display: none;
-        font-size: 12px;
-        height: 14px;
         line-height: 1;
         position: absolute;
-        width: 14px;
         z-index: 99;
+        width:0;
+        height:0;
+        padding:10px;
     }
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
     .yt-lockup-thumbnail .popoutmode{
-        background-position: -23px -117px;
+        bottom: -100%;
+        left: -100%;
+    }
+    .yt-pl-thumb:hover .popoutmode,
+    .thumb-wrapper:hover .popoutmode,
+    .yt-lockup-thumbnail:hover .popoutmode{
         bottom: 2px;
         left: 2px;
     }
     .yt-pl-thumb .blacklist,
     .thumb-wrapper .blacklist,
     .yt-lockup-thumbnail .blacklist{
-        background-position: -23px -56px;
+        right: -100%;
+        top: -100%;
+    }
+    .yt-pl-thumb:hover .blacklist,
+    .thumb-wrapper:hover .blacklist,
+    .yt-lockup-thumbnail:hover .blacklist{
         right: 2px;
         top: 2px;
     }
-    .thumb-wrapper:hover .blacklist,
-    .yt-lockup-thumbnail:hover .blacklist,
-    .yt-pl-thumb:hover .blacklist,
-    .yt-pl-thumb:hover .sidebarmode,
-    .thumb-wrapper:hover .sidebarmode,
-    .yt-lockup-thumbnail:hover .sidebarmode,
-    .yt-pl-thumb:hover .popoutmode,
-    .thumb-wrapper:hover .popoutmode,
-    .yt-lockup-thumbnail:hover .popoutmode{
-        display: initial;
+    .thumb-svg{
+        width: 10px;
+        transform: translate(-50%,-50%);
+        pointer-events:none;
+        fill:#666;
     }
 /*   end| Thumb buttons */
 /* start| Grid layout */
@@ -576,8 +625,7 @@
     #watch-appbar-playlist{
         transition: none !important;
     }
-    .part_fit_theater .watch-stage-mode #theater-background,
-    .part_hide_controls.part_fit_theater .watch-stage-mode #theater-background{
+    .part_fit_theater .watch-stage-mode #theater-background{
         bottom: 0;
         height: initial !important;
         top: 0;
@@ -588,7 +636,7 @@
     #player-unavailable:not(.hid) + #player-api{
         display: none;
     }
-    @media screen and (max-width: 639px){
+    @media screen and (max-width: 656px){
         #theater-background,
         #footer-container{
             display: none;
@@ -628,7 +676,7 @@
        top: 0;
     }
     .floater #movie_player,
-    .part_fullbrowser #movie_player {
+    .part_fullbrowser #movie_player{
         background-color: #000 !important;
     }
 /*   end| Enhancements */
@@ -657,7 +705,7 @@
     }
 /*   end| Improved notification button */
 /* start| Static normal mode */
-    @media screen and (min-width: 640px){
+    @media screen and (min-width: 657px){
         .part_static_size .watch:not(.watch-stage-mode) .player-width,
         .part_static_size .watch:not(.watch-stage-mode) #watch7-content{
             width: 640px;
@@ -698,7 +746,7 @@
         display: block;
         padding-top: 56.25%;
     }
-    @media screen and (min-width: 640px){
+    @media screen and (min-width: 657px){
         .part_fit_theater .watch-stage-mode #movie_player{
             bottom: 0;
             left: 0;
@@ -841,6 +889,17 @@
     #P-content label{
         line-height: 26px;
     }
+    #P-content label svg{
+        width:12.7px;
+        margin-left:-23px;
+        fill:#666;
+        padding-right:12px;
+        height: 9.9px;
+        opacity: 0;
+    }
+    #P-content input:checked + label svg{
+        opacity: 1;
+    }
     #P-content input{
         display: none;
         margin-left: 25px;
@@ -883,12 +942,6 @@
     }
     #P-content input[type='checkbox'] + label{
         display: inline-block;
-    }
-    #P-content input[type='checkbox']:checked + label:before{
-        background-position: -26px -90px;
-    }
-    #P-content input[type='radio']:checked + label:before{
-        background-position: -26px -106px;
     }
     #P-content select{
         background-image: linear-gradient(#FCFCFC, #F8F8F8);
@@ -940,7 +993,6 @@
     .P-impexp,
     .P-implang{
         background-color: transparent;
-        background-position: -22px 6px;
         border: 1px solid transparent;
         box-shadow: none;
         opacity: .5;
@@ -953,6 +1005,16 @@
     .P-impexp:hover,
     .P-implang:hover{
         opacity: 1;
+    }
+    .P-impexp{
+        padding: 14px;
+        width: 0;
+        height: 0;
+    }
+    .P-impexp .save{
+        height: 16px;
+        width: 16px;
+        transform: translate(-50%, -50%);
     }
     .P-reset{
         background-color: #F8F8F8;
@@ -1031,18 +1093,18 @@
     #DNT{
         position: relative;
     }
-    #DNT:hover a{
-        color: #F1F1F1;
-    }
-    #DNT:hover:after{
-        background-position: -28px -37px;
-        content: '';
-        height: 18px;
-        margin-top: -9px;
+    #DNT svg{
         position: absolute;
         right: 10px;
-        top: 50%;
-        width: 15px;
+        top: 3px;
+        display: none;
+        height: 18px;
+    }
+    #DNT:hover svg{
+        display: initial;
+    }
+    #DNT:hover a{
+        color: #F1F1F1;
     }
     #DNT:hover{
         background: linear-gradient(to right, #167AC6 50%, #F6F6F6) !important;
@@ -1066,20 +1128,25 @@
     }
     #blacklist .blacklist .close{
         background-color: #FFF;
-        background-position: -25px -58px;
         border: 1px solid #C6C6C6;
         border-left: none;
         border-top: none;
         color: #666;
         cursor: pointer;
         display: none;
-        height: 17px;
-        font-size: 10px;
-        font-weight: 500;
         position: absolute;
         left: 0;
         top: 0;
-        width: 17px;
+        width: 0;
+        height: 0;
+        padding: 8px;
+        font-size: 0;
+    }
+    #blacklist .blacklist .close svg{
+        width:10px;
+        transform:translate(-50%,-50%);
+        pointer-events:none;
+        fill:#666;
     }
     #blacklist .blacklist:hover .close{
         display: initial;
@@ -1114,21 +1181,29 @@
         height: calc(100% - 80px);
     }
     #yt-masthead #P{
-        background-position: 0 4px;
         cursor: pointer;
         height: 28px;
         margin-right: 10px;
         opacity: .55;
         vertical-align: middle;
-        width: 19px;
+        width:18px;
     }
-    @media screen and (max-width: 639px){
+    @media screen and (max-width: 656px){
         #yt-masthead #P{
             display: none;
         }
     }
     #yt-masthead #P:hover{
         opacity: .85;
+    }
+    #P svg{
+        vertical-align: middle;
+        height:20px;
+        pointer-events: none;
+    }
+    #Psettings{
+        display:inline-block;
+        position:relative
     }
     .P-hide{
         display: none;

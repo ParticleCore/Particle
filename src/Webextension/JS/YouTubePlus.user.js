@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.6
+// @version         1.5.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -116,33 +116,44 @@
                 }
                 return language[label];
             }
-            function setButton(obj) {
-                var lnk, keys, temp;
-                keys = Object.keys(obj);
-                temp = document.createElement("template");
-                temp.innerHTML = "<div class='blacklist'><button class='close ytplus_sprite'></button><a target='_blank'></a></div>";
-                temp = temp.content.firstChild;
-                lnk = temp.querySelector("a");
-                lnk.href = "/channel/" + keys[0];
-                lnk.setAttribute("title", obj[keys[0]]);
-                lnk.textContent = obj[keys[0]];
-                getBlacklist.blist.appendChild(temp);
-                getBlacklist.blist.appendChild(document.createTextNode("\n"));
-            }
             function sortList(previous, next){
-                return previous[Object.keys(previous)[0]].localeCompare(next[Object.keys(next)[0]]);
-            }
-            function buildList(ytid) {
-                var obj = {};
-                obj[ytid] = getBlacklist.list[ytid];
-                getBlacklist.sortAlpha.push(obj);
+                return next[Object.keys(next)[0]].localeCompare(previous[Object.keys(previous)[0]]);
             }
             function getBlacklist(blist) {
-                getBlacklist.blist = blist;
-                getBlacklist.list = user_settings.blacklist;
-                getBlacklist.sortAlpha = [];
-                Object.keys(getBlacklist.list).forEach(buildList);
-                getBlacklist.sortAlpha.sort(sortList).forEach(setButton);
+                var i, obj, temp, lnk, keys, list, fragment, sortAlpha;
+                sortAlpha = [];
+                list = user_settings.blacklist;
+                fragment = document.createDocumentFragment();
+                sortAlpha = [];
+                temp = Object.keys(list);
+                i = temp.length;
+                while (i--) {
+                    obj = {};
+                    obj[temp[i]] = list[temp[i]];
+                    sortAlpha.push(obj);
+                }
+                temp = sortAlpha.sort(sortList);
+                i = temp.length;
+                while (i--) {
+                    keys = Object.keys(temp[i]);
+                    obj = document.createElement("template");
+                    obj.innerHTML = //
+                        `<div class='blacklist'>
+                            <button class='close' data-p='ttl|GLB_RMBL'>
+                                <svg viewBox='0 0 10 10'>
+                                    <polygon points='10,1.4 8.6,0 5,3.6 1.4,0 0,1.4 3.6,5 0,8.6 1.4,10 5,6.4 8.6,10 10,8.6 6.4,5'/>
+                                </svg>
+                            </button><a target='_blank'></a>
+                        </div>`;
+                    obj = setLocale(obj.content.firstChild);
+                    lnk = obj.querySelector("a");
+                    lnk.href = "/channel/" + keys[0];
+                    lnk.setAttribute("title", temp[i][keys[0]]);
+                    lnk.textContent = temp[i][keys[0]];
+                    fragment.appendChild(obj);
+                    fragment.appendChild(document.createTextNode("\n"));
+                }
+                blist.appendChild(fragment);
             }
             function getValues(menu) {
                 var i, ytp, list;
@@ -184,10 +195,11 @@
                                         <li id='BLK' data-p='tnd|BLK'></li>
                                         <li id='ABT' data-p='tnd|ABT'></li>
                                         <li id='HLP'><a target='_blank' href='https://github.com/ParticleCore/Particle/wiki' data-p='tnd|HLP'></a></li>
-                                        <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW' data-p='tnd|DNT'></a></li>
+                                        <li id='DNT'><a title='PayPal' target='_blank' href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UMVQJJFG4BFHW' data-p='tnd|DNT'></a><svg viewBox='0 0 15.3 18'><path style='fill:#27346A;' d='M13,1.4C12.2,0.4,10.6,0,8.7,0H3.1C2.7,0,2.4,0.3,2.3,0.7L0,15.4C0,15.7,0.2,16,0.5,16h3.5 l0.9-5.5l0,0.2C4.8,10.3,5.2,10,5.6,10h1.6c3.2,0,5.7-1.3,6.5-5.1c0-0.1,0-0.2,0.1-0.3c-0.1,0-0.1,0,0,0C14,3.2,13.7,2.2,13,1.4'/><path style='fill:#27346A;' d='M6.1,4.1C6.2,4,6.3,4,6.4,4h4.4c0.5,0,1,0,1.4,0.1c0.1,0,0.2,0,0.4,0.1c0.1,0,0.2,0.1,0.3,0.1 c0.1,0,0.1,0,0.2,0.1c0.2,0.1,0.4,0.2,0.6,0.3c0.2-1.4,0-2.4-0.8-3.2C12.2,0.4,10.6,0,8.7,0H3.1C2.7,0,2.4,0.3,2.3,0.7L0,15.4 C0,15.7,0.2,16,0.5,16h3.5L5.7,4.6C5.8,4.4,5.9,4.2,6.1,4.1z'/><path style='fill:#2790C3;' d='M13.7,4.9C13,8.7,10.4,10,7.2,10H5.6c-0.4,0-0.7,0.3-0.8,0.7l-1.1,6.8c0,0.3,0.2,0.5,0.4,0.5H7 c0.3,0,0.6-0.3,0.7-0.6l0-0.1l0.5-3.5l0-0.2C8.4,13.3,8.7,13,9,13h0.4c2.8,0,5-1.1,5.7-4.5c0.3-1.4,0.1-2.5-0.6-3.4 c-0.2-0.2-0.5-0.4-0.8-0.6C13.7,4.7,13.7,4.8,13.7,4.9L13.7,4.9z'/><path style='fill:#1F264F;' d='M13,4.3c-0.1,0-0.2-0.1-0.3-0.1c-0.1,0-0.2,0-0.4-0.1C11.8,4,11.3,4,10.8,4H6.4 C6.3,4,6.2,4,6.1,4.1C5.9,4.2,5.8,4.4,5.7,4.6l-0.9,5.9l0,0.2C4.8,10.3,5.2,10,5.6,10h1.6c3.2,0,5.7-1.3,6.5-5.1 c0-0.1,0-0.2,0.1-0.3c-0.2-0.1-0.4-0.2-0.6-0.3C13.1,4.3,13,4.3,13,4.3'/></svg></li>
                                     </ul>
                                 </div>
                             </div>
+                            <svg style='display:none;'><symbol id='ytp-svg-checkmark' viewBox='0 0 12.7 9.9'><polygon points='1.4,4.2 0,5.7 4.2,9.9 12.7,1.4 11.3,0 4.2,7.1'/></symbol><symbol id='ytp-svg-save' viewBox='0 0 16 16'><path d='M13,0H0v16h16V3L13,0z M3,1h9v6H3V1z M14,15H2V9h12V15z'/><rect x='10' y='2' width='1' height='4'/></symbol></svg>
                         </div>`;
                 } else if (section === "GEN") {
                     temp.innerHTML = //
@@ -195,20 +207,20 @@
                             <div class='P-header'>
                                 <button class='P-save' data-p='tnd|GLB_SVE'></button>
                                 <button class='P-reset' data-p='tnd|GLB_RSET'></button>
-                                <button class='P-impexp ytplus_sprite' data-p='ttl|GLB_IMPR'></button>
+                                <button class='P-impexp' data-p='ttl|GLB_IMPR'><svg class='save'><use xlink:href='#ytp-svg-save'/></svg></button>
                                 <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>
                                 <h2 data-p='tnd|GEN_TTL'></h2>
                             </div>
                             <hr class='P-horz'></hr>
                             <h3 data-p='tnd|GEN_GEN'></h3>
-                            <div><input id='GEN_LOCL_LANG' type='checkbox'></input><label for='GEN_LOCL_LANG' data-p='tnd|GEN_LOCL_LANG'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#custom_lang' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_DSBL_ADS' type='checkbox'></input><label for='GEN_DSBL_ADS' data-p='tnd|GEN_DSBL_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#outside_ads' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_YT_LOGO_LINK' type='checkbox'></input><label for='GEN_YT_LOGO_LINK' data-p='tnd|GEN_YT_LOGO_LINK'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#logo_redirect' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_SUB_LIST' type='checkbox'></input><label for='GEN_SUB_LIST' data-p='tnd|GEN_SUB_LIST'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_playlist' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_INF_SCRL' type='checkbox'></input><label for='GEN_INF_SCRL' data-p='tnd|GEN_INF_SCRL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#infinite_scroll' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_PPOT_ON' type='checkbox'></input><label for='GEN_PPOT_ON' data-p='tnd|GEN_PPOT_ON'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#popout_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_REM_APUN' type='checkbox'></input><label for='GEN_REM_APUN' data-p='tnd|GEN_REM_APUN'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remove_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_SPF_OFF' type='checkbox'></input><label for='GEN_SPF_OFF' data-p='tnd|GEN_SPF_OFF'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#spf_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_LOCL_LANG'    type='checkbox'></input><label for='GEN_LOCL_LANG'    data-p='tnd|GEN_LOCL_LANG'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#custom_lang' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_DSBL_ADS'     type='checkbox'></input><label for='GEN_DSBL_ADS'     data-p='tnd|GEN_DSBL_ADS'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#outside_ads' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_YT_LOGO_LINK' type='checkbox'></input><label for='GEN_YT_LOGO_LINK' data-p='tnd|GEN_YT_LOGO_LINK'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#logo_redirect' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_SUB_LIST'     type='checkbox'></input><label for='GEN_SUB_LIST'     data-p='tnd|GEN_SUB_LIST'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_playlist' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_INF_SCRL'     type='checkbox'></input><label for='GEN_INF_SCRL'     data-p='tnd|GEN_INF_SCRL'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#infinite_scroll' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_PPOT_ON'      type='checkbox'></input><label for='GEN_PPOT_ON'      data-p='tnd|GEN_PPOT_ON'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#popout_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_REM_APUN'     type='checkbox'></input><label for='GEN_REM_APUN'     data-p='tnd|GEN_REM_APUN'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remove_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_SPF_OFF'      type='checkbox'></input><label for='GEN_SPF_OFF'      data-p='tnd|GEN_SPF_OFF'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#spf_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div>
                                 <label for='GEN_CHN_DFLT_PAGE' data-p='tnd|GEN_CHN_DFLT_PAGE'></label>
                                 <div class='P-select'>
@@ -224,16 +236,16 @@
                                 <a href='https://github.com/ParticleCore/Particle/wiki/Features#channel_page' data-p='ttl|FTR_DESC' target='features'>?</a>
                             </div>
                             <h3 data-p='tnd|GEN_LYT'></h3>
-                            <div><input id='GEN_GRID_SUBS' type='checkbox'></input><label for='GEN_GRID_SUBS' data-p='tnd|GEN_GRID_SUBS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_GRID_SRCH' type='checkbox'></input><label for='GEN_GRID_SRCH' data-p='tnd|GEN_GRID_SRCH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#search_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_BTTR_NTF' type='checkbox'></input><label for='GEN_BTTR_NTF' data-p='tnd|GEN_BTTR_NTF'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blue_box' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_DSB_HVRC' type='checkbox'></input><label for='GEN_DSB_HVRC' data-p='tnd|GEN_DSB_HVRC'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hovercards_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_CMPT_TTLS' type='checkbox'></input><label for='GEN_CMPT_TTLS' data-p='tnd|GEN_CMPT_TTLS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#feed_titles' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_BLUE_GLOW' type='checkbox'></input><label for='GEN_BLUE_GLOW' data-p='tnd|GEN_BLUE_GLOW'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blue_glow' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_HIDE_FTR' type='checkbox'></input><label for='GEN_HIDE_FTR' data-p='tnd|GEN_HIDE_FTR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_footer' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_HDE_RECM_SDBR' type='checkbox'></input><label for='GEN_HDE_RECM_SDBR' data-p='tnd|GEN_HDE_RECM_SDBR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_recom_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_HDE_SRCH_SDBR' type='checkbox'></input><label for='GEN_HDE_SRCH_SDBR' data-p='tnd|GEN_HDE_SRCH_SDBR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_search_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='GEN_HDE_CHN_SDBR' type='checkbox'></input><label for='GEN_HDE_CHN_SDBR' data-p='tnd|GEN_HDE_CHN_SDBR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_channel_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_GRID_SUBS'     type='checkbox'></input><label for='GEN_GRID_SUBS'     data-p='tnd|GEN_GRID_SUBS'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#sub_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_GRID_SRCH'     type='checkbox'></input><label for='GEN_GRID_SRCH'     data-p='tnd|GEN_GRID_SRCH'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#search_grid' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_BTTR_NTF'      type='checkbox'></input><label for='GEN_BTTR_NTF'      data-p='tnd|GEN_BTTR_NTF'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blue_box' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_DSB_HVRC'      type='checkbox'></input><label for='GEN_DSB_HVRC'      data-p='tnd|GEN_DSB_HVRC'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hovercards_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_CMPT_TTLS'     type='checkbox'></input><label for='GEN_CMPT_TTLS'     data-p='tnd|GEN_CMPT_TTLS'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#feed_titles' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_BLUE_GLOW'     type='checkbox'></input><label for='GEN_BLUE_GLOW'     data-p='tnd|GEN_BLUE_GLOW'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blue_glow' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_HIDE_FTR'      type='checkbox'></input><label for='GEN_HIDE_FTR'      data-p='tnd|GEN_HIDE_FTR'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_footer' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_HDE_RECM_SDBR' type='checkbox'></input><label for='GEN_HDE_RECM_SDBR' data-p='tnd|GEN_HDE_RECM_SDBR'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_recom_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_HDE_SRCH_SDBR' type='checkbox'></input><label for='GEN_HDE_SRCH_SDBR' data-p='tnd|GEN_HDE_SRCH_SDBR'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_search_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='GEN_HDE_CHN_SDBR'  type='checkbox'></input><label for='GEN_HDE_CHN_SDBR'  data-p='tnd|GEN_HDE_CHN_SDBR'> <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_channel_sidebar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                         </div>`;
                     if (user_settings.GEN_LOCL_LANG && user_settings.localLang) {
                         temp.content.querySelector(".P-implang").dataset.p = "GLB_LOCL_LANG_CSTM";
@@ -244,27 +256,27 @@
                             <div class='P-header'>
                                 <button class='P-save' data-p='tnd|GLB_SVE'></button>
                                 <button class='P-reset' data-p='tnd|GLB_RSET'></button>
-                                <button class='P-impexp ytplus_sprite' data-p='ttl|GLB_IMPR'></button>
+                                <button class='P-impexp' data-p='ttl|GLB_IMPR'><svg class='save'><use xlink:href='#ytp-svg-save'/></svg></button>
                                 <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>
                                 <h2 data-p='tnd|VID_TTL'></h2>
                             </div>
                             <hr class='P-horz'></hr>
                             <h3 data-p='tnd|VID_PLR'></h3>
-                            <div><input id='VID_PLR_ADS' type='checkbox'></input><label for='VID_PLR_ADS' data-p='tnd|VID_PLR_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_ads' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_SUB_ADS' type='checkbox'></input><label for='VID_SUB_ADS' data-p='tnd|VID_SUB_ADS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subs_ads_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_ALVIS' type='checkbox'></input><label for='VID_PLR_ALVIS' data-p='tnd|VID_PLR_ALVIS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_ADS'        type='checkbox'></input><label for='VID_PLR_ADS'      data-p='tnd|VID_PLR_ADS'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_ads' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_SUB_ADS'        type='checkbox'></input><label for='VID_SUB_ADS'      data-p='tnd|VID_SUB_ADS'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subs_ads_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_ALVIS'      type='checkbox'></input><label for='VID_PLR_ALVIS'    data-p='tnd|VID_PLR_ALVIS'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div><input id='VID_PLR_ALVIS_WDTH' type='text' placeholder='350' size='6'></input><label for='VID_PLR_ALVIS_WDTH' data-p='tnd|VID_PLR_ALVIS_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#floating_player_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_ATPL' type='checkbox'></input><label for='VID_PLR_ATPL' data-p='tnd|VID_PLR_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_CC' type='checkbox'></input><label for='VID_PLR_CC' data-p='tnd|VID_PLR_CC'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subtitles_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_ANTS' type='checkbox'></input><label for='VID_PLR_ANTS' data-p='tnd|VID_PLR_ANTS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#annotations_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_END_SHRE' type='checkbox'></input><label for='VID_END_SHRE' data-p='tnd|VID_END_SHRE'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#share_panel_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_VOL_MEM' type='checkbox'></input><label for='VID_PLR_VOL_MEM' data-p='tnd|VID_PLR_VOL_MEM'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_VOL_LDN' type='checkbox'></input><label for='VID_PLR_VOL_LDN' data-p='tnd|VID_PLR_VOL_LDN'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#disable_normalisation' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_ALACT' type='checkbox'></input><label for='VID_PLR_ALACT' data-p='tnd|VID_PLR_ALACT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#shortcuts_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_SIZE_MEM' type='checkbox'></input><label for='VID_PLR_SIZE_MEM' data-p='tnd|VID_PLR_SIZE_MEM'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_mode' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_VOL_WHEEL' type='checkbox'></input><label for='VID_VOL_WHEEL' data-p='tnd|VID_VOL_WHEEL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#wheel_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_HFR' type='checkbox'></input><label for='VID_PLR_HFR' data-p='tnd|VID_PLR_HFR'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hfr_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_HTML5' type='checkbox'></input><label for='VID_PLR_HTML5' data-p='tnd|VID_PLR_HTML5'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#force_html5' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_ATPL'       type='checkbox'></input><label for='VID_PLR_ATPL'     data-p='tnd|VID_PLR_ATPL'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_CC'         type='checkbox'></input><label for='VID_PLR_CC'       data-p='tnd|VID_PLR_CC'>      <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#subtitles_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_ANTS'       type='checkbox'></input><label for='VID_PLR_ANTS'     data-p='tnd|VID_PLR_ANTS'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#annotations_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_END_SHRE'       type='checkbox'></input><label for='VID_END_SHRE'     data-p='tnd|VID_END_SHRE'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#share_panel_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_VOL_MEM'    type='checkbox'></input><label for='VID_PLR_VOL_MEM'  data-p='tnd|VID_PLR_VOL_MEM'> <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_VOL_LDN'    type='checkbox'></input><label for='VID_PLR_VOL_LDN'  data-p='tnd|VID_PLR_VOL_LDN'> <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#disable_normalisation' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_ALACT'      type='checkbox'></input><label for='VID_PLR_ALACT'    data-p='tnd|VID_PLR_ALACT'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#shortcuts_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_SIZE_MEM'   type='checkbox'></input><label for='VID_PLR_SIZE_MEM' data-p='tnd|VID_PLR_SIZE_MEM'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#remember_mode' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_VOL_WHEEL'      type='checkbox'></input><label for='VID_VOL_WHEEL'    data-p='tnd|VID_VOL_WHEEL'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#wheel_volume' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_HFR'        type='checkbox'></input><label for='VID_PLR_HFR'      data-p='tnd|VID_PLR_HFR'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hfr_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_HTML5'      type='checkbox'></input><label for='VID_PLR_HTML5'    data-p='tnd|VID_PLR_HTML5'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#force_html5' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div>
                                 <label for='VID_DFLT_QLTY' data-p='tnd|VID_DFLT_QLTY'></label>
                                 <div class='P-select'>
@@ -285,13 +297,13 @@
                                 <a href='https://github.com/ParticleCore/Particle/wiki/Features#default_quality' data-p='ttl|FTR_DESC' target='features'>?</a>
                             </div>
                             <h3 data-p='tnd|VID_PLR_LYT'></h3>
-                            <div><input id='VID_PLR_INFO' type='checkbox'></input><label for='VID_PLR_INFO' data-p='tnd|VID_PLR_INFO'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#info_bar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_DYN_SIZE' type='checkbox'></input><label for='VID_PLR_DYN_SIZE' data-p='tnd|VID_PLR_DYN_SIZE'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#dynamic_size_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLR_FIT' type='checkbox'></input><label for='VID_PLR_FIT' data-p='tnd|VID_PLR_FIT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_to_page' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_INFO'     type='checkbox'></input><label for='VID_PLR_INFO'     data-p='tnd|VID_PLR_INFO'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#info_bar' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_DYN_SIZE' type='checkbox'></input><label for='VID_PLR_DYN_SIZE' data-p='tnd|VID_PLR_DYN_SIZE'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#dynamic_size_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLR_FIT'      type='checkbox'></input><label for='VID_PLR_FIT'      data-p='tnd|VID_PLR_FIT'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_to_page' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div><input id='VID_PLR_FIT_WDTH' type='text' placeholder='1280px' size='6'></input><label for='VID_PLR_FIT_WDTH' data-p='tnd|VID_PLR_FIT_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_max_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <h3 data-p='tnd|VID_PLST'></h3>
-                            <div><input id='VID_PLST_ATPL' type='checkbox'></input><label for='VID_PLST_ATPL' data-p='tnd|VID_PLST_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_PLST_RVRS' type='checkbox'></input><label for='VID_PLST_RVRS' data-p='tnd|VID_PLST_RVRS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_reverse' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLST_ATPL'    type='checkbox'></input><label for='VID_PLST_ATPL'    data-p='tnd|VID_PLST_ATPL'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_PLST_RVRS'    type='checkbox'></input><label for='VID_PLST_RVRS'    data-p='tnd|VID_PLST_RVRS'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_reverse' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <h3 data-p='tnd|VID_LAYT'></h3>
                             <div><input id='VID_PPOT_SZ' type='text' placeholder='533' size='6'></input><label for='VID_PPOT_SZ' data-p='tnd|VID_PPOT_SZ'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#popout_size' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div>
@@ -305,12 +317,12 @@
                                 </div>\n
                                 <a href='https://github.com/ParticleCore/Particle/wiki/Features#comments' data-p='ttl|FTR_DESC' target='features'>?</a>
                             </div>
-                            <div><input id='VID_TTL_CMPT' type='checkbox'></input><label for='VID_TTL_CMPT' data-p='tnd|VID_TTL_CMPT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_title' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_DESC_SHRT' type='checkbox'></input><label for='VID_DESC_SHRT' data-p='tnd|VID_DESC_SHRT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#labelless_buttons' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_VID_CNT' type='checkbox'></input><label for='VID_VID_CNT' data-p='tnd|VID_VID_CNT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#upload_counter' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_POST_TIME' type='checkbox'></input><label for='VID_POST_TIME' data-p='tnd|VID_POST_TIME'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#relative_upload_time' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_HIDE_DETLS' type='checkbox'></input><label for='VID_HIDE_DETLS' data-p='tnd|VID_HIDE_DETLS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_video_details' data-p='ttl|FTR_DESC' target='features'>?</a></div>
-                            <div><input id='VID_LAYT_AUTO_PNL' type='checkbox'></input><label for='VID_LAYT_AUTO_PNL' data-p='tnd|VID_LAYT_AUTO_PNL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#expand_description' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_TTL_CMPT'      type='checkbox'></input><label for='VID_TTL_CMPT'      data-p='tnd|VID_TTL_CMPT'>     <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#video_title' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_DESC_SHRT'     type='checkbox'></input><label for='VID_DESC_SHRT'     data-p='tnd|VID_DESC_SHRT'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#labelless_buttons' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_VID_CNT'       type='checkbox'></input><label for='VID_VID_CNT'       data-p='tnd|VID_VID_CNT'>      <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#upload_counter' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_POST_TIME'     type='checkbox'></input><label for='VID_POST_TIME'     data-p='tnd|VID_POST_TIME'>    <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#relative_upload_time' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_HIDE_DETLS'    type='checkbox'></input><label for='VID_HIDE_DETLS'    data-p='tnd|VID_HIDE_DETLS'>   <svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#hide_video_details' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='VID_LAYT_AUTO_PNL' type='checkbox'></input><label for='VID_LAYT_AUTO_PNL' data-p='tnd|VID_LAYT_AUTO_PNL'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#expand_description' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                         </div>`;
                     if (user_settings.GEN_LOCL_LANG && user_settings.localLang) {
                         temp.content.querySelector(".P-implang").dataset.p = "GLB_LOCL_LANG_CSTM";
@@ -321,13 +333,13 @@
                             <div class='P-header'>
                                 <button class='P-save' data-p='tnd|GLB_SVE'></button>
                                 <button class='P-reset' data-p='tnd|GLB_RSET'></button>
-                                <button class='P-impexp ytplus_sprite' data-p='ttl|GLB_IMPR'></button>
+                                <button class='P-impexp' data-p='ttl|GLB_IMPR'><svg class='save'><use xlink:href='#ytp-svg-save'/></svg></button>
                                 <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>
                                 <h2 data-p='tnd|BLK_TTL'></h2>
                             </div>
                             <hr class='P-horz'></hr>
                             <h3 data-p='tnd|BLK_BLK'></h3>
-                            <div><input id='BLK_ON' type='checkbox'></input><label for='BLK_ON' data-p='tnd|BLK_ON'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blacklist_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
+                            <div><input id='BLK_ON' type='checkbox'></input><label for='BLK_ON' data-p='tnd|BLK_ON'><svg><use xlink:href='#ytp-svg-checkmark'/></svg></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blacklist_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div id='blacklist'>
                                 <div id='blacklist-controls'>
                                     <button id='blacklist-edit' class='yt-uix-button yt-uix-sessionlink yt-uix-button-default yt-uix-button-size-default'><span class='yt-uix-button-content' data-p='tnd|BLCK_EDIT'></span></button>
@@ -513,16 +525,21 @@
                 if (settings_button) {
                     welcome_message = document.createElement("template");
                     welcome_message.innerHTML = //
-                        `<div id='Psettings' style='display:inline-block;position:relative'>
-                           <button id='P' class='ytplus_sprite' data-p='ttl|YTSETS'></button>
-                           <div id='part_welcome' style='display:none;margin-left:-220px;top:38px;right:0'>
-                               <span data-p='tnd|WLCM'></span>
-                               <br></br>
-                               <span data-p='tnd|WLCMSTRT'></span>
-                               <br></br><br></br>
-                               <a data-p='tnd|WLCMFTRS' style='color:#FFF;' href='https://github.com/ParticleCore/Particle/wiki/Features' target='_blank'></a>
-                               <div class='par_closewlcm'><span>×</span></div>
-                           </div>
+                        `<div id='Psettings'>
+                            <button id='P' data-p='ttl|YTSETS'>
+                                <svg viewBox='0 0 18 20'>
+                                    <polygon points='0,20 14,12 0,4'/>
+                                    <polygon points='15,3 15,0 13,0 13,3 10,3 10,5 13,5 13,8 15,8 15,5 18,5 18,3'/>
+                                </svg>
+                            </button>
+                            <div id='part_welcome' style='display:none;margin-left:-220px;top:38px;right:0'>
+                                <span data-p='tnd|WLCM'></span>
+                                <br></br>
+                                <span data-p='tnd|WLCMSTRT'></span>
+                                <br></br><br></br>
+                                <a data-p='tnd|WLCMFTRS' style='color:#FFF;' href='https://github.com/ParticleCore/Particle/wiki/Features' target='_blank'></a>
+                                <div class='par_closewlcm'><span>×</span></div>
+                            </div>
                         </div>`;
                     welcome_message = setLocale(welcome_message.content);
                     document.addEventListener("click", settingsTemplate);
@@ -724,52 +741,51 @@
                 }
                 player.setAttribute("style", "width:" + (height * (16 / 9)) + "px;height:" + height + "px;left:" + x + ";top:" + y);
             }
+            function goToTop() {
+                document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
+            }
             function dragFloater(event) {
                 var excluded, isFScreen, isFloater, bounds, player;
                 isFScreen = document.querySelector(".ytp-fullscreen");
                 isFloater = document.documentElement.classList.contains("floater");
                 if (event && !isFScreen && isFloater) {
-                    if (event.type === "click" && event.target.id === "part_floaterui_scrolltop") {
-                         document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
-                    } else {
-                        player = document.getElementById("movie_player");
-                        if (event.buttons === 1) {
-                            excluded = document.querySelector(".ytp-chrome-bottom");
-                            if (event.type === "mousedown" && player.contains(event.target) && (!excluded || !excluded.contains(event.target))) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                document.addEventListener("mousemove", dragFloater);
-                                document.addEventListener("click", dragFloater, true);
-                                dragFloater.oldPos = {
-                                    X: parseInt(player.style.left) - event.clientX,
-                                    Y: parseInt(player.style.top) - event.clientY,
-                                    orgX: event.clientX,
-                                    orgY: event.clientY
-                                };
-                            } else if (event.type === "mousemove" && (dragFloater.hasMoved || Math.abs(event.clientX - dragFloater.oldPos.orgX) > 10 || Math.abs(event.clientY - dragFloater.oldPos.orgY) > 10)) {
-                                bounds = checkBounds(player, event.clientX + dragFloater.oldPos.X, event.clientY + dragFloater.oldPos.Y);
-                                player.style.left = bounds.X;
-                                player.style.top = bounds.Y;
-                                dragFloater.hasMoved = true;
-                                dragFloater.snapX = bounds.snapX;
-                                dragFloater.snapY = bounds.snapY;
-                            }
+                    player = document.getElementById("movie_player");
+                    if (event.buttons === 1) {
+                        excluded = document.querySelector(".ytp-chrome-bottom");
+                        if (event.type === "mousedown" && player.contains(event.target) && (!excluded || !excluded.contains(event.target))) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            document.addEventListener("mousemove", dragFloater);
+                            document.addEventListener("click", dragFloater, true);
+                            dragFloater.oldPos = {
+                                X: parseInt(player.style.left) - event.clientX,
+                                Y: parseInt(player.style.top) - event.clientY,
+                                orgX: event.clientX,
+                                orgY: event.clientY
+                            };
+                        } else if (event.type === "mousemove" && (dragFloater.hasMoved || Math.abs(event.clientX - dragFloater.oldPos.orgX) > 10 || Math.abs(event.clientY - dragFloater.oldPos.orgY) > 10)) {
+                            bounds = checkBounds(player, event.clientX + dragFloater.oldPos.X, event.clientY + dragFloater.oldPos.Y);
+                            player.style.left = bounds.X;
+                            player.style.top = bounds.Y;
+                            dragFloater.hasMoved = true;
+                            dragFloater.snapX = bounds.snapX;
+                            dragFloater.snapY = bounds.snapY;
                         }
-                        if (event.buttons !== 1 || event.type === "click") {
-                            if (dragFloater.hasMoved) {
-                                event.preventDefault();
-                                event.stopImmediatePropagation();
-                                dragFloater.oldPos = false;
-                                dragFloater.hasMoved = false;
-                                user_settings.floaterX = parseInt(player.style.left);
-                                user_settings.floaterY = parseInt(player.style.top);
-                                user_settings.floaterSnapX = dragFloater.snapX;
-                                user_settings.floaterSnapY = dragFloater.snapY;
-                                set("user_settings", user_settings);
-                            }
-                            document.removeEventListener("mousemove", dragFloater);
-                            document.removeEventListener("click", dragFloater, true);
+                    }
+                    if (event.buttons !== 1 || event.type === "click") {
+                        if (dragFloater.hasMoved) {
+                            event.preventDefault();
+                            event.stopImmediatePropagation();
+                            dragFloater.oldPos = false;
+                            dragFloater.hasMoved = false;
+                            user_settings.floaterX = parseInt(player.style.left);
+                            user_settings.floaterY = parseInt(player.style.top);
+                            user_settings.floaterSnapX = dragFloater.snapX;
+                            user_settings.floaterSnapY = dragFloater.snapY;
+                            set("user_settings", user_settings);
                         }
+                        document.removeEventListener("mousemove", dragFloater);
+                        document.removeEventListener("click", dragFloater, true);
                     }
                 }
             }
@@ -787,11 +803,13 @@
                         floaterUI = document.createElement("template");
                         floaterUI.innerHTML = //
                             `<div id='part_floaterui'>
-                                <button id='part_floaterui_scrolltop' class='ytplus_sprite' data-p='ttl|VID_PLR_ALVIS_SCRL_TOP'></button>
+                                <button id='part_floaterui_move' data-p='ttl|VID_PLR_ALVIS_MOVE'><svg viewBox='0 0 20 20'><polygon points='6.4,3.6 7.2,4.3 10,1.5 12.8,4.3 13.6,3.6 10,0'/><polygon points='16.4,6.4 15.7,7.2 18.5,10 15.7,12.8 16.4,13.6 20,10'/><polygon points='3.6,6.4 0,10 3.6,13.6 4.3,12.8 1.5,10 4.3,7.2'/><polygon points='10,18.5 7.2,15.7 6.4,16.4 10,20 13.6,16.4 12.8,15.7'/><circle cx='10' cy='10' r='2'/></svg></button>
+                                <button id='part_floaterui_scrolltop' data-p='ttl|VID_PLR_ALVIS_SCRL_TOP'><svg viewBox='0 0 20 20'><polygon points='10,0.1 0,10.1 2.9,12.9 10,5.8 17.1,12.9 20,10.1 '/></svg></button>
                             </div>`;
                         floaterUI = setLocale(floaterUI.content).firstChild;
-                        document.addEventListener("mousedown", dragFloater);
                         player.appendChild(floaterUI);
+                        document.getElementById("part_floaterui_move").addEventListener("mousedown", dragFloater);
+                        document.getElementById("part_floaterui_scrolltop").addEventListener("click", goToTop);
                     }
                     if (out_of_sight && !isFloater && !settings_open) {
                         document.documentElement.classList.add("floater");
@@ -922,44 +940,8 @@
                     window.dispatchEvent(new Event("resize"));
                 }
             }
-            function toggleFrames(event) {
-                var i, pi, fps, temp;
-                advancedOptions.frame_step = document.getElementById("framestep-button");
-                if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
-                    if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
-                        pi = api.getVideoStats().fmt;
-                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts) {
-                            temp = window.ytplayer.config.args.adaptive_fmts.split(",");
-                            i = temp.length;
-                            while (i--) {
-                                if (temp[i].indexOf("itag=" + pi) > 0) {
-                                    advancedOptions.fps = parseInt(temp[i].match(/fps=([\d]+)/)[1]);
-                                    break;
-                                }
-                            }
-                        }
-                        if (!advancedOptions.fps || advancedOptions.fps === 1) {
-                            advancedOptions.fps = 30;
-                        }
-                        fps = ((event.keyCode < 39 && -1) || 1) * ((advancedOptions.fps < 2 && 30) || advancedOptions.fps);
-                        if (fps && api) {
-                            if (!document.querySelector("video").paused) {
-                                api.pauseVideo();
-                            }
-                            api.seekBy(1 / fps);
-                        }
-                        event.preventDefault();
-                        event.stopImmediatePropagation();
-                    } else if (event.type === "click" && event.target.id === "framestep-button") {
-                        set("frame_step", !user_settings.frame_step);
-                        advancedOptions.frame_step.classList[(user_settings.frame_step && "add") || "remove"]("active");
-                    }
-                }
-                if (advancedOptions.frame_step && advancedOptions.frame_step.classList.contains("active")) {
-                    document.addEventListener("keydown", toggleFrames, true);
-                } else if (!advancedOptions.frame_step || !advancedOptions.frame_step.classList.contains("active")) {
-                    document.removeEventListener("keydown", toggleFrames, true);
-                }
+            function toggleShortcuts() {
+                window.open("https://github.com/ParticleCore/Particle/wiki/YouTube-shortcuts", "_blank");
             }
             function toggleConsole(event) {
                 if (event.target.id === "console-button") {
@@ -1001,7 +983,6 @@
                 advancedOptions.full_browser = advancedOptions.controls.querySelector("#fullbrowser-button");
                 advancedOptions.cinema_mode = advancedOptions.controls.querySelector("#cinemamode-button");
                 advancedOptions.loop_button = advancedOptions.controls.querySelector("#loop-button");
-                advancedOptions.frame_step = advancedOptions.controls.querySelector("#framestep-button");
                 advancedOptions.actions = {
                     togglePlay: togglePlay,
                     toggleLoop: toggleLoop,
@@ -1010,7 +991,7 @@
                     popPlayer: popPlayer,
                     toggleFullBrowser: toggleFullBrowser,
                     toggleCinemaMode: toggleCinemaMode,
-                    toggleFrames: toggleFrames
+                    toggleShortcuts: toggleShortcuts
                 };
                 document.addEventListener("click", handleToggles);
                 if (user_settings.loopVid && !advancedOptions.loop_button.classList.contains("active")) {
@@ -1025,10 +1006,6 @@
                     advancedOptions.cinema_mode.classList.add("active");
                     toggleCinemaMode();
                 }
-                if (user_settings.frame_step && !advancedOptions.frame_step.classList.contains("active")) {
-                    advancedOptions.frame_step.classList.add("active");
-                    toggleFrames();
-                }
             }
             function advancedOptions() {
                 var header, cnslBtn, cnslCont;
@@ -1037,7 +1014,17 @@
                 advancedOptions.controls = document.getElementById("player-console");
                 if (window.location.pathname === "/watch" && header && !cnslBtn) {
                     cnslBtn = document.createElement("template");
-                    cnslBtn.innerHTML = "<button id='console-button' class='ytplus_sprite' data-p='ttl|ADV_OPTS'></button>";
+                    cnslBtn.innerHTML = //
+                        `<button id='console-button' data-p='ttl|ADV_OPTS'>
+                            <svg class='close' viewBox='0 0 10 10'>
+                                <polygon points='10,1.4 8.6,0 5,3.6 1.4,0 0,1.4 3.6,5 0,8.6 1.4,10 5,6.4 8.6,10 10,8.6 6.4,5'/>
+                            </svg>
+                            <svg class='open' viewBox='0 0 12 10'>
+                                <rect width='12' height='2'/>
+                                <rect width='12' height='2' y='4'/>
+                                <rect width='12' height='2' y='8'/>
+                            </svg>
+                        </button>`;
                     cnslBtn = setLocale(cnslBtn.content).firstChild;
                     document.addEventListener("click", toggleConsole);
                     cnslCont = document.createElement("template");
@@ -1051,14 +1038,14 @@
                     advancedOptions.controls = document.createElement("template");
                     advancedOptions.controls.innerHTML = //
                         `<div id='player-console'>
-                            <div id='autoplay-button' class='yt-uix-tooltip' data-p='ttp|CNSL_AP' data-action='togglePlay'></div>
-                            <div id='loop-button' class='yt-uix-tooltip' data-p='ttp|CNSL_RPT' data-action='toggleLoop'></div>
-                            <div id='save-thumbnail-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SVTH' data-action='getThumb'></div>
-                            <div id='screenshot-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SS' data-action='getScreenshot'></div>
-                            <div id='popout-button' class='yt-uix-tooltip' data-p='ttp|CNSL_PPOT' data-action='popPlayer'></div>
-                            <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR' data-action='toggleFullBrowser'></div>
-                            <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD' data-action='toggleCinemaMode'></div>
-                            <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME' data-action='toggleFrames'></div>
+                            <div id='autoplay-button' class='yt-uix-tooltip' data-p='ttp|CNSL_AP' data-action='togglePlay'><svg viewBox='0 0 14 16'><polygon points='0,16 14,8 0,0'/></svg></div>
+                            <div id='loop-button' class='yt-uix-tooltip' data-p='ttp|CNSL_RPT' data-action='toggleLoop'><svg viewBox='0 0 20.5 18'><path d='M11.5,0C9,0,6.8,1,5.1,2.6l1.4,1.4C7.8,2.8,9.6,2,11.5,2c3.9,0,7,3.1,7,7c0,3.9-3.1,7-7,7s-7-3.1-7-7H7L3.5,4L0,9 h2.5c0,5,4,9,9,9s9-4,9-9C20.5,4,16.5,0,11.5,0z'/></svg></div>
+                            <div id='save-thumbnail-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SVTH' data-action='getThumb'><svg viewBox='0 0 24 18'><path d='M0,0v18h24V0H0z M22,16H2V2h20V16z'/><circle cx='8' cy='6' r='3'/><polygon points='3,12 6,10 9,12 10,12 16,6 21,11 21,15 3,15'/></svg></div>
+                            <div id='screenshot-button' class='yt-uix-tooltip' data-p='ttp|CNSL_SS' data-action='getScreenshot'><svg viewBox='0 0 22 18'><path d='M17.7,4l-2.3-4h-9L4.1,4H0v14h22V4H17.7z M11,15c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S13.8,15,11,15z'/><circle cx='11' cy='10' r='4'/></svg></div>
+                            <div id='popout-button' class='yt-uix-tooltip' data-p='ttp|CNSL_PPOT' data-action='popPlayer'><svg viewBox='0 0 22 16'><path d='M6,0v12h16V0H6z M20,10H8V2h12V10z'/><polygon points='14,14 2,14 2,6 5,6 5,4 0,4 0,16 16,16 16,13 14,13'/></svg></div>
+                            <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR' data-action='toggleFullBrowser'><svg viewBox='0 0 20 18'><path d='M0,0v18h20V0H0z M18,16H2V4h16V16z'/><polygon points='3,5 3,9 5,9 5,7 7,7 7,5'/><polygon points='17,5 13,5 13,7 15,7 15,9 17,9'/><polygon points='17,15 17,11 15,11 15,13 13,13 13,15'/><polygon points='3,15 7,15 7,13 5,13 5,11 3,11'/></svg></div>
+                            <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD' data-action='toggleCinemaMode'><svg viewBox='0 0 20 18'><path d='M18,0v2h-2V0H4v2H2V0H0v18h2v-2h2v2h12v-2h2v2h2V0H18z M4,14H2v-2h2V14z M4,10H2V8h2V10z M4,6H2V4h2V6z M14,16 H6v-6h8V16z M14,8H6V2h8V8z M18,14h-2v-2h2V14z M18,10h-2V8h2V10z M18,6h-2V4h2V6z'/></svg></div>
+                            <div id='shortcuts-button' class='yt-uix-tooltip' data-p='ttp|CNSL_YTSC' data-action='toggleShortcuts'><svg viewBox='0 0 18 18'><polygon points='7,8 10,8 10,13 11,13 11,14 7,14 7,13 8,13 8,9 7,9'/><rect x='8' y='4' width='2' height='2'/><path d='M9,0C4,0,0,4,0,9c0,5,4,9,9,9s9-4,9-9C18,4,14,0,9,0z M9,16.1c-3.9,0-7.1-3.2-7.1-7.1S5.1,1.9,9,1.9 s7.1,3.2,7.1,7.1S12.9,16.1,9,16.1z'/></svg></div>
                         </div>`;
                     if (user_settings.VID_PLR_ATPL) {
                         advancedOptions.controls.content.querySelector("#autoplay-button").classList.add("active");
@@ -1113,13 +1100,24 @@
                         if (thumb) {
                             if (user_settings.GEN_PPOT_ON && !thumb.querySelector(".popoutmode") && !/channel/.test(temp[j].firstChild.className)) {
                                 button = document.createElement("template");
-                                button.innerHTML = "<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip popoutmode ytplus_sprite'></div>";
+                                button.innerHTML = //
+                                    `<div data-p='ttl|PPOT_OPEN&ttp|PPOT_OPEN' class='yt-uix-tooltip popoutmode'>
+                                        <svg viewBox='0 0 10 10' class='thumb-svg'>
+                                            <polygon points='7,9 1,9 1,4 3,4 3,2 0,2 0,10 8,10 8,7 7,7'/>
+                                            <path d='M4,0v6h6V0H4z M9,5H5V2h4V5z'/>
+                                        </svg>
+                                    </div>`;
                                 button.content.firstChild.dataset.link = temp[j].querySelector("a[href*='/watch?v']").href;
                                 thumb.appendChild(setLocale(button.content).firstChild);
                             }
                             if (user_settings.BLK_ON && !thumb.querySelector(".blacklist") && window.yt.config_.PAGE_NAME !== "channel") {
                                 button = document.createElement("template");
-                                button.innerHTML = "<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist ytplus_sprite'></div>";
+                                button.innerHTML = //
+                                    `<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist'>
+                                        <svg viewBox='0 0 10 10' class='thumb-svg'>
+                                            <polygon points='10,1.4 8.6,0 5,3.6 1.4,0 0,1.4 3.6,5 0,8.6 1.4,10 5,6.4 8.6,10 10,8.6 6.4,5'/>
+                                        </svg>
+                                    </div>`;
                                 button.content.firstChild.dataset.user = temp[j].username;
                                 button.content.firstChild.dataset.ytid = list[i];
                                 thumb.appendChild(setLocale(button.content).firstChild);
@@ -1314,14 +1312,20 @@
                 var button = document.createElement("template");
                 button.innerHTML = //
                     `<button class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' type='button'>
-                        <span class='yt-uix-button-icon'></span>
+                            <svg class='pl-autoplay' viewBox='0 0 14 16'>
+                                <polygon points='0,16 14,8 0,0'/>
+                            </svg>
+                            <svg class='pl-reverse' viewBox='0 0 16 20'>
+                                <polygon points='7,8 3,8 3,14 0,14 5,20 10,14 7,14'/>
+                                <polygon points='11,0 6,6 9,6 9,12 13,12 13,6 16,6'/>
+                            </svg>
                     </button>`;
                 if (bool === true || window.location.href.split(bool).length > 1) {
                     button.content.querySelector("button").classList.add("yt-uix-button-toggled");
                 }
                 button.content.firstChild.id = type;
                 button.content.firstChild.dataset.p = "ttp|" + label + "&ttl|" + label;
-                button.content.firstChild.classList.add("yt-uix-button-icon-watch-appbar-" + type + "-video-list", "ytplus_sprite");
+                button.content.firstChild.classList.add("yt-uix-button-icon-watch-appbar-" + type + "-video-list");
                 button = setLocale(button.content).firstChild;
                 playlistControls.plBar.className = playlistControls.plBar.className.replace("radio-playlist", "");
                 document.addEventListener("click", call);
@@ -1479,7 +1483,7 @@
             function setSubPlaylist(event) {
                 var i, list, button;
                 list = [];
-                if (event.target && event.target.parentNode && event.target.parentNode.id === "subscription-playlist") {
+                if (event.target && event.target.id === "subscription-playlist") {
                     i = subPlaylist.video_list.length;
                     while (i--) {
                         if (i > -1) {
@@ -1503,7 +1507,9 @@
                     button.innerHTML = //
                         `<li id='subscription-playlist-icon'>
                             <a id='subscription-playlist' data-p='ttl|SUB_PLST' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>
-                                <span class='yt-uix-button-content ytplus_sprite'></span>
+                                <svg viewBox='0 0 14 16'>
+                                    <polygon points='0,16 14,8 0,0 '/>
+                                </svg>
                             </a>
                         </li>`;
                     button = setLocale(button.content).firstChild;
@@ -1944,7 +1950,7 @@
                 CNSL_PPOT             : "Pop-out video",
                 CNSL_FLBR             : "Fullbrowser mode",
                 CNSL_CINM_MD          : "Cinema mode",
-                CNSL_FRME             : "Frame by frame (Shift + ← or →)",
+                CNSL_YTSC             : "YouTube shortcuts list",
                 PLST_AP               : "Autoplay",
                 PLST_RVRS             : "Reverse",
                 SHOW_CMTS             : "Show comments",
@@ -1956,6 +1962,7 @@
                 GLB_RSET              : "Reset",
                 GLB_SVE               : "Save",
                 GLB_SVE_SETS          : "Settings saved",
+                GLB_RMBL              : "Remove from blacklist",
                 FTR_DESC              : "Find out what this does",
                 GEN                   : "General",
                 VID                   : "Video",
@@ -2002,6 +2009,7 @@
                 VID_DFLT_QLTY_ORIG    : "4320p (8k)",
                 VID_PLR_ALVIS         : "Player always visible when reading comments",
                 VID_PLR_ALVIS_WDTH    : "Floating player width",
+                VID_PLR_ALVIS_MOVE    : "Move player",
                 VID_PLR_ALVIS_SCRL_TOP: "Go to top",
                 VID_PLR_ATPL          : "Autoplay videos",
                 VID_LAYT              : "Layout",
@@ -2126,17 +2134,6 @@
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
                     holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css";
-                    document.documentElement.appendChild(holder);
-                } else if (window.chrome) {
-                    holder = document.createElement("style");
-                    holder.textContent = //
-                        `.ytplus_sprite,
-                        #DNT:hover:after,
-                        #player-console > div,
-                        #P-content input[type='radio']:checked + label:before,
-                        #P-content input[type='checkbox']:checked + label:before{
-                            background-image: url(chrome-extension://` + window.chrome.runtime.id + `/images/sprite.png);
-                        }`;
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
