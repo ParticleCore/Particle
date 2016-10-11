@@ -591,6 +591,10 @@
     .watch.watch-stage-mode #player-playlist.watch-player-playlist{
        min-width: 0 !important;
     }
+    html:not(.part_autoplayon) .ytp-thumbnail-overlay,
+    html:not(.part_autoplayon) .ytp-large-play-button{
+       transition: none !important;
+    }
     #placeholder-player .player-api {
         background-color: transparent !important;
     }

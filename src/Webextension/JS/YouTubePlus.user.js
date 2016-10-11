@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.9
+// @version         1.6.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1540,9 +1540,22 @@
                 if (!temp) {
                     return;
                 }
-                max_width = window.parseInt(user_settings.VID_PLR_FIT_WDTH || 1280);
-                max_width = document.documentElement.clientWidth >= max_width ? max_width : document.documentElement.clientWidth;
+                temp = document.documentElement.clientWidth;
                 is_small = window.innerWidth < 657 ? "" : ".watch-stage-mode ";
+                if (is_small !== "") {
+                    if (user_settings.VID_PLR_FIT_WDTH) {
+                        if (user_settings.VID_PLR_FIT_WDTH.match("%")) {
+                            max_width = window.parseInt(user_settings.VID_PLR_FIT_WDTH) / 100 * temp;
+                        } else {
+                            max_width = window.parseInt(user_settings.VID_PLR_FIT_WDTH);
+                        }
+                        max_width = temp >= max_width ? max_width : temp;
+                    } else {
+                        max_width = temp >= 1280 ? 1280 : temp;
+                    }
+                } else {
+                    max_width = temp;
+                }
                 content = //
                     `@media screen and (max-width: 656px) {
                         #player-api,
@@ -2199,7 +2212,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.5.9";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.0";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
