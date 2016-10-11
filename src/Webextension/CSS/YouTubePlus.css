@@ -450,6 +450,9 @@
     }
 /*   end| Pop-out */
 /* start| Thumb buttons */
+    .yt-lockup-thumbnail{
+        overflow: hidden;
+    }
     .yt-pl-thumb .popoutmode,
     .thumb-wrapper .popoutmode,
     .yt-lockup-thumbnail .popoutmode,

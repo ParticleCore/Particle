@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.5.7
+// @version         1.5.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1110,7 +1110,7 @@
                                 button.content.firstChild.dataset.link = temp[j].querySelector("a[href*='/watch?v']").href;
                                 thumb.appendChild(setLocale(button.content).firstChild);
                             }
-                            if (user_settings.BLK_ON && !thumb.querySelector(".blacklist") && window.yt.config_.PAGE_NAME !== "channel") {
+                            if (user_settings.BLK_ON && !thumb.querySelector(".blacklist") && window.yt.config_.PAGE_NAME !== "channel" && window.location.pathname !== "/feed/subscriptions") {
                                 button = document.createElement("template");
                                 button.innerHTML = //
                                     `<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist'>
@@ -1596,8 +1596,10 @@
                         }
                         adverts = document.querySelector(ads_list);
                     }
-                    if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((user_settings.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (user_settings.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (user_settings.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
-                        sidebar.outerHTML = "";
+                    if (sidebar && sidebar.parentNode) {
+                        if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((user_settings.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (user_settings.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (user_settings.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
+                            sidebar.outerHTML = "";
+                        }
                     }
                     if (window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
                         comments.outerHTML = "";
@@ -2133,7 +2135,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.5.8";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
