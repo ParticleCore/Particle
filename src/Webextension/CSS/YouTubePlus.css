@@ -44,60 +44,19 @@
     }
 /*   end| Compact thumbnail titles */
 /* start| Floater player */
-    html.floater #player #movie_player:not(.ytp-fullscreen){
-        box-shadow: 0 0 10px rgb(0, 0, 0) !important;
-        position: fixed !important;
-        z-index: 10;
-    }
-    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
-    html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
-        display: none !important;
-    }
-    @media screen and (max-width: 656px){
-        #player-api{
-            height: auto !important;
-            left: 0 !important;
-            margin: 0 auto !important;
-            max-width: 1280px !important;
-            position: relative !important;
-            right: 0 !important;
-            width: 100% !important;
+    @media screen and (min-width: 657px){
+        html.floater #player #movie_player:not(.ytp-fullscreen){
+            box-shadow: 0 0 10px rgb(0, 0, 0) !important;
+            position: fixed !important;
+            z-index: 10;
         }
-        #player-api:before{
-            content: '';
-            display: block;
-            padding-top: 56.25%;
-        }
-        #player,
-        #placeholder-player{
-            margin-top: -10px !important;
-        }
-        #placeholder-player{
+        html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
+        html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
             display: none !important;
         }
-        #movie_player{
-            box-shadow: 0 0 10px #000;
-            height: initial !important;
-            left: initial !important;
-            position: fixed !important;
-            top: 50px !important;
-            width: 100% !important;
-            margin-left: auto;
-        }
-        #movie_player{
-            content: '';
-            display: block;
-            padding-top: 56.25%;
-        }
-       .watch-stage-mode #player,
-       .watch-stage-mode #placeholder-player{
-            margin-top: -10px;
-        }
-       .playlist-videos-list{
-            max-height: 170px !important;
-        }
-       #content{
-            margin-top: 10px !important;
+        .floater #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
+            opacity: 1;
+            pointer-events: initial;
         }
     }
     #part_floaterui{
@@ -120,12 +79,6 @@
         position: absolute;
         width: 100%;
         z-index: -1;
-    }
-    @media screen and (min-width: 657px){
-        .floater #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
-            opacity: 1;
-            pointer-events: initial;
-        }
     }
     #part_floaterui > button{
         cursor: pointer;
@@ -503,6 +456,13 @@
     }
 /*   end| Thumb buttons */
 /* start| Grid layout */
+    .part_grid_subs #browse-items-primary .item-section > li > .yt-lockup-tile,
+    .part_grid_subs #browse-items-primary .item-section > li > .multirow-shelf,
+    .part_grid_subs .browse-list-item-container.feed-item-container.branded-page-box,
+    .part_grid_subs .compact-shelf.branded-page-box,
+    .part_grid_subs .c4-featured-content.branded-page-box{
+       width: initial;
+    }
     .part_grid_subs .feed-item-container .branded-page-module-title,
     .part_grid_subs .feed-item-container .yt-lockup-description,
     .part_grid_search #results .yt-lockup-description{
@@ -602,10 +562,6 @@
     :-moz-focus-inner{
         border: 0;
     }
-    #P-settings input[type='checkbox'],
-    #P-settings input[type='radio']{
-        opacity: 0;
-    }
     .signin-container{
         margin-right: 10px;
     }
@@ -624,37 +580,8 @@
         max-width: 1003px;
         width: initial;
     }
-    #theater-background, #watch7-sidebar,
-    #watch-appbar-playlist{
-        transition: none !important;
-    }
-    .part_fit_theater .watch-stage-mode #theater-background{
-        bottom: 0;
-        height: initial !important;
-        top: 0;
-    }
     #footer-container{
         max-width: initial;
-    }
-    #player-unavailable:not(.hid) + #player-api{
-        display: none;
-    }
-    @media screen and (max-width: 656px){
-        #theater-background,
-        #footer-container{
-            display: none;
-        }
-        #player-playlist{
-            margin-top: 10px;
-        }
-        #watch-appbar-playlist{
-            margin-left: auto !important;
-            top: 0 !important;
-            transform: initial !important;
-        }
-        #player-playlist .watch-playlist{
-            height: 270px !important;
-        }
     }
     #page.watch .content-alignment,
     .watch.watch-non-stage-mode #player.content-alignment,
@@ -664,23 +591,11 @@
     .watch.watch-stage-mode #player-playlist.watch-player-playlist{
        min-width: 0 !important;
     }
-    .part_grid_subs #browse-items-primary .item-section > li > .yt-lockup-tile,
-    .part_grid_subs #browse-items-primary .item-section > li > .multirow-shelf,
-    .part_grid_subs .browse-list-item-container.feed-item-container.branded-page-box,
-    .part_grid_subs .compact-shelf.branded-page-box,
-    .part_grid_subs .c4-featured-content.branded-page-box{
-       width: initial;
+    #placeholder-player .player-api {
+        background-color: transparent !important;
     }
-    html:not(.part_autoplayon) .ytp-thumbnail-overlay,
-    html:not(.part_autoplayon) .ytp-large-play-button{
-       transition: none !important;
-    }
-    #movie_player .video-ads .ad-container:not(.ad-overlay){
-       top: 0;
-    }
-    .floater #movie_player,
-    .part_fullbrowser #movie_player{
-        background-color: #000 !important;
+    #watch-appbar-playlist{
+        transition: none !important;
     }
 /*   end| Enhancements */
 /* start| Improved notification button */
@@ -732,48 +647,6 @@
         }
     }
 /*   end| Static normal mode */
-/* start| Fit player in theater mode */
-    .part_fit_theater .watch-stage-mode #player-api,
-    .part_fit_theater .watch-stage-mode #player-unavailable{
-        height: auto !important;
-        left: 0 !important;
-        margin: 0 auto !important;
-        max-width: 1280px;
-        position: relative;
-        right: 0;
-        width: 100%;
-    }
-    .part_fit_theater .watch-stage-mode #player-api:after,
-    .part_fit_theater .watch-stage-mode #player-unavailable:after{
-        content: '';
-        display: block;
-        padding-top: 56.25%;
-    }
-    @media screen and (min-width: 657px){
-        .part_fit_theater .watch-stage-mode #movie_player{
-            bottom: 0;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-        }
-        .part_fit_theater .watch-stage-mode #watch-appbar-playlist{
-            top: 10px !important;
-        }
-        .part_fit_theater .watch-stage-mode #watch-appbar-playlist{
-            transform: none !important;
-        }
-    }
-    .part_fit_theater .watch-stage-mode #placeholder-player{
-        display: none;
-    }
-    .part_fit_theater .watch-stage-mode #content{
-        margin-top: 10px;
-    }
-    #page:not(.watch-stage-mode) #player-api{
-        max-width: none !important;
-    }
-/*   end| Fit player in theater mode */
 /* start| Cinema mode */
     #player-api:before,
     #masthead-positioner:before{
@@ -810,6 +683,10 @@
     }
     #P-settings + #page-container{
         display: none;
+    }
+    #P-settings input[type='checkbox'],
+    #P-settings input[type='radio']{
+        opacity: 0;
     }
     #P-container{
         margin: 10px auto 0;
@@ -1017,6 +894,7 @@
     .P-impexp .save{
         height: 16px;
         width: 16px;
+        pointer-events: none;
         transform: translate(-50%, -50%);
     }
     .P-reset{
