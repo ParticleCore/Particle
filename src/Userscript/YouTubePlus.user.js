@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.1
+// @version         1.6.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1263,7 +1263,7 @@
                     details = details.target.response.querySelectorAll("[data-context-item-id='" + window.ytplayer.config.args.video_id + "'] .yt-lockup-meta-info li");
                     if (details && details.length > 0 && enhancedDetails.watchTime.textContent.split("·").length < 2) {
                         enhancedDetails.watchTime.textContent += " · " + details[retry ? 0 : 1].textContent;
-                    } else if (retry) {
+                    } else if (retry && window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.ucid) {
                         localXHR("GET", getChannelInfo, "/channel/" + window.ytplayer.config.args.ucid + "/videos", "doc");
                     }
                 }
@@ -1306,7 +1306,7 @@
             function reverseButton(event) {
                 if (event.target.id === "reverse") {
                     event.target.classList.toggle("yt-uix-button-toggled");
-                    set("plRev", (event.target.classList.contains("yt-uix-button-toggled")) ? window.yt.config_.LIST_ID : false);
+                    set("plRev", event.target.classList.contains("yt-uix-button-toggled"));
                     reverseControl();
                 }
             }
@@ -1342,7 +1342,7 @@
             function playlistControls() {
                 playlistControls.plBar = document.getElementById("watch-appbar-playlist");
                 if (playlistControls.plBar) {
-                    if (document.readyState === "complete" && user_settings.plRev && window.location.href.split(user_settings.plRev).length > 1) {
+                    if (document.readyState === "complete" && user_settings.plRev) {
                         reverseControl();
                     }
                     if (user_settings.VID_PLST_RVRS && !document.getElementById("reverse")) {
@@ -2212,7 +2212,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.1";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.2";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
