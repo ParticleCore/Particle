@@ -45,16 +45,16 @@
 /*   end| Compact thumbnail titles */
 /* start| Floater player */
     @media screen and (min-width: 657px){
-        html.floater #player #movie_player:not(.ytp-fullscreen){
+        html.floater:not(.part_fullbrowser) #player #movie_player:not(.ytp-fullscreen){
             box-shadow: 0 0 10px rgb(0, 0, 0) !important;
             position: fixed !important;
             z-index: 10;
         }
-        html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
-        html.floater #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
+        html.floater:not(.part_fullbrowser) #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
+        html.floater:not(.part_fullbrowser) #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
             display: none !important;
         }
-        .floater #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
+        .floater:not(.part_fullbrowser) #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
             opacity: 1;
             pointer-events: initial;
         }
@@ -220,6 +220,8 @@
         position: fixed !important;
         right: 0 !important;
         top: 0 !important;
+        height: 100% !important;
+        width: 100% !important;
     }
     .part_fullbrowser body{
         overflow: hidden;
