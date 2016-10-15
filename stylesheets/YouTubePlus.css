@@ -598,6 +598,9 @@
     html:not(.part_autoplayon) .ytp-large-play-button{
        transition: none !important;
     }
+    body:not(.page-loaded) #movie_player .ytp-thumbnail-overlay {
+        display: none;
+    }
     #placeholder-player .player-api {
         background-color: transparent !important;
     }
