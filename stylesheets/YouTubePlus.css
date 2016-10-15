@@ -1073,11 +1073,6 @@
     }
     #yt-masthead #P{
         cursor: pointer;
-        height: 28px;
-        margin-right: 10px;
-        opacity: .55;
-        vertical-align: middle;
-        width:18px;
     }
     @media screen and (max-width: 656px){
         #yt-masthead #P{
