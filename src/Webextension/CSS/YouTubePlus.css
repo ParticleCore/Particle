@@ -69,6 +69,7 @@
         transition: opacity .25s cubic-bezier(0, 0, .2, 1);
         width: 100%;
         z-index: 1000;
+        pointer-events: none;
     }
     #part_floaterui:after{
         box-shadow: inset 0 120px 90px -90px rgba(8, 8, 8, .8);
@@ -597,6 +598,9 @@
     html:not(.part_autoplayon) .ytp-large-play-button{
        transition: none !important;
     }
+    body:not(.page-loaded) #movie_player .ytp-thumbnail-overlay {
+        display: none;
+    }
     #placeholder-player .player-api {
         background-color: transparent !important;
     }
@@ -1069,11 +1073,6 @@
     }
     #yt-masthead #P{
         cursor: pointer;
-        height: 28px;
-        margin-right: 10px;
-        opacity: .55;
-        vertical-align: middle;
-        width:18px;
     }
     @media screen and (max-width: 656px){
         #yt-masthead #P{
@@ -1081,7 +1080,7 @@
         }
     }
     #yt-masthead #P:hover{
-        opacity: .85;
+        opacity: .85 !important;
     }
     #P svg{
         vertical-align: middle;

@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.2
+// @version         1.6.3
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -526,7 +526,7 @@
                     welcome_message = document.createElement("template");
                     welcome_message.innerHTML = //
                         `<div id='Psettings'>
-                            <button id='P' data-p='ttl|YTSETS'>
+                            <button id='P' data-p='ttl|YTSETS' style='height:28px;margin-right:10px;opacity:.55;vertical-align:middle;width:18px;'>
                                 <svg viewBox='0 0 18 20'>
                                     <polygon points='0,20 14,12 0,4'/>
                                     <polygon points='15,3 15,0 13,0 13,3 10,3 10,5 13,5 13,8 15,8 15,5 18,5 18,3'/>
@@ -622,30 +622,29 @@
                     }
                 };
             }
-            function iterateKeys(keys) {
-                if (typeof player_instance[keys] === "object") {
-                    if (player_instance[keys] && player_instance[keys].hasNext) {
-                        player_instance[keys].hasNext = modAutoplayFullscreen(player_instance[keys].hasNext);
-                        return true;
-                    }
+            function modArgsWatch(args) {
+                if (args && args.autoplay === "1" && !user_settings.VID_PLR_ATPL && window.location.hash === "") {
+                    args.autoplay = "0";
                 }
+                return modArgsWatch.original.apply(this, arguments);
             }
             function modPlayerCreate(original) {
                 return function (a, b) {
-                    var player;
+                    var i, temp, player;
                     b = modArgs(b);
                     if (a.id === "upsell-video") {
                         original.apply(this, arguments);
                     } else if (typeof a === "object") {
                         player_instance = original.apply(this, arguments);
-                        Object.keys(player_instance).some(iterateKeys);
-                        player = document.getElementById("movie_player");
-                        if (!user_settings.VID_PLR_ATPL && player && (!window.opener || window.location.hash === "")) {
-                            if (window.ytplayer.config.args.dvmap && !user_settings.VID_PLR_ADS) {
-                                window.ytplayer.config.args.vmap = window.ytplayer.config.args.dvmap;
+                        temp = Object.keys(player_instance);
+                        i = temp.length;
+                        while (i--) {
+                            if (typeof player_instance[temp[i]] === "object" && player_instance[temp[i]] && player_instance[temp[i]].hasNext) {
+                                player_instance[temp[i]].hasNext = modAutoplayFullscreen(player_instance[temp[i]].hasNext);
+                                break;
                             }
-                            player.stopVideo();
                         }
+                        player = document.getElementById("movie_player");
                         if (user_settings.VID_PLR_FIT) {
                             resizePlayer();
                         }
@@ -661,24 +660,34 @@
                     }
                 };
             }
-            function setMods(keys) {
-                var str;
-                if (typeof window._yt_www[keys] === "function") {
-                    str = String(window._yt_www[keys]);
-                    if (str.split("player-added").length > 1) {
-                        window._yt_www[keys] = modEmbed(window._yt_www[keys]);
-                    } else if (str.split("window.spf.navigate").length > 1) {
-                        window._yt_www[keys] = modAutoplay(window._yt_www[keys]);
-                    } else if (str.split(".set(\"\"+a,b,c,\"/\",d").length > 1) {
-                        window.ytpsetwide = window._yt_www[keys];
-                    }
-                }
-            }
             function scriptExit(event) {
+                var i, j, key, temp;
                 if (event && event.target) {
                     if (event.target.getAttribute("name") === "www/base") {
                         window.yt.setConfig = modSetConfig(window.yt.setConfig);
-                        Object.keys(window._yt_www).forEach(setMods);
+                        if (window._yt_www) {
+                            temp = Object.keys(window._yt_www);
+                            i = temp.length;
+                            j = 0;
+                            while (i--) {
+                                key = temp[i];
+                                if (typeof window._yt_www[key] === "function") {
+                                    if (String(window._yt_www[key]).split("player-added").length > 1) {
+                                        window._yt_www[key] = modEmbed(window._yt_www[key]);
+                                        j++;
+                                    } else if (String(window._yt_www[key]).split("window.spf.navigate").length > 1) {
+                                        window._yt_www[key] = modAutoplay(window._yt_www[key]);
+                                        j++;
+                                    } else if (String(window._yt_www[key]).split(".set(\"\"+a,b,c,\"/\",d").length > 1) {
+                                        window.ytpsetwide = window._yt_www[key];
+                                        j++;
+                                    }
+                                }
+                                if (j === 3) {
+                                    break;
+                                }
+                            }
+                        }
                     }
                     if (event.target.getAttribute("name") === "www/watch") {
                         window.yt.www.watch.player.seekTo = modSeekTo(window.yt.www.watch.player.seekTo);
@@ -694,6 +703,26 @@
                 if ((event && event.target && event.target.getAttribute("name") === "player/base") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
                     window.html5Patched = true;
                     window.yt.player.Application.create = modPlayerCreate(window.yt.player.Application.create);
+                    if (window._yt_player) {
+                        temp = Object.keys(window._yt_player);
+                        i = temp.length;
+                        while (i--) {
+                            if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].toString().match("this.adaptiveFormats")) {
+                                key = temp[i];
+                                break;
+                            }
+                        }
+                        if (key) {
+                            modArgsWatch.original = window._yt_player[key];
+                            modArgsWatch.prototype = modArgsWatch.original.prototype;
+                            temp = Object.keys(modArgsWatch.original);
+                            i = temp.length;
+                            while (i--) {
+                                modArgsWatch[temp[i]] = modArgsWatch.original[temp[i]];
+                            }
+                            window._yt_player[key] = modArgsWatch;
+                        }
+                    }
                 }
             }
             function checkBounds(elm, X, Y) {
@@ -1751,6 +1780,9 @@
                     } else if (!user_settings.VID_PLR_ATPL) {
                         config.args.autoplay = "0";
                     }
+                    if (config.args.fflags) {
+                        config.args.fflags = config.args.fflags.replace("legacy_autoplay_flag=true", "legacy_autoplay_flag=false");
+                    }
                     if (user_settings.VID_PLR_SIZE_MEM) {
                         config.args.player_wide = (user_settings.theaterMode && "1") || "0";
                         if (window.ytpsetwide) {
@@ -1763,10 +1795,6 @@
                     if (user_settings.VID_PLR_ADS && (!user_settings.VID_SUB_ADS || (user_settings.VID_SUB_ADS && !config.args.subscribed))) {
                         delete config.args.ad3_module;
                     }
-                    if (config.args.vmap && !user_settings.VID_PLR_ATPL && !user_settings.VID_PLR_ADS) {
-                        config.args.dvmap = config.args.vmap;
-                        delete config.args.vmap;
-                    }
                     if (config.args.adaptive_fmts && user_settings.VID_PLR_HFR) {
                         new_list = [];
                         list = config.args.adaptive_fmts.split(",");
@@ -1778,13 +1806,6 @@
                             }
                         }
                         config.args.adaptive_fmts = new_list.join(",");
-                    }
-                    if (window.ytplayer) {
-                        if (window.ytplayer.config === null) {
-                            window.ytplayer.config = config;
-                        } else if (window.ytplayer.config) {
-                            window.ytplayer.config.args = config.args;
-                        }
                     }
                 }
                 return config;
@@ -1884,7 +1905,7 @@
                 document.documentElement.classList.remove("floater");
                 if (video_player) {
                     video_player.removeAttribute("style");
-                    if (!user_settings.VID_PLR_ATPL || event.detail.url.split("/watch").length < 2) {
+                    if (event.detail.url.split("/watch").length < 2 || (!user_settings.VID_PLR_ATPL && (event.detail.url.split("list=").length !== event.detail.previous.split("list=").length))) {
                         if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
                             delete window.ytplayer.config.loaded;
                         }
@@ -2212,7 +2233,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.2";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.3";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
