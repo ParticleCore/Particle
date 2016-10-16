@@ -44,6 +44,7 @@
     "GEN_REM_APUN"          : "Bir sonrakini otomatik oynatmayı durdur",
     "GEN_SPF_OFF"           : "SPF'i devre dışı bırak",
     "GEN_HIDE_FTR"          : "Altbilgiyi gizle",
+    "GEN_UNST_HDR"          : "Başlığı sabitle",
     "GEN_BLUE_GLOW"         : "Tıklanmış butonların etrafındaki mavi çerçeveyi kaldır",
     "GEN_HDE_RECM_SDBR"     : "Önerilen kanallar sidebar'ını gizle",
     "GEN_HDE_SRCH_SDBR"     : "Arama sonuçları sidebar'ını gizle",
