@@ -92,6 +92,7 @@
     "VID_PLR_SIZE_MEM"      : "Oynatıcının modunu hatırla",
     "VID_VOL_WHEEL"         : "Fare tekerleğiyle sesi değiştir",
     "VID_PLR_VOL_MEM"       : "Ses seviyesini hatırla",
+    "VID_PLR_VOL_LDN"       : "Youtube yüksek ses normalleştirmesini devre dışı bırak",
     "VID_PLR_ADS"           : "Video sayfasındaki reklamları engelle",
     "VID_PLR_ALACT"         : "Oynatıcı kısayolları her zaman aktif olsun",
     "VID_SUB_ADS"           : "Sadece abone olunan kanalların reklamlarını göster",
