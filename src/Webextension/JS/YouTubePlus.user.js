@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.3
+// @version         1.6.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -465,7 +465,7 @@
             function navigateSettings(event) {
                 if (event.target.classList.contains("P-save")) {
                     saveSettings();
-                } else if (event.target.classList.contains("P-reset")) {
+                } else if (event.target.classList.contains("P-reset") && window.confirm(lang("GLB_RSET_CONF"))) {
                     set("user_settings", default_settings);
                     settingsMenu.settingsButton.click();
                     settingsMenu.settingsButton.click();
@@ -1565,6 +1565,9 @@
             }
             function resizePlayer(event) {
                 var i, temp, is_small, content, max_width;
+                if (window.location.pathname.indexOf("/watch")) {
+                    return;
+                }
                 temp = document.getElementById("player-api");
                 if (!temp) {
                     return;
@@ -1592,6 +1595,12 @@
                             top: 51px;
                             position: fixed !important;
                             box-shadow: 0 0 10px #000;
+                        }
+                        #theater-background {
+                            background-color: transparent !important;
+                        }
+                        #content {
+                            top: 0 !important;
                         }
                     }
                     ${is_small}.player-width {
@@ -1812,9 +1821,10 @@
             }
             function modMatchMedia(original) {
                 return function(text) {
-                    if (text !== "(max-width: 656px)") {
-                        return original.apply(this, arguments);
-                    }
+                    var temp = original.apply(this, arguments);
+                    Object.defineProperty(temp, "matches", {writable: true});
+                    temp.matches = false;
+                    return temp;
                 };
             }
             function generalChanges() {
@@ -1942,6 +1952,9 @@
                 document.documentElement.dataset.parsend = JSON.stringify(user_settings);
             }
             function main() {
+                if (isMaterial()) {
+                    return;
+                }
                 pageScriptMessages();
                 customStyles();
                 settingsMenu();
@@ -1962,20 +1975,18 @@
             }
             function isMaterial() {
                 var i, temp;
-                temp = document.querySelectorAll("link");
-                i = temp.length;
-                while (i--) {
-                    if (temp[i].href.match("olymer")) {
-                        temp = document.createElement("template");
-                        temp.innerHTML = //
-                            `<div style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:20px;z-index:99999'>
-                            YouTube Plus is not yet compatible with the YouTube beta Material Layout<br>
-                            <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
-                            To keep using the current layout without this message please disable YT+
-                            </div>`;
-                        document.documentElement.appendChild(temp.content.firstChild);
-                        return true;
-                    }
+                temp = document.querySelector("link[href*='olymer']");
+                if (temp && !document.getElementById("material-notice")) {
+                    temp = document.createElement("template");
+                    temp.innerHTML = //
+                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:20px;z-index:99999'>
+                        YouTube Plus is not yet compatible with the YouTube beta Material Layout<br>
+                        <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
+                        To keep using the current layout without this message please disable YT+
+                        </div>`;
+                    document.documentElement.appendChild(temp.content.firstChild);
+                    document.documentElement.removeAttribute("data-user_settings");
+                    return true;
                 }
             }
             function closeMigrationInstructions(event) {
@@ -2060,6 +2071,7 @@
                 GLB_LOCL_LANG_CSTM    : "Local",
                 GLB_IMPR_SAVE         : "Save and load",
                 GLB_RSET              : "Reset",
+                GLB_RSET_CONF         : "This will reset YT+ settings and the blacklist will be erased. Do you want to continue?",
                 GLB_SVE               : "Save",
                 GLB_SVE_SETS          : "Settings saved",
                 GLB_RMBL              : "Remove from blacklist",
