@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.5
+// @version         1.6.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1983,7 +1983,7 @@
             }
             function isMaterial() {
                 var i, temp;
-                temp = document.querySelector("link[href*='olymer']");
+                temp = document.querySelector("ytd-app");
                 if (temp && !document.getElementById("material-notice")) {
                     temp = document.createElement("template");
                     temp.innerHTML = //

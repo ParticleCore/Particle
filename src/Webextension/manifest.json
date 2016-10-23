@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "YouTube Plus",
-    "version": "1.6.5",
+    "version": "1.6.6",
     "description": "YouTube with more freedom",
     "default_locale": "en",
     "icons": {
