@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.6
+// @version         1.6.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1607,15 +1607,12 @@
                         #theater-background {
                             background-color: transparent !important;
                         }
-                        #content {
-                            top: 0 !important;
-                        }
                     }
                     ${is_small}.player-width {
                         width: ${max_width}px !important;
                         left: ${max_width / 2 * -1}px !important;
                     }
-                    ${is_small}.player-height:not(#watch-appbar-playlist) {
+                    ${is_small}.player-height:not(.watch-playlist) {
                         height: ${max_width / (16 / 9)}px !important;
                     }
                     ${is_small}#watch-appbar-playlist {
@@ -1830,6 +1827,9 @@
             function modMatchMedia(original) {
                 return function(text) {
                     var temp = original.apply(this, arguments);
+                    if (text === "screen and (max-width: 656px)" && temp.matches) {
+                        return temp;
+                    }
                     Object.defineProperty(temp, "matches", {writable: true});
                     temp.matches = false;
                     return temp;
@@ -2253,7 +2253,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.5";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.7";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
