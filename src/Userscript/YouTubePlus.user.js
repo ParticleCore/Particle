@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.7
+// @version         1.6.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1753,74 +1753,74 @@
             }
             function modArgs(config) {
                 var i, temp, list, length, videos, new_list, can_share;
-                if (config.args.video_id) {
-                    if (window.name === "popOut") {
-                        can_share = document.querySelector(".playlist-header-content");
-                        if (can_share && can_share.dataset.shareable === "False" && !config.args.video) {
-                            config.args.video = [];
-                            videos = document.querySelectorAll("li[data-video-id]");
-                            length = videos.length;
-                            for (i = 0; i < length; i++) {
-                                config.args.video[i] = {"encrypted_id": videos[i].getAttribute("data-video-id")};
-                            }
+                if (window.name === "popOut") {
+                    can_share = document.querySelector(".playlist-header-content");
+                    if (can_share && can_share.dataset.shareable === "False" && !config.args.video) {
+                        config.args.video = [];
+                        videos = document.querySelectorAll("li[data-video-id]");
+                        length = videos.length;
+                        for (i = 0; i < length; i++) {
+                            config.args.video[i] = {"encrypted_id": videos[i].getAttribute("data-video-id")};
                         }
-                        document.title = config.args.title;
-                        config.args.el = "embedded";
                     }
+                    document.title = config.args.title;
+                    config.args.el = "embedded";
+                }
+                if (config.args.vq) {
                     config.args.vq = user_settings.VID_DFLT_QLTY;
-                    if (user_settings.VID_DFLT_QLTY !== "auto") {
-                        try {
-                            window.localStorage["yt-player-quality"] = JSON.stringify({
-                                "data": user_settings.VID_DFLT_QLTY,
-                                "expiration": new Date().getTime() + 864E5,
-                                "creation": new Date().getTime()
-                            });
-                        } catch (ignore) {}
+                }
+                if (user_settings.VID_DFLT_QLTY !== "auto") {
+                    try {
+                        window.localStorage["yt-player-quality"] = JSON.stringify({
+                            "data": user_settings.VID_DFLT_QLTY,
+                            "expiration": new Date().getTime() + 864E5,
+                            "creation": new Date().getTime()
+                        });
+                    } catch (ignore) {}
+                }
+                if (config.args.caption_audio_tracks && user_settings.VID_PLR_CC) {
+                    config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
+                }
+                if (user_settings.VID_PLR_VOL_LDN) {
+                    delete config.args.loudness;
+                }
+                if (user_settings.VID_PLR_HTML5) {
+                    config.html5 = true;
+                }
+                if (user_settings.VID_PLR_INFO) {
+                    config.args.showinfo = "1";
+                }
+                if (window.opener && window.location.hash !== "") {
+                    config.args.autoplay = "1";
+                } else if (!user_settings.VID_PLR_ATPL) {
+                    config.args.autoplay = "0";
+                }
+                if (config.args.fflags) {
+                    config.args.fflags = config.args.fflags.replace("legacy_autoplay_flag=true", "legacy_autoplay_flag=false");
+                }
+                if (user_settings.VID_PLR_SIZE_MEM) {
+                    config.args.player_wide = (user_settings.theaterMode && "1") || "0";
+                    if (window.ytpsetwide) {
+                        window.ytpsetwide("wide", config.args.player_wide, -1);
                     }
-                    if (config.args.caption_audio_tracks && user_settings.VID_PLR_CC) {
-                        config.args.caption_audio_tracks = config.args.caption_audio_tracks.split(/&d=[0-9]|d=[0-9]&/).join("");
-                    }
-                    if (user_settings.VID_PLR_VOL_LDN) {
-                        delete config.args.loudness;
-                    }
-                    if (user_settings.VID_PLR_HTML5) {
-                        config.html5 = true;
-                    }
-                    if (user_settings.VID_PLR_INFO) {
-                        config.args.showinfo = "1";
-                    }
-                    if (window.opener && window.location.hash !== "") {
-                        config.args.autoplay = "1";
-                    } else if (!user_settings.VID_PLR_ATPL) {
-                        config.args.autoplay = "0";
-                    }
-                    if (config.args.fflags) {
-                        config.args.fflags = config.args.fflags.replace("legacy_autoplay_flag=true", "legacy_autoplay_flag=false");
-                    }
-                    if (user_settings.VID_PLR_SIZE_MEM) {
-                        config.args.player_wide = (user_settings.theaterMode && "1") || "0";
-                        if (window.ytpsetwide) {
-                            window.ytpsetwide("wide", config.args.player_wide, -1);
+                }
+                if (config.args.iv_load_policy && user_settings.VID_PLR_ANTS) {
+                    config.args.iv_load_policy = "3";
+                }
+                if (user_settings.VID_PLR_ADS && (!user_settings.VID_SUB_ADS || (user_settings.VID_SUB_ADS && !config.args.subscribed))) {
+                    delete config.args.ad3_module;
+                }
+                if (config.args.adaptive_fmts && user_settings.VID_PLR_HFR) {
+                    new_list = [];
+                    list = config.args.adaptive_fmts.split(",");
+                    i = list.length;
+                    while (i--) {
+                        temp = list[i].split(/fps\=([0-9]{2})/)[1];
+                        if (!temp || temp < 31) {
+                            new_list.push(list[i]);
                         }
                     }
-                    if (config.args.iv_load_policy && user_settings.VID_PLR_ANTS) {
-                        config.args.iv_load_policy = "3";
-                    }
-                    if (user_settings.VID_PLR_ADS && (!user_settings.VID_SUB_ADS || (user_settings.VID_SUB_ADS && !config.args.subscribed))) {
-                        delete config.args.ad3_module;
-                    }
-                    if (config.args.adaptive_fmts && user_settings.VID_PLR_HFR) {
-                        new_list = [];
-                        list = config.args.adaptive_fmts.split(",");
-                        i = list.length;
-                        while (i--) {
-                            temp = list[i].split(/fps\=([0-9]{2})/)[1];
-                            if (!temp || temp < 31) {
-                                new_list.push(list[i]);
-                            }
-                        }
-                        config.args.adaptive_fmts = new_list.join(",");
-                    }
+                    config.args.adaptive_fmts = new_list.join(",");
                 }
                 return config;
             }
@@ -2253,7 +2253,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.7";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.8";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
