@@ -678,9 +678,6 @@
     .part_cinema_mode #masthead-positioner:before{
         background-color: rgba(0, 0, 0, .9);
     }
-    .part_cinema_mode .html5-video-player{
-        overflow: initial;
-    }
 /*   end| Cinema mode */
 /* start| Particle settings */
     #P-settings{
