@@ -45,16 +45,16 @@
 /*   end| Compact thumbnail titles */
 /* start| Floater player */
     @media screen and (min-width: 657px){
-        html.floater:not(.part_fullbrowser) #player #movie_player:not(.ytp-fullscreen){
+        html.floater:not(.part_fullbrowser) #player #player-api #movie_player:not(.ytp-fullscreen){
             box-shadow: 0 0 10px rgb(0, 0, 0) !important;
             position: fixed !important;
             z-index: 10;
         }
-        html.floater:not(.part_fullbrowser) #player #movie_player:not(.ytp-fullscreen) .ytp-next-button,
-        html.floater:not(.part_fullbrowser) #player #movie_player:not(.ytp-fullscreen) .ytp-size-button{
+        html.floater:not(.part_fullbrowser) #player #player-api #movie_player:not(.ytp-fullscreen) .ytp-next-button,
+        html.floater:not(.part_fullbrowser) #player #player-api #movie_player:not(.ytp-fullscreen) .ytp-size-button{
             display: none !important;
         }
-        .floater:not(.part_fullbrowser) #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
+        .floater:not(.part_fullbrowser) #player-api #movie_player:not(.ytp-fullscreen):hover #part_floaterui{
             opacity: 1;
             pointer-events: initial;
         }
@@ -214,8 +214,8 @@
     #watch-header{
         position: relative;
     }
-    .part_fullbrowser div#movie_player.playing-mode,
-    .part_fullbrowser div#movie_player.paused-mode{
+    .part_fullbrowser #player-api div#movie_player.playing-mode,
+    .part_fullbrowser #player-api div#movie_player.paused-mode{
         bottom: 0 !important;
         left: 0 !important;
         position: fixed !important;
@@ -393,7 +393,7 @@
         display: none;
     }
     .part_popout #player-api,
-    .part_popout #movie_player{
+    .part_popout #player-api #movie_player{
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
@@ -598,7 +598,7 @@
     html:not(.part_autoplayon) .ytp-large-play-button{
        transition: none !important;
     }
-    body:not(.page-loaded) #movie_player .ytp-thumbnail-overlay {
+    body:not(.page-loaded) #player-api #movie_player .ytp-thumbnail-overlay {
         display: none;
     }
     #placeholder-player .player-api {
@@ -677,9 +677,6 @@
     .part_cinema_mode #player-api:before,
     .part_cinema_mode #masthead-positioner:before{
         background-color: rgba(0, 0, 0, .9);
-    }
-    .part_cinema_mode .html5-video-player{
-        overflow: initial;
     }
 /*   end| Cinema mode */
 /* start| Particle settings */

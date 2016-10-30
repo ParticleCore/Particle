@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.8
+// @version         1.6.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -592,6 +592,10 @@
             function modEmbed(original) {
                 return function (a, b) {
                     var temp, player;
+                    temp = a.id || a;
+                    if (temp !== "player-api" && temp !== "upsell-video") {
+                        return original.apply(this, arguments);
+                    }
                     b = modArgs(b);
                     temp = original.apply(this, arguments);
                     player = document.getElementById("movie_player");
@@ -639,6 +643,10 @@
             function modPlayerCreate(original) {
                 return function (a, b) {
                     var i, temp, player;
+                    temp = a.id || a;
+                    if (temp !== "player-api" && temp !== "upsell-video") {
+                        return original.apply(this, arguments);
+                    }
                     b = modArgs(b);
                     if (a.id === "upsell-video") {
                         original.apply(this, arguments);
@@ -2253,7 +2261,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.8";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.6.9";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
