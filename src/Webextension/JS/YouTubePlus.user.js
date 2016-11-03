@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.6.9
+// @version         1.7.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1216,7 +1216,7 @@
                         temp = false;
                     }
                 }
-                temp = document.getElementsByClassName("feed-item-container");
+                temp = document.querySelectorAll(".feed-item-container:not(.search-history-item)");
                 i = temp.length;
                 while (i--) {
                     if (temp[i].querySelectorAll("ul").length < 2) {
