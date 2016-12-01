@@ -487,6 +487,9 @@
         margin-bottom: 12px;
         width: 196px;
     }
+    .part_grid_search .exp-search-big-thumbs246 #results .item-section > li{
+        width: 246px;
+    }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container,
     .part_grid_search #results .item-section > li .yt-lockup{
         border: initial;
