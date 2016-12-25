@@ -1104,6 +1104,7 @@
         font-size: 13px;
         font-weight: normal;
         white-space: normal;
+        text-transform: normal;
         background:#09F;
         border-radius:2px;
         max-width:220px;
