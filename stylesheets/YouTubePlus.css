@@ -343,6 +343,12 @@
     #cinemamode-button svg{
         height: 18px;
     }
+    #framestep-button{
+        padding: 15px 14px !important;
+    }
+    #framestep-button svg{
+        height: 20px;
+    }
     #shortcuts-button{
         padding: 15px 13px !important;
     }
