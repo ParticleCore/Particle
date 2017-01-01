@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.7.3
+// @version         1.7.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -19,10 +19,10 @@
 // ==/UserScript==
 (function () {
     "use strict";
-    var particle = {
+    let particle = {
         inject: function(is_userscript) {
             function setLocale(content) {
-                var i, j, list, temp, ytplabel;
+                let i, j, list, temp, ytplabel;
                 ytplabel = content.querySelectorAll("[data-p]");
                 i = ytplabel.length;
                 while (i--) {
@@ -120,8 +120,7 @@
                 return next[Object.keys(next)[0]].localeCompare(previous[Object.keys(previous)[0]]);
             }
             function getBlacklist(blist) {
-                var i, obj, temp, lnk, keys, list, fragment, sortAlpha;
-                sortAlpha = [];
+                let i, obj, temp, lnk, keys, list, fragment, sortAlpha;
                 list = user_settings.blacklist;
                 fragment = document.createDocumentFragment();
                 sortAlpha = [];
@@ -156,7 +155,7 @@
                 blist.appendChild(fragment);
             }
             function getValues(menu) {
-                var i, ytp, list;
+                let i, ytp, list;
                 if (user_settings) {
                     list = menu.querySelector("#blacklist");
                     if (list) {
@@ -183,7 +182,7 @@
                 return menu;
             }
             function getMenu(section) {
-                var i, temp, svg, inputs;
+                let i, temp, svg, inputs;
                 temp = document.createElement("template");
                 if (section === "MEN") {
                     temp.innerHTML = //
@@ -338,7 +337,7 @@
                                 <button class='P-implang' data-p='ttl|GLB_LOCL_LANG&tnd|LOCALE'></button>
                                 <h2 data-p='tnd|BLK_TTL'></h2>
                             </div>
-                            <hr class='P-horz'></hr>
+                            <hr class='P-horz'/>
                             <h3 data-p='tnd|BLK_BLK'></h3>
                             <div><input id='BLK_ON' type='checkbox'><label for='BLK_ON' data-p='tnd|BLK_ON'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#blacklist_on' data-p='ttl|FTR_DESC' target='features'>?</a></div>
                             <div id='blacklist'>
@@ -349,7 +348,7 @@
                                 </div>
                                 <textarea id='blacklist-edit-list'></textarea>
                             </div>
-                            <br></br>
+                            <br/>
                         </div>`;
                     if (user_settings.GEN_LOCL_LANG && user_settings.localLang) {
                         temp.content.querySelector(".P-implang").dataset.p = "ttl|GLB_LOCL_LANG&tnd|GLB_LOCL_LANG_CSTM";
@@ -360,7 +359,7 @@
                             <div class='P-header'>
                                 <h2 data-p='tnd|ABT_TTL'></h2>
                             </div>
-                            <hr class='P-horz'></hr>
+                            <hr class='P-horz'/>
                             <h3 data-p='tnd|ABT_THKS'></h3>
                             <div><a target='_blank' href='https://github.com/YePpHa'>Jeppe Rune Mortensen</a><span data-p='tnd|ABT_THKS_YEPPHA'></span></div>
                             <div><a target='_blank' href='http://www.greasespot.net/'>Greasemonkey</a> + <a href='http://tampermonkey.net/'>Tampermonkey</a><span data-p='tnd|ABT_THKS_USERSCRIPT'></span></div>
@@ -374,14 +373,13 @@
                 inputs = temp.content.querySelectorAll("input[type='checkbox'] + label");
                 svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 svg.innerHTML = "<use xlink:href='#ytp-svg-checkmark'>";
-                i = inputs.length;
-                while (i--) {
+                for (i = 0; i < inputs.length; i++) {
                     inputs[i].appendChild(svg.cloneNode(true));
                 }
                 return setLocale(getValues(temp.content));
             }
             function exportSettings(target) {
-                var expCont;
+                let expCont;
                 if (target.classList.contains("P-impexp") || target.classList.contains("P-implang")) {
                     expCont = document.getElementById("exp-cont");
                     if (expCont) {
@@ -424,7 +422,7 @@
                 }
             }
             function delBlackList(event) {
-                var newKey = user_settings.blacklist;
+                let newKey = user_settings.blacklist;
                 delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
                 event.target.parentNode.outerHTML = "";
                 set("blacklist", newKey);
@@ -433,7 +431,7 @@
                 document.body.classList.remove("show-guide-button-notification");
             }
             function saveSettings(salt) {
-                var i, value, notification, navId, userSets, savedSets;
+                let i, value, notification, navId, userSets, savedSets;
                 navId = document.querySelector(".selected").id;
                 userSets = document.getElementById("P-content").querySelectorAll("[id^='" + navId + "']");
                 savedSets = user_settings;
@@ -497,7 +495,7 @@
                 }
             }
             function settingsTemplate(event) {
-                var pWrapper;
+                let pWrapper;
                 if (event.target.id === "P" && event.target.tagName !== "INPUT") {
                     pWrapper = document.getElementById("P-settings");
                     if (pWrapper) {
@@ -524,11 +522,11 @@
                 }
             }
             function settingsMenu() {
-                var notif_button, settings_button, welcome_message;
+                let notif_button, settings_button, welcome_message;
                 if (settingsMenu.settingsButton) {
                     return;
                 }
-                notif_button = document.querySelector(".notifications-container");
+                notif_button = document.querySelector("#yt-masthead-notifications, .notifications-container");
                 settings_button = document.querySelector("#yt-masthead-user, #yt-masthead-signin");
                 if (settings_button) {
                     welcome_message = document.createElement("template");
@@ -542,9 +540,9 @@
                             </button>
                             <div id='part_welcome' style='display:none;margin-left:-220px;top:38px;right:0'>
                                 <span data-p='tnd|WLCM'></span>
-                                <br></br>
+                                <br/>
                                 <span data-p='tnd|WLCMSTRT'></span>
-                                <br></br><br></br>
+                                <br/><br/>
                                 <a data-p='tnd|WLCMFTRS' style='color:#FFF;' href='https://github.com/ParticleCore/Particle/wiki/Features' target='_blank'></a>
                                 <div class='par_closewlcm'><span>×</span></div>
                             </div>
@@ -566,7 +564,7 @@
             }
             function modComment(original) {
                 return function (a) {
-                    var comments, is_live;
+                    let comments, is_live;
                     comments = document.getElementById("watch-discussion");
                     is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
                     if (a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
@@ -591,12 +589,12 @@
             }
             function modEmbed(original) {
                 return function (a, b) {
-                    var temp, player;
+                    let temp, player;
                     temp = a.id || a;
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
                     }
-                    b = modArgs(b);
+                    /*b = */modArgs(b);
                     temp = original.apply(this, arguments);
                     player = document.getElementById("movie_player");
                     if (player) {
@@ -614,7 +612,7 @@
             }
             function modAutoplayFullscreen(original) {
                 return function () {
-                    var has_ended, next_button, next_clicked;
+                    let has_ended, next_button, next_clicked;
                     has_ended = api && api.getCurrentTime && Math.round(api.getCurrentTime()) >= Math.floor(api.getDuration());
                     next_clicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
                     if (!user_settings.plApl && !next_clicked && has_ended) {
@@ -634,20 +632,14 @@
                     }
                 };
             }
-            function modArgsWatch(args) {
-                if (args && args.autoplay === "1" && !user_settings.VID_PLR_ATPL && window.location.hash === "") {
-                    args.autoplay = "0";
-                }
-                return modArgsWatch.original.apply(this, arguments);
-            }
             function modPlayerCreate(original) {
                 return function (a, b) {
-                    var i, temp, player;
+                    let i, temp, player;
                     temp = a.id || a;
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
                     }
-                    b = modArgs(b);
+                    /*b = */modArgs(b);
                     if (a.id === "upsell-video") {
                         original.apply(this, arguments);
                     } else if (typeof a === "object") {
@@ -676,8 +668,14 @@
                     }
                 };
             }
+            function ModArgsWatch(args) {
+                if (args && args.autoplay === "1" && !user_settings.VID_PLR_ATPL && window.location.hash === "") {
+                    args.autoplay = "0";
+                }
+                return ModArgsWatch.Original.apply(this, arguments);
+            }
             function scriptExit(event) {
-                var i, j, key, temp;
+                let i, j, key, temp;
                 if (event && event.target) {
                     if (event.target.getAttribute("name") === "www/base") {
                         window.yt.setConfig = modSetConfig(window.yt.setConfig);
@@ -710,39 +708,40 @@
                     }
                     if (event.target.getAttribute("name") === "spf/spf") {
                         window.spf.load = modComment(window.spf.load);
-                        window.spf.prefetch = function(){return;};
+                        window.spf.prefetch = function(){};
                         if (window.name === "popOut") {
-                            window.spf.navigate = function(){return;};
+                            window.spf.navigate = function(){};
                         }
                     }
                 }
-                if ((event && event.target && event.target.getAttribute("name") === "player/base") || (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)) {
+                if (
+                    (event && event.target && event.target.getAttribute("name") === "player/base") ||
+                    (!window.html5Patched && window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create)
+                ) {
                     window.html5Patched = true;
                     window.yt.player.Application.create = modPlayerCreate(window.yt.player.Application.create);
                     if (window._yt_player) {
                         temp = Object.keys(window._yt_player);
-                        i = temp.length;
-                        while (i--) {
-                            if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].toString().match("this.adaptiveFormats")) {
+                        for (i = 0; i < temp.length; i++) {
+                            if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].toString().match(/this\.adaptiveFormats/)) {
                                 key = temp[i];
                                 break;
                             }
                         }
                         if (key) {
-                            modArgsWatch.original = window._yt_player[key];
-                            modArgsWatch.prototype = modArgsWatch.original.prototype;
-                            temp = Object.keys(modArgsWatch.original);
-                            i = temp.length;
-                            while (i--) {
-                                modArgsWatch[temp[i]] = modArgsWatch.original[temp[i]];
+                            ModArgsWatch.Original = window._yt_player[key];
+                            ModArgsWatch.prototype = ModArgsWatch.Original.prototype;
+                            temp = Object.keys(ModArgsWatch.Original);
+                            for (i = 0; i < temp.length; i++) {
+                                ModArgsWatch[temp[i]] = ModArgsWatch.Original[temp[i]];
                             }
-                            window._yt_player[key] = modArgsWatch;
+                            window._yt_player[key] = ModArgsWatch;
                         }
                     }
                 }
             }
             function checkBounds(elm, X, Y) {
-                var snapX, snapY;
+                let snapX, snapY;
                 if (X > -1 && X + elm.offsetWidth < document.documentElement.offsetWidth) {
                     snapX = false;
                 } else if (X < 1) {
@@ -764,7 +763,7 @@
                 return {X: X + "px", Y: Y + "px", snapX: snapX, snapY: snapY};
             }
             function updatePos() {
-                var x, y, height, player, bounds;
+                let x, y, height, player, bounds;
                 player = document.getElementById("movie_player");
                 if (!document.documentElement.classList.contains("floater") || window.innerWidth < 657) {
                     if (player) {
@@ -798,7 +797,7 @@
                 document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
             }
             function dragFloater(event) {
-                var excluded, isFScreen, isFloater, bounds, player;
+                let excluded, isFScreen, isFloater, bounds, player;
                 isFScreen = document.querySelector(".ytp-fullscreen");
                 isFloater = document.documentElement.classList.contains("floater");
                 if (event && !isFScreen && isFloater) {
@@ -816,7 +815,13 @@
                                 orgX: event.clientX,
                                 orgY: event.clientY
                             };
-                        } else if (event.type === "mousemove" && (dragFloater.hasMoved || Math.abs(event.clientX - dragFloater.oldPos.orgX) > 10 || Math.abs(event.clientY - dragFloater.oldPos.orgY) > 10)) {
+                        } else if (
+                            event.type === "mousemove" && (
+                                dragFloater.hasMoved ||
+                                Math.abs(event.clientX - dragFloater.oldPos.orgX) > 10 ||
+                                Math.abs(event.clientY - dragFloater.oldPos.orgY) > 10
+                            )
+                        ) {
                             bounds = checkBounds(player, event.clientX + dragFloater.oldPos.X, event.clientY + dragFloater.oldPos.Y);
                             player.style.left = bounds.X;
                             player.style.top = bounds.Y;
@@ -843,7 +848,7 @@
                 }
             }
             function iniFloater() {
-                var player, plrApi, out_of_sight, isFloater, isFScreen, floaterUI, settings_open;
+                let player, plrApi, out_of_sight, isFloater, isFScreen, floaterUI, settings_open;
                 player = document.getElementById("movie_player");
                 plrApi = document.getElementById("player-api").getBoundingClientRect();
                 settings_open = document.getElementById("P-settings");
@@ -887,9 +892,16 @@
                 }
             }
             function alwaysActive(event) {
-                var i, list, clear, length, eventClone;
+                let i, list, clear, length, eventClone;
                 clear = window.location.pathname == "/watch" && api && api !== event.target && !api.contains(event.target) && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !event.target.isContentEditable;
-                if (clear && ((event.which > 47 && event.which < 58) || (event.which > 95 && event.which < 106) || [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1) && ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0) {
+                if (
+                    clear && (
+                        event.which > 47 && event.which < 58 ||
+                        event.which > 95 && event.which < 106 ||
+                        [27, 32, 35, 36, 37, 38, 39, 40, 66, 67, 79, 87, 187, 189].indexOf(event.which) > -1
+                    ) &&
+                    ["EMBED", "INPUT", "OBJECT", "TEXTAREA", "IFRAME"].indexOf(document.activeElement.tagName) < 0
+                ) {
                     eventClone = new Event("keydown");
                     list = Object.keys(Object.getPrototypeOf(event));
                     length = list.length;
@@ -935,7 +947,7 @@
                 }
             }
             function getThumb() {
-                var args, base, thumb_url;
+                let args, base, thumb_url;
                 args = window.ytplayer.config.args;
                 base = (args.iurl_webp && "_webp") || "";
                 thumb_url = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
@@ -948,7 +960,7 @@
                 }
             }
             function getScreenshot() {
-                var width, height, aspectRatio, video, container, canvas, close, context;
+                let width, height, aspectRatio, video, container, canvas, close, context;
                 video = document.querySelector("video");
                 container = document.getElementById("screenshot-result") || document.createElement("div");
                 canvas = container.querySelector("canvas") || document.createElement("canvas");
@@ -971,7 +983,15 @@
                 }
             }
             function exitFullBrowser(key) {
-                if (document.documentElement.classList.contains("part_fullbrowser") && (key.keyCode === 27 || key.key === "Escape" || (key.target.className && key.target.className.split("ytp-size").length > 1))) {
+                if (
+                    document.documentElement.classList.contains("part_fullbrowser") && (
+                        key.keyCode === 27 ||
+                        key.key === "Escape" || (
+                            key.target.className &&
+                            key.target.className.split("ytp-size").length > 1
+                        )
+                    )
+                ) {
                     toggleFullBrowser(key);
                     if (key.type === "mousedown") {
                         document.removeEventListener("keydown", exitFullBrowser);
@@ -981,7 +1001,7 @@
                 }
             }
             function toggleFullBrowser(event) {
-                var plrState = api && api.getPlayerState && api.getPlayerState();
+                let plrState = api && api.getPlayerState && api.getPlayerState();
                 plrState = plrState < 5 && plrState > 0;
                 document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
                 document.addEventListener("keydown", exitFullBrowser);
@@ -991,6 +1011,45 @@
                 if (event && (plrState || event.keyCode === 27 || event.key === "Escape")) {
                     document.documentElement.classList[(user_settings.fullBrs && "add") || "remove"]("part_fullbrowser");
                     window.dispatchEvent(new Event("resize"));
+                }
+            }
+            function toggleFrames(event) {
+                let i, pi, fps, temp;
+                advancedOptions.frame_step = document.getElementById("framestep-button");
+                if (event && ["EMBED", "INPUT", "OBJECT", "TEXTAREA"].indexOf(document.activeElement.tagName) < 0 && event.target.tagName !== "IFRAME" && !event.target.getAttribute("contenteditable")) {
+                    if ((event.keyCode === 37 || event.keyCode === 39) && event.shiftKey) {
+                        pi = api.getVideoStats().fmt;
+                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.adaptive_fmts) {
+                            temp = window.ytplayer.config.args.adaptive_fmts.split(",");
+                            i = temp.length;
+                            while (i--) {
+                                if (temp[i].indexOf("itag=" + pi) > 0) {
+                                    advancedOptions.fps = parseInt(temp[i].match(/fps=([\d]+)/)[1]);
+                                    break;
+                                }
+                            }
+                        }
+                        if (!advancedOptions.fps || advancedOptions.fps === 1) {
+                            advancedOptions.fps = 30;
+                        }
+                        fps = ((event.keyCode < 39 && -1) || 1) * ((advancedOptions.fps < 2 && 30) || advancedOptions.fps);
+                        if (fps && api) {
+                            if (!document.querySelector("video").paused) {
+                                api.pauseVideo();
+                            }
+                            api.seekBy(1 / fps);
+                        }
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                    } else if (event.type === "click" && event.target.id === "framestep-button") {
+                        set("frame_step", !user_settings.frame_step);
+                        advancedOptions.frame_step.classList[(user_settings.frame_step && "add") || "remove"]("active");
+                    }
+                }
+                if (advancedOptions.frame_step && advancedOptions.frame_step.classList.contains("active")) {
+                    document.addEventListener("keydown", toggleFrames, true);
+                } else if (!advancedOptions.frame_step || !advancedOptions.frame_step.classList.contains("active")) {
+                    document.removeEventListener("keydown", toggleFrames, true);
                 }
             }
             function toggleShortcuts() {
@@ -1009,7 +1068,7 @@
                 document.getElementById("autoplay-button").classList[(user_settings.VID_PLR_ATPL && "add") || "remove"]("active");
             }
             function toggleLoop(event) {
-                var videoPlayer = document.querySelector("video");
+                let videoPlayer = document.querySelector("video");
                 if (videoPlayer) {
                     videoPlayer.loop = event ? !user_settings.loopVid : user_settings.loopVid;
                     if (event) {
@@ -1019,7 +1078,7 @@
                 set("loopVid", advancedOptions.loop_button.classList.contains("active"));
             }
             function toggleCinemaMode(event) {
-                var plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
+                let plrState = api && api.getPlayerState && api.getPlayerState() < 5 && api.getPlayerState() > 0;
                 set("lightsOut", event ? !user_settings.lightsOut : true);
                 advancedOptions.cinema_mode.classList[(user_settings.lightsOut && "add") || "remove"]("active");
                 if (event && plrState) {
@@ -1036,6 +1095,7 @@
                 advancedOptions.full_browser = advancedOptions.controls.querySelector("#fullbrowser-button");
                 advancedOptions.cinema_mode = advancedOptions.controls.querySelector("#cinemamode-button");
                 advancedOptions.loop_button = advancedOptions.controls.querySelector("#loop-button");
+                advancedOptions.frame_step = advancedOptions.controls.querySelector("#framestep-button");
                 advancedOptions.actions = {
                     togglePlay: togglePlay,
                     toggleLoop: toggleLoop,
@@ -1044,6 +1104,7 @@
                     popPlayer: popPlayer,
                     toggleFullBrowser: toggleFullBrowser,
                     toggleCinemaMode: toggleCinemaMode,
+                    toggleFrames: toggleFrames,
                     toggleShortcuts: toggleShortcuts
                 };
                 document.addEventListener("click", handleToggles);
@@ -1059,9 +1120,13 @@
                     advancedOptions.cinema_mode.classList.add("active");
                     toggleCinemaMode();
                 }
+                if (user_settings.frame_step && !advancedOptions.frame_step.classList.contains("active")) {
+                    advancedOptions.frame_step.classList.add("active");
+                    toggleFrames();
+                }
             }
             function advancedOptions() {
-                var header, cnslBtn, cnslCont;
+                let header, cnslBtn, cnslCont;
                 header = document.getElementById("watch-header");
                 cnslBtn = document.getElementById("console-button");
                 advancedOptions.controls = document.getElementById("player-console");
@@ -1098,6 +1163,7 @@
                             <div id='popout-button' class='yt-uix-tooltip' data-p='ttp|CNSL_PPOT' data-action='popPlayer'><svg viewBox='0 0 22 16'><path d='M6,0v12h16V0H6z M20,10H8V2h12V10z'/><polygon points='14,14 2,14 2,6 5,6 5,4 0,4 0,16 16,16 16,13 14,13'/></svg></div>
                             <div id='fullbrowser-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FLBR' data-action='toggleFullBrowser'><svg viewBox='0 0 20 18'><path d='M0,0v18h20V0H0z M18,16H2V4h16V16z'/><polygon points='3,5 3,9 5,9 5,7 7,7 7,5'/><polygon points='17,5 13,5 13,7 15,7 15,9 17,9'/><polygon points='17,15 17,11 15,11 15,13 13,13 13,15'/><polygon points='3,15 7,15 7,13 5,13 5,11 3,11'/></svg></div>
                             <div id='cinemamode-button' class='yt-uix-tooltip' data-p='ttp|CNSL_CINM_MD' data-action='toggleCinemaMode'><svg viewBox='0 0 20 18'><path d='M18,0v2h-2V0H4v2H2V0H0v18h2v-2h2v2h12v-2h2v2h2V0H18z M4,14H2v-2h2V14z M4,10H2V8h2V10z M4,6H2V4h2V6z M14,16 H6v-6h8V16z M14,8H6V2h8V8z M18,14h-2v-2h2V14z M18,10h-2V8h2V10z M18,6h-2V4h2V6z'/></svg></div>
+                            <div id='framestep-button' class='yt-uix-tooltip' data-p='ttp|CNSL_FRME' data-action='toggleFrames'><svg viewBox='0 0 20 20'><path d='M20,9h-2.1c-0.5-3.6-3.3-6.5-6.9-6.9V0H9v2.1C5.4,2.5,2.5,5.4,2.1,9H0v2h2.1c0.5,3.6,3.3,6.5,6.9,6.9V20h2 v-2.1c3.6-0.5,6.5-3.3,6.9-6.9H20V9z M11,15.9V14H9v1.9c-2.5-0.4-4.5-2.4-4.9-4.9H6V9H4.1C4.5,6.5,6.5,4.5,9,4.1V6h2V4.1 c2.5,0.4,4.5,2.4,4.9,4.9H14v2h1.9C15.5,13.5,13.5,15.5,11,15.9z'/><circle cx='10' cy='10' r='1'/></svg></div>
                             <div id='shortcuts-button' class='yt-uix-tooltip' data-p='ttp|CNSL_YTSC' data-action='toggleShortcuts'><svg viewBox='0 0 18 18'><polygon points='7,8 10,8 10,13 11,13 11,14 7,14 7,13 8,13 8,9 7,9'/><rect x='8' y='4' width='2' height='2'/><path d='M9,0C4,0,0,4,0,9c0,5,4,9,9,9s9-4,9-9C18,4,14,0,9,0z M9,16.1c-3.9,0-7.1-3.2-7.1-7.1S5.1,1.9,9,1.9 s7.1,3.2,7.1,7.1S12.9,16.1,9,16.1z'/></svg></div>
                         </div>`;
                     if (user_settings.VID_PLR_ATPL) {
@@ -1113,7 +1179,7 @@
                 }
             }
             function iniAction(event) {
-                var observer, load_more, click_title;
+                let observer, load_more, click_title;
                 load_more = document.querySelector("#watch-more-related, .load-more-button");
                 click_title = document.querySelector(".yt-uix-tile");
                 while (click_title) {
@@ -1142,7 +1208,7 @@
                 }
             }
             function setButtons() {
-                var i, j, list, temp, thumb, button;
+                let i, j, list, temp, thumb, button;
                 list = Object.keys(modThumbs.thumbs);
                 i = list.length;
                 while (i--) {
@@ -1180,7 +1246,7 @@
                 }
             }
             function delVideos() {
-                var i, j, temp, parent, blacklist, has_upnext;
+                let i, j, temp, parent, blacklist, has_upnext;
                 has_upnext = document.querySelector(".autoplay-bar");
                 blacklist = Object.keys(user_settings.blacklist);
                 i = blacklist.length;
@@ -1233,7 +1299,7 @@
                 }
             }
             function getVideos() {
-                var i, list, temp, channel_id;
+                let i, list, temp, channel_id;
                 modThumbs.thumbs = {};
                 list = document.querySelectorAll(`
                     .yt-lockup-byline > a,
@@ -1271,7 +1337,7 @@
                 }
             }
             function setVideoCount() {
-                var span = document.createElement("span");
+                let span = document.createElement("span");
                 span.textContent = " · ";
                 enhancedDetails.username.appendChild(span);
                 enhancedDetails.link.href = window.location.origin + "/channel/" + enhancedDetails.user.dataset.ytid + "/videos";
@@ -1301,7 +1367,7 @@
                 }
             }
             function getChannelInfo(details) {
-                var retry, isLive;
+                let retry, isLive;
                 isLive = details.target.response.querySelector(".yt-badge-live");
                 if (!isLive) {
                     retry = details.target.responseURL.split("/videos").length < 2;
@@ -1331,7 +1397,7 @@
                 }
             }
             function reverseControl() {
-                var i, temp, prev, next, list, videos;
+                let i, temp, prev, next, list, videos;
                 prev = document.querySelector(".prev-playlist-list-item");
                 next = document.querySelector(".next-playlist-list-item");
                 list = document.getElementById("playlist-autoscroll-list");
@@ -1362,7 +1428,7 @@
                 }
             }
             function createButton(type, label, bool, call) {
-                var button = document.createElement("template");
+                let button = document.createElement("template");
                 button.innerHTML = //
                     `<button class='yt-uix-button yt-uix-button-player-controls yt-uix-button-opacity yt-uix-tooltip' type='button'>
                             <svg class='pl-autoplay' viewBox='0 0 14 16'>
@@ -1398,8 +1464,8 @@
                     }
                 }
             }
-            function xhrPatch(event) {
-                var temp, player;
+            function xhrPatch() {
+                let temp, player;
                 if (this.readyState === 4) {
                     temp = {args: JSON.parse(
                         "{\"" +
@@ -1413,7 +1479,7 @@
                         "\"}"
                     )};
                     temp = modArgs(temp);
-                    temp = encodeURIComponent(JSON.stringify(temp.args).split(/\{"([\w\W]*?)"\}/)[1])
+                    temp = encodeURIComponent(JSON.stringify(temp.args).split(/\{"([\w\W]*?)"}/)[1])
                         .replace(/%5C%5C/g, "%5C")
                         .replace(/%5C%22/g, "%22")
                         .replace(/%22%2C%22/g, "&")
@@ -1442,7 +1508,7 @@
                 }
             }
             function volumeWheel(event) {
-                var fsPl, pSets, ivCard, player, canScroll, direction;
+                let fsPl, pSets, ivCard, player, canScroll, direction;
                 player = document.querySelector("video");
                 fsPl = document.querySelector(".ytp-playlist-menu");
                 pSets = document.querySelector(".ytp-settings-menu");
@@ -1472,7 +1538,7 @@
                 }
             }
             function dragPopOut(event) {
-                var excluded, isFScreen;
+                let excluded, isFScreen;
                 excluded = document.querySelector(".ytp-chrome-bottom");
                 isFScreen = document.querySelector(".ytp-fullscreen");
                 if (event && !isFScreen && (!excluded || (event.target !== excluded && !excluded.contains(event.target)))) {
@@ -1488,7 +1554,12 @@
                                 orgX: event.clientX,
                                 orgY: event.clientY
                             };
-                        } else if (event.type === "mousemove" && (window.hasMoved || Math.abs(event.clientX - window.oldPos.orgX) > 10 || Math.abs(event.clientY - window.oldPos.orgY) > 10)) {
+                        } else if (
+                            event.type === "mousemove" && (
+                                window.hasMoved ||
+                                Math.abs(event.clientX - window.oldPos.orgX) > 10 ||
+                                Math.abs(event.clientY - window.oldPos.orgY) > 10)
+                        ) {
                             window.moveBy(event.clientX - window.oldPos.X, event.clientY - window.oldPos.Y);
                             window.hasMoved = true;
                         }
@@ -1508,7 +1579,7 @@
                 }
             }
             function resumePlayback() {
-                var temp = this.document.querySelector("video");
+                let temp = this.document.querySelector("video");
                 if (temp && !isNaN(temp.duration) && temp.currentTime < temp.duration) {
                     temp = temp.currentTime;
                     window.setTimeout(function() {
@@ -1517,7 +1588,7 @@
                 }
             }
             function popPlayer(url) {
-                var popOut, width, height, pop_url, video;
+                let popOut, width, height, pop_url, video;
                 width = parseInt(user_settings.VID_PPOT_SZ) || 533;
                 height = Math.round(width / (16 / 9));
                 video = document.querySelector("video");
@@ -1534,7 +1605,7 @@
                 popOut.focus();
             }
             function setSubPlaylist(event) {
-                var i, list, button;
+                let i, list, button;
                 list = [];
                 if (event.target && event.target.id === "subscription-playlist") {
                     i = subPlaylist.video_list.length;
@@ -1550,7 +1621,7 @@
                 }
             }
             function subPlaylist() {
-                var button, nav_menu;
+                let button, nav_menu;
                 nav_menu = document.querySelector(".appbar-nav-menu");
                 button = document.getElementById("subscription-playlist");
                 subPlaylist.list_title = document.querySelector(".appbar-nav-menu");
@@ -1580,7 +1651,7 @@
                 }
             }
             function resizePlayer(event) {
-                var i, temp, is_small, content, max_width;
+                let temp, is_small, content, max_width;
                 if (window.location.pathname.indexOf("/watch")) {
                     return;
                 }
@@ -1592,7 +1663,7 @@
                 is_small = window.innerWidth < 657 ? "" : ".watch-stage-mode ";
                 if (is_small !== "") {
                     if (user_settings.VID_PLR_FIT_WDTH) {
-                        if (user_settings.VID_PLR_FIT_WDTH.match("%")) {
+                        if (user_settings.VID_PLR_FIT_WDTH.match(/%/)) {
                             max_width = window.parseInt(user_settings.VID_PLR_FIT_WDTH) / 100 * temp;
                         } else {
                             max_width = window.parseInt(user_settings.VID_PLR_FIT_WDTH);
@@ -1648,7 +1719,7 @@
                 }
             }
             function modComments() {
-                var is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
+                let is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
                 modComments.comments = document.getElementById("watch-discussion");
                 if (!is_live && modComments.comments && !document.getElementById("P-show-comments") && user_settings.VID_HIDE_COMS === "1") {
                     modComments.wrapper = document.createElement("template");
@@ -1665,7 +1736,7 @@
                 document.documentElement.classList[user_settings[clss] ? "add" : "remove"](customStyles.custom_styles[clss]);
             }
             function customStyles() {
-                var child, parent, plr_api, comments, sidebar, ytGrid, adverts, ads_list;
+                let child, parent, comments, sidebar, ytGrid, adverts, ads_list;
                 comments = document.getElementById("watch-discussion");
                 ytGrid = document.querySelector(".yt-uix-menu-top-level-flow-button:last-child a");
                 customStyles.custom_styles = {
@@ -1693,7 +1764,6 @@
                 if (ytGrid && user_settings.GEN_GRID_SUBS) {
                     ytGrid.click();
                 } else {
-                    plr_api = document.getElementById("player-api");
                     sidebar = document.querySelector(".branded-page-v2-secondary-col");
                     ads_list = //
                         `#masthead_child,
@@ -1716,10 +1786,23 @@
                         }
                         adverts = document.querySelector(ads_list);
                     }
-                    if (sidebar && sidebar.parentNode) {
-                        if ((window.location.pathname === "/results" && sidebar && sidebar.querySelectorAll("*").length < 10) || (sidebar && ((user_settings.GEN_HDE_RECM_SDBR && window.location.href.split("/feed/subscriptions").length > 1) || (user_settings.GEN_HDE_SRCH_SDBR && window.location.pathname === "/results") || (user_settings.GEN_HDE_CHN_SDBR && window.location.href.split(/\/(channel|user|c)\//).length > 1)))) {
-                            sidebar.outerHTML = "";
-                        }
+                    if (
+                        sidebar &&
+                        sidebar.parentNode && (
+                            window.location.pathname === "/results" &&
+                            sidebar &&
+                            sidebar.querySelectorAll("*").length < 10) || (
+                                sidebar && (
+                                    user_settings.GEN_HDE_RECM_SDBR &&
+                                    window.location.href.split("/feed/subscriptions").length > 1 ||
+                                    user_settings.GEN_HDE_SRCH_SDBR &&
+                                    window.location.pathname === "/results" ||
+                                    user_settings.GEN_HDE_CHN_SDBR &&
+                                    window.location.href.split(/\/(channel|user|c)\//).length > 1
+                                )
+                            )
+                        ) {
+                        sidebar.outerHTML = "";
                     }
                     if (window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
                         comments.outerHTML = "";
@@ -1739,7 +1822,7 @@
                 }
             }
             function defaultChannelPage(event) {
-                var parentNode;
+                let parentNode;
                 if (user_settings.GEN_CHN_DFLT_PAGE !== "default") {
                     if (event && event.target) {
                         parentNode = event.target;
@@ -1751,7 +1834,16 @@
                                 }
                             }
                         }
-                        if (parentNode && parentNode.href && parentNode.href.split(user_settings.GEN_CHN_DFLT_PAGE).length < 2 && (parentNode.href.split("/channel/").length > 1 || parentNode.href.split("/user/").length > 1) && parentNode.href.split(/[a-z0-9]\/[a-z0-9]/i).length < 4) {
+                        if (
+                            parentNode &&
+                            parentNode.href &&
+                            parentNode.href.split(user_settings.GEN_CHN_DFLT_PAGE).length < 2 &&
+                            (
+                                parentNode.href.split("/channel/").length > 1 ||
+                                parentNode.href.split("/user/").length > 1
+                            ) &&
+                            parentNode.href.split(/[a-z0-9]\/[a-z0-9]/i).length < 4
+                        ) {
                             parentNode.href += "/" + user_settings.GEN_CHN_DFLT_PAGE;
                         }
                     } else if (!event) {
@@ -1760,7 +1852,7 @@
                 }
             }
             function modArgs(config) {
-                var i, temp, list, length, videos, new_list, can_share;
+                let i, temp, list, length, videos, new_list, can_share;
                 if (window.name === "popOut") {
                     can_share = document.querySelector(".playlist-header-content");
                     if (can_share && can_share.dataset.shareable === "False" && !config.args.video) {
@@ -1823,7 +1915,7 @@
                     list = config.args.adaptive_fmts.split(",");
                     i = list.length;
                     while (i--) {
-                        temp = list[i].split(/fps\=([0-9]{2})/)[1];
+                        temp = list[i].split(/fps=([0-9]{2})/)[1];
                         if (!temp || temp < 31) {
                             new_list.push(list[i]);
                         }
@@ -1834,7 +1926,7 @@
             }
             function modMatchMedia(original) {
                 return function(text) {
-                    var temp = original.apply(this, arguments);
+                    let temp = original.apply(this, arguments);
                     if (text === "screen and (max-width: 656px)" && temp.matches) {
                         return temp;
                     }
@@ -1844,7 +1936,7 @@
                 };
             }
             function generalChanges() {
-                var logo, checkbox, autoplaybar, description;
+                let logo, checkbox, autoplaybar, description;
                 autoplaybar = document.querySelector(".autoplay-bar");
                 description = document.getElementById("action-panel-details");
                 if (user_settings.GEN_YT_LOGO_LINK && window.yt && window.yt.config_ && window.yt.config_.LOGGED_IN) {
@@ -1867,7 +1959,7 @@
                 }
             }
             function localXHR(method, call, url, head) {
-                var request = new XMLHttpRequest();
+                let request = new XMLHttpRequest();
                 request.addEventListener("load", call);
                 request.open(method, url, true);
                 if (head && head !== "doc") {
@@ -1878,7 +1970,7 @@
                 request.send();
             }
             function playerMode() {
-                var pageElement, playerElement;
+                let pageElement, playerElement;
                 if (user_settings.VID_PLR_SIZE_MEM) {
                     pageElement = document.getElementById("page");
                     playerElement = document.getElementById("player");
@@ -1893,7 +1985,7 @@
                 }
             }
             function infiniteScroll() {
-                var observer, loadMore;
+                let observer, loadMore;
                 loadMore = document.querySelector(".load-more-button");
                 if (loadMore && user_settings.GEN_INF_SCRL) {
                     if (!loadMore.classList.contains("infiniteScroll")) {
@@ -1908,7 +2000,7 @@
                 }
             }
             function checkNewFeatures() {
-                var i, keys;
+                let i, keys;
                 keys = Object.keys(default_settings);
                 i = keys.length;
                 while (i) {
@@ -1927,7 +2019,7 @@
                 };
             }
             function request(event) {
-                var video_player = document.getElementById("movie_player");
+                let video_player = document.getElementById("movie_player");
                 document.documentElement.classList.remove("floater");
                 if (video_player) {
                     video_player.removeAttribute("style");
@@ -1940,7 +2032,7 @@
                 }
             }
             function pageScriptMessages() {
-                var key, gate, sets, observer;
+                let key, gate, sets, observer;
                 key = "parreceive";
                 gate = document.documentElement;
                 sets = JSON.parse(gate.dataset[key] || null);
@@ -1948,7 +2040,7 @@
                     gate.pagescript = true;
                     observer = new MutationObserver(pageScriptMessages);
                     return observer.observe(gate, {
-                        attributes:true,
+                        attributes: true,
                         attributeFilter: ["data-" + key]
                     });
                 }
@@ -1990,7 +2082,7 @@
                 dragPopOut();
             }
             function isMaterial() {
-                var i, temp;
+                let temp;
                 temp = document.querySelector("ytd-app");
                 if (temp && !document.getElementById("material-notice")) {
                     temp = document.createElement("template");
@@ -2013,9 +2105,9 @@
                 }
             }
             function migrationInstructions() {
-                var temp = document.createElement("template");
+                let temp = document.createElement("template");
                 temp.innerHTML = //
-                    `<div style='border-radius: 2px; color: #FFF; font: 12px Roboto,arial,sans-serif; padding: 10px; background-color: rgb(0, 153, 255); box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5); position: fixed; z-index: 99999; top: 50%; left: 50%; transform: translate(-50%, -50%);'>
+                    `<div style='border-radius: 2px; color: #FFF; font: 12px Roboto,arial,sans-serif; padding: 10px; background-color: rgb(0, 153, 255); box-shadow: 0 0 3px rgba(0, 0, 0, 0.5); position: fixed; z-index: 99999; top: 50%; left: 50%; transform: translate(-50%, -50%);'>
                     YouTube Plus has been updated and is now a Webextension. Unfortunately this means that your previous settings need to be imported manually.<br>
                     <a href='https://github.com/ParticleCore/Particle/wiki/Restore-settings' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> if you wish to import the previous settings or know more about this change.<br>
                     <button id='close_migration_instructions' style='background-color: rgba(255, 255, 255, 0.3); color: #FFF; cursor: pointer; margin-top: 10px; border-radius: 2px; padding: 4px; float: right;'>CLOSE</button>
@@ -2023,12 +2115,11 @@
                 document.documentElement.appendChild(temp.content.firstChild);
                 document.addEventListener("click", closeMigrationInstructions);
             }
-            var api, cid, events, language, user_settings, player_instance, default_settings;
+            let api, cid, language, user_settings, player_instance, default_settings;
             if (isMaterial()) {
                 return;
             }
             cid = {};
-            events = {};
             user_settings = JSON.parse(document.documentElement.dataset.user_settings || null);
             if (document.documentElement.dataset.user_settings) {
                 document.documentElement.removeAttribute("data-user_settings");
@@ -2077,6 +2168,7 @@
                 CNSL_PPOT             : "Pop-out video",
                 CNSL_FLBR             : "Fullbrowser mode",
                 CNSL_CINM_MD          : "Cinema mode",
+                CNSL_FRME             : "Frame by frame (Shift + ← or →)",
                 CNSL_YTSC             : "YouTube shortcuts list",
                 PLST_AP               : "Autoplay",
                 PLST_RVRS             : "Reverse",
@@ -2217,7 +2309,7 @@
             main();
         },
         contentScriptMessages: function() {
-            var key1, key2, gate, sets, locs, observer;
+            let key1, key2, gate, sets, locs, observer;
             key1 = "parsend";
             key2 = "getlocale";
             gate = document.documentElement;
@@ -2250,7 +2342,7 @@
             }
         },
         main: function(event) {
-            var holder;
+            let holder;
             if (!event && particle.is_userscript) {
                 event = JSON.parse(particle.GM_getValue(particle.id, "{}"));
             }
@@ -2261,7 +2353,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.3";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.4";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
@@ -2274,7 +2366,7 @@
         },
         ini: function() {
             particle.id = "particleSettings";
-            particle.is_userscript = typeof GM_info === "object" ? true : false;
+            particle.is_userscript = typeof GM_info === "object";
             if (particle.is_userscript) {
                 particle.GM_getValue = GM_getValue;
                 particle.GM_setValue = GM_setValue;
