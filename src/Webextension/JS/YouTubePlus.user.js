@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.7.5
+// @version         1.7.6
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1883,6 +1883,7 @@
                 }
                 if (user_settings.VID_PLR_VOL_LDN) {
                     delete config.args.loudness;
+                    delete config.args.relative_loudness;
                 }
                 if (user_settings.VID_PLR_HTML5) {
                     config.html5 = true;
@@ -2353,7 +2354,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.5";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.6";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
