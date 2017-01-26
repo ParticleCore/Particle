@@ -236,7 +236,7 @@
         min-width: 25px;
         position: absolute;
         right: 0;
-        top: 35px;
+        bottom: 80px;
     }
     .part_fullbrowser #advanced-options{
         z-index: initial;
