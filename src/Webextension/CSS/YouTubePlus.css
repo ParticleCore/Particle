@@ -231,7 +231,7 @@
         z-index: initial;
     }
     #advanced-options{
-        background: inherit;
+        background: transparent;
         min-height: 20px;
         min-width: 25px;
         position: absolute;
