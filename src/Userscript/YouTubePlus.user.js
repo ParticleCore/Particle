@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.7.6
+// @version         1.7.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1556,9 +1556,9 @@
                             };
                         } else if (
                             event.type === "mousemove" && (
-                                window.hasMoved ||
-                                Math.abs(event.clientX - window.oldPos.orgX) > 10 ||
-                                Math.abs(event.clientY - window.oldPos.orgY) > 10)
+                            window.hasMoved ||
+                            Math.abs(event.clientX - window.oldPos.orgX) > 10 ||
+                            Math.abs(event.clientY - window.oldPos.orgY) > 10)
                         ) {
                             window.moveBy(event.clientX - window.oldPos.X, event.clientY - window.oldPos.Y);
                             window.hasMoved = true;
@@ -1789,19 +1789,19 @@
                     if (
                         sidebar &&
                         sidebar.parentNode && (
-                            window.location.pathname === "/results" &&
-                            sidebar &&
-                            sidebar.querySelectorAll("*").length < 10) || (
-                                sidebar && (
-                                    user_settings.GEN_HDE_RECM_SDBR &&
-                                    window.location.href.split("/feed/subscriptions").length > 1 ||
-                                    user_settings.GEN_HDE_SRCH_SDBR &&
-                                    window.location.pathname === "/results" ||
-                                    user_settings.GEN_HDE_CHN_SDBR &&
-                                    window.location.href.split(/\/(channel|user|c)\//).length > 1
-                                )
+                        window.location.pathname === "/results" &&
+                        sidebar &&
+                        sidebar.querySelectorAll("*").length < 10) || (
+                            sidebar && (
+                                user_settings.GEN_HDE_RECM_SDBR &&
+                                window.location.href.split("/feed/subscriptions").length > 1 ||
+                                user_settings.GEN_HDE_SRCH_SDBR &&
+                                window.location.pathname === "/results" ||
+                                user_settings.GEN_HDE_CHN_SDBR &&
+                                window.location.href.split(/\/(channel|user|c)\//).length > 1
                             )
-                        ) {
+                        )
+                    ) {
                         sidebar.outerHTML = "";
                     }
                     if (window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
@@ -1978,7 +1978,7 @@
                     if (window.ytpsetwide) {
                         window.ytpsetwide("wide", (user_settings.theaterMode ? "1" : "0"), -1);
                     }
-                    if (playerElement && window.location.pathname === "/watch") {
+                    if (pageElement && playerElement && window.location.pathname === "/watch") {
                         pageElement.classList[user_settings.theaterMode ? "add" : "remove"]("watch-wide");
                         pageElement.className = pageElement.className.replace(user_settings.theaterMode ? "non-" : "watch-stage", user_settings.theaterMode ? "" : "watch-non-stage");
                         playerElement.className = user_settings.theaterMode ? playerElement.className.replace("small", "large") : playerElement.className.replace("large", "small").replace("medium", "small");
@@ -2097,24 +2097,6 @@
                     document.documentElement.removeAttribute("data-user_settings");
                     return true;
                 }
-            }
-            function closeMigrationInstructions(event) {
-                if (event && event.target && event.target.id === "close_migration_instructions") {
-                    document.removeEventListener("click", closeMigrationInstructions);
-                    event.target.parentNode.outerHTML = "";
-                    set("migration_instructions", true);
-                }
-            }
-            function migrationInstructions() {
-                var temp = document.createElement("template");
-                temp.innerHTML = //
-                    `<div style='border-radius: 2px; color: #FFF; font: 12px Roboto,arial,sans-serif; padding: 10px; background-color: rgb(0, 153, 255); box-shadow: 0 0 3px rgba(0, 0, 0, 0.5); position: fixed; z-index: 99999; top: 50%; left: 50%; transform: translate(-50%, -50%);'>
-                    YouTube Plus has been updated and is now a Webextension. Unfortunately this means that your previous settings need to be imported manually.<br>
-                    <a href='https://github.com/ParticleCore/Particle/wiki/Restore-settings' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> if you wish to import the previous settings or know more about this change.<br>
-                    <button id='close_migration_instructions' style='background-color: rgba(255, 255, 255, 0.3); color: #FFF; cursor: pointer; margin-top: 10px; border-radius: 2px; padding: 4px; float: right;'>CLOSE</button>
-                    </div>`;
-                document.documentElement.appendChild(temp.content.firstChild);
-                document.addEventListener("click", closeMigrationInstructions);
             }
             var api, cid, language, user_settings, player_instance, default_settings;
             if (isMaterial()) {
@@ -2298,9 +2280,6 @@
             } else {
                 document.addEventListener("afterscriptexecute", scriptExit);
             }
-            if (!is_userscript && !window.chrome && !user_settings.migration_instructions) {
-                migrationInstructions();
-            }
             document.addEventListener("spfdone", main);
             document.addEventListener("spfrequest", request);
             document.addEventListener("readystatechange", main, true);
@@ -2354,7 +2333,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.6";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.7";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
