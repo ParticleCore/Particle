@@ -488,13 +488,7 @@
     .part_grid_subs div#browse-items-primary .section-list > li,
     .part_grid_search #results .item-section > li{
         display: inline-block;
-        margin-right: 10px;
         vertical-align: top;
-        margin-bottom: 12px;
-        width: 196px;
-    }
-    .part_grid_search .exp-search-big-thumbs246 #results .item-section > li{
-        width: 246px;
     }
     .part_grid_search .exp-search-big-thumbs246 .search #content{
         max-width: 1054px !important;
@@ -504,6 +498,12 @@
     .part_grid_search #results .item-section > li .yt-lockup{
         border: initial;
         padding: initial;
+        margin-right: 10px;
+        margin-bottom: 12px;
+        width: 196px;
+    }
+    .part_grid_search .exp-search-big-thumbs246 #results .item-section > li .yt-lockup{
+        width: 246px;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{
         display: none;
