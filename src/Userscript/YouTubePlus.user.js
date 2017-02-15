@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.7.8
+// @version         1.7.9
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -567,7 +567,7 @@
                     var comments, is_live;
                     comments = document.getElementById("watch-discussion");
                     is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
-                    if (!window.location.search.match(/&?lc=/) && a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
+                    if (!window.location.search.match(/&?(lc|google_comment_id)=/) && a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
                         comments.lazyload = arguments;
                     } else {
                         return original.apply(this, arguments);
@@ -1730,7 +1730,7 @@
                     modComments.wrapper = setLocale(modComments.wrapper.content).firstChild;
                     document.addEventListener("click", loadComments);
                     modComments.comments.parentNode.insertBefore(modComments.wrapper, modComments.comments);
-                    if (window.location.search.match(/&?lc=/)) {
+                    if (window.location.search.match(/&?(lc|google_comment_id)=/)) {
                         modComments.wrapper.querySelector("button").click();
                     }
                 }
@@ -1807,7 +1807,7 @@
                     ) {
                         sidebar.outerHTML = "";
                     }
-                    if (!window.location.search.match(/&?lc=/) && window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
+                    if (!window.location.search.match(/&?(lc|google_comment_id)=/) && window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
                         comments.outerHTML = "";
                     }
                     if (user_settings.VID_HIDE_COMS === "1") {
@@ -2336,7 +2336,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.8";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.9";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
