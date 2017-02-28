@@ -495,14 +495,16 @@
         font-size: 0;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container,
-    .part_grid_search #results .item-section > li .yt-lockup{
+    .part_grid_search #results .item-section > li .yt-lockup,
+    .part_grid_search #results .item-section > li .spell-correction{
         border: initial;
         padding: initial;
         margin-right: 10px;
         margin-bottom: 12px;
         width: 196px;
     }
-    .part_grid_search .exp-search-big-thumbs246 #results .item-section > li .yt-lockup{
+    .part_grid_search .exp-search-big-thumbs246 #results .item-section > li .yt-lockup,
+    .part_grid_search .exp-search-big-thumbs246 #results .item-section > li .spell-correction{
         width: 246px;
     }
     .part_grid_subs div#browse-items-primary .item-section .feed-item-container .menu-container{
