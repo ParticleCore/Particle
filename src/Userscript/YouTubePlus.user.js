@@ -1,8 +1,10 @@
 ﻿// ==UserScript==
-// @version         1.7.9
+// @version         1.8.0
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
+// @compatible      chrome
+// @compatible      firefox
 // @icon            https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/YT%2Bicon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -594,7 +596,7 @@
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
                     }
-                    /*b = */modArgs(b);
+                    modArgs(b);
                     temp = original.apply(this, arguments);
                     player = document.getElementById("movie_player");
                     if (player) {
@@ -613,6 +615,9 @@
             function modAutoplayFullscreen(original) {
                 return function () {
                     var has_ended, next_button, next_clicked;
+                    if (!document.mozFullScreenElement && !document.webkitFullscreenElement) {
+                        return original.apply(this, arguments);
+                    }
                     has_ended = api && api.getCurrentTime && Math.round(api.getCurrentTime()) >= Math.floor(api.getDuration());
                     next_clicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
                     if (!user_settings.plApl && !next_clicked && has_ended) {
@@ -634,24 +639,16 @@
             }
             function modPlayerCreate(original) {
                 return function (a, b) {
-                    var i, temp, player;
+                    var temp, player;
                     temp = a.id || a;
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
                     }
-                    /*b = */modArgs(b);
+                    modArgs(b);
                     if (a.id === "upsell-video") {
                         original.apply(this, arguments);
                     } else if (typeof a === "object") {
                         player_instance = original.apply(this, arguments);
-                        temp = Object.keys(player_instance);
-                        i = temp.length;
-                        while (i--) {
-                            if (typeof player_instance[temp[i]] === "object" && player_instance[temp[i]] && player_instance[temp[i]].hasNext) {
-                                player_instance[temp[i]].hasNext = modAutoplayFullscreen(player_instance[temp[i]].hasNext);
-                                break;
-                            }
-                        }
                         player = document.getElementById("movie_player");
                         if (user_settings.VID_PLR_FIT) {
                             resizePlayer();
@@ -722,6 +719,12 @@
                     window.yt.player.Application.create = modPlayerCreate(window.yt.player.Application.create);
                     if (window._yt_player) {
                         temp = Object.keys(window._yt_player);
+                        for (i = 0; i < temp.length; i++) {
+                            if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].prototype && window._yt_player[temp[i]].prototype.hasNext) {
+                                window._yt_player[temp[i]].prototype.hasNext = modAutoplayFullscreen(window._yt_player[temp[i]].prototype.hasNext);
+                                break;
+                            }
+                        }
                         for (i = 0; i < temp.length; i++) {
                             if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].toString().match(/this\.adaptiveFormats/)) {
                                 key = temp[i];
@@ -1991,7 +1994,7 @@
             function infiniteScroll() {
                 var observer, loadMore;
                 loadMore = document.querySelector(".load-more-button");
-                if (loadMore && user_settings.GEN_INF_SCRL) {
+                if (window.location.pathname !== "/watch" && loadMore && user_settings.GEN_INF_SCRL) {
                     if (!loadMore.classList.contains("infiniteScroll")) {
                         loadMore.classList.add("infiniteScroll");
                         observer = new MutationObserver(infiniteScroll);
@@ -2087,13 +2090,15 @@
             }
             function isMaterial() {
                 var temp;
-                temp = document.querySelector("ytd-app");
+                temp = document.querySelector("ytd-app, [src*='polymer'],[href*='polymer']");
                 if (temp && !document.getElementById("material-notice")) {
                     temp = document.createElement("template");
                     temp.innerHTML = //
-                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:20px;z-index:99999'>
+                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:50px;z-index:99999'>
                         YouTube Plus is not compatible with the YouTube beta Material Layout<br>
-                        The development of YouTube Plus might end when this layout is officially launched, <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>click here</a> to read the announcement<br>
+                        <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
+                        The development of YT+ might end when this layout is launched permanently,<br>
+                        <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>click here</a> to read the announcement<br>
                         To keep using the current layout without this message please disable YT+
                         </div>`;
                     document.documentElement.appendChild(temp.content.firstChild);
@@ -2336,7 +2341,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.9";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.0";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
