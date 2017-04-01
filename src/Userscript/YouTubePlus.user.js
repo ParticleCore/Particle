@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.8.3
+// @version         1.8.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -950,11 +950,11 @@
                 }
             }
             function getThumb() {
-                var args, base, thumb_url;
-                args = window.ytplayer.config.args;
-                base = (args.iurl_webp && "_webp") || "";
-                thumb_url = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
-                window.open(thumb_url);
+                if (getThumb.thumbnail_url) {
+                    window.open(getThumb.thumbnail_url);
+                } else if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.thumbnail_url) {
+                    window.open(window.ytplayer.config.args.thumbnail_url);
+                }
             }
             function hideScreenshot(event) {
                 if (event.target.id === "close-screenshot") {
@@ -1129,7 +1129,7 @@
                 }
             }
             function advancedOptions() {
-                var header, cnslBtn, cnslCont;
+                var header, cnslBtn, cnslCont, thumbnail_url;
                 header = document.getElementById("watch-header");
                 cnslBtn = document.getElementById("console-button");
                 advancedOptions.controls = document.getElementById("player-console");
@@ -1171,6 +1171,11 @@
                         </div>`;
                     if (user_settings.VID_PLR_ATPL) {
                         advancedOptions.controls.content.querySelector("#autoplay-button").classList.add("active");
+                    }
+                    thumbnail_url = document.querySelector("link[itemprop='thumbnailUrl'], span[itemprop='thumbnail'] link[itemprop='url']");
+                    thumbnail_url = thumbnail_url && thumbnail_url.getAttribute("href");
+                    if (thumbnail_url) {
+                        getThumb.thumbnail_url = thumbnail_url;
                     }
                     advancedOptions.controls = setLocale(advancedOptions.controls.content).firstChild;
                     cnslCont.appendChild(advancedOptions.controls);
@@ -1942,6 +1947,24 @@
                     return temp;
                 };
             }
+            function checkDomParser(original) {
+                return function() {
+                    var i, fps, result, streams;
+                    if (user_settings.VID_PLR_HFR) {
+                        result = original.apply(this, arguments);
+                        streams = result.getElementsByTagName("Representation");
+                        i = streams.length;
+                        while (i--) {
+                            fps = streams[i].getAttribute("frameRate");
+                            if (fps > 30) {
+                                streams[i].remove();
+                            }
+                        }
+                        return result;
+                    }
+                    return original.apply(this, arguments);
+                };
+            }
             function generalChanges() {
                 var logo, checkbox, autoplaybar, description;
                 autoplaybar = document.querySelector(".autoplay-bar");
@@ -2292,6 +2315,7 @@
             document.addEventListener("spfrequest", request);
             document.addEventListener("readystatechange", main, true);
             XMLHttpRequest.prototype.open = checkXHR(XMLHttpRequest.prototype.open);
+            DOMParser.prototype.parseFromString = checkDomParser(DOMParser.prototype.parseFromString);
             window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
             window.matchMedia = modMatchMedia(window.matchMedia);
             main();
@@ -2341,7 +2365,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.3";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.4";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
