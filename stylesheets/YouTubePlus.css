@@ -400,6 +400,7 @@
     }
     .part_popout #player-api,
     .part_popout #player-api #movie_player{
+        margin: 0 !important;
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
