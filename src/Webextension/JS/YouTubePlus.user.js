@@ -1,10 +1,10 @@
 ﻿// ==UserScript==
-// @version         1.8.4
+// @version         1.8.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
-// @compatible      chrome
 // @compatible      firefox
+// @compatible      opera
 // @icon            https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/YT%2Bicon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -1223,7 +1223,7 @@
                     temp = modThumbs.thumbs[list[i]];
                     j = temp.length;
                     while (j--) {
-                        thumb = temp[j].querySelector(".yt-lockup-thumbnail, .thumb-wrapper");
+                        thumb = temp[j].querySelector(".yt-lockup .yt-lockup-thumbnail, .thumb-wrapper");
                         if (thumb) {
                             if (user_settings.GEN_PPOT_ON && !thumb.querySelector(".popoutmode") && !/channel/.test(temp[j].firstChild.className)) {
                                 button = document.createElement("template");
@@ -1307,8 +1307,13 @@
                 }
             }
             function getVideos() {
-                var i, list, temp, channel_id;
+                var i, list, temp, video_list, channel_id;
                 modThumbs.thumbs = {};
+                video_list = Array.from(document.querySelectorAll(`
+                    .yt-shelf-grid-item,
+                    .video-list-item,
+                    .item-section > li
+                `));
                 list = document.querySelectorAll(`
                     .yt-lockup-byline > a,
                     .yt-lockup-content .g-hovercard,
@@ -1320,7 +1325,7 @@
                     temp = list[i];
                     channel_id = temp.dataset.ytid;
                     while (temp) {
-                        if (temp.tagName && temp.tagName === "LI") {
+                        if (temp.tagName && temp.tagName === "LI" && video_list.indexOf(temp) > -1) {
                             temp.username = list[i].textContent;
                             if (!modThumbs.thumbs[channel_id]) {
                                 modThumbs.thumbs[channel_id] = [temp];
@@ -1747,7 +1752,7 @@
                 document.documentElement.classList[user_settings[clss] ? "add" : "remove"](customStyles.custom_styles[clss]);
             }
             function customStyles() {
-                var child, parent, comments, sidebar, ytGrid, adverts, ads_list;
+                var child, width, height, parent, comments, sidebar, ytGrid, adverts, ads_list;
                 comments = document.getElementById("watch-discussion");
                 ytGrid = document.querySelector(".yt-uix-menu-top-level-flow-button:last-child a");
                 customStyles.custom_styles = {
@@ -1771,6 +1776,12 @@
                 }
                 if (window.name === "popOut") {
                     document.documentElement.classList.add("part_popout");
+                    width = parseInt(user_settings.VID_PPOT_SZ) || 533;
+                    height = Math.round(width / (16 / 9));
+                    window.resizeTo(
+                        width + (window.outerWidth - window.innerWidth),
+                        height + (window.outerHeight - window.innerHeight)
+                    );
                 }
                 if (ytGrid && user_settings.GEN_GRID_SUBS) {
                     ytGrid.click();
@@ -2120,8 +2131,7 @@
                         `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:50px;z-index:99999'>
                         YouTube Plus is not compatible with the YouTube beta Material Layout<br>
                         <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
-                        The development of YT+ might end when this layout is launched permanently,<br>
-                        <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>click here</a> to read the announcement<br>
+                        When an alpha version is ready for public testing it will be announced <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>here</a><br>
                         To keep using the current layout without this message please disable YT+
                         </div>`;
                     document.documentElement.appendChild(temp.content.firstChild);
@@ -2365,7 +2375,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.4";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.5";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
