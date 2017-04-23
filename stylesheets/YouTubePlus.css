@@ -393,6 +393,16 @@
     .part_popout{
         overflow: hidden;
     }
+    .part_popout body:after {
+        content: "";
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: black;
+    }
     .part_popout #masthead-positioner,
     .part_popout #masthead-positioner-height-offset,
     .part_popout .ytp-size-button{
