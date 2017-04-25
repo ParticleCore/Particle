@@ -1,3 +1,11 @@
+/* start| Particle settings */
 #particle_settings {
-    font-family: sans-serif;
+    font-family: Roboto, sans-serif;
+    letter-spacing: 1px;
+    font-size: 0.8em;
 }
+.p-setting {
+    display: inline-block;
+    vertical-align: middle;
+}
+/*  end| Particle settings */
