@@ -8,11 +8,13 @@
     padding: 10px;
 }
 .settings_sidebar {
-    width: 200px;
-    position: fixed;
+    background-color: #25272A !important;
     bottom: 10px;
+    color: rgba(156, 174, 192, 0.3) !important;
     left: 10px;
+    position: fixed;
     top: 10px;
+    width: 200px;
 }
 .settings_container {
     box-sizing: border-box;
@@ -28,12 +30,14 @@
     background-color: #FFFFFF;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
     box-sizing: border-box;
-    padding: 10px;
+    padding: 15px;
 }
 .settings_section h3 {
     color: #555555;
     font-size: 14px;
     margin: 30px 0 16px;
+}
+.settings_section h3:first-letter {
 }
 .settings_section h2 {
     color: #333333;
@@ -42,17 +46,77 @@
 }
 .settings_section h2,
 .settings_section h3 {
+    display:inline-block;
     font-weight: bold;
+}
+.settings_section h2:first-letter,
+.settings_section h3:first-letter {
     text-transform: capitalize;
 }
 .settings_divider {
     background-color: #E2E2E2;
     height: 1px;
-    margin: 0 -10px;
+    margin: 0 -15px;
 }
-.p-setting {
+.settings_setting {
+    font-size: 0;
+    line-height: 27px;
+}
+.setting {
+    font-size: 13px;
     display: inline-block;
+    left: 39px;
     margin: 0 5px 0 0;
+    position: relative;
     vertical-align: middle;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+input[type=checkbox] {
+    display: none;
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+label:before {
+    content: '';
+    cursor: pointer;
+    width: 34px;
+    height: 19px;
+    background: grey;
+    display: inline-block;
+    border-radius: 100px;
+    position: absolute;
+    vertical-align: middle;
+    transform: translateY(-50%);
+    top: 50%;
+    left: -39px;
+}
+label:after {
+    box-shadow: 0 0 3px 0px #333;
+    content: '';
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    background: #FFFFFF;
+    border-radius: 90px;
+    transition: 0.3s;
+    vertical-align: middle;
+    transform: translateY(-50%);
+    top: 50%;
+    left: -37px;
+}
+input:checked + label:before {
+    background: #e52d27;
+    background: #27a6e5;
+}
+input:checked + label:after {
+    left: calc(-39px + 17px);
 }
 /*  end| Particle settings */
