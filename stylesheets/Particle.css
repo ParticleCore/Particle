@@ -2,16 +2,17 @@
 #particle_settings {
     background-color: #F1F1F1;
     color: #666666;
-    font-family: sans-serif;
+    font-family: "Segoe UI", sans-serif;
     font-size: 13px;
     margin: 0;
     padding: 10px;
 }
 .settings_sidebar {
-    background-color: #25272A !important;
-    bottom: 10px;
-    color: rgba(156, 174, 192, 0.3) !important;
+    /*background-color: #25272A !important;*/
+    /*bottom: 10px;*/
+    /*color: rgba(156, 174, 192, 0.3) !important;*/
     left: 10px;
+    padding: 10px 0;
     position: fixed;
     top: 10px;
     width: 200px;
@@ -24,25 +25,35 @@
 }
 .settings_section {
     margin-bottom: 10px;
+    padding: 0 15px 15px 15px;
 }
 .settings_sidebar,
 .settings_section {
     background-color: #FFFFFF;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
     box-sizing: border-box;
-    padding: 15px;
+}
+.sidebar_section {
+    font-weight: bold;
+    text-transform: capitalize;
+    line-height: 25px;
+    overflow: hidden;
+    padding: 0 20px;
+}
+.active_section {
+    background-color: #CC181E;
+    color: #FFFFFF;
 }
 .settings_section h3 {
     color: #555555;
     font-size: 14px;
     margin: 30px 0 16px;
 }
-.settings_section h3:first-letter {
-}
 .settings_section h2 {
     color: #333333;
     font-size: 18px;
     line-height: 20px;
+    margin: 20px 0;
 }
 .settings_section h2,
 .settings_section h3 {
@@ -75,6 +86,10 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+
+
+
 input[type=checkbox] {
     display: none;
     height: 0;
