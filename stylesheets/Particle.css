@@ -2,6 +2,7 @@
 #particle_settings {
     background-color: #F1F1F1;
     color: #666666;
+    display: block !important;
     font-family: "Segoe UI", sans-serif;
     font-size: 13px;
     margin: 0;
