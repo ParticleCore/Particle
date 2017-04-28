@@ -5,7 +5,11 @@
     font-family: "Segoe UI", sans-serif;
     font-size: 13px;
     margin: 0;
-    padding: 10px;
+}
+#particle_settings_container:after {
+    content: "";
+    display: block;
+    margin-bottom: 100%;
 }
 .settings_sidebar {
     /*background-color: #25272A !important;*/
@@ -19,12 +23,12 @@
 }
 .settings_container {
     box-sizing: border-box;
-    left: 210px;
+    left: 220px;
     position: relative;
-    width: calc(100% - 210px);
+    width: calc(100% - 220px);
 }
 .settings_section {
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     padding: 0 15px 15px 15px;
 }
 .settings_sidebar,
@@ -52,6 +56,15 @@
     background-color: #CC181E;
     color: #FFFFFF;
 }
+.settings_anchor {
+    height: 10px;
+}
+.settings_anchor:not(:first-child) {
+    margin-top: 5px;
+}
+.settings_anchor:target + .settings_section h2 {
+    color: #CC181E;
+}
 .settings_section h3 {
     color: #555555;
     font-size: 14px;
@@ -62,9 +75,6 @@
     font-size: 18px;
     line-height: 20px;
     margin: 20px 0;
-}
-.settings_section:target h2 {
-    color: #CC181E;
 }
 .settings_section h2,
 .settings_section h3 {
