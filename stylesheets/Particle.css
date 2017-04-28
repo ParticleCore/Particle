@@ -26,10 +26,10 @@
     box-sizing: border-box;
     left: 220px;
     position: relative;
+    top: 10px;
     width: calc(100% - 220px);
 }
 .settings_section {
-    margin-top: 10px;
     padding: 0 15px 15px 15px;
 }
 .settings_section:not(.active_section) {
