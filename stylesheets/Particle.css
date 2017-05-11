@@ -22,12 +22,11 @@
     position: fixed;
     top: 10px;
     width: 200px;
+    z-index: 1;
 }
 .settings_container {
     box-sizing: border-box;
     padding: 5px 5px 5px 215px;
-    position: relative;
-    z-index: 1;
 }
 .settings_section {
     padding: 0 15px 15px 15px;
