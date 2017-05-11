@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.8.6
+// @version         1.8.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -385,7 +385,7 @@
                 if (target.classList.contains("P-impexp") || target.classList.contains("P-implang")) {
                     expCont = document.getElementById("exp-cont");
                     if (expCont) {
-                        expCont.outerHTML = "";
+                        expCont.remove();
                         return;
                     }
                     expCont = document.createElement("template");
@@ -426,7 +426,7 @@
             function delBlackList(event) {
                 var newKey = user_settings.blacklist;
                 delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
-                event.target.parentNode.outerHTML = "";
+                event.target.parentNode.remove();
                 set("blacklist", newKey);
             }
             function delNotification() {
@@ -451,7 +451,7 @@
                 if (!salt) {
                     notification = document.getElementById("appbar-main-guide-notification-container");
                     if (notification.childNodes.length < 1) {
-                        notification.outerHTML = "";
+                        notification.remove();
                         notification = document.createElement("template");
                         notification.innerHTML = //
                             `<div id='appbar-main-guide-notification-container'>
@@ -485,12 +485,12 @@
                     setBlackList(event.target);
                 } else if (event.target.id === "P-container" || event.target.id === "P-settings") {
                     event = (event.target.id === "P-settings") ? event.target : event.target.parentNode;
-                    event.outerHTML = "";
+                    event.remove();
                     document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
                     window.dispatchEvent(new Event("resize"));
                 } else if (event.target.id !== "DNT" && event.target.tagName !== "A" && event.target.parentNode.id === "P-sidebar-list") {
                     saveSettings("no-notification");
-                    document.getElementById("P-content").outerHTML = "";
+                    document.getElementById("P-content").remove();
                     document.getElementById("P-container").appendChild(getMenu(event.target.id));
                     event.target.parentNode.querySelector(".selected").removeAttribute("class");
                     event.target.className = "selected";
@@ -501,7 +501,7 @@
                 if (event.target.id === "P" && event.target.tagName !== "INPUT") {
                     pWrapper = document.getElementById("P-settings");
                     if (pWrapper) {
-                        pWrapper.outerHTML = "";
+                        pWrapper.remove();
                     } else {
                         if (document.documentElement.classList.contains("floater")) {
                             document.documentElement.classList.remove("floater");
@@ -950,15 +950,18 @@
                 }
             }
             function getThumb() {
-                if (getThumb.thumbnail_url) {
-                    window.open(getThumb.thumbnail_url);
+                var thumbnail_url;
+                thumbnail_url = document.querySelector("[href*='maxresdefault']");
+                thumbnail_url = thumbnail_url && thumbnail_url.getAttribute("href");
+                if (thumbnail_url) {
+                    window.open(thumbnail_url);
                 } else if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.thumbnail_url) {
                     window.open(window.ytplayer.config.args.thumbnail_url);
                 }
             }
             function hideScreenshot(event) {
                 if (event.target.id === "close-screenshot") {
-                    event.target.parentNode.outerHTML = "";
+                    event.target.parentNode.remove();
                     document.removeEventListener("click", hideScreenshot);
                 }
             }
@@ -1129,7 +1132,7 @@
                 }
             }
             function advancedOptions() {
-                var header, cnslBtn, cnslCont, thumbnail_url;
+                var header, cnslBtn, cnslCont;
                 header = document.getElementById("watch-header");
                 cnslBtn = document.getElementById("console-button");
                 advancedOptions.controls = document.getElementById("player-console");
@@ -1154,7 +1157,7 @@
                     cnslCont.appendChild(cnslBtn);
                     header.appendChild(cnslCont);
                     if (advancedOptions.controls) {
-                        advancedOptions.controls.outerHTML = "";
+                        advancedOptions.controls.remove();
                     }
                     advancedOptions.controls = document.createElement("template");
                     advancedOptions.controls.innerHTML = //
@@ -1171,11 +1174,6 @@
                         </div>`;
                     if (user_settings.VID_PLR_ATPL) {
                         advancedOptions.controls.content.querySelector("#autoplay-button").classList.add("active");
-                    }
-                    thumbnail_url = document.querySelector("link[itemprop='thumbnailUrl'], span[itemprop='thumbnail'] link[itemprop='url']");
-                    thumbnail_url = thumbnail_url && thumbnail_url.getAttribute("href");
-                    if (thumbnail_url) {
-                        getThumb.thumbnail_url = thumbnail_url;
                     }
                     advancedOptions.controls = setLocale(advancedOptions.controls.content).firstChild;
                     cnslCont.appendChild(advancedOptions.controls);
@@ -1264,16 +1262,16 @@
                         j = temp.length;
                         while (j--) {
                             if (has_upnext && has_upnext.contains(temp[j])) {
-                                has_upnext.parentNode.outerHTML = "";
+                                has_upnext.parentNode.remove();
                                 has_upnext = document.querySelector(".watch-sidebar-separation-line");
                                 if (has_upnext) {
-                                    has_upnext.outerHTML = "";
+                                    has_upnext.remove();
                                 }
                                 has_upnext = false;
                                 parent = false;
                             } else {
                                 parent = temp[j].parentNode;
-                                temp[j].outerHTML = "";
+                                temp[j].remove();
                             }
                             temp.splice(j, 1);
                             while (parent) {
@@ -1281,7 +1279,7 @@
                                     break;
                                 }
                                 parent = parent.parentNode;
-                                parent.firstChild.outerHTML = "";
+                                parent.firstChild.remove();
                             }
                         }
                         if (!temp.length) {
@@ -1295,13 +1293,13 @@
                 while (i--) {
                     if (temp[i].querySelectorAll("ul").length < 2) {
                         parent = temp[i].parentNode;
-                        temp[i].outerHTML = "";
+                        temp[i].remove();
                         while (parent) {
                             if (parent.childElementCount) {
                                 break;
                             }
                             parent = parent.parentNode;
-                            parent.firstChild.outerHTML = "";
+                            parent.firstChild.remove();
                         }
                     }
                 }
@@ -1802,7 +1800,7 @@
                         while (child) {
                             parent = child.parentNode;
                             if (parent.childElementCount > 1) {
-                                child.outerHTML = "";
+                                child.remove();
                                 break;
                             }
                             child = parent;
@@ -1825,10 +1823,10 @@
                             )
                         )
                     ) {
-                        sidebar.outerHTML = "";
+                        sidebar.remove();
                     }
                     if (!window.location.search.match(/&?(lc|google_comment_id)=/) && window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
-                        comments.outerHTML = "";
+                        comments.remove();
                     }
                     if (user_settings.VID_HIDE_COMS === "1") {
                         document.documentElement.classList.add("part_hide_comments");
@@ -1990,7 +1988,7 @@
                 if (user_settings.GEN_REM_APUN && window.location.pathname === "/watch" && autoplaybar) {
                     checkbox = document.querySelector(".checkbox-on-off");
                     if (checkbox) {
-                        checkbox.outerHTML = "";
+                        checkbox.remove();
                     }
                 }
                 if (user_settings.VID_LAYT_AUTO_PNL && window.location.pathname === "/watch" && description) {
@@ -2376,7 +2374,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.6";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.7";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");

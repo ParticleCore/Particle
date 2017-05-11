@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Particle",
-    "version": "1.8.6",
+    "version": "1.8.7",
     "description": "YouTube with more freedom",
     "default_locale": "en",
     "icons": {
