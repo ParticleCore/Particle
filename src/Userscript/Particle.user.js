@@ -1,5 +1,4 @@
 // ==UserScript==
-// @version         0.0.1
 // @name            Particle
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -150,6 +149,10 @@
                 }
             }
 
+            function saveSettings(id, value) {
+
+            }
+
             function loadSettingsMenu() {
 
                 var
@@ -210,7 +213,10 @@
             var
             fsexit,
             modules,
-            particleApi;
+            particleApi,
+            user_settings;
+
+            user_settings = {};
 
             modules = [
                 {
@@ -222,7 +228,7 @@
                             type:        "checkbox",
                             value:       true,
                             title:       "video settings",
-                            label:       "Play videos automatically",
+                            label:       "Play videos automatically"
                         },
                         channel_trailer_auto_play: {
                             id:          "channel_trailer_auto_play",
@@ -234,211 +240,106 @@
                             label:       "Play channel trailers automatically"
                         }
                     },
-                    interceptApplicationCreate: function(event, index) {
-                        if (window.yt && window.yt.player && window.yt.player.Application && window.yt.player.Application.create) {
-
-                            console.log(event.target);
-
-                            document.documentElement.removeEventListener("load", index, true);
-
-                            window.yt.player.Application.create = this.modApplicationCreate(this, window.yt.player.Application.create);
-                        }
-                    },
-                    /*interceptYtPlayer: function(event, index) {
-                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args) {
-
-                            console.log(event.target);
-
-                            document.documentElement.removeEventListener("load", index, true);
-
-                            window.ytplayer.config.loaded = false;
-                            window.ytplayer.config.args.autoplay = "0";
-                            window.ytplayer.config.args.fflags = window.ytplayer.config.args.fflags
-                                .replace("legacy_autoplay_flag=true", "legacy_autoplay_flag=false")
-                                .replace("disable_new_pause_state3=true", "disable_new_pause_state3=false"); // remove transition-delay
-                        }
-                    },
-                    intercept_yt_player: function(event, index) {
-                        var
-                        i,
-                        key,
-                        keys,
-                        temp,
-                        pattern;
-
-                        if (window._yt_player) {
-
-                            console.log(event.target);
-
-                            document.documentElement.removeEventListener("load", index, true);
-
-                            pattern = /this\.adaptiveFormats/;
-                            keys = Object.keys(window._yt_player);
-
-                            for (i = 0; i < keys.length; i++) {
-                                if (typeof window._yt_player[keys[i]] === "function" && pattern.test(window._yt_player[keys[i]].toString())) {
-                                    key = keys[i];
-                                    break;
-                                }
-                            }
-
-                            if (key) {
-                                this.modGetVideoData.Original = window._yt_player[key];
-                                this.modGetVideoData.prototype = this.modGetVideoData.Original.prototype;
-                                temp = Object.keys(this.modGetVideoData.Original);
-                                for (i = 0; i < temp.length; i++) {
-                                    this.modGetVideoData[temp[i]] = this.modGetVideoData.Original[temp[i]];
-                                }
-                                window._yt_player[key] = this.modGetVideoData;
-                            }
-                        }
-                    },
-                    interceptSpfRequest: function() {
-                        var
-                        video_player;
-
-                        video_player = document.getElementById("movie_player");
-                        if (video_player) {
-                            video_player.remove();
-                        }
-                        if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.loaded) {
-                            delete window.ytplayer.config.loaded;
-                        }
-                    },
-                    interceptSpfRequest_Material: function(event, index) {
-                        if (window.spf && window.spf.request) {
-                            //console.info(index, event.target);
-                            document.documentElement.removeEventListener("load", index, true);
-                            //particleApi.interceptScriptLoaded.hooks.splice(index, 1);
-                            window.spf.request = (function intercept(original) {
-                                return function(a, b) {
-                                    console.log("spf intercepted", a, b);
-                                    //player_auto_play.interceptSpfRequest();
-                                    return original.apply(this, arguments);
-                                };
-                            }(window.spf.request));
-                        }
-                    },
-                    modGetVideoData: function modGetVideoData(args) {
-                        if (args && args.autoplay === "1") {
-                            args.autoplay = "0";
-                        }
-                        //console.trace();
-                        var temp = modGetVideoData.Original.apply(this, arguments);
-                        //window.api.stopVideo();
-                        return temp;
-                    },*/
-                    modApplicationCreate: function(context, original) {
-                        return function(target, config) {
-
-                            var
-                            i,
-                            j,
-                            temp,
-                            player;
-
-                            if (config) {
-                                config.loaded = false;
-                                //Object.defineProperty(window.ytplayer.config, 'loaded', {
-                                Object.defineProperty(config, 'loaded', {
-                                    value: false,
-                                    writable : false/*,
-                                    enumerable : true,
-                                    configurable : false*/
-                                });
-
-                                if (config.args) {
-                                    config.args.autoplay = "0";
-                                    if (config.args.fflags) {
-                                        config.args.fflags = config.args.fflags
-                                            .replace(
-                                                "legacy_autoplay_flag=true",
-                                                "legacy_autoplay_flag=false"
-                                            ).replace(
-                                                "disable_new_pause_state3=true",
-                                                "disable_new_pause_state3=false"
-                                            ); // remove transition-delay
-                                    }
-                                }
-                                //window.ytplayer.config = config;
-                            }
-
-                            temp = original.apply(this, arguments);
-
-                            for (i in temp) {
-                                if (temp.hasOwnProperty(i)) {
-                                    if (typeof temp[i] === "object") {
-                                        for (j in temp[i]) {
-                                            if (temp[i].hasOwnProperty(j)) {
-                                                if (typeof temp[i][j] === "object" && temp[i][j] && temp[i][j].loadVideoByPlayerVars && temp[i][j].cueVideoByPlayerVars) {
-                                                    temp[i][j].loadVideoByPlayerVars = context.patchLoadVideoByPlayerVars(target, temp[i][j].loadVideoByPlayerVars, temp[i][j].cueVideoByPlayerVars);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            player = document.getElementById("movie_player");
-
-                            if (player) {
-                                player.cueVideoByPlayerVars(config.args);
-                            }
-
-                            return temp;
-                        };
-                    },
-                    patchLoadVideoByPlayerVars: function(target, load, cue) {
-
-                        var context = this;
-
-                        return function() {
-                            console.log(context);
-                            console.log(target);
-                            console.log(this);
-                            // if (context.options.)
-                            return cue.apply(this, arguments);
-                            //return load.apply(this, arguments);
-                        };
-                    },
                     ini: function() {
 
                         var
                         key,
-                        player_auto_play;
+                        auto_play;
 
-                        if (this.started) {
+                        auto_play = this;
+
+                        if (auto_play.started) {
                             return;
                         }
 
-                        this.started     = true;
-                        player_auto_play = this;
+                        auto_play.started = true;
 
-                        for (key in this.options) {
-                            if (this.options.hasOwnProperty(key)) {
-                                if ("user_setting" in this.options[key]) {
-                                    this[key] = this.options[key].user_setting;
-                                } else {
-                                    this[key] = this.options[key].value;
+                        for (key in auto_play.options) {
+                            if (auto_play.options.hasOwnProperty(key)) {
+                                if (!(key in user_settings)) {
+                                    user_settings[key] = auto_play.options[key].value;
                                 }
                             }
                         }
 
-                        document.documentElement.addEventListener("load", function intercept(event) {
-                            player_auto_play.interceptApplicationCreate(event, intercept);
-                        }, true);
-                        //document.documentElement.addEventListener("load", function intercept(event) {
-                        //    player_auto_play.interceptYtPlayer(event, intercept);
-                        //}, true);
-                        //document.documentElement.addEventListener("load", function intercept(event) {
-                        //    player_auto_play.intercept_yt_player(event, intercept);
-                        //}, true);
-                        /*document.documentElement.addEventListener("load", function intercept(event) {
-                            player_auto_play.interceptSpfRequest_Material(event, intercept);
-                        }, true);*/
-                        /*document.addEventListener("spfrequest", function intercept(event) {
-                            player_auto_play.interceptSpfRequest(event, intercept);
-                        });*/
+                        Object.defineProperty(Object.prototype, "TIMING_AFT_KEYS", {
+                            set: function(data) {
+                                this._TIMING_AFT_KEYS = data;
+                            },
+                            get: function() {
+                                var key;
+
+                                if (window.ytcsi && window.ytcsi.data_ && window.ytcsi.data_.tick) {
+                                    for (key in window.ytcsi.data_.tick) {
+                                        return [key];
+                                    }
+                                } else {
+                                    return ["srt"];
+                                }
+
+                                return this._TIMING_AFT_KEYS;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "loaded", {
+                            set: function(data) {
+                                this._loaded = data;
+                            },
+                            get: function() {
+                                if (user_settings.player_auto_play && this.args) {
+                                    return false;
+                                }
+
+                                return this._loaded;
+                            },
+                            configurable: true
+                        });
+
+                        Object.defineProperty(Object.prototype, "loadVideoByPlayerVars", {
+                            set: function(data) {
+                                this._loadVideoByPlayerVars = data;
+                            },
+                            get: function() {
+                                if (user_settings.player_auto_play) {
+                                    return this.cueVideoByPlayerVars;
+                                }
+
+                                return this._loadVideoByPlayerVars;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "autoplay", {
+                            set: function(data) {
+                                this._autoplay = data;
+                            },
+                            get: function() {
+                                if (user_settings.player_auto_play && this.ucid && this._autoplay === "1") {
+                                    return "0";
+                                }
+
+                                return this._autoplay;
+                            }
+                        });
+
+                        Object.defineProperty(Object.prototype, "fflags", {
+                            set: function(data) {
+                                this._fflags = data;
+                            },
+                            get: function() {
+                                if (user_settings.player_auto_play && this.ucid) {
+                                    return this._fflags
+                                        .replace(
+                                            "legacy_autoplay_flag=true",
+                                            "legacy_autoplay_flag=false"
+                                        ).replace(
+                                            "disable_new_pause_state3=true",
+                                            "disable_new_pause_state3=false"
+                                        ); // remove transition-delay
+                                }
+
+                                return this._fflags;
+                            }
+                        });
                     }
                 }, {
                     options: {
@@ -462,73 +363,7 @@
                 }
             };
 
-            /*window.onYouTubePlayerReady = function(api) {
-                window.api = api;
-                api.loadVideoByPlayerVars = api.cueVideoByPlayerVars;
-            };*/
-
-            /*window.onYouTubePlayerReady = (function intercept(original) {
-                return function(api) {
-                    var
-                        player;
-                    window.api = api;
-                    api.loadVideoByPlayerVars = api.cueVideoByPlayerVars;
-
-                    player = document.getElementById("movie_player");
-                    if (player) {
-                        console.log(player);
-                        player.loadVideoByPlayerVars = player.cueVideoByPlayerVars;
-                    }
-                    if (original) {
-                        return original.apply(this, arguments);
-                    }
-                };
-            }(window.onYouTubePlayerReady));*/
-
             particleApi.ini();
-
-            /*if (document.exitFullscreen) {
-                fsexit = "exitFullscreen";
-            } else if (document.webkitExitFullscreen) {
-                fsexit = "webkitExitFullscreen";
-            } else if (document.mozCancelFullScreen) {
-                fsexit = "mozCancelFullScreen";
-            } else {
-                fsexit = "msExitFullscreen";
-            }
-
-            document[fsexit] = (function(original) {
-                return function me() {
-                    console.log(me.caller, this, arguments);
-                    //return original.apply(this, arguments);
-                }
-            }(document[fsexit]));*/
-
-            /*if (window.chrome) {
-                document.documentElement.addEventListener("load", function(event) {
-                    particleApi.interceptScriptLoaded(event);
-                }, true);
-            } else {
-                document.addEventListener("afterscriptexecute", function(event) {
-                    particleApi.interceptScriptLoaded(event);
-                });
-            }*/
-
-            /*HTMLVideoElement.prototype.play = (function tracer(original) {
-                return function() {
-                    console.trace();
-                    return original.apply(this, arguments);
-                };
-            }(HTMLVideoElement.prototype.play));*/
-
-            /*
-                yt-navigate
-                yt-navigate-start
-                yt-navigate-finish
-            */
-
-            //document.addEventListener("spfdone", particleApi.interceptSpfDone);
-            //document.addEventListener("spfrequest", particleApi.interceptSpfRequest);
         },
         contentScriptMessages: function() {
 
@@ -540,7 +375,7 @@
             locs,
             observer;
 
-            key1 = "parsend";
+            key1 = "particle-save-settings";
             key2 = "getlocale";
             gate = document.documentElement;
             sets = JSON.parse(gate.dataset[key1] || null);
@@ -564,14 +399,14 @@
                     chrome.storage.local.set({particleSettings: sets});
                 }
 
-                document.documentElement.removeAttribute("data-parsend");
+                document.documentElement.removeAttribute("data-particle-save-settings");
             } else if (locs) {
                 document.documentElement.dataset.setlocale = chrome.i18n.getMessage(locs);
             }
         },
         filterChromeKeys: function(keys) {
             if (keys[particle.id] && keys[particle.id].new_value) {
-                document.documentElement.dataset.parreceive = JSON.stringify(
+                document.documentElement.dataset.particleLoadSettings = JSON.stringify(
                     (keys[particle.id].new_value && keys[particle.id].new_value[particle.id]) || keys[particle.id].new_value || {}
                 );
             }
@@ -586,7 +421,7 @@
 
             if (event) {
                 event = JSON.stringify(event[particle.id] || event);
-                document.documentElement.dataset.user_settings = event;
+                document.documentElement.dataset.particleUserSettings = event;
 
                 if (particle.is_userscript) {
                     holder = document.createElement("link");
