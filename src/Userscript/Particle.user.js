@@ -1,4 +1,5 @@
 // ==UserScript==
+// @version         0.0.2a
 // @name            Particle
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
