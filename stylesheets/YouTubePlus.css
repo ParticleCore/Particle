@@ -211,6 +211,17 @@
     }
 /*   end| Custom styles */
 /* start| Player console */
+
+    .player-console #watch7-headline{
+        max-width: calc(100% - 30% - 80px);
+    }
+    #watch-headline-title-form .yt-uix-form-input-container{
+        width: calc(100% - 100px);
+    }
+    #watch-headline-title-form .yt-uix-form-input-text{
+        width: calc(100% - 20px);
+    }
+
     #watch-header{
         position: relative;
     }
