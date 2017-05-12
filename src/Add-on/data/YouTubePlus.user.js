@@ -180,6 +180,7 @@
                     GEN_CMPT_TTLS   : "part_compact_titles",
                     VID_PLR_ATPL    : "part_autoplayon",
                     VID_PLR_FIT     : "part_fit_theater",
+                    VID_PLR_FIT_H   : "part_fit_theater_height",                    
                     VID_PLR_DYN_SIZE: "part_static_size",
                     VID_HIDE_DETLS  : "part_hide_details",
                     VID_TTL_CMPT    : "part_compact_title",
@@ -208,6 +209,20 @@
                 }
                 if (parSets.VID_PLR_FIT && plrApi && (!!plrApi.style.maxWidth || plrApi.style.maxWidth !== parSets.VID_PLR_FIT_WDTH)) {
                     plrApi.style.maxWidth = parSets.VID_PLR_FIT_WDTH || "1280px";
+                }
+                if (parSets.VID_PLR_FIT_H && plrApi) {
+                    var customCss = document.getElementById("part_custom_css");
+                    var offsetTop = Math.max(plrApi.getBoundingClientRect().top || 50);
+
+                    var cssText = '.part_fit_theater_height .watch-stage-mode #player-api, .part_fit_theater_height .watch-stage-mode #player-unavailable {height: calc(100vh - ' + offsetTop + 'px) !important}'+
+                                  '.part_fit_theater_height .watch-stage-mode #player-api:before,' + '.part_fit_theater_height .watch-stage-mode #player-unavailable:before {padding-top: calc(100vh - ' + offsetTop + 'px) !important;}';
+                    
+                    if(!customCss) {
+                        customCss = document.createElement("style");
+                        customCss.id = "part_custom_css";
+                        document.body.appendChild(customCss);
+                    }
+                    customCss.innerHTML = cssText;
                 }
                 Object.keys(setsList).forEach(checkClasses);
                 if (window.location.href.split("/feed/subscriptions").length < 2) {
@@ -410,6 +425,7 @@
                         "    <div><input id='VID_PLR_DYN_SIZE' type='checkbox'></input><label for='VID_PLR_DYN_SIZE' data-p='tnd|VID_PLR_DYN_SIZE'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#dynamic_size_off' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_FIT' type='checkbox'></input><label for='VID_PLR_FIT' data-p='tnd|VID_PLR_FIT'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_to_page' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLR_FIT_WDTH' type='text' placeholder='1280px' size='6'></input><label for='VID_PLR_FIT_WDTH' data-p='tnd|VID_PLR_FIT_WDTH'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_max_width' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
+                        "    <div><input id='VID_PLR_FIT_H' type='checkbox'></input><label for='VID_PLR_FIT_H' data-p='tnd|VID_PLR_FIT_H'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#fit_to_page_height' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <h3 data-p='tnd|VID_PLST'></h3>" +
                         "    <div><input id='VID_PLST_ATPL' type='checkbox'></input><label for='VID_PLST_ATPL' data-p='tnd|VID_PLST_ATPL'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_autoplay' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
                         "    <div><input id='VID_PLST_RVRS' type='checkbox'></input><label for='VID_PLST_RVRS' data-p='tnd|VID_PLST_RVRS'></label>\n<a href='https://github.com/ParticleCore/Particle/wiki/Features#playlist_reverse' data-p='ttl|FTR_DESC' target='features'>?</a></div>" +
@@ -1921,7 +1937,8 @@
                 VID_PLR_CC            : "Disable subtitles and CC",
                 VID_PLR_INFO          : "Enable info bar with watch later button",
                 VID_PLR_FIT           : "Fit to page in theater mode",
-                VID_PLR_FIT_WDTH      : "Fit to page max width:",
+                VID_PLR_FIT_WDTH      : "Fit to page max width:",             
+                VID_PLR_FIT_H         : "Fit to page height in theater mode (unstable)",                                        
                 VID_PLR_DYN_SIZE      : "Disable dynamic player size in default view",
                 VID_DESC_SHRT         : "Short video description buttons",
                 VID_TTL_CMPT          : "Compact title in video description",
