@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "YouTube Plus",
+    "name": "Particle",
     "version": "1.8.7",
     "description": "YouTube with more freedom",
     "default_locale": "en",
@@ -21,11 +21,5 @@
         "run_at": "document_start"
     }],
     "permissions": ["storage"],
-    "applications": {
-        "gecko": {
-            "id": "unlisted-particle@particlecore.github.io",
-            "strict_min_version": "48.0",
-            "update_url": "https://github.com/ParticleCore/Particle/raw/master/bin/update.json"
-        }
-    }
+    "minimum_opera_version": "42"
 }

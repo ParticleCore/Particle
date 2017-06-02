@@ -231,12 +231,12 @@
         z-index: initial;
     }
     #advanced-options{
-        background: transparent;
+        background: inherit;
         min-height: 20px;
         min-width: 25px;
         position: absolute;
         right: 0;
-        bottom: 80px;
+        top: 0;
     }
     .part_fullbrowser #advanced-options{
         z-index: initial;

@@ -1,8 +1,10 @@
 ﻿// ==UserScript==
-// @version         1.7.6
+// @version         1.8.7
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
+// @compatible      firefox
+// @compatible      opera
 // @icon            https://raw.githubusercontent.com/ParticleCore/Particle/gh-pages/images/YT%2Bicon.png
 // @match           *://www.youtube.com/*
 // @exclude         *://www.youtube.com/tv*
@@ -383,7 +385,7 @@
                 if (target.classList.contains("P-impexp") || target.classList.contains("P-implang")) {
                     expCont = document.getElementById("exp-cont");
                     if (expCont) {
-                        expCont.outerHTML = "";
+                        expCont.remove();
                         return;
                     }
                     expCont = document.createElement("template");
@@ -424,7 +426,7 @@
             function delBlackList(event) {
                 var newKey = user_settings.blacklist;
                 delete newKey[event.target.nextSibling.href.split("/channel/")[1]];
-                event.target.parentNode.outerHTML = "";
+                event.target.parentNode.remove();
                 set("blacklist", newKey);
             }
             function delNotification() {
@@ -449,7 +451,7 @@
                 if (!salt) {
                     notification = document.getElementById("appbar-main-guide-notification-container");
                     if (notification.childNodes.length < 1) {
-                        notification.outerHTML = "";
+                        notification.remove();
                         notification = document.createElement("template");
                         notification.innerHTML = //
                             `<div id='appbar-main-guide-notification-container'>
@@ -483,12 +485,12 @@
                     setBlackList(event.target);
                 } else if (event.target.id === "P-container" || event.target.id === "P-settings") {
                     event = (event.target.id === "P-settings") ? event.target : event.target.parentNode;
-                    event.outerHTML = "";
+                    event.remove();
                     document[(window.chrome && "body") || "documentElement"].scrollTop = 0;
                     window.dispatchEvent(new Event("resize"));
                 } else if (event.target.id !== "DNT" && event.target.tagName !== "A" && event.target.parentNode.id === "P-sidebar-list") {
                     saveSettings("no-notification");
-                    document.getElementById("P-content").outerHTML = "";
+                    document.getElementById("P-content").remove();
                     document.getElementById("P-container").appendChild(getMenu(event.target.id));
                     event.target.parentNode.querySelector(".selected").removeAttribute("class");
                     event.target.className = "selected";
@@ -499,7 +501,7 @@
                 if (event.target.id === "P" && event.target.tagName !== "INPUT") {
                     pWrapper = document.getElementById("P-settings");
                     if (pWrapper) {
-                        pWrapper.outerHTML = "";
+                        pWrapper.remove();
                     } else {
                         if (document.documentElement.classList.contains("floater")) {
                             document.documentElement.classList.remove("floater");
@@ -567,7 +569,7 @@
                     var comments, is_live;
                     comments = document.getElementById("watch-discussion");
                     is_live = window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.livestream;
-                    if (a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
+                    if (!window.location.search.match(/&?(lc|google_comment_id)=/) && a.split("comments").length > 1 && !is_live && comments && !comments.lazyload && user_settings.VID_HIDE_COMS === "1" && !comments.classList.contains("show")) {
                         comments.lazyload = arguments;
                     } else {
                         return original.apply(this, arguments);
@@ -594,7 +596,7 @@
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
                     }
-                    /*b = */modArgs(b);
+                    modArgs(b);
                     temp = original.apply(this, arguments);
                     player = document.getElementById("movie_player");
                     if (player) {
@@ -613,6 +615,9 @@
             function modAutoplayFullscreen(original) {
                 return function () {
                     var has_ended, next_button, next_clicked;
+                    if (!document.mozFullScreenElement && !document.webkitFullscreenElement) {
+                        return original.apply(this, arguments);
+                    }
                     has_ended = api && api.getCurrentTime && Math.round(api.getCurrentTime()) >= Math.floor(api.getDuration());
                     next_clicked = document.activeElement.classList.contains("ytp-button-next") || document.activeElement.classList.contains("ytp-next-button");
                     if (!user_settings.plApl && !next_clicked && has_ended) {
@@ -634,24 +639,16 @@
             }
             function modPlayerCreate(original) {
                 return function (a, b) {
-                    var i, temp, player;
+                    var temp, player;
                     temp = a.id || a;
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
                     }
-                    /*b = */modArgs(b);
+                    modArgs(b);
                     if (a.id === "upsell-video") {
                         original.apply(this, arguments);
                     } else if (typeof a === "object") {
                         player_instance = original.apply(this, arguments);
-                        temp = Object.keys(player_instance);
-                        i = temp.length;
-                        while (i--) {
-                            if (typeof player_instance[temp[i]] === "object" && player_instance[temp[i]] && player_instance[temp[i]].hasNext) {
-                                player_instance[temp[i]].hasNext = modAutoplayFullscreen(player_instance[temp[i]].hasNext);
-                                break;
-                            }
-                        }
                         player = document.getElementById("movie_player");
                         if (user_settings.VID_PLR_FIT) {
                             resizePlayer();
@@ -722,6 +719,12 @@
                     window.yt.player.Application.create = modPlayerCreate(window.yt.player.Application.create);
                     if (window._yt_player) {
                         temp = Object.keys(window._yt_player);
+                        for (i = 0; i < temp.length; i++) {
+                            if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].prototype && window._yt_player[temp[i]].prototype.hasNext) {
+                                window._yt_player[temp[i]].prototype.hasNext = modAutoplayFullscreen(window._yt_player[temp[i]].prototype.hasNext);
+                                break;
+                            }
+                        }
                         for (i = 0; i < temp.length; i++) {
                             if (typeof window._yt_player[temp[i]] === "function" && window._yt_player[temp[i]].toString().match(/this\.adaptiveFormats/)) {
                                 key = temp[i];
@@ -947,15 +950,18 @@
                 }
             }
             function getThumb() {
-                var args, base, thumb_url;
-                args = window.ytplayer.config.args;
-                base = (args.iurl_webp && "_webp") || "";
-                thumb_url = args["iurlmaxres" + base] || args["iurlsd" + base] || args["iurl" + base];
-                window.open(thumb_url);
+                var thumbnail_url;
+                thumbnail_url = document.querySelector("[href*='maxresdefault']");
+                thumbnail_url = thumbnail_url && thumbnail_url.getAttribute("href");
+                if (thumbnail_url) {
+                    window.open(thumbnail_url);
+                } else if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args && window.ytplayer.config.args.thumbnail_url) {
+                    window.open(window.ytplayer.config.args.thumbnail_url);
+                }
             }
             function hideScreenshot(event) {
                 if (event.target.id === "close-screenshot") {
-                    event.target.parentNode.outerHTML = "";
+                    event.target.parentNode.remove();
                     document.removeEventListener("click", hideScreenshot);
                 }
             }
@@ -1151,7 +1157,7 @@
                     cnslCont.appendChild(cnslBtn);
                     header.appendChild(cnslCont);
                     if (advancedOptions.controls) {
-                        advancedOptions.controls.outerHTML = "";
+                        advancedOptions.controls.remove();
                     }
                     advancedOptions.controls = document.createElement("template");
                     advancedOptions.controls.innerHTML = //
@@ -1215,7 +1221,7 @@
                     temp = modThumbs.thumbs[list[i]];
                     j = temp.length;
                     while (j--) {
-                        thumb = temp[j].querySelector(".yt-lockup-thumbnail, .thumb-wrapper");
+                        thumb = temp[j].querySelector(".yt-lockup .yt-lockup-thumbnail, .thumb-wrapper");
                         if (thumb) {
                             if (user_settings.GEN_PPOT_ON && !thumb.querySelector(".popoutmode") && !/channel/.test(temp[j].firstChild.className)) {
                                 button = document.createElement("template");
@@ -1256,16 +1262,16 @@
                         j = temp.length;
                         while (j--) {
                             if (has_upnext && has_upnext.contains(temp[j])) {
-                                has_upnext.parentNode.outerHTML = "";
+                                has_upnext.parentNode.remove();
                                 has_upnext = document.querySelector(".watch-sidebar-separation-line");
                                 if (has_upnext) {
-                                    has_upnext.outerHTML = "";
+                                    has_upnext.remove();
                                 }
                                 has_upnext = false;
                                 parent = false;
                             } else {
                                 parent = temp[j].parentNode;
-                                temp[j].outerHTML = "";
+                                temp[j].remove();
                             }
                             temp.splice(j, 1);
                             while (parent) {
@@ -1273,7 +1279,7 @@
                                     break;
                                 }
                                 parent = parent.parentNode;
-                                parent.firstChild.outerHTML = "";
+                                parent.firstChild.remove();
                             }
                         }
                         if (!temp.length) {
@@ -1287,20 +1293,26 @@
                 while (i--) {
                     if (temp[i].querySelectorAll("ul").length < 2) {
                         parent = temp[i].parentNode;
-                        temp[i].outerHTML = "";
+                        temp[i].remove();
                         while (parent) {
                             if (parent.childElementCount) {
                                 break;
                             }
                             parent = parent.parentNode;
-                            parent.firstChild.outerHTML = "";
+                            parent.firstChild.remove();
                         }
                     }
                 }
             }
             function getVideos() {
-                var i, list, temp, channel_id;
+                var i, list, temp, video_list, channel_id;
                 modThumbs.thumbs = {};
+                video_list = Array.from(document.querySelectorAll(`
+                    .yt-shelf-grid-item,
+                    .video-list-item,
+                    #results .item-section > li,
+                    .expanded-shelf-content-item-wrapper
+                `));
                 list = document.querySelectorAll(`
                     .yt-lockup-byline > a,
                     .yt-lockup-content .g-hovercard,
@@ -1312,7 +1324,7 @@
                     temp = list[i];
                     channel_id = temp.dataset.ytid;
                     while (temp) {
-                        if (temp.tagName && temp.tagName === "LI") {
+                        if (temp.tagName && temp.tagName === "LI" && video_list.indexOf(temp) > -1) {
                             temp.username = list[i].textContent;
                             if (!modThumbs.thumbs[channel_id]) {
                                 modThumbs.thumbs[channel_id] = [temp];
@@ -1556,9 +1568,9 @@
                             };
                         } else if (
                             event.type === "mousemove" && (
-                                window.hasMoved ||
-                                Math.abs(event.clientX - window.oldPos.orgX) > 10 ||
-                                Math.abs(event.clientY - window.oldPos.orgY) > 10)
+                            window.hasMoved ||
+                            Math.abs(event.clientX - window.oldPos.orgX) > 10 ||
+                            Math.abs(event.clientY - window.oldPos.orgY) > 10)
                         ) {
                             window.moveBy(event.clientX - window.oldPos.X, event.clientY - window.oldPos.Y);
                             window.hasMoved = true;
@@ -1730,13 +1742,16 @@
                     modComments.wrapper = setLocale(modComments.wrapper.content).firstChild;
                     document.addEventListener("click", loadComments);
                     modComments.comments.parentNode.insertBefore(modComments.wrapper, modComments.comments);
+                    if (window.location.search.match(/&?(lc|google_comment_id)=/)) {
+                        modComments.wrapper.querySelector("button").click();
+                    }
                 }
             }
             function setCustomStyles(clss) {
                 document.documentElement.classList[user_settings[clss] ? "add" : "remove"](customStyles.custom_styles[clss]);
             }
             function customStyles() {
-                var child, parent, comments, sidebar, ytGrid, adverts, ads_list;
+                var child, width, height, parent, comments, sidebar, ytGrid, adverts, ads_list;
                 comments = document.getElementById("watch-discussion");
                 ytGrid = document.querySelector(".yt-uix-menu-top-level-flow-button:last-child a");
                 customStyles.custom_styles = {
@@ -1760,6 +1775,12 @@
                 }
                 if (window.name === "popOut") {
                     document.documentElement.classList.add("part_popout");
+                    width = parseInt(user_settings.VID_PPOT_SZ) || 533;
+                    height = Math.round(width / (16 / 9));
+                    window.resizeTo(
+                        width + (window.outerWidth - window.innerWidth),
+                        height + (window.outerHeight - window.innerHeight)
+                    );
                 }
                 if (ytGrid && user_settings.GEN_GRID_SUBS) {
                     ytGrid.click();
@@ -1779,7 +1800,7 @@
                         while (child) {
                             parent = child.parentNode;
                             if (parent.childElementCount > 1) {
-                                child.outerHTML = "";
+                                child.remove();
                                 break;
                             }
                             child = parent;
@@ -1789,23 +1810,23 @@
                     if (
                         sidebar &&
                         sidebar.parentNode && (
-                            window.location.pathname === "/results" &&
-                            sidebar &&
-                            sidebar.querySelectorAll("*").length < 10) || (
-                                sidebar && (
-                                    user_settings.GEN_HDE_RECM_SDBR &&
-                                    window.location.href.split("/feed/subscriptions").length > 1 ||
-                                    user_settings.GEN_HDE_SRCH_SDBR &&
-                                    window.location.pathname === "/results" ||
-                                    user_settings.GEN_HDE_CHN_SDBR &&
-                                    window.location.href.split(/\/(channel|user|c)\//).length > 1
-                                )
+                        window.location.pathname === "/results" &&
+                        sidebar &&
+                        sidebar.querySelectorAll("*").length < 10) || (
+                            sidebar && (
+                                user_settings.GEN_HDE_RECM_SDBR &&
+                                window.location.href.split("/feed/subscriptions").length > 1 ||
+                                user_settings.GEN_HDE_SRCH_SDBR &&
+                                window.location.pathname === "/results" ||
+                                user_settings.GEN_HDE_CHN_SDBR &&
+                                window.location.href.split(/\/(channel|user|c)\//).length > 1
                             )
-                        ) {
-                        sidebar.outerHTML = "";
+                        )
+                    ) {
+                        sidebar.remove();
                     }
-                    if (window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
-                        comments.outerHTML = "";
+                    if (!window.location.search.match(/&?(lc|google_comment_id)=/) && window.location.pathname === "/watch" && user_settings.VID_HIDE_COMS > 1 && comments) {
+                        comments.remove();
                     }
                     if (user_settings.VID_HIDE_COMS === "1") {
                         document.documentElement.classList.add("part_hide_comments");
@@ -1936,6 +1957,24 @@
                     return temp;
                 };
             }
+            function checkDomParser(original) {
+                return function() {
+                    var i, fps, result, streams;
+                    if (user_settings.VID_PLR_HFR) {
+                        result = original.apply(this, arguments);
+                        streams = result.getElementsByTagName("Representation");
+                        i = streams.length;
+                        while (i--) {
+                            fps = streams[i].getAttribute("frameRate");
+                            if (fps > 30) {
+                                streams[i].remove();
+                            }
+                        }
+                        return result;
+                    }
+                    return original.apply(this, arguments);
+                };
+            }
             function generalChanges() {
                 var logo, checkbox, autoplaybar, description;
                 autoplaybar = document.querySelector(".autoplay-bar");
@@ -1949,7 +1988,7 @@
                 if (user_settings.GEN_REM_APUN && window.location.pathname === "/watch" && autoplaybar) {
                     checkbox = document.querySelector(".checkbox-on-off");
                     if (checkbox) {
-                        checkbox.outerHTML = "";
+                        checkbox.remove();
                     }
                 }
                 if (user_settings.VID_LAYT_AUTO_PNL && window.location.pathname === "/watch" && description) {
@@ -1978,7 +2017,7 @@
                     if (window.ytpsetwide) {
                         window.ytpsetwide("wide", (user_settings.theaterMode ? "1" : "0"), -1);
                     }
-                    if (playerElement && window.location.pathname === "/watch") {
+                    if (pageElement && playerElement && window.location.pathname === "/watch") {
                         pageElement.classList[user_settings.theaterMode ? "add" : "remove"]("watch-wide");
                         pageElement.className = pageElement.className.replace(user_settings.theaterMode ? "non-" : "watch-stage", user_settings.theaterMode ? "" : "watch-non-stage");
                         playerElement.className = user_settings.theaterMode ? playerElement.className.replace("small", "large") : playerElement.className.replace("large", "small").replace("medium", "small");
@@ -1988,7 +2027,7 @@
             function infiniteScroll() {
                 var observer, loadMore;
                 loadMore = document.querySelector(".load-more-button");
-                if (loadMore && user_settings.GEN_INF_SCRL) {
+                if (window.location.pathname !== "/watch" && loadMore && user_settings.GEN_INF_SCRL) {
                     if (!loadMore.classList.contains("infiniteScroll")) {
                         loadMore.classList.add("infiniteScroll");
                         observer = new MutationObserver(infiniteScroll);
@@ -2084,37 +2123,20 @@
             }
             function isMaterial() {
                 var temp;
-                temp = document.querySelector("ytd-app");
+                temp = document.querySelector("ytd-app, [src*='polymer'],link[href*='polymer']");
                 if (temp && !document.getElementById("material-notice")) {
                     temp = document.createElement("template");
                     temp.innerHTML = //
-                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:20px;z-index:99999'>
-                        YouTube Plus is not yet compatible with the YouTube beta Material Layout<br>
+                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:50px;z-index:99999'>
+                        YouTube Plus is not compatible with the YouTube beta Material Layout<br>
                         <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
+                        When an alpha version is ready for public testing it will be announced <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>here</a><br>
                         To keep using the current layout without this message please disable YT+
                         </div>`;
                     document.documentElement.appendChild(temp.content.firstChild);
                     document.documentElement.removeAttribute("data-user_settings");
                     return true;
                 }
-            }
-            function closeMigrationInstructions(event) {
-                if (event && event.target && event.target.id === "close_migration_instructions") {
-                    document.removeEventListener("click", closeMigrationInstructions);
-                    event.target.parentNode.outerHTML = "";
-                    set("migration_instructions", true);
-                }
-            }
-            function migrationInstructions() {
-                var temp = document.createElement("template");
-                temp.innerHTML = //
-                    `<div style='border-radius: 2px; color: #FFF; font: 12px Roboto,arial,sans-serif; padding: 10px; background-color: rgb(0, 153, 255); box-shadow: 0 0 3px rgba(0, 0, 0, 0.5); position: fixed; z-index: 99999; top: 50%; left: 50%; transform: translate(-50%, -50%);'>
-                    YouTube Plus has been updated and is now a Webextension. Unfortunately this means that your previous settings need to be imported manually.<br>
-                    <a href='https://github.com/ParticleCore/Particle/wiki/Restore-settings' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> if you wish to import the previous settings or know more about this change.<br>
-                    <button id='close_migration_instructions' style='background-color: rgba(255, 255, 255, 0.3); color: #FFF; cursor: pointer; margin-top: 10px; border-radius: 2px; padding: 4px; float: right;'>CLOSE</button>
-                    </div>`;
-                document.documentElement.appendChild(temp.content.firstChild);
-                document.addEventListener("click", closeMigrationInstructions);
             }
             var api, cid, language, user_settings, player_instance, default_settings;
             if (isMaterial()) {
@@ -2298,13 +2320,11 @@
             } else {
                 document.addEventListener("afterscriptexecute", scriptExit);
             }
-            if (!is_userscript && !window.chrome && !user_settings.migration_instructions) {
-                migrationInstructions();
-            }
             document.addEventListener("spfdone", main);
             document.addEventListener("spfrequest", request);
             document.addEventListener("readystatechange", main, true);
             XMLHttpRequest.prototype.open = checkXHR(XMLHttpRequest.prototype.open);
+            DOMParser.prototype.parseFromString = checkDomParser(DOMParser.prototype.parseFromString);
             window.onYouTubePlayerReady = shareApi(window.onYouTubePlayerReady);
             window.matchMedia = modMatchMedia(window.matchMedia);
             main();
@@ -2354,7 +2374,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.7.6";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.7";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
