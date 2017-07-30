@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.8.7
+// @version         1.8.8
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -2374,7 +2374,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.7";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.8.8";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");

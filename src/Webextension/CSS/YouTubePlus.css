@@ -564,8 +564,8 @@
     .part_grid_search .yt-lockup-meta-info > li{
         display: inline;
     }
-    .part_grid_subs .yt-lockup-content,
-    .part_grid_search .yt-lockup-content{
+    div:not(#yt-masthead-notifications-content) .part_grid_subs .yt-lockup-content,
+    div:not(#yt-masthead-notifications-content) .part_grid_search .yt-lockup-content{
         margin-right: 10px;
     }
     .part_grid_search #results .item-section{
@@ -1134,8 +1134,8 @@
     #part_welcome:after{
         content:"";
         display:block;
-        width:0; 
-        height:0; 
+        width:0;
+        height:0;
         border-left:10px solid transparent;
         border-right:10px solid transparent;
         border-bottom:10px solid #09F;
