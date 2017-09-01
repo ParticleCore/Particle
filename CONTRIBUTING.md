@@ -1,3 +1,5 @@
+# Contributing to Particle
+
 If you do not follow the following instructions your issue will be immediately closed and tagged as `invalid`.
 
 Before reporting a new issue please first follow the troubleshooting guide:
