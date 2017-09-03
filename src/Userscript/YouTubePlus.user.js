@@ -601,6 +601,7 @@
                     player = document.getElementById("movie_player");
                     if (player) {
                         player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
+                        player.cueVideoByPlayerVars(b.args);
                     }
                     return temp;
                 };
@@ -639,7 +640,7 @@
             }
             function modPlayerCreate(original) {
                 return function (a, b) {
-                    var temp, player;
+                    var temp;
                     temp = a.id || a;
                     if (temp !== "player-api" && temp !== "upsell-video") {
                         return original.apply(this, arguments);
@@ -649,7 +650,6 @@
                         original.apply(this, arguments);
                     } else if (typeof a === "object") {
                         player_instance = original.apply(this, arguments);
-                        player = document.getElementById("movie_player");
                         if (user_settings.VID_PLR_FIT) {
                             resizePlayer();
                         }
