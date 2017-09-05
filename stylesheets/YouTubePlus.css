@@ -152,12 +152,11 @@
     }
     #subscription-playlist-icon{
         margin-left: 0;
-        position: absolute;
+        border-bottom: 1px solid #eee;
     }
     #subscription-playlist{
-        width: 0;
-        height: 0 !important;
-        padding: 20px 15px !important;
+        padding: 15px !important;
+        display: block;
     }
     #subscription-playlist:hover{
         padding: 17px 15px !important;
@@ -167,11 +166,9 @@
     }
     #subscription-playlist svg{
         opacity: .4;
-        width:14px;
+        width: 14px;
         height: 16px;
-        display:block;
-        pointer-events:none;
-        transform: translate(-50%, -50%);
+        pointer-events: none;
     }
     #blacklist-import,
     #blacklist-export{
