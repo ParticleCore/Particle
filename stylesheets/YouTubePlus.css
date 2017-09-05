@@ -157,9 +157,10 @@
     #subscription-playlist{
         padding: 15px !important;
         display: block;
-    }
-    #subscription-playlist:hover{
-        padding: 17px 15px !important;
+        color: #333;
+        font-weight: 500;
+        font-size: 13px;
+        text-decoration: none;
     }
     #subscription-playlist:hover svg{
         opacity: 1;
@@ -169,6 +170,8 @@
         width: 14px;
         height: 16px;
         pointer-events: none;
+        vertical-align: bottom;
+        margin-right: 5px;
     }
     #blacklist-import,
     #blacklist-export{
