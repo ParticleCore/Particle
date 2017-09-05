@@ -152,26 +152,26 @@
     }
     #subscription-playlist-icon{
         margin-left: 0;
-        position: absolute;
+        border-bottom: 1px solid #eee;
     }
     #subscription-playlist{
-        width: 0;
-        height: 0 !important;
-        padding: 20px 15px !important;
-    }
-    #subscription-playlist:hover{
-        padding: 17px 15px !important;
+        padding: 15px !important;
+        display: block;
+        color: #333;
+        font-weight: 500;
+        font-size: 13px;
+        text-decoration: none;
     }
     #subscription-playlist:hover svg{
         opacity: 1;
     }
     #subscription-playlist svg{
         opacity: .4;
-        width:14px;
+        width: 14px;
         height: 16px;
-        display:block;
-        pointer-events:none;
-        transform: translate(-50%, -50%);
+        pointer-events: none;
+        vertical-align: bottom;
+        margin-right: 5px;
     }
     #blacklist-import,
     #blacklist-export{
@@ -564,8 +564,8 @@
     .part_grid_search .yt-lockup-meta-info > li{
         display: inline;
     }
-    .part_grid_subs .yt-lockup-content,
-    .part_grid_search .yt-lockup-content{
+    div:not(#yt-masthead-notifications-content) .part_grid_subs .yt-lockup-content,
+    div:not(#yt-masthead-notifications-content) .part_grid_search .yt-lockup-content{
         margin-right: 10px;
     }
     .part_grid_search #results .item-section{
@@ -1134,8 +1134,8 @@
     #part_welcome:after{
         content:"";
         display:block;
-        width:0; 
-        height:0; 
+        width:0;
+        height:0;
         border-left:10px solid transparent;
         border-right:10px solid transparent;
         border-bottom:10px solid #09F;

@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.9.0
+// @version         1.9.1
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1629,29 +1629,29 @@
                         }
                     }
                     list = list.reverse().splice(0, 20).join("%2C");
-                    subPlaylist.list_title = subPlaylist.list_title && subPlaylist.list_title.querySelector(".epic-nav-item-heading").textContent.trim();
+                    subPlaylist.list_title = subPlaylist.list_title.textContent.trim();
                     button = document.getElementById("subscription-playlist");
                     button.href = "/watch_videos?title=" + subPlaylist.list_title + "&video_ids=" + list;
                 }
             }
             function subPlaylist() {
-                var button, nav_menu;
-                nav_menu = document.querySelector(".appbar-nav-menu");
+                var button, browse_items;
+                browse_items = document.querySelector("#browse-items-primary");
                 button = document.getElementById("subscription-playlist");
-                subPlaylist.list_title = document.querySelector(".appbar-nav-menu");
+                subPlaylist.list_title = document.querySelector("#subscriptions-guide-item [href='/feed/subscriptions']");
                 subPlaylist.video_list = document.getElementsByClassName("addto-watch-later-button");
-                if (user_settings.GEN_SUB_LIST && nav_menu && window.location.href.split("/feed/subscriptions").length > 1 && !button && subPlaylist.list_title && subPlaylist.video_list) {
+                if (user_settings.GEN_SUB_LIST && browse_items && window.location.href.split("/feed/subscriptions").length > 1 && !button && subPlaylist.list_title && subPlaylist.video_list) {
                     button = document.createElement("template");
                     button.innerHTML = //
-                        `<li id='subscription-playlist-icon'>
-                            <a id='subscription-playlist' data-p='ttl|SUB_PLST' class='yt-uix-button spf-link yt-uix-sessionlink yt-uix-button-epic-nav-item yt-uix-button-size-default'>
+                        `<div id='subscription-playlist-icon'>
+                            <a id='subscription-playlist' data-p='ttl|SUB_PLST&tnd|SUB_PLST' class='spf-link'>
                                 <svg viewBox='0 0 14 16'>
                                     <polygon points='0,16 14,8 0,0 '/>
                                 </svg>
                             </a>
-                        </li>`;
+                        </div>`;
                     button = setLocale(button.content).firstChild;
-                    nav_menu.appendChild(button);
+                    browse_items.parentNode.insertBefore(button, browse_items);
                     document.addEventListener("click", setSubPlaylist);
                 }
             }
@@ -2376,7 +2376,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.9.0";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.9.1";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
