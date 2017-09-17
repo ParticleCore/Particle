@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.9.1
+// @version         1.9.2
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -600,10 +600,10 @@
                     temp = original.apply(this, arguments);
                     player = document.getElementById("movie_player");
                     if (player) {
-                        player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
                         if (!user_settings.VID_PLR_ATPL) {
                             player.cueVideoByPlayerVars(b.args);
                         }
+                        player.setPlaybackQuality(user_settings.VID_DFLT_QLTY);
                     }
                     return temp;
                 };
@@ -667,12 +667,6 @@
                     }
                 };
             }
-            function ModArgsWatch(args) {
-                if (args && args.autoplay === "1" && !user_settings.VID_PLR_ATPL && window.location.hash === "") {
-                    args.autoplay = "0";
-                }
-                return ModArgsWatch.Original.apply(this, arguments);
-            }
             function scriptExit(event) {
                 var i, j, key, temp;
                 if (event && event.target) {
@@ -732,15 +726,6 @@
                                 key = temp[i];
                                 break;
                             }
-                        }
-                        if (key) {
-                            ModArgsWatch.Original = window._yt_player[key];
-                            ModArgsWatch.prototype = ModArgsWatch.Original.prototype;
-                            temp = Object.keys(ModArgsWatch.Original);
-                            for (i = 0; i < temp.length; i++) {
-                                ModArgsWatch[temp[i]] = ModArgsWatch.Original[temp[i]];
-                            }
-                            window._yt_player[key] = ModArgsWatch;
                         }
                     }
                 }
@@ -1645,7 +1630,7 @@
                     button.innerHTML = //
                         `<div id='subscription-playlist-icon'>
                             <a id='subscription-playlist' data-p='ttl|SUB_PLST&tnd|SUB_PLST' class='spf-link'>
-                                <svg viewBox='0 0 14 16'>
+                                <svg viewBox='0 0 14 16' width='14' height='16'>
                                     <polygon points='0,16 14,8 0,0 '/>
                                 </svg>
                             </a>
@@ -2376,7 +2361,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.9.1";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.9.2";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
