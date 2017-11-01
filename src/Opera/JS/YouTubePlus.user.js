@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.9.3
+// @version         1.9.4
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -118,25 +118,12 @@
                 }
                 return language[label];
             }
-            function sortList(previous, next){
-                return next[Object.keys(next)[0]].localeCompare(previous[Object.keys(previous)[0]]);
-            }
             function getBlacklist(blist) {
-                var i, obj, temp, lnk, keys, list, fragment, sortAlpha;
+                var i, obj, temp, lnk, list, fragment;
                 list = user_settings.blacklist;
                 fragment = document.createDocumentFragment();
-                sortAlpha = [];
-                temp = Object.keys(list);
-                i = temp.length;
-                while (i--) {
-                    obj = {};
-                    obj[temp[i]] = list[temp[i]];
-                    sortAlpha.push(obj);
-                }
-                temp = sortAlpha.sort(sortList);
-                i = temp.length;
-                while (i--) {
-                    keys = Object.keys(temp[i]);
+                temp = list;
+                for (i = 0; i < temp.length; i++) {
                     obj = document.createElement("template");
                     obj.innerHTML = //
                         `<div class='blacklist'>
@@ -148,9 +135,13 @@
                         </div>`;
                     obj = setLocale(obj.content.firstChild);
                     lnk = obj.querySelector("a");
-                    lnk.href = "/channel/" + keys[0];
-                    lnk.setAttribute("title", temp[i][keys[0]]);
-                    lnk.textContent = temp[i][keys[0]];
+                    if (temp[i].ucid !== "") {
+                        lnk.href = "/channel/" + temp[i].ucid;
+                    } else {
+                        lnk.href = "/user/" + temp[i].canonical;
+                    }
+                    lnk.setAttribute("title", temp[i].name);
+                    lnk.textContent = temp[i].name;
                     fragment.appendChild(obj);
                     fragment.appendChild(document.createTextNode("\n"));
                 }
@@ -1194,9 +1185,11 @@
                     if (event.classList.contains("popoutmode")) {
                         popPlayer(event.dataset.link);
                     } else if (event.dataset.ytid !== "undefined") {
-                        user_settings.blacklist[event.dataset.ytid] = event.dataset.user;
-                        set("blacklist", user_settings.blacklist);
-                        modThumbs();
+                        if (!checkBlacklistEntry(event.dataset.ytid)) {
+                            addToBlacklist(event.dataset.ytid, event.dataset.user);
+                            set("blacklist", user_settings.blacklist);
+                            modThumbs();
+                        }
                     }
                 }
             }
@@ -1241,10 +1234,10 @@
             function delVideos() {
                 var i, j, temp, parent, blacklist, has_upnext;
                 has_upnext = document.querySelector(".autoplay-bar");
-                blacklist = Object.keys(user_settings.blacklist);
+                blacklist = user_settings.blacklist;
                 i = blacklist.length;
                 while (i--) {
-                    temp = modThumbs.thumbs[blacklist[i]];
+                    temp = modThumbs.thumbs["channel/" + blacklist[i].ucid] || modThumbs.thumbs["user/" + blacklist[i].canonical];
                     if (temp) {
                         j = temp.length;
                         while (j--) {
@@ -1270,7 +1263,7 @@
                             }
                         }
                         if (!temp.length) {
-                            delete modThumbs.thumbs[blacklist[i]];
+                            delete modThumbs.thumbs["channel/" + blacklist[i].ucid] || modThumbs.thumbs["user/" + blacklist[i].canonical];
                         }
                         temp = false;
                     }
@@ -1309,18 +1302,23 @@
                 i = list.length;
                 while (i--) {
                     temp = list[i];
-                    channel_id = temp.dataset.ytid;
-                    while (temp) {
-                        if (temp.tagName && temp.tagName === "LI" && video_list.indexOf(temp) > -1) {
-                            temp.username = list[i].textContent;
-                            if (!modThumbs.thumbs[channel_id]) {
-                                modThumbs.thumbs[channel_id] = [temp];
-                            } else if (modThumbs.thumbs[channel_id].indexOf(temp) < 0) {
-                                modThumbs.thumbs[channel_id].push(temp);
+                    if (temp.href) {
+                        channel_id = temp.href.match(/\/(user\/[^\/]+|channel\/[^\/]+)(?:\/|$)/);
+                        if (channel_id) {
+                            channel_id = channel_id[1];
+                            while (temp) {
+                                if (temp.tagName && temp.tagName === "LI" && video_list.indexOf(temp) > -1) {
+                                    temp.username = list[i].textContent;
+                                    if (!modThumbs.thumbs[channel_id]) {
+                                        modThumbs.thumbs[channel_id] = [temp];
+                                    } else if (modThumbs.thumbs[channel_id].indexOf(temp) < 0) {
+                                        modThumbs.thumbs[channel_id].push(temp);
+                                    }
+                                    break;
+                                }
+                                temp = temp.parentNode;
                             }
-                            break;
                         }
-                        temp = temp.parentNode;
                     }
                 }
             }
@@ -1339,14 +1337,14 @@
                 var span = document.createElement("span");
                 span.textContent = " · ";
                 enhancedDetails.username.appendChild(span);
-                enhancedDetails.link.href = window.location.origin + "/channel/" + enhancedDetails.user.dataset.ytid + "/videos";
+                enhancedDetails.link.href = window.location.origin + "/channel/" + enhancedDetails.user + "/videos";
                 enhancedDetails.username.appendChild(enhancedDetails.link);
             }
             function updateVideoCount(details) {
                 details = details.target.response.querySelector(".pl-header-details li:nth-child(2)");
                 if (details) {
                     enhancedDetails.link.className = "spf-link";
-                    enhancedDetails.link.textContent = cid[enhancedDetails.user.dataset.ytid] = details.textContent;
+                    enhancedDetails.link.textContent = cid[enhancedDetails.user] = details.textContent;
                     setVideoCount();
                 }
             }
@@ -1356,12 +1354,13 @@
                     enhancedDetails.link = document.createElement("a");
                     enhancedDetails.link.id = "uploaded-videos";
                     enhancedDetails.username.appendChild(enhancedDetails.link);
-                    enhancedDetails.user = enhancedDetails.username.querySelector("a");
-                    if (cid[enhancedDetails.user.dataset.ytid]) {
-                        enhancedDetails.link.textContent = cid[enhancedDetails.user.dataset.ytid];
+                    enhancedDetails.user = document.querySelector("[itemprop='channelId']");
+                    enhancedDetails.user = enhancedDetails.user.getAttribute("content");
+                    if (cid[enhancedDetails.user]) {
+                        enhancedDetails.link.textContent = cid[enhancedDetails.user];
                         setVideoCount();
                     } else {
-                        localXHR("GET", updateVideoCount, "/playlist?list=" + enhancedDetails.user.dataset.ytid.replace("UC", "UU"), "doc");
+                        localXHR("GET", updateVideoCount, "/playlist?list=" + enhancedDetails.user.replace("UC", "UU"), "doc");
                     }
                 }
             }
@@ -2090,6 +2089,7 @@
                 if (isMaterial()) {
                     return;
                 }
+                updateBlacklistModel();
                 pageScriptMessages();
                 customStyles();
                 settingsMenu();
@@ -2114,16 +2114,67 @@
                 if (temp && !document.getElementById("material-notice")) {
                     temp = document.createElement("template");
                     temp.innerHTML = //
-                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:50px;z-index:99999'>
+                        `<div id='material-notice' style='border-radius:2px;color:#FFF;padding:10px;background-color:#09F;box-shadow:0 0 3px rgba(0,0,0,.5);font-size:12px;position:fixed;bottom:20px;right:50%;transform:translateX(50%);z-index:99999;'>
                         YouTube Plus is not compatible with the YouTube beta Material Layout<br>
                         <a href='https://github.com/ParticleCore/Particle/wiki/Restore-classic-YouTube' target='_blank' style='color:#FFF;font-weight:bold;'>Click here</a> for instructions to restore classic YouTube and continue using YT+<br>
-                        When an alpha version is ready for public testing it will be announced <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>here</a><br>
+                        A new version for the new layout is available <a href='https://github.com/ParticleCore/Particle/issues/448' target='_blank' style='color:#FFF;font-weight:bold;'>here</a><br>
                         To keep using the current layout without this message please disable YT+
                         </div>`;
                     document.documentElement.appendChild(temp.content.firstChild);
                     document.documentElement.removeAttribute("data-user_settings");
                     return true;
                 }
+            }
+            function addToBlacklist(data, name) {
+                var ucid, canonical;
+                ucid = "";
+                canonical = "";
+                if (data !== "" && name !== "") {
+                    if (data.indexOf("user/") === 0) {
+                        canonical = data.replace(/user\//, "");
+                    } else if (data.indexOf("channel/") === 0) {
+                        ucid = data.replace(/channel\//, "");
+                    }
+                    user_settings.blacklist.push({
+                        name: name,
+                        ucid: ucid,
+                        canonical: canonical
+                    })
+                }
+            }
+            function checkBlacklistEntry(data) {
+                var i, type, value;
+                if (data.indexOf("user/") === 0) {
+                    value = data.replace(/user\//, "");
+                    type = "canonical";
+                } else if (data.indexOf("channel/") === 0) {
+                    value = data.replace(/channel\//, "");
+                    type = "ucid";
+                }
+                for (i = 0; i < user_settings.blacklist.length; i++) {
+                    if (user_settings.blacklist[i][type] !== "" && value === user_settings.blacklist[i][type]) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            function updateBlacklistModel() {
+                var i, new_blacklist, blacklist_entries;
+                if (user_settings.blacklist.constructor.name === "Array") {
+                    return;
+                }
+                new_blacklist = [];
+                blacklist_entries = Object.keys(user_settings.blacklist);
+                for (i = 0; i < blacklist_entries.length; i++) {
+                    new_blacklist.push({
+                        name: user_settings.blacklist[blacklist_entries[i]],
+                        ucid: blacklist_entries[i],
+                        canonical: ""
+                    });
+                }
+                new_blacklist.sort(function(before, after) {return before.name.localeCompare(after.name);});
+                user_settings.blacklist = new_blacklist;
+                set("blacklist", user_settings.blacklist);
             }
             var api, cid, language, user_settings, player_instance, default_settings;
             if (isMaterial()) {
@@ -2361,7 +2412,7 @@
                     holder = document.createElement("link");
                     holder.rel = "stylesheet";
                     holder.type = "text/css";
-                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.9.3";
+                    holder.href = "https://particlecore.github.io/Particle/stylesheets/YouTubePlus.css?v=1.9.4";
                     document.documentElement.appendChild(holder);
                 }
                 holder = document.createElement("script");
