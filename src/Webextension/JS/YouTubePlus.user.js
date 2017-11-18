@@ -1,5 +1,5 @@
 ﻿// ==UserScript==
-// @version         1.9.4
+// @version         1.9.5
 // @name            YouTube +
 // @namespace       https://github.com/ParticleCore
 // @description     YouTube with more freedom
@@ -1215,7 +1215,7 @@
                                 button.content.firstChild.dataset.link = temp[j].querySelector("a[href*='/watch?v']").href;
                                 thumb.appendChild(setLocale(button.content).firstChild);
                             }
-                            if (user_settings.BLK_ON && !thumb.querySelector(".blacklist") && window.yt.config_.PAGE_NAME !== "channel" && window.location.pathname !== "/feed/subscriptions") {
+                            if (user_settings.BLK_ON && list[i] !== "no_channel_id" && !thumb.querySelector(".blacklist") && window.yt.config_.PAGE_NAME !== "channel" && window.location.pathname !== "/feed/subscriptions") {
                                 button = document.createElement("template");
                                 button.innerHTML = //
                                     `<div data-p='ttl|BLCK_ADD&ttp|BLCK_ADD' class='yt-uix-tooltip blacklist'>
@@ -1285,7 +1285,7 @@
                 }
             }
             function getVideos() {
-                var i, list, temp, video_list, channel_id;
+                var i, list, temp, video_list, watch_id, channel_id;
                 modThumbs.thumbs = {};
                 video_list = Array.from(document.querySelectorAll(`
                     .yt-shelf-grid-item,
@@ -1297,7 +1297,8 @@
                     .yt-lockup-byline > a,
                     .yt-lockup-content .g-hovercard,
                     .video-list-item .g-hovercard,
-                    .channels-content-item .yt-lockup-title > a
+                    .channels-content-item .yt-lockup-title > a,
+                    .watch-sidebar-section .content-link
                 `);
                 i = list.length;
                 while (i--) {
@@ -1317,6 +1318,22 @@
                                     break;
                                 }
                                 temp = temp.parentNode;
+                            }
+                        } else {
+                            watch_id = temp.href.match(/\/watch?/);
+                            if (watch_id) {
+                                watch_id = watch_id[1];
+                                while (temp) {
+                                    if (temp.tagName && temp.tagName === "LI" && video_list.indexOf(temp) > -1) {
+                                        if (!modThumbs.thumbs["no_channel_id"]) {
+                                            modThumbs.thumbs["no_channel_id"] = [temp];
+                                        } else if (modThumbs.thumbs["no_channel_id"].indexOf(temp) < 0) {
+                                            modThumbs.thumbs["no_channel_id"].push(temp);
+                                        }
+                                        break;
+                                    }
+                                    temp = temp.parentNode;
+                                }
                             }
                         }
                     }
