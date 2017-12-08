@@ -2,7 +2,7 @@
     "addons": {
         "unlisted-particle@particlecore.github.io": {
             "updates": [{
-                "version": "1.9.5",
+                "version": "1.9.6",
                 "update_link": "https://github.com/ParticleCore/Particle/raw/master/dist/YouTubePlus.xpi",
                 "applications": {
                     "gecko": {
